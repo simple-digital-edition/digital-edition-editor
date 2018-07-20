@@ -1,0 +1,3 @@
+[run]
+source = digital_edition_editor
+omit = digital_edition_editor/test*

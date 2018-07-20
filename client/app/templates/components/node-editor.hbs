@@ -1,0 +1,53 @@
+<div class="grid-y">
+  <div class="cell shrink">
+    <h2>{{strip-tag-ns node.tag}}</h2>
+  </div>
+  {{#if edit_attributes}}
+    <div class="cell shrink">
+      <h3>Attributes
+        <a href="#" title="Add an attribute" {{action "add-attribute" node}}>
+          <svg viewBox="0 0 24 24" class="icon small">
+            <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z" />
+          </svg>
+        </a>
+      </h3>
+    </div>
+    {{#each-in node.attrib as |key value|}}
+      <div class="cell shrink">
+        <div class="grid-x">
+          <div class="cell auto">
+            <label><span title={{format-tag-ns key}}>{{strip-tag-ns key}}</span>
+              <input type="text" value={{value}} onchange={{action "update-attribute" node key}}/>
+            </label>
+          </div>
+          <div class="cell shrink">
+            <a href="#" title="Remove the attribute" {{action "remove-attribute" node key}}>
+              <svg viewBox="0 0 24 24" class="icon small">
+                <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    {{/each-in}}
+  {{/if}}
+  {{#if (or edit_text edit_tail)}}
+    <div class="cell shrink">
+      <h3>Text</h3>
+    </div>
+    {{#if edit_text}}
+      <div class="cell shrink">
+        <label>Text
+          <input type="text" value={{node.text}} onchange={{action "update-text" node "text"}}/>
+        </label>
+      </div>
+    {{/if}}
+    {{#if edit_tail}}
+      <div class="cell shrink">
+        <label>Tail
+          <input type="text" value={{node.tail}} onchange={{action "update-text" node "tail"}}/>
+        </label>
+      </div>
+    {{/if}}
+  {{/if}}
+</div>

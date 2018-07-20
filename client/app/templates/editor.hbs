@@ -1,0 +1,91 @@
+<main class="grid-y grid-frame">
+  <nav class="cell shrink">
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <ul class="menu dropdown" role="menubar">
+          <li class="menu-text">TEI Editor</li>
+          <li title="Open a project from the cloud" role="menuitem">
+            {{#link-to "editor.repositories"}}
+              <svg viewBox="0 0 24 24" class="icon">
+                <path d="M17,13L12,18L7,13H10V9H14V13M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" />
+              </svg>
+            {{/link-to}}
+          </li>
+          {{#if selected_repository}}
+            <li class="menu-text">{{selected_repository.title}}</li>
+            <li title="Synchronise the project with the cloud" role="menuitem">
+              <a href="#">
+                <svg viewBox="0 0 24 24" class="icon">
+                  <path d="M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z" />
+                </svg>
+              </a>
+            </li>
+            <li class="separator"></li>
+            <li title="Open a file for editing" role="menuitem">
+              {{#link-to "editor.files" selected_repository.id}}
+                <svg viewBox="0 0 24 24" class="icon">
+                  <path d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z" />
+                </svg>
+              {{/link-to}}
+            </li>
+            {{#if selected_file}}
+              <li class="menu-text">{{selected_file.basename}}</li>
+              {{#if selected_file.hasDirtyAttributes}}
+                <li title="Save changes to the file" role="menuitem">
+                  <a href="#" {{action "save_file"}}>
+                    <svg viewBox="0 0 24 24" class="icon">
+                      <path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
+                    </svg>
+                  </a>
+                </li>
+                <li title="Discard changes to the file" role="menuitem">
+                  <a href="#" {{action "reset_file"}}>
+                    <svg viewBox="0 0 24 24" class="icon">
+                      <path d="M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z" />
+                    </svg>
+                  </a>
+                </li>
+              {{else}}
+              <li class="menu-icon-disabled">
+                <span>
+                  <svg viewBox="0 0 24 24" class="icon">
+                    <path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
+                  </svg>
+                </span>
+              </li>
+              <li class="menu-icon-disabled">
+                <span>
+                  <svg viewBox="0 0 24 24" class="icon">
+                    <path d="M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z" />
+                  </svg>
+                </span>
+              </li>
+              {{/if}}
+            {{/if}}
+          {{/if}}
+        </ul>
+      </div>
+      <div class="top-bar-right">
+        <ul class="menu" role="menubar">
+          <li role="menuitem">
+            <a href="#" title="Log in">
+              <svg viewBox="0 0 24 24" class="icon">
+                  <path d="M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z" />
+              </svg>
+            </a>
+          </li>
+          <li role="menuitem">
+            <a href="#" title="Log out">
+              <svg viewBox="0 0 24 24" class="icon">
+                  <path d="M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <article class="cell auto cell-block-container grid-padding-x">
+    {{outlet}}
+  </article>
+</main>

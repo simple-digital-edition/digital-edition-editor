@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pyramid = "*"
+pyramid-tm = "*"
+sqlalchemy = "*"
+transaction = "*"
+"zope.sqlalchemy" = "*"
+waitress = "*"
+pywebtools = "*"
+gitpython = "*"
+lxml = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"

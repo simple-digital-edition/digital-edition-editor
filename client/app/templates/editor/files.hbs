@@ -1,0 +1,8 @@
+<div class="cell">
+  <h1>Select the file to load</h1>
+  <ul class="menu vertical" role="menubar">
+    {{#each-in model.tei_files as |key filename|}}
+      <li role="menuitem"><a href="#" {{action "select-file" model.id key}}>{{filename}}</a></li>
+    {{/each-in}}
+  </ul>
+</div>

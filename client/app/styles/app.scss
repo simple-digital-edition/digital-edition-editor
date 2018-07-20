@@ -1,0 +1,101 @@
+@import "settings";
+@import "foundation-sites/foundation";
+@include foundation-everything;
+
+/**
+ * Generic styles
+ */
+.full-height {
+    height: 100%;
+    box-sizing: border-box;
+}
+.hide-overflow {
+    overflow: hidden;
+}
+a {
+    svg.icon {
+        path {
+            fill: $primary-color;
+        }
+
+        &:hover {
+            path {
+                fill: lighten($primary-color, 10%);
+            }
+        }
+    }
+}
+svg.icon {
+    width: 24px;
+    height: 24px;
+
+    &.small {
+        width: 18px;
+        height: 18px;
+    }
+}
+.secondary {
+    color: $dark-gray;
+    font-size: 80%;
+}
+.ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.hover-parent {
+    .hover {
+        display: none;
+    }
+
+    &:hover {
+        .hover {
+            display: inline-block;
+        }
+    }
+}
+
+/**
+ * Foundation overrides
+ */
+.top-bar {
+    margin-bottom: $global-margin;
+    border-bottom: 1px solid $medium-gray;
+
+    a {
+        svg.icon {
+            path {
+                fill: $black;
+            }
+
+            &:hover {
+                path {
+                    fill: lighten($black, 20%);
+                }
+            }
+        }
+    }
+}
+
+.menu {
+    .menu-text {
+        padding: rem-calc(14) $global-padding;
+    }
+    .menu-icon-disabled {
+        span {
+            display: block;
+            padding: $global-menu-padding;
+            line-height: 1;
+
+            svg {
+
+                path {
+                    fill: $medium-gray;
+                }
+            }
+        }
+    }
+    .separator {
+        border-right: 1px solid $medium-gray;
+    }
+}
