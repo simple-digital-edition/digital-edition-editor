@@ -5009,6 +5009,9 @@ a.thumbnail {
   height: 100%;
   box-sizing: border-box; }
 
+.auto-overflow {
+  overflow: auto; }
+
 .hide-overflow {
   overflow: hidden; }
 
@@ -5040,6 +5043,15 @@ svg.icon {
 .hover-parent:hover .hover {
   display: inline-block; }
 
+.position-relative {
+  position: relative; }
+  .position-relative .position-top-right {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 1; }
+
 /**
  * Foundation overrides
  */
@@ -5063,5 +5075,11 @@ svg.icon {
 
 .menu .separator {
   border-right: 1px solid #cacaca; }
+
+/**
+ * Editor styling
+ */
+.body-tag-editor textarea {
+  min-height: 10rem; }
 
 /*# sourceMappingURL=client.css.map */

@@ -20,6 +20,38 @@
 
   exports.default = App;
 });
+;define('client/components/body-editor', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({});
+});
+;define('client/components/body-tag-editor', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        tagName: 'li',
+        classNames: ['hover-parent', 'position-relative', 'body-tag-editor'],
+        mode: 'display',
+
+        actions: {
+            'start-edit': function () {
+                this.set('mode', 'edit');
+            },
+            'save-edit': function () {
+                this.set('mode', 'display');
+            },
+            'cancel-edit': function () {
+                this.set('mode', 'display');
+            }
+        }
+    });
+});
 ;define('client/components/node-editor', ['exports'], function (exports) {
     'use strict';
 
@@ -55,6 +87,14 @@
             }
         }
     });
+});
+;define('client/components/tei-tag-render', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({});
 });
 ;define('client/components/tree-view', ['exports'], function (exports) {
   'use strict';
@@ -688,6 +728,72 @@
 
     exports.default = Ember.Helper.helper(stripTagNs);
 });
+;define('client/helpers/tei-tag-mapper', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.teiTagMapper = teiTagMapper;
+    function teiTagMapper(params /*, hash*/) {
+        return params.map(function (item) {
+            if (item === '{http://www::tei-c::org/ns/1::0}head') {
+                return 'header';
+            } else if (item === '{http://www::tei-c::org/ns/1::0}p') {
+                return 'p';
+            } else if (item === '{http://www::tei-c::org/ns/1::0}span') {
+                return 'span';
+            } else {
+                if (item.indexOf('{') >= 0 && item.indexOf('}') >= 0) {
+                    return item.substring(item.indexOf('}') + 1);
+                } else {
+                    return item;
+                }
+            }
+        });
+    }
+
+    exports.default = Ember.Helper.helper(teiTagMapper);
+});
+;define('client/helpers/tei-tag-source-code', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.teiTagSourceCode = teiTagSourceCode;
+
+
+    function recursive_text(tag) {
+        var text = '<' + tag.tag.replace('{http://www::tei-c::org/ns/1::0}', 'tei:');
+        Object.keys(tag.attrib).forEach(function (key) {
+            text = text + ' ' + key + '="' + tag.attrib[key] + '"';
+        });
+        text = text + '>';
+        if (tag.text) {
+            text = text + tag.text;
+        }
+        tag.children.forEach(function (child) {
+            text = text + recursive_text(child);
+            if (child.tail) {
+                text = text + child.tail;
+            }
+        });
+        text = text + '</' + tag.tag.replace('{http://www::tei-c::org/ns/1::0}', 'tei:') + '>';
+        if (tag.tail) {
+            text = text + tag.tail;
+        }
+        return text;
+    }
+
+    function teiTagSourceCode(params /*, hash*/) {
+        return params.map(function (item) {
+            return recursive_text(item);
+        });
+    }
+
+    exports.default = Ember.Helper.helper(teiTagSourceCode);
+});
 ;define('client/helpers/xor', ['exports', 'ember-truth-helpers/helpers/xor'], function (exports, _xor) {
   'use strict';
 
@@ -996,6 +1102,22 @@
   });
   exports.default = Ember.HTMLBars.template({ "id": "sGhC0tck", "block": "{\"symbols\":[],\"statements\":[[1,[20,\"outlet\"],false],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/application.hbs" } });
 });
+;define("client/templates/components/body-editor", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "pRys3iLm", "block": "{\"symbols\":[\"elem\"],\"statements\":[[6,\"ol\"],[10,\"class\",\"no-bullet\"],[8],[0,\"\\n\"],[4,\"each\",[[22,[\"body\",\"children\"]]],null,{\"statements\":[[0,\"    \"],[1,[26,\"body-tag-editor\",null,[[\"elem\"],[[21,1,[]]]]],false],[0,\"\\n\"]],\"parameters\":[1]},null],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
+});
+;define("client/templates/components/body-tag-editor", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "WqcyORNW", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[26,\"eq\",[[22,[\"mode\"]],\"display\"],null]],null,{\"statements\":[[0,\"  \"],[1,[26,\"tei-tag-render\",null,[[\"elem\",\"tagName\",\"classNames\"],[[22,[\"elem\"]],[26,\"tei-tag-mapper\",[[22,[\"elem\",\"tag\"]]],null],[22,[\"elem\",\"attrib\",\"style\"]]]]],false],[0,\"\\n  \"],[6,\"ul\"],[10,\"class\",\"menu hover position-top-right\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n    \"],[6,\"li\"],[8],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"role\",\"menuitem\"],[3,\"action\",[[21,0,[]],\"start-edit\"]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n          \"],[6,\"path\"],[10,\"d\",\"M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"textarea\"],[8],[1,[26,\"tei-tag-source-code\",[[22,[\"elem\"]]],null],false],[9],[0,\"  \"],[6,\"ul\"],[10,\"class\",\"menu vertical hover position-top-right\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n    \"],[6,\"li\"],[8],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"role\",\"menuitem\"],[3,\"action\",[[21,0,[]],\"save-edit\"]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n          \"],[6,\"path\"],[10,\"d\",\"M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"role\",\"menuitem\"],[3,\"action\",[[21,0,[]],\"cancel-edit\"]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n          \"],[6,\"path\"],[10,\"d\",\"M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-tag-editor.hbs" } });
+});
 ;define("client/templates/components/node-editor", ["exports"], function (exports) {
   "use strict";
 
@@ -1003,6 +1125,14 @@
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "KJK+Qcl/", "block": "{\"symbols\":[\"value\",\"key\"],\"statements\":[[6,\"div\"],[10,\"class\",\"grid-y\"],[8],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n    \"],[6,\"h2\"],[8],[1,[26,\"strip-tag-ns\",[[22,[\"node\",\"tag\"]]],null],false],[9],[0,\"\\n  \"],[9],[0,\"\\n\"],[4,\"if\",[[22,[\"edit_attributes\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n      \"],[6,\"h3\"],[8],[0,\"Attributes\\n        \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Add an attribute\"],[3,\"action\",[[21,0,[]],\"add-attribute\",[22,[\"node\"]]]],[8],[0,\"\\n          \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon small\"],[8],[0,\"\\n            \"],[6,\"path\"],[10,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z\"],[8],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n\"],[4,\"each\",[[26,\"-each-in\",[[22,[\"node\",\"attrib\"]]],null]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n        \"],[6,\"div\"],[10,\"class\",\"grid-x\"],[8],[0,\"\\n          \"],[6,\"div\"],[10,\"class\",\"cell auto\"],[8],[0,\"\\n            \"],[6,\"label\"],[8],[6,\"span\"],[11,\"title\",[26,\"format-tag-ns\",[[21,2,[]]],null]],[8],[1,[26,\"strip-tag-ns\",[[21,2,[]]],null],false],[9],[0,\"\\n              \"],[6,\"input\"],[11,\"value\",[21,1,[]]],[11,\"onchange\",[26,\"action\",[[21,0,[]],\"update-attribute\",[22,[\"node\"]],[21,2,[]]],null]],[10,\"type\",\"text\"],[8],[9],[0,\"\\n            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n          \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n            \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Remove the attribute\"],[3,\"action\",[[21,0,[]],\"remove-attribute\",[22,[\"node\"]],[21,2,[]]]],[8],[0,\"\\n              \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon small\"],[8],[0,\"\\n                \"],[6,\"path\"],[10,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7\"],[8],[9],[0,\"\\n              \"],[9],[0,\"\\n            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null],[4,\"if\",[[26,\"or\",[[22,[\"edit_text\"]],[22,[\"edit_tail\"]]],null]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n      \"],[6,\"h3\"],[8],[0,\"Text\"],[9],[0,\"\\n    \"],[9],[0,\"\\n\"],[4,\"if\",[[22,[\"edit_text\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n        \"],[6,\"label\"],[8],[0,\"Text\\n          \"],[6,\"input\"],[11,\"value\",[22,[\"node\",\"text\"]]],[11,\"onchange\",[26,\"action\",[[21,0,[]],\"update-text\",[22,[\"node\"]],\"text\"],null]],[10,\"type\",\"text\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[22,[\"edit_tail\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n        \"],[6,\"label\"],[8],[0,\"Tail\\n          \"],[6,\"input\"],[11,\"value\",[22,[\"node\",\"tail\"]]],[11,\"onchange\",[26,\"action\",[[21,0,[]],\"update-text\",[22,[\"node\"]],\"tail\"],null]],[10,\"type\",\"text\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/node-editor.hbs" } });
+});
+;define("client/templates/components/tei-tag-render", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "UwdlAPLs", "block": "{\"symbols\":[\"child\"],\"statements\":[[1,[22,[\"elem\",\"text\"]],false],[4,\"each\",[[22,[\"elem\",\"children\"]]],null,{\"statements\":[[1,[26,\"tei-tag-render\",null,[[\"tag\",\"tagName\",\"classNames\"],[[21,1,[]],[26,\"tei-tag-mapper\",[[21,1,[\"tag\"]]],null],[21,1,[\"attrib\",\"style\"]]]]],false],[1,[22,[\"elem\",\"tail\"]],false]],\"parameters\":[1]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tei-tag-render.hbs" } });
 });
 ;define("client/templates/components/tree-view", ["exports"], function (exports) {
   "use strict";
@@ -1034,7 +1164,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "WfvCEeCU", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n  \"],[6,\"h1\"],[8],[1,[22,[\"model\",\"filename\"]],false],[9],[0,\"\\n\"],[9],[0,\"\\n\"],[6,\"div\"],[10,\"class\",\"cell auto grid-x grid-padding-x\"],[8],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-container\"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n      \"],[6,\"ul\"],[10,\"class\",\"tabs\"],[8],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title is-active\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-metadata\"],null]],[10,\"aria-selected\",\"true\"],[8],[0,\"Metadata\"],[9],[9],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-annotations\"],null]],[8],[0,\"Annotations\"],[9],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell auto cell-block-y\"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",\"tabs-content full-height\"],[8],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-metadata\"],[10,\"class\",\"tabs-panel is-active full-height\"],[8],[0,\"\\n          \"],[6,\"div\"],[10,\"class\",\"grid-x grid-padding-x full-height\"],[8],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n              \"],[6,\"ul\"],[10,\"class\",\"no-bullet\"],[8],[1,[26,\"xml-tree-editor\",null,[[\"node\",\"click-node-title\",\"notify-model-change\"],[[22,[\"model\",\"header\"]],[26,\"action\",[[21,0,[]],\"select-metadata-node\"],null],[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[9],[0,\"\\n            \"],[9],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n\"],[4,\"if\",[[22,[\"selected_metadata_node\"]]],null,{\"statements\":[[0,\"                \"],[1,[26,\"node-editor\",null,[[\"node\",\"edit_tail\",\"notify-model-change\"],[[22,[\"selected_metadata_node\"]],false,[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-annotations\"],[10,\"class\",\"tabs-panel full-height\"],[8],[0,\"\\n          \"],[6,\"p\"],[8],[0,\"Suspendisse dictum feugiat nisl ut dapibus.  Vivamus hendrerit arcu sed erat molestie vehicula. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.  Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.\"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6\"],[8],[0,\"\\n    B\\n  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "oX4P1f3P", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n  \"],[6,\"h1\"],[8],[1,[22,[\"model\",\"filename\"]],false],[9],[0,\"\\n\"],[9],[0,\"\\n\"],[6,\"div\"],[10,\"class\",\"cell auto grid-x grid-padding-x\"],[8],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-container\"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n      \"],[6,\"ul\"],[10,\"class\",\"tabs\"],[8],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title is-active\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-metadata\"],null]],[10,\"aria-selected\",\"true\"],[8],[0,\"Metadata\"],[9],[9],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-annotations\"],null]],[8],[0,\"Annotations\"],[9],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell auto cell-block-y\"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",\"tabs-content full-height\"],[8],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-metadata\"],[10,\"class\",\"tabs-panel is-active full-height\"],[8],[0,\"\\n          \"],[6,\"div\"],[10,\"class\",\"grid-x grid-padding-x full-height\"],[8],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n              \"],[6,\"ul\"],[10,\"class\",\"no-bullet\"],[8],[1,[26,\"xml-tree-editor\",null,[[\"node\",\"click-node-title\",\"notify-model-change\"],[[22,[\"model\",\"header\"]],[26,\"action\",[[21,0,[]],\"select-metadata-node\"],null],[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[9],[0,\"\\n            \"],[9],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n\"],[4,\"if\",[[22,[\"selected_metadata_node\"]]],null,{\"statements\":[[0,\"                \"],[1,[26,\"node-editor\",null,[[\"node\",\"edit_tail\",\"notify-model-change\"],[[22,[\"selected_metadata_node\"]],false,[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-annotations\"],[10,\"class\",\"tabs-panel full-height\"],[8],[0,\"\\n          \"],[6,\"p\"],[8],[0,\"Suspendisse dictum feugiat nisl ut dapibus.  Vivamus hendrerit arcu sed erat molestie vehicula. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.  Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.\"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6 auto-overflow\"],[8],[0,\"\\n    \"],[1,[26,\"body-editor\",null,[[\"body\"],[[22,[\"model\",\"body\"]]]]],false],[0,\"\\n  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/file.hbs" } });
 });
 ;define("client/templates/editor/files", ["exports"], function (exports) {
   "use strict";

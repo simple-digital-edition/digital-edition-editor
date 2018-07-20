@@ -10,9 +10,24 @@ define('client/tests/app.lint-test', [], function () {
     assert.ok(true, 'app.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/body-editor.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/body-editor.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/body-tag-editor.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/body-tag-editor.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/node-editor.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/node-editor.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/tei-tag-render.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/tei-tag-render.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/tree-view.js', function (assert) {
@@ -60,6 +75,16 @@ define('client/tests/app.lint-test', [], function () {
     assert.ok(true, 'helpers/strip-tag-ns.js should pass ESLint\n\n');
   });
 
+  QUnit.test('helpers/tei-tag-mapper.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/tei-tag-mapper.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/tei-tag-source-code.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/tei-tag-source-code.js should pass ESLint\n\n');
+  });
+
   QUnit.test('models/file.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/file.js should pass ESLint\n\n');
@@ -105,6 +130,64 @@ define('client/tests/app.lint-test', [], function () {
     assert.ok(true, 'routes/editor/repository.js should pass ESLint\n\n');
   });
 });
+define('client/tests/integration/components/body-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Component | body-editor', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    (0, _qunit.test)('it renders', async function (assert) {
+      // Set any properties with this.set('myProperty', 'value');
+      // Handle any actions with this.set('myAction', function(val) { ... });
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "csyKz1Sv",
+        "block": "{\"symbols\":[],\"statements\":[[1,[20,\"body-editor\"],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '');
+
+      // Template block usage:
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "sNf+yvWU",
+        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"body-editor\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), 'template block text');
+    });
+  });
+});
+define('client/tests/integration/components/body-tag-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Component | body-tag-editor', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    (0, _qunit.test)('it renders', async function (assert) {
+      // Set any properties with this.set('myProperty', 'value');
+      // Handle any actions with this.set('myAction', function(val) { ... });
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "EorkQPeD",
+        "block": "{\"symbols\":[],\"statements\":[[1,[20,\"body-tag-editor\"],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '');
+
+      // Template block usage:
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "nkFcZAAS",
+        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"body-tag-editor\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), 'template block text');
+    });
+  });
+});
 define('client/tests/integration/components/node-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
   'use strict';
 
@@ -127,6 +210,35 @@ define('client/tests/integration/components/node-editor-test', ['qunit', 'ember-
       await (0, _testHelpers.render)(Ember.HTMLBars.template({
         "id": "epgKcr3T",
         "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"node-editor\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), 'template block text');
+    });
+  });
+});
+define('client/tests/integration/components/tei-tag-render-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Component | tei-tag-render', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    (0, _qunit.test)('it renders', async function (assert) {
+      // Set any properties with this.set('myProperty', 'value');
+      // Handle any actions with this.set('myAction', function(val) { ... });
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "60Y7bJCv",
+        "block": "{\"symbols\":[],\"statements\":[[1,[20,\"tei-tag-render\"],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '');
+
+      // Template block usage:
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "7Jr+S/KN",
+        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"tei-tag-render\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
         "meta": {}
       }));
 
@@ -232,6 +344,46 @@ define('client/tests/integration/helpers/strip-tag-ns-test', ['qunit', 'ember-qu
     });
   });
 });
+define('client/tests/integration/helpers/tei-tag-mapper-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Helper | tei-tag-mapper', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    // Replace this with your real tests.
+    (0, _qunit.test)('it renders', async function (assert) {
+      this.set('inputValue', '1234');
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "3Y3UgDdP",
+        "block": "{\"symbols\":[],\"statements\":[[1,[26,\"tei-tag-mapper\",[[22,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '1234');
+    });
+  });
+});
+define('client/tests/integration/helpers/tei-tag-source-code-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Helper | tei-tag-source-code', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    // Replace this with your real tests.
+    (0, _qunit.test)('it renders', async function (assert) {
+      this.set('inputValue', '1234');
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "uPW6G3Tg",
+        "block": "{\"symbols\":[],\"statements\":[[1,[26,\"tei-tag-source-code\",[[22,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '1234');
+    });
+  });
+});
 define('client/tests/test-helper', ['client/app', 'client/config/environment', '@ember/test-helpers', 'ember-qunit'], function (_app, _environment, _testHelpers, _emberQunit) {
   'use strict';
 
@@ -244,9 +396,24 @@ define('client/tests/tests.lint-test', [], function () {
 
   QUnit.module('ESLint | tests');
 
+  QUnit.test('integration/components/body-editor-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/body-editor-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/body-tag-editor-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/body-tag-editor-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/node-editor-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/node-editor-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/tei-tag-render-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/tei-tag-render-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/tree-view-test.js', function (assert) {
@@ -267,6 +434,16 @@ define('client/tests/tests.lint-test', [], function () {
   QUnit.test('integration/helpers/strip-tag-ns-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/helpers/strip-tag-ns-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/tei-tag-mapper-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/tei-tag-mapper-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/tei-tag-source-code-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/tei-tag-source-code-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('test-helper.js', function (assert) {

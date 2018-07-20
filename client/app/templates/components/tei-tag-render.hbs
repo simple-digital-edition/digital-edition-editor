@@ -1,0 +1,1 @@
+{{elem.text}}{{#each elem.children as |child|}}{{tei-tag-render tag=child tagName=(tei-tag-mapper child.tag) classNames=child.attrib.style}}{{elem.tail}}{{/each}}
