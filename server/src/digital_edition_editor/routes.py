@@ -1,5 +1,5 @@
 def includeme(config):
-    config.add_route('editor', '/editor')
+    config.add_route('editor', '/')
     config.add_route('editor.file', '/editor/*path')
     config.add_route('repositories.get', '/repositories', request_method='GET')
     config.add_route('repository.get', '/repositories/{rid}', request_method='GET')

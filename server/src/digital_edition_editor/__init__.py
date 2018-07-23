@@ -8,7 +8,7 @@ def main(global_config, **settings):
                                   for repo1 in settings['git.repos'].split('\n')
                                   for repo2 in repo1.split(',')])
     config = Configurator(settings=settings)
-    config.include('.models')
+    #config.include('.models')
     config.include('.routes')
     config.scan()
     return config.make_wsgi_app()
