@@ -1,0 +1,26 @@
+<div class="grid-y full-height">
+  <nav class="cell shrink">
+    <ul class="menu" role="menubar">
+      <li>
+        <select role="menuitem" onchange={{action "set-block-type" value="target.value"}}>
+          {{#each block_types as |block_type|}}
+            <option value={{block_type.key}} selected={{eq block_type.key selected_block_type}}>{{block_type.label}}</option>
+          {{/each}}
+        </select>
+      </li>
+      {{#each mark_types as |mark_type|}}
+        {{#if (array-contains selected_mark_types mark_type.key)}}
+          <li class="is-active">
+            <a href="" {{action "toggle-mark" mark_type.key}}>{{mark_type.label}}</a>
+          </li>
+        {{else}}
+          <li>
+            <a href="" {{action "toggle-mark" mark_type.key}}>{{mark_type.label}}</a>
+          </li>
+        {{/if}}
+      {{/each}}
+    </ul>
+  </nav>
+  <div class="editor auto-overflow">
+  </div>
+</div>
