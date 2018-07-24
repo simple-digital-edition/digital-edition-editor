@@ -28,8 +28,10 @@ def file_to_json(file):
         if event == 'start':
             if element.tag == '{http://www.tei-c.org/ns/1.0}teiHeader':
                 stack.append(header)
+                target = 'header'
             elif element.tag == '{http://www.tei-c.org/ns/1.0}body':
                 stack.append(body)
+                target = 'body'
             elif len(stack) > 0:
                 stack.append({})
             if len(stack) > 0:
@@ -46,6 +48,7 @@ def file_to_json(file):
                 current = stack.pop()
                 if len(stack) > 0:
                     stack[-1]['children'].append(current)
+    print(body)
     return header, body
 
 

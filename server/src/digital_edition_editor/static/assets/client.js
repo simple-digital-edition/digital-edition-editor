@@ -20,13 +20,66 @@
 
   exports.default = App;
 });
-;define('client/components/body-editor', ['exports'], function (exports) {
-  'use strict';
+;define("client/components/body-editor", ["exports", "prosemirror-model", "prosemirror-state", "prosemirror-view", "prosemirror-history", "prosemirror-keymap", "prosemirror-commands"], function (exports, _prosemirrorModel, _prosemirrorState, _prosemirrorView, _prosemirrorHistory, _prosemirrorKeymap, _prosemirrorCommands) {
+    "use strict";
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.Component.extend({});
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        didInsertElement() {
+            this._super(...arguments);
+
+            let schema = new _prosemirrorModel.Schema({
+                nodes: {
+                    text: {},
+                    'main_heading': {
+                        content: 'text*',
+                        toDOM() {
+                            return ['h1', 0];
+                        },
+                        parseDOM: [{ tag: 'h1' }]
+                    },
+                    'sub_heading': {
+                        content: 'text*',
+                        toDOM() {
+                            return ['h2', 0];
+                        },
+                        parseDOM: [{ tag: 'h2' }]
+                    },
+                    paragraph: {
+                        content: 'text*',
+                        toDOM() {
+                            return ['p', 0];
+                        },
+                        parseDOM: [{ tag: 'p' }]
+                    },
+                    doc: {
+                        content: '(main_heading | sub_heading | paragraph)+'
+                    }
+                }
+            });
+
+            let state = _prosemirrorState.EditorState.create({
+                schema,
+                doc: schema.nodeFromJSON(this.get('body')),
+                plugins: [(0, _prosemirrorHistory.history)(), (0, _prosemirrorKeymap.keymap)({
+                    'Mod-z': _prosemirrorHistory.undo,
+                    'Mod-y': _prosemirrorHistory.redo
+                }), (0, _prosemirrorKeymap.keymap)(_prosemirrorCommands.baseKeymap), (0, _prosemirrorKeymap.keymap)({
+                    'Ctrl-1': (0, _prosemirrorCommands.setBlockType)(schema.nodes.main_heading),
+                    'Ctrl-2': (0, _prosemirrorCommands.setBlockType)(schema.nodes.sub_heading),
+                    'Ctrl-3': (0, _prosemirrorCommands.setBlockType)(schema.nodes.paragraph)
+                })]
+            });
+
+            this.set('editor-view', new _prosemirrorView.EditorView(this.element, { state }));
+        },
+
+        willDestroyElement() {
+            this.get('editor-view').destroy();
+        }
+    });
 });
 ;define('client/components/body-tag-editor', ['exports'], function (exports) {
     'use strict';
@@ -1108,7 +1161,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "pRys3iLm", "block": "{\"symbols\":[\"elem\"],\"statements\":[[6,\"ol\"],[10,\"class\",\"no-bullet\"],[8],[0,\"\\n\"],[4,\"each\",[[22,[\"body\",\"children\"]]],null,{\"statements\":[[0,\"    \"],[1,[26,\"body-tag-editor\",null,[[\"elem\"],[[21,1,[]]]]],false],[0,\"\\n\"]],\"parameters\":[1]},null],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "5X6tQPv8", "block": "{\"symbols\":[],\"statements\":[],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
 });
 ;define("client/templates/components/body-tag-editor", ["exports"], function (exports) {
   "use strict";
@@ -1213,7 +1266,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+4bfcb508"});
           }
         
 //# sourceMappingURL=client.map
