@@ -5082,4 +5082,28 @@ svg.icon {
 .body-tag-editor textarea {
   min-height: 10rem; }
 
+.tei-body-editor .menu {
+  margin-bottom: 1rem; }
+
+.tei-body-editor .paragraph {
+  font-size: 11pt;
+  margin-bottom: 0;
+  margin-top: 1rem; }
+  .tei-body-editor .paragraph.no-indent {
+    margin-top: 0; }
+
+.tei-body-editor .page-number {
+  font-size: 80%;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem; }
+
+.tei-body-editor .letter-sparse {
+  letter-spacing: 0.1rem; }
+
+.tei-body-editor .invert-font-family {
+  font-weight: 300; }
+
+.tei-body-editor .shouting {
+  color: #f00; }
+
 /*# sourceMappingURL=client.css.map */

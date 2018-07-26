@@ -63660,21 +63660,21 @@ requireModule('ember')
 /******/
 /******/
 /******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push(["./tmp/ember_auto_import_webpack-staging_dir-KeBCRYLk.tmp/app.js","vendors~app"]);
+/******/ 	deferredModules.push(["./tmp/ember_auto_import_webpack-staging_dir-UwYVOVvk.tmp/app.js","vendors~app"]);
 /******/ 	// run deferred modules when ready
 /******/ 	return checkDeferredModules();
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./tmp/ember_auto_import_webpack-staging_dir-KeBCRYLk.tmp/app.js":
+/***/ "./tmp/ember_auto_import_webpack-staging_dir-UwYVOVvk.tmp/app.js":
 /*!***********************************************************************!*\
-  !*** ./tmp/ember_auto_import_webpack-staging_dir-KeBCRYLk.tmp/app.js ***!
+  !*** ./tmp/ember_auto_import_webpack-staging_dir-UwYVOVvk.tmp/app.js ***!
   \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("\n\nmodule.exports = (function(){\n  var w = window;\n  var d = w.define;\n  var r = w.require;\n  w.emberAutoImportDynamic = function(specifier) {\n    return r('_eai_dyn_' + specifier);\n  };\n    d('prosemirror-model', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-model/dist/index.js */ \"./node_modules/prosemirror-model/dist/index.js\"); });\n    d('prosemirror-state', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-state/dist/index.js */ \"./node_modules/prosemirror-state/dist/index.js\"); });\n    d('prosemirror-view', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-view/dist/index.js */ \"./node_modules/prosemirror-view/dist/index.js\"); });\n    d('prosemirror-history', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-history/dist/history.js */ \"./node_modules/prosemirror-history/dist/history.js\"); });\n    d('prosemirror-keymap', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-keymap/dist/keymap.js */ \"./node_modules/prosemirror-keymap/dist/keymap.js\"); });\n    d('prosemirror-commands', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-commands/dist/commands.js */ \"./node_modules/prosemirror-commands/dist/commands.js\"); });\n})();\n\n\n//# sourceURL=webpack://__ember_auto_import__/./tmp/ember_auto_import_webpack-staging_dir-KeBCRYLk.tmp/app.js?");
+eval("\n\nmodule.exports = (function(){\n  var w = window;\n  var d = w.define;\n  var r = w.require;\n  w.emberAutoImportDynamic = function(specifier) {\n    return r('_eai_dyn_' + specifier);\n  };\n    d('prosemirror-model', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-model/dist/index.js */ \"./node_modules/prosemirror-model/dist/index.js\"); });\n    d('prosemirror-history', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-history/dist/history.js */ \"./node_modules/prosemirror-history/dist/history.js\"); });\n    d('prosemirror-state', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-state/dist/index.js */ \"./node_modules/prosemirror-state/dist/index.js\"); });\n    d('prosemirror-view', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-view/dist/index.js */ \"./node_modules/prosemirror-view/dist/index.js\"); });\n    d('prosemirror-keymap', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-keymap/dist/keymap.js */ \"./node_modules/prosemirror-keymap/dist/keymap.js\"); });\n    d('prosemirror-commands', [], function() { return __webpack_require__(/*! ./node_modules/prosemirror-commands/dist/commands.js */ \"./node_modules/prosemirror-commands/dist/commands.js\"); });\n})();\n\n\n//# sourceURL=webpack://__ember_auto_import__/./tmp/ember_auto_import_webpack-staging_dir-UwYVOVvk.tmp/app.js?");
 
 /***/ })
 
@@ -75583,6 +75583,111 @@ createDeprecatedModule('resolver');
     value: true
   });
   exports.default = _isFastboot.default ? najax : Ember.$.ajax;
+});
+;define("ember-array-contains-helper/helpers/array-contains", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Helper.extend({
+
+    /**
+     * Test if an array contains an object, eventually based on one of this object property / value
+     *
+     * @method compute
+     * @param {Array} params array and value to test. Array can be null, undefined or valid Array.
+     * value could be a literal or an object
+     * @param {Object} hash named arguments accepted by this helper (``property``)
+     * @return {Boolean}
+     * - true if:
+     *   - the array in ``params[0]`` contains the object value in ``params[1]``
+     *   - the array in ``params[0]`` contains an object holding a property named ``hash.property`` with value equals to ``params[1]``
+     * - false otherwise and if the array in ``params[0]`` is null or undefined
+     *
+     * @throws {Ember.Error} if the given array (from ``params[0]``) is not null and not an array.
+     */
+    compute(params, hash = {}) {
+      let [array, value] = params;
+
+      // if array undefined or null, we test against an empty array. This is particularily usefull
+      // if the test occurs before a promise is resolved, for example
+      if (Ember.isNone(array)) {
+        array = Ember.A([]);
+      }
+
+      if (!Ember.isArray(array)) {
+        throw new Ember.Error('First parameter should be a valid array');
+      }
+
+      const property = hash.property;
+      let contained = false;
+      this.setupRecompute(array, property);
+
+      // Wrap into an Ember.Array to use advanced methods while supporting disabling prototype extensions
+      // Note: This operation does not modify the original array
+      let wrappedArray = Ember.A(array);
+
+      if (property) {
+        // Property provided, test the property
+        contained = wrappedArray.isAny(property, value);
+      } else {
+        // No property provided, test the full object
+        contained = wrappedArray.includes(value);
+      }
+
+      return contained;
+    },
+
+    destroy() {
+      if (this.teardown) {
+        this.teardown();
+      }
+      if (this.teardownProperty) {
+        this.teardownProperty();
+      }
+      this._super(...arguments);
+    },
+
+    /**
+     * Install and clean observers to be able to recompute result if array changes :
+     * content added or removed or observed property modified.
+     *
+     * @method setupRecompute
+     * @param {Array} array The given array
+     * @param {String} property Name of the property to test
+     * @private
+     */
+    setupRecompute(array, property) {
+      Ember.set(this, '_array', array);
+
+      // Remove existing observers, if any
+      if (this.teardown) {
+        this.teardown();
+      }
+      if (this.teardownProperty) {
+        this.teardownProperty();
+      }
+
+      // Install observer on the array itself : run when adding / removing items to the array
+      let arrayPath = '_array.[]';
+      Ember.addObserver(this, arrayPath, this, this.recompute);
+      // define method to remove observer
+      this.teardown = () => {
+        Ember.removeObserver(this, arrayPath, this, this.recompute);
+      };
+
+      if (property) {
+        // Install observer on the given property, if any
+        let propertyPath = `_array.@each.${property}`;
+        Ember.addObserver(this, propertyPath, this, this.recompute);
+        // define method to remove observer
+        this.teardownProperty = () => {
+          Ember.removeObserver(this, propertyPath, this, this.recompute);
+        };
+      }
+    }
+  });
 });
 ;define('ember-cli-app-version/initializer-factory', ['exports'], function (exports) {
   'use strict';

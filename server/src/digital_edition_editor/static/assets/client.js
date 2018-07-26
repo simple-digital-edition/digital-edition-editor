@@ -27,38 +27,87 @@
         value: true
     });
     exports.default = Ember.Component.extend({
+        classNames: ['tei-body-editor', 'full-height'],
+
+        block_types: [{ key: 'main_heading', label: 'Heading 1' }, { key: 'sub_heading', label: 'Heading 2' }, { key: 'paragraph', label: 'Paragraph' }, { key: 'paragraph_no_indent', label: 'Paragraph (no Indent)' }],
+        selected_block_type: null,
+        mark_types: [{ key: '', label: '' }, { key: 'page_number', label: 'Page Number' }, { key: 'invert_font_family', label: 'Font Highlight' }, { key: 'letter_sparse', label: 'Sparse Lettering' }, { key: 'sup', label: 'Superscript' }],
+        selected_mark_types: null,
+
         didInsertElement() {
             this._super(...arguments);
 
             let schema = new _prosemirrorModel.Schema({
                 nodes: {
-                    text: {},
-                    'main_heading': {
-                        content: 'text*',
+                    doc: {
+                        content: 'block+'
+                    },
+                    main_heading: {
+                        group: 'block',
+                        content: 'inline*',
                         toDOM() {
                             return ['h1', 0];
                         },
                         parseDOM: [{ tag: 'h1' }]
                     },
-                    'sub_heading': {
-                        content: 'text*',
+                    sub_heading: {
+                        group: 'block',
+                        content: 'inline*',
                         toDOM() {
                             return ['h2', 0];
                         },
                         parseDOM: [{ tag: 'h2' }]
                     },
+                    paragraph_no_indent: {
+                        group: 'block',
+                        content: 'inline*',
+                        toDOM() {
+                            return ['p', { class: 'no-indent' }, 0];
+                        },
+                        parseDOM: [{ tag: 'p.no-indent' }]
+                    },
                     paragraph: {
-                        content: 'text*',
+                        group: 'block',
+                        content: 'inline*',
                         toDOM() {
                             return ['p', 0];
                         },
                         parseDOM: [{ tag: 'p' }]
                     },
-                    doc: {
-                        content: '(main_heading | sub_heading | paragraph)+'
+                    text: {
+                        group: 'inline',
+                        inline: true
+                    }
+                },
+                marks: {
+                    page_number: {
+                        inclusive: true,
+                        toDOM() {
+                            return ['span', { class: 'page-number' }, 0];
+                        },
+                        parseDOM: [{ tag: 'span.page-number' }]
+                    },
+                    invert_font_family: {
+                        toDOM() {
+                            return ['span', { class: 'invert-font-family' }, 0];
+                        },
+                        parseDOM: [{ tag: 'span.invert-font-family' }]
+                    },
+                    letter_sparse: {
+                        toDOM() {
+                            return ['span', { class: 'letter-sparse' }, 0];
+                        },
+                        parseDOM: [{ tag: 'span.letter-sparse' }]
+                    },
+                    sup: {
+                        toDOM() {
+                            return ['sup', 0];
+                        },
+                        parseDOM: [{ tag: 'sup' }]
                     }
                 }
             });
+            this.set('editor-schema', schema);
 
             let state = _prosemirrorState.EditorState.create({
                 schema,
@@ -73,11 +122,80 @@
                 })]
             });
 
-            this.set('editor-view', new _prosemirrorView.EditorView(this.element, { state }));
+            let component = this;
+            let view = new _prosemirrorView.EditorView(this.element.querySelector('.editor'), {
+                state,
+                dispatchTransaction(transaction) {
+                    let new_state = view.state.apply(transaction);
+                    let selection = new_state.selection;
+                    for (let idx = 0; idx < selection.$anchor.path.length; idx++) {
+                        if (typeof selection.$anchor.path[idx] === 'object') {
+                            let node_type = selection.$anchor.path[idx].type;
+                            if (node_type.name !== 'doc' && node_type.isBlock) {
+                                component.set('selected_block_type', node_type.name);
+                            }
+                        }
+                    }
+                    // Calculate which marks are currently selected
+                    let selected_marks = [];
+                    if (selection.from === selection.to) {
+                        // Get marks at the current cursor position
+                        new_state.doc.nodeAt(selection.from).marks.forEach(mark => {
+                            if (selected_marks.indexOf(mark.type.name) === -1) {
+                                selected_marks.push(mark.type.name);
+                            }
+                        });
+                        // Add marks from the previous cursor position if they are inclusive
+                        new_state.doc.nodeAt(selection.from - 1).marks.forEach(mark => {
+                            if (mark.type.spec.inclusive && selected_marks.indexOf(mark.type.name) === -1) {
+                                selected_marks.push(mark.type.name);
+                            }
+                        });
+                        // Add stored marks
+                        if (new_state.storedMarks) {
+                            new_state.storedMarks.forEach(mark => {
+                                if (selected_marks.indexOf(mark.type.name) === -1) {
+                                    selected_marks.push(mark.type.name);
+                                }
+                            });
+                        }
+                    } else {
+                        // Add all marks between the selection markers
+                        new_state.doc.nodesBetween(selection.from, selection.to, node => {
+                            node.marks.forEach(mark => {
+                                if (selected_marks.indexOf(mark.type.name) === -1) {
+                                    selected_marks.push(mark.type.name);
+                                }
+                            });
+                        });
+                    }
+                    component.set('selected_mark_types', selected_marks);
+                    view.updateState(new_state);
+                    component.set('body', new_state.doc.toJSON());
+                }
+            });
+            this.set('editor-view', view);
         },
 
         willDestroyElement() {
             this.get('editor-view').destroy();
+        },
+
+        actions: {
+            'set-block-type'(value) {
+                this.set('selected_block_type', value);
+                let view = this.get('editor-view');
+                let schema = this.get('editor-schema');
+                view.focus();
+                (0, _prosemirrorCommands.setBlockType)(schema.nodes[value])(view.state, view.dispatch);
+            },
+            'toggle-mark'(value) {
+                this.set('selected_inline_type', value);
+                let view = this.get('editor-view');
+                let schema = this.get('editor-schema');
+                view.focus();
+                (0, _prosemirrorCommands.toggleMark)(schema.marks[value])(view.state, view.dispatch);
+            }
         }
     });
 });
@@ -540,6 +658,25 @@
   }
 
   exports.default = Ember.Helper.helper(appVersion);
+});
+;define('client/helpers/array-contains', ['exports', 'ember-array-contains-helper/helpers/array-contains'], function (exports, _arrayContains) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _arrayContains.default;
+    }
+  });
+  Object.defineProperty(exports, 'arrayContains', {
+    enumerable: true,
+    get: function () {
+      return _arrayContains.arrayContains;
+    }
+  });
 });
 ;define('client/helpers/eq', ['exports', 'ember-truth-helpers/helpers/equal'], function (exports, _equal) {
   'use strict';
@@ -1161,7 +1298,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "5X6tQPv8", "block": "{\"symbols\":[],\"statements\":[],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "H4pjqQIh", "block": "{\"symbols\":[\"mark_type\",\"block_type\"],\"statements\":[[6,\"div\"],[10,\"class\",\"grid-y full-height\"],[8],[0,\"\\n  \"],[6,\"nav\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n    \"],[6,\"ul\"],[10,\"class\",\"menu\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n      \"],[6,\"li\"],[8],[0,\"\\n        \"],[6,\"select\"],[10,\"role\",\"menuitem\"],[11,\"onchange\",[26,\"action\",[[21,0,[]],\"set-block-type\"],[[\"value\"],[\"target.value\"]]]],[8],[0,\"\\n\"],[4,\"each\",[[22,[\"block_types\"]]],null,{\"statements\":[[0,\"            \"],[6,\"option\"],[11,\"value\",[21,2,[\"key\"]]],[11,\"selected\",[26,\"eq\",[[21,2,[\"key\"]],[22,[\"selected_block_type\"]]],null]],[8],[1,[21,2,[\"label\"]],false],[9],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n\"],[4,\"each\",[[22,[\"mark_types\"]]],null,{\"statements\":[[4,\"if\",[[26,\"array-contains\",[[22,[\"selected_mark_types\"]],[21,1,[\"key\"]]],null]],null,{\"statements\":[[0,\"          \"],[6,\"li\"],[10,\"class\",\"is-active\"],[8],[0,\"\\n            \"],[6,\"a\"],[10,\"href\",\"\"],[3,\"action\",[[21,0,[]],\"toggle-mark\",[21,1,[\"key\"]]]],[8],[1,[21,1,[\"label\"]],false],[9],[0,\"\\n          \"],[9],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[6,\"li\"],[8],[0,\"\\n            \"],[6,\"a\"],[10,\"href\",\"\"],[3,\"action\",[[21,0,[]],\"toggle-mark\",[21,1,[\"key\"]]]],[8],[1,[21,1,[\"label\"]],false],[9],[0,\"\\n          \"],[9],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null],[0,\"    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"editor auto-overflow\"],[8],[0,\"\\n  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
 });
 ;define("client/templates/components/body-tag-editor", ["exports"], function (exports) {
   "use strict";
@@ -1217,7 +1354,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "oX4P1f3P", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n  \"],[6,\"h1\"],[8],[1,[22,[\"model\",\"filename\"]],false],[9],[0,\"\\n\"],[9],[0,\"\\n\"],[6,\"div\"],[10,\"class\",\"cell auto grid-x grid-padding-x\"],[8],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-container\"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n      \"],[6,\"ul\"],[10,\"class\",\"tabs\"],[8],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title is-active\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-metadata\"],null]],[10,\"aria-selected\",\"true\"],[8],[0,\"Metadata\"],[9],[9],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-annotations\"],null]],[8],[0,\"Annotations\"],[9],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell auto cell-block-y\"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",\"tabs-content full-height\"],[8],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-metadata\"],[10,\"class\",\"tabs-panel is-active full-height\"],[8],[0,\"\\n          \"],[6,\"div\"],[10,\"class\",\"grid-x grid-padding-x full-height\"],[8],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n              \"],[6,\"ul\"],[10,\"class\",\"no-bullet\"],[8],[1,[26,\"xml-tree-editor\",null,[[\"node\",\"click-node-title\",\"notify-model-change\"],[[22,[\"model\",\"header\"]],[26,\"action\",[[21,0,[]],\"select-metadata-node\"],null],[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[9],[0,\"\\n            \"],[9],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n\"],[4,\"if\",[[22,[\"selected_metadata_node\"]]],null,{\"statements\":[[0,\"                \"],[1,[26,\"node-editor\",null,[[\"node\",\"edit_tail\",\"notify-model-change\"],[[22,[\"selected_metadata_node\"]],false,[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-annotations\"],[10,\"class\",\"tabs-panel full-height\"],[8],[0,\"\\n          \"],[6,\"p\"],[8],[0,\"Suspendisse dictum feugiat nisl ut dapibus.  Vivamus hendrerit arcu sed erat molestie vehicula. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.  Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.\"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6 auto-overflow\"],[8],[0,\"\\n    \"],[1,[26,\"body-editor\",null,[[\"body\"],[[22,[\"model\",\"body\"]]]]],false],[0,\"\\n  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "jdPPTLkq", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n  \"],[6,\"h1\"],[8],[1,[22,[\"model\",\"filename\"]],false],[9],[0,\"\\n\"],[9],[0,\"\\n\"],[6,\"div\"],[10,\"class\",\"cell auto grid-x grid-padding-x\"],[8],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-container\"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n      \"],[6,\"ul\"],[10,\"class\",\"tabs\"],[8],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title is-active\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-metadata\"],null]],[10,\"aria-selected\",\"true\"],[8],[0,\"Metadata\"],[9],[9],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-annotations\"],null]],[8],[0,\"Annotations\"],[9],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell auto cell-block-y\"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",\"tabs-content full-height\"],[8],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-metadata\"],[10,\"class\",\"tabs-panel is-active full-height\"],[8],[0,\"\\n          \"],[6,\"div\"],[10,\"class\",\"grid-x grid-padding-x full-height\"],[8],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n              \"],[6,\"ul\"],[10,\"class\",\"no-bullet\"],[8],[1,[26,\"xml-tree-editor\",null,[[\"node\",\"click-node-title\",\"notify-model-change\"],[[22,[\"model\",\"header\"]],[26,\"action\",[[21,0,[]],\"select-metadata-node\"],null],[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[9],[0,\"\\n            \"],[9],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n\"],[4,\"if\",[[22,[\"selected_metadata_node\"]]],null,{\"statements\":[[0,\"                \"],[1,[26,\"node-editor\",null,[[\"node\",\"edit_tail\",\"notify-model-change\"],[[22,[\"selected_metadata_node\"]],false,[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-annotations\"],[10,\"class\",\"tabs-panel full-height\"],[8],[0,\"\\n          \"],[6,\"p\"],[8],[0,\"Suspendisse dictum feugiat nisl ut dapibus.  Vivamus hendrerit arcu sed erat molestie vehicula. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.  Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.\"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6 full-height\"],[8],[0,\"\\n    \"],[1,[26,\"body-editor\",null,[[\"body\"],[[22,[\"model\",\"body\"]]]]],false],[0,\"\\n  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/file.hbs" } });
 });
 ;define("client/templates/editor/files", ["exports"], function (exports) {
   "use strict";
@@ -1266,7 +1403,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+4bfcb508"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+e86503de"});
           }
         
 //# sourceMappingURL=client.map

@@ -12,7 +12,7 @@ define('client/tests/app.lint-test', [], function () {
 
   QUnit.test('components/body-editor.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/body-editor.js should pass ESLint\n\n');
+    assert.ok(false, 'components/body-editor.js should pass ESLint\n\n12:5 - Only string, number, symbol, boolean, null, undefined, and function are allowed as default properties (ember/avoid-leaking-state-in-ember-objects)\n19:5 - Only string, number, symbol, boolean, null, undefined, and function are allowed as default properties (ember/avoid-leaking-state-in-ember-objects)');
   });
 
   QUnit.test('components/body-tag-editor.js', function (assert) {
