@@ -10,8 +10,8 @@ export default Component.extend({
     classNames: ['tei-body-editor', 'full-height'],
 
     block_types: [
-        {key: 'main_heading', label: 'Heading 1'},
-        {key: 'sub_heading', label: 'Heading 2'},
+        {key: 'heading_level_1', label: 'Heading 1'},
+        {key: 'heading_level_2', label: 'Heading 2'},
         {key: 'paragraph', label: 'Paragraph'},
         {key: 'paragraph_no_indent', label: 'Paragraph (no Indent)'},
     ],
@@ -19,7 +19,7 @@ export default Component.extend({
     mark_types: [
         {key: '', label: ''},
         {key: 'page_number', label: 'Page Number'},
-        {key: 'invert_font_family', label: 'Font Highlight'},
+        {key: 'foreign_language', label: 'Foreign Language'},
         {key: 'letter_sparse', label: 'Sparse Lettering'},
         {key: 'sup', label: 'Superscript'},
     ],
@@ -33,13 +33,13 @@ export default Component.extend({
                 doc: {
                     content: 'block+'
                 },
-                main_heading: {
+                heading_level_1: {
                     group: 'block',
                     content: 'inline*',
                     toDOM() {return ['h1', 0]},
                     parseDOM: [{tag: 'h1'}]
                 },
-                sub_heading: {
+                heading_level_2: {
                     group: 'block',
                     content: 'inline*',
                     toDOM() {return ['h2', 0]},
@@ -68,9 +68,9 @@ export default Component.extend({
                     toDOM() {return ['span', {class: 'page-number'}, 0]},
                     parseDOM: [{tag: 'span.page-number'}]
                 },
-                invert_font_family: {
-                    toDOM() {return ['span', {class: 'invert-font-family'}, 0]},
-                    parseDOM: [{tag: 'span.invert-font-family'}]
+                foreign_language: {
+                    toDOM() {return ['span', {class: 'foreign_language'}, 0]},
+                    parseDOM: [{tag: 'span.foreign_language'}]
                 },
                 letter_sparse: {
                     toDOM() {return ['span', {class: 'letter-sparse'}, 0]},

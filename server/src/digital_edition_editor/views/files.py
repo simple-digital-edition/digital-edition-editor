@@ -48,11 +48,11 @@ def file_to_json(file):
                                   'tail': element.tail})
                 elif target == 'body':
                     if element.tag == '{http://www.tei-c.org/ns/1.0}head':
-                        if element.attrib['style'] == 'main':
-                            stack.append({'type': 'main_heading',
+                        if element.attrib['type'] == 'level-1':
+                            stack.append({'type': 'heading_level_1',
                                           'content': []})
                         else:
-                            stack.append({'type': 'sub_heading',
+                            stack.append({'type': 'heading_level_2',
                                           'content': []})
                         if element.text:
                             stack[-1]['content'].append({'type': 'text',
@@ -68,16 +68,15 @@ def file_to_json(file):
                             stack[-1]['content'].append({'type': 'text',
                                                          'text': element.text})
                     elif element.tag == '{http://www.tei-c.org/ns/1.0}span':
-                        if 'style' in element.attrib:
-                            if element.attrib['style'] == 'page-number' and element.text:
+                        if 'type' in element.attrib:
+                            if element.attrib['type'] == 'foreign-language':
                                 stack[-1]['content'].append({'type': 'text',
                                                              'text': element.text,
-                                                             'marks': [{'type': 'page_number'}]})
-                            elif element.attrib['style'] == 'invert-font-family' and element.text:
-                                stack[-1]['content'].append({'type': 'text',
-                                                             'text': element.text,
-                                                             'marks': [{'type': 'invert_font_family'}]})
-                            elif element.attrib['style'] == 'letter-sparse' and element.text:
+                                                             'marks': [{'type': 'foreign_language'}]})
+                            else:
+                                print(element.attrib['type'])
+                        elif 'style' in element.attrib:
+                            if element.attrib['style'] == 'letter-sparse' and element.text:
                                 stack[-1]['content'].append({'type': 'text',
                                                              'text': element.text,
                                                              'marks': [{'type': 'letter_sparse'}]})
@@ -91,6 +90,12 @@ def file_to_json(file):
                             if element.text:
                                 stack[-1]['content'].append({'type': 'text',
                                                              'text': element.text})
+                    elif element.tag == '{http://www.tei-c.org/ns/1.0}pb':
+                        stack[-1]['content'].append({'type': 'text',
+                                                     'text': element.attrib['n'],
+                                                     'marks': [{'type': 'page_number'}]})
+                    else:
+                        print(element.tag)
         elif event == 'end':
             if len(stack) > 0:
                 if target == 'header':
