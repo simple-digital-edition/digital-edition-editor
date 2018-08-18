@@ -109,7 +109,7 @@ def file_to_json(file):
 
 
 @view_config(route_name='file.get', renderer='json')
-def get_repositories(request):
+def get_file(request):
     repository, fid = request.matchdict['fid'].split(':')
     repositories = get_config_setting(request, 'git.repos')
     if repository in repositories:
@@ -169,7 +169,7 @@ def build_etree_from_prosemirror(source):
 
 
 @view_config(route_name='file.patch', renderer='json')
-def patch_repositories(request):
+def patch_file(request):
     repository, fid = request.matchdict['fid'].split(':')
     repositories = get_config_setting(request, 'git.repos')
     if repository in repositories:
