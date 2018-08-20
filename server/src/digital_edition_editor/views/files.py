@@ -67,29 +67,25 @@ def file_to_json(file):
                         if element.text:
                             stack[-1]['content'].append({'type': 'text',
                                                          'text': element.text})
-                    elif element.tag == '{http://www.tei-c.org/ns/1.0}span':
+                    elif element.tag == '{http://www.tei-c.org/ns/1.0}span' and element.text:
+                        marks = []
                         if 'type' in element.attrib:
                             if element.attrib['type'] == 'foreign-language':
-                                stack[-1]['content'].append({'type': 'text',
-                                                             'text': element.text,
-                                                             'marks': [{'type': 'foreign_language'}]})
-                            else:
-                                print(element.attrib['type'])
-                        elif 'style' in element.attrib:
-                            if element.attrib['style'] == 'letter-sparse' and element.text:
-                                stack[-1]['content'].append({'type': 'text',
-                                                             'text': element.text,
-                                                             'marks': [{'type': 'letter_sparse'}]})
-                            elif element.attrib['style'] == 'sup' and element.text:
-                                stack[-1]['content'].append({'type': 'text',
-                                                             'text': element.text,
-                                                             'marks': [{'type': 'sup'}]})
-                            else:
-                                print(element.attrib['style'])
-                        else:
-                            if element.text:
-                                stack[-1]['content'].append({'type': 'text',
-                                                             'text': element.text})
+                                marks.append({'type': 'foreign_language'})
+                        if 'style' in element.attrib:
+                            if 'letter-sparse' in element.attrib['style']:
+                                marks.append({'type': 'letter_sparse'})
+                            if 'sup' in element.attrib['style']:
+                                marks.append({'type': 'sup'})
+                            if 'font-size-large' in element.attrib['style']:
+                                marks.append({'type': 'font_size_large'})
+                            if 'font-size-medium' in element.attrib['style']:
+                                marks.append({'type': 'font_size_medium'})
+                            if 'font-size-small' in element.attrib['style']:
+                                marks.append({'type': 'font_size_small'})
+                        stack[-1]['content'].append({'type': 'text',
+                                                     'text': element.text,
+                                                     'marks': marks})
                     elif element.tag == '{http://www.tei-c.org/ns/1.0}pb':
                         stack[-1]['content'].append({'type': 'text',
                                                      'text': element.attrib['n'],

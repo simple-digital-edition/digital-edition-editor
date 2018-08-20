@@ -31,7 +31,7 @@
 
         block_types: [{ key: 'heading_level_1', label: 'Heading 1' }, { key: 'heading_level_2', label: 'Heading 2' }, { key: 'paragraph', label: 'Paragraph' }, { key: 'paragraph_no_indent', label: 'Paragraph (no Indent)' }],
         selected_block_type: null,
-        mark_types: [{ key: '', label: '' }, { key: 'page_number', label: 'Page Number' }, { key: 'foreign_language', label: 'Foreign Language' }, { key: 'letter_sparse', label: 'Sparse Lettering' }, { key: 'sup', label: 'Superscript' }],
+        mark_types: [{ key: '', label: '' }, { key: 'page_number', label: 'Page Number' }, { key: 'foreign_language', label: 'Foreign Language' }, { key: 'letter_sparse', label: 'Sparse Lettering' }, { key: 'sup', label: 'Superscript' }, { key: 'font_size_large', label: 'Large' }, { key: 'font_size_medium', label: 'Medium' }, { key: 'font_size_small', label: 'Small' }],
         selected_mark_types: null,
 
         didInsertElement() {
@@ -104,6 +104,24 @@
                             return ['sup', 0];
                         },
                         parseDOM: [{ tag: 'sup' }]
+                    },
+                    font_size_large: {
+                        toDOM() {
+                            return ['span', { class: 'font-size-large' }, 0];
+                        },
+                        parseDOM: [{ tag: 'span.font-size-large' }]
+                    },
+                    font_size_medium: {
+                        toDOM() {
+                            return ['sup', { class: 'font-size-medium' }, 0];
+                        },
+                        parseDOM: [{ tag: 'span.font-size-medium' }]
+                    },
+                    font_size_small: {
+                        toDOM() {
+                            return ['sup', { class: 'font-size-small' }, 0];
+                        },
+                        parseDOM: [{ tag: 'span.font-size-small' }]
                     }
                 }
             });
@@ -140,17 +158,21 @@
                     let selected_marks = [];
                     if (selection.from === selection.to) {
                         // Get marks at the current cursor position
-                        new_state.doc.nodeAt(selection.from).marks.forEach(mark => {
-                            if (selected_marks.indexOf(mark.type.name) === -1) {
-                                selected_marks.push(mark.type.name);
-                            }
-                        });
+                        if (new_state.doc.nodeAt(selection.from)) {
+                            new_state.doc.nodeAt(selection.from).marks.forEach(mark => {
+                                if (selected_marks.indexOf(mark.type.name) === -1) {
+                                    selected_marks.push(mark.type.name);
+                                }
+                            });
+                        }
                         // Add marks from the previous cursor position if they are inclusive
-                        new_state.doc.nodeAt(selection.from - 1).marks.forEach(mark => {
-                            if (mark.type.spec.inclusive && selected_marks.indexOf(mark.type.name) === -1) {
-                                selected_marks.push(mark.type.name);
-                            }
-                        });
+                        if (new_state.doc.nodeAt(selection.from - 1)) {
+                            new_state.doc.nodeAt(selection.from - 1).marks.forEach(mark => {
+                                if (mark.type.spec.inclusive && selected_marks.indexOf(mark.type.name) === -1) {
+                                    selected_marks.push(mark.type.name);
+                                }
+                            });
+                        }
                         // Add stored marks
                         if (new_state.storedMarks) {
                             new_state.storedMarks.forEach(mark => {
@@ -1403,7 +1425,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+d8293816"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+ad87bef3"});
           }
         
 //# sourceMappingURL=client.map

@@ -22,6 +22,9 @@ export default Component.extend({
         {key: 'foreign_language', label: 'Foreign Language'},
         {key: 'letter_sparse', label: 'Sparse Lettering'},
         {key: 'sup', label: 'Superscript'},
+        {key: 'font_size_large', label: 'Large'},
+        {key: 'font_size_medium', label: 'Medium'},
+        {key: 'font_size_small', label: 'Small'},
     ],
     selected_mark_types: null,
 
@@ -79,6 +82,18 @@ export default Component.extend({
                 sup: {
                     toDOM() {return ['sup', 0]},
                     parseDOM: [{tag: 'sup'}]
+                },
+                font_size_large: {
+                    toDOM() {return ['span', {class: 'font-size-large'}, 0]},
+                    parseDOM: [{tag: 'span.font-size-large'}]
+                },
+                font_size_medium: {
+                    toDOM() {return ['sup', {class: 'font-size-medium'}, 0]},
+                    parseDOM: [{tag: 'span.font-size-medium'}]
+                },
+                font_size_small: {
+                    toDOM() {return ['sup', {class: 'font-size-small'}, 0]},
+                    parseDOM: [{tag: 'span.font-size-small'}]
                 }
             }
         })
@@ -120,17 +135,21 @@ export default Component.extend({
                 let selected_marks = []
                 if(selection.from === selection.to) {
                     // Get marks at the current cursor position
-                    new_state.doc.nodeAt(selection.from).marks.forEach((mark) => {
-                        if(selected_marks.indexOf(mark.type.name) === -1) {
-                            selected_marks.push(mark.type.name)
-                        }
-                    })
+                    if(new_state.doc.nodeAt(selection.from)) {
+                        new_state.doc.nodeAt(selection.from).marks.forEach((mark) => {
+                            if(selected_marks.indexOf(mark.type.name) === -1) {
+                                selected_marks.push(mark.type.name)
+                            }
+                        })
+                    }
                     // Add marks from the previous cursor position if they are inclusive
-                    new_state.doc.nodeAt(selection.from - 1).marks.forEach((mark) => {
-                        if(mark.type.spec.inclusive && selected_marks.indexOf(mark.type.name) === -1) {
-                            selected_marks.push(mark.type.name)
-                        }
-                    })
+                    if(new_state.doc.nodeAt(selection.from - 1)) {
+                        new_state.doc.nodeAt(selection.from - 1).marks.forEach((mark) => {
+                            if(mark.type.spec.inclusive && selected_marks.indexOf(mark.type.name) === -1) {
+                                selected_marks.push(mark.type.name)
+                            }
+                        })
+                    }
                     // Add stored marks
                     if(new_state.storedMarks) {
                         new_state.storedMarks.forEach((mark) => {
