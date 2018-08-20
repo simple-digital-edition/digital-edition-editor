@@ -5085,25 +5085,60 @@ svg.icon {
 .tei-body-editor .menu {
   margin-bottom: 1rem; }
 
-.tei-body-editor .paragraph {
-  font-size: 11pt;
-  margin-bottom: 0;
-  margin-top: 1rem; }
-  .tei-body-editor .paragraph.no-indent {
+.tei-body-editor .editor {
+  font-family: 'Open Sans', sans-serif; }
+  .tei-body-editor .editor *:last-child {
+    padding-bottom: 100vh; }
+  .tei-body-editor .editor h1 {
+    font-size: 15pt;
+    font-weight: bold;
+    text-align: center;
+    margin: 0; }
+  .tei-body-editor .editor * + h1 {
+    margin-top: 3rem; }
+  .tei-body-editor .editor h1 + h1 {
     margin-top: 0; }
-
-.tei-body-editor .page-number {
-  font-size: 80%;
-  margin-left: 0.2rem;
-  margin-right: 0.2rem; }
-
-.tei-body-editor .letter-sparse {
-  letter-spacing: 0.1rem; }
-
-.tei-body-editor .invert-font-family {
-  font-weight: 300; }
-
-.tei-body-editor .shouting {
-  color: #f00; }
+  .tei-body-editor .editor h2 {
+    font-size: 13pt;
+    font-weight: bold;
+    text-align: center; }
+  .tei-body-editor .editor .content-heading {
+    font-size: 13pt; }
+  .tei-body-editor .editor h1 + .content-heading {
+    margin-top: 1.5rem; }
+  .tei-body-editor .editor .paragraph {
+    font-size: 11pt;
+    margin-bottom: 0;
+    margin-top: 1rem; }
+    .tei-body-editor .editor .paragraph.no-indent {
+      margin-top: 0; }
+  .tei-body-editor .editor h1 + .paragraph, .tei-body-editor .editor h2 + .paragraph {
+    margin-top: 3rem !important; }
+  .tei-body-editor .editor .page-break {
+    font-size: 80%;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem; }
+    .tei-body-editor .editor .page-break::before {
+      content: '['; }
+    .tei-body-editor .editor .page-break::after {
+      content: ']'; }
+  .tei-body-editor .editor .letter-sparse {
+    letter-spacing: 0.1rem; }
+  .tei-body-editor .editor .font-weight-bold {
+    font-weight: 700; }
+  .tei-body-editor .editor .font-style-italic {
+    font-style: italic; }
+  .tei-body-editor .editor .font-size-large {
+    font-size: 15pt; }
+  .tei-body-editor .editor .font-size-medium {
+    font-size: 13pt; }
+  .tei-body-editor .editor .font-size-small {
+    font-size: 10pt; }
+  .tei-body-editor .editor .font-size-very-small {
+    font-size: 8pt; }
+  .tei-body-editor .editor .foreign-language {
+    font-weight: 300; }
+  .tei-body-editor .editor .indent-big {
+    margin-left: 3rem; }
 
 /*# sourceMappingURL=client.css.map */

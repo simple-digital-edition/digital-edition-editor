@@ -18,7 +18,7 @@ export default Component.extend({
     selected_block_type: null,
     mark_types: [
         {key: '', label: ''},
-        {key: 'page_number', label: 'Page Number'},
+        {key: 'page_break', label: 'Page Number'},
         {key: 'foreign_language', label: 'Foreign Language'},
         {key: 'letter_sparse', label: 'Sparse Lettering'},
         {key: 'sup', label: 'Superscript'},
@@ -66,10 +66,10 @@ export default Component.extend({
                 }
             },
             marks: {
-                page_number: {
+                page_break: {
                     inclusive: true,
-                    toDOM() {return ['span', {class: 'page-number'}, 0]},
-                    parseDOM: [{tag: 'span.page-number'}]
+                    toDOM() {return ['span', {class: 'page-break'}, 0]},
+                    parseDOM: [{tag: 'span.page-break'}]
                 },
                 foreign_language: {
                     toDOM() {return ['span', {class: 'foreign_language'}, 0]},

@@ -89,7 +89,7 @@ def file_to_json(file):
                     elif element.tag == '{http://www.tei-c.org/ns/1.0}pb':
                         stack[-1]['content'].append({'type': 'text',
                                                      'text': element.attrib['n'],
-                                                     'marks': [{'type': 'page_number'}]})
+                                                     'marks': [{'type': 'page_break'}]})
                     else:
                         print(element.tag)
         elif event == 'end':

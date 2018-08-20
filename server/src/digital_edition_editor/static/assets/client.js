@@ -31,7 +31,7 @@
 
         block_types: [{ key: 'heading_level_1', label: 'Heading 1' }, { key: 'heading_level_2', label: 'Heading 2' }, { key: 'paragraph', label: 'Paragraph' }, { key: 'paragraph_no_indent', label: 'Paragraph (no Indent)' }],
         selected_block_type: null,
-        mark_types: [{ key: '', label: '' }, { key: 'page_number', label: 'Page Number' }, { key: 'foreign_language', label: 'Foreign Language' }, { key: 'letter_sparse', label: 'Sparse Lettering' }, { key: 'sup', label: 'Superscript' }, { key: 'font_size_large', label: 'Large' }, { key: 'font_size_medium', label: 'Medium' }, { key: 'font_size_small', label: 'Small' }],
+        mark_types: [{ key: '', label: '' }, { key: 'page_break', label: 'Page Number' }, { key: 'foreign_language', label: 'Foreign Language' }, { key: 'letter_sparse', label: 'Sparse Lettering' }, { key: 'sup', label: 'Superscript' }, { key: 'font_size_large', label: 'Large' }, { key: 'font_size_medium', label: 'Medium' }, { key: 'font_size_small', label: 'Small' }],
         selected_mark_types: null,
 
         didInsertElement() {
@@ -80,12 +80,12 @@
                     }
                 },
                 marks: {
-                    page_number: {
+                    page_break: {
                         inclusive: true,
                         toDOM() {
-                            return ['span', { class: 'page-number' }, 0];
+                            return ['span', { class: 'page-break' }, 0];
                         },
-                        parseDOM: [{ tag: 'span.page-number' }]
+                        parseDOM: [{ tag: 'span.page-break' }]
                     },
                     foreign_language: {
                         toDOM() {
