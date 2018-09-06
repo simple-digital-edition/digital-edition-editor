@@ -32,6 +32,20 @@
         block_types: [{ key: 'heading_level_1', label: 'Heading 1' }, { key: 'heading_level_2', label: 'Heading 2' }, { key: 'paragraph', label: 'Paragraph' }, { key: 'paragraph_no_indent', label: 'Paragraph (no Indent)' }],
         selected_block_type: null,
         mark_types: [{ key: '', label: '' }, { key: 'page_break', label: 'Page Number' }, { key: 'foreign_language', label: 'Foreign Language' }, { key: 'letter_sparse', label: 'Sparse Lettering' }, { key: 'sup', label: 'Superscript' }, { key: 'font_size_large', label: 'Large' }, { key: 'font_size_medium', label: 'Medium' }, { key: 'font_size_small', label: 'Small' }],
+        menu: [{
+            id: 'paragraph',
+            title: 'Paragraph',
+            items: [{
+                id: 'heading_level_1',
+                title: 'Heading 1'
+            }, {
+                id: 'heading_level_2',
+                title: 'Heading 2'
+            }, {
+                id: 'paragraph',
+                title: 'Paragraph'
+            }]
+        }],
         selected_mark_types: null,
 
         didInsertElement() {
@@ -221,7 +235,7 @@
         }
     });
 });
-;define('client/components/body-tag-editor', ['exports'], function (exports) {
+;define('client/components/dropdown-menu-item', ['exports'], function (exports) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -229,18 +243,54 @@
     });
     exports.default = Ember.Component.extend({
         tagName: 'li',
-        classNames: ['hover-parent', 'position-relative', 'body-tag-editor'],
-        mode: 'display',
+        classNameBindings: ['has_children:is-dropdown-submenu-parent', 'is_nested:is-submenu-item', 'is_nested:is-dropdown-submenu-item', 'has_children:opens-right', 'is_active:is-active'],
+        is_focus: false,
+        has_children: false,
+        is_nested: false,
+        is_active: false,
 
+        didReceiveAttrs() {
+            this._super(...arguments);
+            this.set('has_children', this.get('item.items') !== undefined);
+        },
+        mouseEnter() {
+            this.set('is_focus', true);
+        },
+        mouseLeave() {
+            this.set('is_focus', false);
+        },
         actions: {
-            'start-edit': function () {
-                this.set('mode', 'edit');
-            },
-            'save-edit': function () {
-                this.set('mode', 'display');
-            },
-            'cancel-edit': function () {
-                this.set('mode', 'display');
+            select() {
+                this.set('is_active', !this.get('is_active'));
+            }
+        }
+    });
+});
+;define('client/components/dropdown-menu', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        tagName: 'ul',
+        classNames: ['menu'],
+        classNameBindings: ['dropdown', 'submenu', 'isDropdownSubmenu', 'vertical', 'is_focus:is-visible'],
+        dropdown: false,
+        submenu: false,
+        isDropdownSubmenu: false,
+        vertical: false,
+        is_focus: false,
+        is_nested: false,
+
+        didReceiveAttrs() {
+            this._super(...arguments);
+            if (this.is_nested) {
+                this.set('submenu', true);
+                this.set('isDropdownSubmenu', true);
+                this.set('vertical', true);
+            } else {
+                this.set('dropdown', true);
             }
         }
     });
@@ -1145,15 +1195,23 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "6tvv8QDc", "block": "{\"symbols\":[\"mark_type\",\"block_type\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"menu\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n      \"],[7,\"li\"],[9],[0,\"\\n        \"],[7,\"select\"],[11,\"role\",\"menuitem\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-type\"],[[\"value\"],[\"target.value\"]]]],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"block_types\"]]],null,{\"statements\":[[0,\"            \"],[7,\"option\"],[12,\"value\",[22,2,[\"key\"]]],[12,\"selected\",[27,\"eq\",[[22,2,[\"key\"]],[23,[\"selected_block_type\"]]],null]],[9],[1,[22,2,[\"label\"]],false],[10],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"],[4,\"each\",[[23,[\"mark_types\"]]],null,{\"statements\":[[4,\"if\",[[27,\"array-contains\",[[23,[\"selected_mark_types\"]],[22,1,[\"key\"]]],null]],null,{\"statements\":[[0,\"          \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "rVm6w40t", "block": "{\"symbols\":[\"mark_type\",\"block_type\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[1,[27,\"dropdown-menu\",null,[[\"items\"],[[23,[\"menu\"]]]]],false],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"menu dropdown\"],[9],[0,\"\\n      \"],[7,\"li\"],[11,\"class\",\"is-dropdown-submenu-parent opens-right\"],[9],[0,\"\\n        \"],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"Parent\"],[10],[0,\"\\n        \"],[7,\"ul\"],[11,\"class\",\"menu submenu is-dropdown-submenu vertical\"],[9],[0,\"\\n          \"],[7,\"li\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"A\"],[10],[10],[0,\"\\n          \"],[7,\"li\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"B\"],[10],[10],[0,\"\\n          \"],[7,\"li\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"C\"],[10],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"menu\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n      \"],[7,\"li\"],[9],[0,\"\\n        \"],[7,\"select\"],[11,\"role\",\"menuitem\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-type\"],[[\"value\"],[\"target.value\"]]]],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"block_types\"]]],null,{\"statements\":[[0,\"            \"],[7,\"option\"],[12,\"value\",[22,2,[\"key\"]]],[12,\"selected\",[27,\"eq\",[[22,2,[\"key\"]],[23,[\"selected_block_type\"]]],null]],[9],[1,[22,2,[\"label\"]],false],[10],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"],[4,\"each\",[[23,[\"mark_types\"]]],null,{\"statements\":[[4,\"if\",[[27,\"array-contains\",[[23,[\"selected_mark_types\"]],[22,1,[\"key\"]]],null]],null,{\"statements\":[[0,\"          \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
 });
-;define("client/templates/components/body-tag-editor", ["exports"], function (exports) {
+;define("client/templates/components/dropdown-menu-item", ["exports"], function (exports) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "PDUBWqbd", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[27,\"eq\",[[23,[\"mode\"]],\"display\"],null]],null,{\"statements\":[[0,\"  \"],[1,[27,\"tei-tag-render\",null,[[\"elem\",\"tagName\",\"classNames\"],[[23,[\"elem\"]],[27,\"tei-tag-mapper\",[[23,[\"elem\",\"tag\"]]],null],[23,[\"elem\",\"attrib\",\"style\"]]]]],false],[0,\"\\n  \"],[7,\"ul\"],[11,\"class\",\"menu hover position-top-right\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n    \"],[7,\"li\"],[9],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"start-edit\"]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[7,\"textarea\"],[9],[1,[27,\"tei-tag-source-code\",[[23,[\"elem\"]]],null],false],[10],[0,\"  \"],[7,\"ul\"],[11,\"class\",\"menu vertical hover position-top-right\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n    \"],[7,\"li\"],[9],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"save-edit\"]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"cancel-edit\"]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-tag-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "dpKFTcxo", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[23,[\"item\",\"items\"]]],null,{\"statements\":[[0,\"  \"],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"select\"]],[9],[1,[23,[\"item\",\"title\"]],false],[10],[0,\"\\n  \"],[1,[27,\"dropdown-menu\",null,[[\"items\",\"is_nested\",\"is_focus\"],[[23,[\"item\",\"items\"]],true,[23,[\"is_focus\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"select\"]],[9],[1,[23,[\"item\",\"title\"]],false],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/dropdown-menu-item.hbs" } });
+});
+;define("client/templates/components/dropdown-menu", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "RgosI1H3", "block": "{\"symbols\":[\"item\"],\"statements\":[[4,\"each\",[[23,[\"items\"]]],null,{\"statements\":[[0,\"  \"],[1,[27,\"dropdown-menu-item\",null,[[\"item\",\"is_nested\"],[[22,1,[]],[23,[\"is_nested\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1]},null]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/dropdown-menu.hbs" } });
 });
 ;define("client/templates/components/node-editor", ["exports"], function (exports) {
   "use strict";

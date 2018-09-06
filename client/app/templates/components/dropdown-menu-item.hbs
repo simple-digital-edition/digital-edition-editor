@@ -1,0 +1,6 @@
+{{#if item.items}}
+  <a href="#" {{action "select"}}>{{item.title}}</a>
+  {{dropdown-menu items=item.items is_nested=true is_focus=is_focus}}
+{{else}}
+  <a href="#" {{action "select"}}>{{item.title}}</a>
+{{/if}}

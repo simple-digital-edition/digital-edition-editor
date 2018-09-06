@@ -4440,10 +4440,10 @@ define('client/tests/integration/components/body-editor-test', ['qunit', 'ember-
     });
   });
 });
-define('client/tests/integration/components/body-tag-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+define('client/tests/integration/components/dropdown-menu-item-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
   'use strict';
 
-  (0, _qunit.module)('Integration | Component | body-tag-editor', function (hooks) {
+  (0, _qunit.module)('Integration | Component | dropdown-menu-item', function (hooks) {
     (0, _emberQunit.setupRenderingTest)(hooks);
 
     (0, _qunit.test)('it renders', async function (assert) {
@@ -4451,8 +4451,8 @@ define('client/tests/integration/components/body-tag-editor-test', ['qunit', 'em
       // Handle any actions with this.set('myAction', function(val) { ... });
 
       await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "54KxkxsH",
-        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"body-tag-editor\"],false]],\"hasEval\":false}",
+        "id": "enTchFp8",
+        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"dropdown-menu-item\"],false]],\"hasEval\":false}",
         "meta": {}
       }));
 
@@ -4460,8 +4460,37 @@ define('client/tests/integration/components/body-tag-editor-test', ['qunit', 'em
 
       // Template block usage:
       await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "nkFcZAAS",
-        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"body-tag-editor\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
+        "id": "NYISl5D4",
+        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"dropdown-menu-item\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), 'template block text');
+    });
+  });
+});
+define('client/tests/integration/components/dropdown-menu-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Component | dropdown-menu', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    (0, _qunit.test)('it renders', async function (assert) {
+      // Set any properties with this.set('myProperty', 'value');
+      // Handle any actions with this.set('myAction', function(val) { ... });
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "6R3V8Rd3",
+        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"dropdown-menu\"],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '');
+
+      // Template block usage:
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "699vw44A",
+        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"dropdown-menu\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
         "meta": {}
       }));
 
@@ -4677,12 +4706,17 @@ define('client/tests/lint/app.lint-test', [], function () {
 
   QUnit.test('components/body-editor.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/body-editor.js should pass ESLint\n\n12:5 - Only string, number, symbol, boolean, null, undefined, and function are allowed as default properties (ember/avoid-leaking-state-in-ember-objects)\n19:5 - Only string, number, symbol, boolean, null, undefined, and function are allowed as default properties (ember/avoid-leaking-state-in-ember-objects)');
+    assert.ok(false, 'components/body-editor.js should pass ESLint\n\n12:5 - Only string, number, symbol, boolean, null, undefined, and function are allowed as default properties (ember/avoid-leaking-state-in-ember-objects)\n19:5 - Only string, number, symbol, boolean, null, undefined, and function are allowed as default properties (ember/avoid-leaking-state-in-ember-objects)\n29:5 - Only string, number, symbol, boolean, null, undefined, and function are allowed as default properties (ember/avoid-leaking-state-in-ember-objects)');
   });
 
-  QUnit.test('components/body-tag-editor.js', function (assert) {
+  QUnit.test('components/dropdown-menu-item.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/body-tag-editor.js should pass ESLint\n\n');
+    assert.ok(true, 'components/dropdown-menu-item.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/dropdown-menu.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/dropdown-menu.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/node-editor.js', function (assert) {
@@ -4807,12 +4841,17 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
 
   QUnit.test('client/templates/components/body-editor.hbs', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'client/templates/components/body-editor.hbs should pass TemplateLint.\n\nclient/templates/components/body-editor.hbs\n  5:16  error  Incorrect indentation of htmlAttribute \'role\' beginning at L5:C16. Expected \'role\' to be at L6:C10.  attribute-indentation\n  5:32  error  Incorrect indentation of htmlAttribute \'onchange\' beginning at L5:C32. Expected \'onchange\' to be at L7:C10.  attribute-indentation\n  5:89  error  Incorrect indentation of close bracket \'>\' for the element \'<select>\' beginning at L5:C89. Expected \'<select>\' to be at L6:C8.  attribute-indentation\n  7:20  error  Incorrect indentation of htmlAttribute \'value\' beginning at L7:C20. Expected \'value\' to be at L8:C14.  attribute-indentation\n  7:45  error  Incorrect indentation of htmlAttribute \'selected\' beginning at L7:C45. Expected \'selected\' to be at L8:C14.  attribute-indentation\n  7:95  error  Incorrect indentation of close bracket \'>\' for the element \'<option>\' beginning at L7:C95. Expected \'<option>\' to be at L8:C12.  attribute-indentation\n  7:116  error  Incorrect indentation of close tag \'</option>\' for element \'<option>\' beginning at L7:C116. Expected \'</option>\' to be at L7:C12.  attribute-indentation\n');
+    assert.ok(false, 'client/templates/components/body-editor.hbs should pass TemplateLint.\n\nclient/templates/components/body-editor.hbs\n  16:16  error  Incorrect indentation of htmlAttribute \'role\' beginning at L16:C16. Expected \'role\' to be at L17:C10.  attribute-indentation\n  16:32  error  Incorrect indentation of htmlAttribute \'onchange\' beginning at L16:C32. Expected \'onchange\' to be at L18:C10.  attribute-indentation\n  16:89  error  Incorrect indentation of close bracket \'>\' for the element \'<select>\' beginning at L16:C89. Expected \'<select>\' to be at L17:C8.  attribute-indentation\n  18:20  error  Incorrect indentation of htmlAttribute \'value\' beginning at L18:C20. Expected \'value\' to be at L19:C14.  attribute-indentation\n  18:45  error  Incorrect indentation of htmlAttribute \'selected\' beginning at L18:C45. Expected \'selected\' to be at L19:C14.  attribute-indentation\n  18:95  error  Incorrect indentation of close bracket \'>\' for the element \'<option>\' beginning at L18:C95. Expected \'<option>\' to be at L19:C12.  attribute-indentation\n  18:116  error  Incorrect indentation of close tag \'</option>\' for element \'<option>\' beginning at L18:C116. Expected \'</option>\' to be at L18:C12.  attribute-indentation\n');
   });
 
-  QUnit.test('client/templates/components/body-tag-editor.hbs', function (assert) {
+  QUnit.test('client/templates/components/dropdown-menu-item.hbs', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'client/templates/components/body-tag-editor.hbs should pass TemplateLint.\n\nclient/templates/components/body-tag-editor.hbs\n  2:19  error  Incorrect indentation of attribute \'elem\' beginning at L2:C19. Expected \'elem\' to be at L3:C4.  attribute-indentation\n  2:29  error  Incorrect indentation of attribute \'tagName\' beginning at L2:C29. Expected \'tagName\' to be at L4:C4.  attribute-indentation\n  2:63  error  Incorrect indentation of attribute \'classNames\' beginning at L2:C63. Expected \'classNames\' to be at L5:C4.  attribute-indentation\n  2:91  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{tei-tag-render}}\' beginning at L2:C91. Expected \'{{tei-tag-render}}\' to be at L6:C2.  attribute-indentation\n  7:16  error  Incorrect indentation of htmlAttribute \'d\' beginning at L7:C16. Expected \'d\' to be at L8:C12.  attribute-indentation\n  7:168  error  Incorrect indentation of close bracket \'>\' for the element \'<path>\' beginning at L7:C168. Expected \'<path>\' to be at L9:C10.  attribute-indentation\n  23:16  error  Incorrect indentation of htmlAttribute \'d\' beginning at L23:C16. Expected \'d\' to be at L24:C12.  attribute-indentation\n  23:130  error  Incorrect indentation of close bracket \'>\' for the element \'<path>\' beginning at L23:C130. Expected \'<path>\' to be at L25:C10.  attribute-indentation\n  1:15  error  you must use double quotes in templates  quotes\n');
+    assert.ok(true, 'client/templates/components/dropdown-menu-item.hbs should pass TemplateLint.\n\n');
+  });
+
+  QUnit.test('client/templates/components/dropdown-menu.hbs', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'client/templates/components/dropdown-menu.hbs should pass TemplateLint.\n\n');
   });
 
   QUnit.test('client/templates/components/node-editor.hbs', function (assert) {
@@ -4870,9 +4909,14 @@ define('client/tests/lint/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/body-editor-test.js should pass ESLint\n\n');
   });
 
-  QUnit.test('integration/components/body-tag-editor-test.js', function (assert) {
+  QUnit.test('integration/components/dropdown-menu-item-test.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'integration/components/body-tag-editor-test.js should pass ESLint\n\n');
+    assert.ok(true, 'integration/components/dropdown-menu-item-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/dropdown-menu-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/dropdown-menu-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/node-editor-test.js', function (assert) {

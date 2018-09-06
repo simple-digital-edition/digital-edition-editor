@@ -26,6 +26,26 @@ export default Component.extend({
         {key: 'font_size_medium', label: 'Medium'},
         {key: 'font_size_small', label: 'Small'},
     ],
+    menu: [
+        {
+            id: 'paragraph',
+            title: 'Paragraph',
+            items: [
+                {
+                    id: 'heading_level_1',
+                    title: 'Heading 1'
+                },
+                {
+                    id: 'heading_level_2',
+                    title: 'Heading 2'
+                },
+                {
+                    id: 'paragraph',
+                    title: 'Paragraph'
+                }
+            ]
+        }
+    ],
     selected_mark_types: null,
 
     didInsertElement() {
