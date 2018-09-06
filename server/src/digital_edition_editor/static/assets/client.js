@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 
 
@@ -356,175 +356,6 @@
         }
     });
 });
-;define('client/components/zf-accordion-menu', ['exports', 'ember-cli-foundation-6-sass/components/zf-accordion-menu'], function (exports, _zfAccordionMenu) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfAccordionMenu.default;
-    }
-  });
-});
-;define('client/components/zf-accordion', ['exports', 'ember-cli-foundation-6-sass/components/zf-accordion'], function (exports, _zfAccordion) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfAccordion.default;
-    }
-  });
-});
-;define('client/components/zf-callout', ['exports', 'ember-cli-foundation-6-sass/components/zf-callout'], function (exports, _zfCallout) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfCallout.default;
-    }
-  });
-});
-;define('client/components/zf-drilldown-menu', ['exports', 'ember-cli-foundation-6-sass/components/zf-drilldown-menu'], function (exports, _zfDrilldownMenu) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfDrilldownMenu.default;
-    }
-  });
-});
-;define('client/components/zf-dropdown-menu', ['exports', 'ember-cli-foundation-6-sass/components/zf-dropdown-menu'], function (exports, _zfDropdownMenu) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfDropdownMenu.default;
-    }
-  });
-});
-;define('client/components/zf-dropdown', ['exports', 'ember-cli-foundation-6-sass/components/zf-dropdown'], function (exports, _zfDropdown) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfDropdown.default;
-    }
-  });
-});
-;define('client/components/zf-magellan', ['exports', 'ember-cli-foundation-6-sass/components/zf-magellan'], function (exports, _zfMagellan) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfMagellan.default;
-    }
-  });
-});
-;define('client/components/zf-off-canvas', ['exports', 'ember-cli-foundation-6-sass/components/zf-off-canvas'], function (exports, _zfOffCanvas) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfOffCanvas.default;
-    }
-  });
-});
-;define('client/components/zf-orbit', ['exports', 'ember-cli-foundation-6-sass/components/zf-orbit'], function (exports, _zfOrbit) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfOrbit.default;
-    }
-  });
-});
-;define('client/components/zf-reveal', ['exports', 'ember-cli-foundation-6-sass/components/zf-reveal'], function (exports, _zfReveal) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfReveal.default;
-    }
-  });
-});
-;define('client/components/zf-slider', ['exports', 'ember-cli-foundation-6-sass/components/zf-slider'], function (exports, _zfSlider) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfSlider.default;
-    }
-  });
-});
-;define('client/components/zf-tabs', ['exports', 'ember-cli-foundation-6-sass/components/zf-tabs'], function (exports, _zfTabs) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfTabs.default;
-    }
-  });
-});
-;define('client/components/zf-tooltip', ['exports', 'ember-cli-foundation-6-sass/components/zf-tooltip'], function (exports, _zfTooltip) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfTooltip.default;
-    }
-  });
-});
 ;define('client/controllers/editor', ['exports'], function (exports) {
     'use strict';
 
@@ -788,6 +619,19 @@
     enumerable: true,
     get: function () {
       return _isArray.isArray;
+    }
+  });
+});
+;define('client/helpers/is-empty', ['exports', 'ember-truth-helpers/helpers/is-empty'], function (exports, _isEmpty) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _isEmpty.default;
     }
   });
 });
@@ -1122,33 +966,14 @@
     initialize: initialize
   };
 });
-;define('client/initializers/zf-widget', ['exports', 'ember-cli-foundation-6-sass/initializers/zf-widget'], function (exports, _zfWidget) {
+;define('client/instance-initializers/ember-data', ['exports', 'ember-data/initialize-store-service'], function (exports, _initializeStoreService) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _zfWidget.default;
-    }
-  });
-  Object.defineProperty(exports, 'initialize', {
-    enumerable: true,
-    get: function () {
-      return _zfWidget.initialize;
-    }
-  });
-});
-;define("client/instance-initializers/ember-data", ["exports", "ember-data/initialize-store-service"], function (exports, _initializeStoreService) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
   exports.default = {
-    name: "ember-data",
+    name: 'ember-data',
     initialize: _initializeStoreService.default
   };
 });
@@ -1312,7 +1137,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "sGhC0tck", "block": "{\"symbols\":[],\"statements\":[[1,[20,\"outlet\"],false],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/application.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "8PzX6Lwz", "block": "{\"symbols\":[],\"statements\":[[1,[21,\"outlet\"],false],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/application.hbs" } });
 });
 ;define("client/templates/components/body-editor", ["exports"], function (exports) {
   "use strict";
@@ -1320,7 +1145,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "H4pjqQIh", "block": "{\"symbols\":[\"mark_type\",\"block_type\"],\"statements\":[[6,\"div\"],[10,\"class\",\"grid-y full-height\"],[8],[0,\"\\n  \"],[6,\"nav\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n    \"],[6,\"ul\"],[10,\"class\",\"menu\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n      \"],[6,\"li\"],[8],[0,\"\\n        \"],[6,\"select\"],[10,\"role\",\"menuitem\"],[11,\"onchange\",[26,\"action\",[[21,0,[]],\"set-block-type\"],[[\"value\"],[\"target.value\"]]]],[8],[0,\"\\n\"],[4,\"each\",[[22,[\"block_types\"]]],null,{\"statements\":[[0,\"            \"],[6,\"option\"],[11,\"value\",[21,2,[\"key\"]]],[11,\"selected\",[26,\"eq\",[[21,2,[\"key\"]],[22,[\"selected_block_type\"]]],null]],[8],[1,[21,2,[\"label\"]],false],[9],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n\"],[4,\"each\",[[22,[\"mark_types\"]]],null,{\"statements\":[[4,\"if\",[[26,\"array-contains\",[[22,[\"selected_mark_types\"]],[21,1,[\"key\"]]],null]],null,{\"statements\":[[0,\"          \"],[6,\"li\"],[10,\"class\",\"is-active\"],[8],[0,\"\\n            \"],[6,\"a\"],[10,\"href\",\"\"],[3,\"action\",[[21,0,[]],\"toggle-mark\",[21,1,[\"key\"]]]],[8],[1,[21,1,[\"label\"]],false],[9],[0,\"\\n          \"],[9],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[6,\"li\"],[8],[0,\"\\n            \"],[6,\"a\"],[10,\"href\",\"\"],[3,\"action\",[[21,0,[]],\"toggle-mark\",[21,1,[\"key\"]]]],[8],[1,[21,1,[\"label\"]],false],[9],[0,\"\\n          \"],[9],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null],[0,\"    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"editor auto-overflow\"],[8],[0,\"\\n  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "6tvv8QDc", "block": "{\"symbols\":[\"mark_type\",\"block_type\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"menu\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n      \"],[7,\"li\"],[9],[0,\"\\n        \"],[7,\"select\"],[11,\"role\",\"menuitem\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-type\"],[[\"value\"],[\"target.value\"]]]],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"block_types\"]]],null,{\"statements\":[[0,\"            \"],[7,\"option\"],[12,\"value\",[22,2,[\"key\"]]],[12,\"selected\",[27,\"eq\",[[22,2,[\"key\"]],[23,[\"selected_block_type\"]]],null]],[9],[1,[22,2,[\"label\"]],false],[10],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"],[4,\"each\",[[23,[\"mark_types\"]]],null,{\"statements\":[[4,\"if\",[[27,\"array-contains\",[[23,[\"selected_mark_types\"]],[22,1,[\"key\"]]],null]],null,{\"statements\":[[0,\"          \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
 });
 ;define("client/templates/components/body-tag-editor", ["exports"], function (exports) {
   "use strict";
@@ -1328,7 +1153,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "WqcyORNW", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[26,\"eq\",[[22,[\"mode\"]],\"display\"],null]],null,{\"statements\":[[0,\"  \"],[1,[26,\"tei-tag-render\",null,[[\"elem\",\"tagName\",\"classNames\"],[[22,[\"elem\"]],[26,\"tei-tag-mapper\",[[22,[\"elem\",\"tag\"]]],null],[22,[\"elem\",\"attrib\",\"style\"]]]]],false],[0,\"\\n  \"],[6,\"ul\"],[10,\"class\",\"menu hover position-top-right\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n    \"],[6,\"li\"],[8],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"role\",\"menuitem\"],[3,\"action\",[[21,0,[]],\"start-edit\"]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n          \"],[6,\"path\"],[10,\"d\",\"M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"textarea\"],[8],[1,[26,\"tei-tag-source-code\",[[22,[\"elem\"]]],null],false],[9],[0,\"  \"],[6,\"ul\"],[10,\"class\",\"menu vertical hover position-top-right\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n    \"],[6,\"li\"],[8],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"role\",\"menuitem\"],[3,\"action\",[[21,0,[]],\"save-edit\"]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n          \"],[6,\"path\"],[10,\"d\",\"M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"role\",\"menuitem\"],[3,\"action\",[[21,0,[]],\"cancel-edit\"]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n          \"],[6,\"path\"],[10,\"d\",\"M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-tag-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "PDUBWqbd", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[27,\"eq\",[[23,[\"mode\"]],\"display\"],null]],null,{\"statements\":[[0,\"  \"],[1,[27,\"tei-tag-render\",null,[[\"elem\",\"tagName\",\"classNames\"],[[23,[\"elem\"]],[27,\"tei-tag-mapper\",[[23,[\"elem\",\"tag\"]]],null],[23,[\"elem\",\"attrib\",\"style\"]]]]],false],[0,\"\\n  \"],[7,\"ul\"],[11,\"class\",\"menu hover position-top-right\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n    \"],[7,\"li\"],[9],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"start-edit\"]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[7,\"textarea\"],[9],[1,[27,\"tei-tag-source-code\",[[23,[\"elem\"]]],null],false],[10],[0,\"  \"],[7,\"ul\"],[11,\"class\",\"menu vertical hover position-top-right\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n    \"],[7,\"li\"],[9],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"save-edit\"]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"cancel-edit\"]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-tag-editor.hbs" } });
 });
 ;define("client/templates/components/node-editor", ["exports"], function (exports) {
   "use strict";
@@ -1336,7 +1161,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "KJK+Qcl/", "block": "{\"symbols\":[\"value\",\"key\"],\"statements\":[[6,\"div\"],[10,\"class\",\"grid-y\"],[8],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n    \"],[6,\"h2\"],[8],[1,[26,\"strip-tag-ns\",[[22,[\"node\",\"tag\"]]],null],false],[9],[0,\"\\n  \"],[9],[0,\"\\n\"],[4,\"if\",[[22,[\"edit_attributes\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n      \"],[6,\"h3\"],[8],[0,\"Attributes\\n        \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Add an attribute\"],[3,\"action\",[[21,0,[]],\"add-attribute\",[22,[\"node\"]]]],[8],[0,\"\\n          \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon small\"],[8],[0,\"\\n            \"],[6,\"path\"],[10,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z\"],[8],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n\"],[4,\"each\",[[26,\"-each-in\",[[22,[\"node\",\"attrib\"]]],null]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n        \"],[6,\"div\"],[10,\"class\",\"grid-x\"],[8],[0,\"\\n          \"],[6,\"div\"],[10,\"class\",\"cell auto\"],[8],[0,\"\\n            \"],[6,\"label\"],[8],[6,\"span\"],[11,\"title\",[26,\"format-tag-ns\",[[21,2,[]]],null]],[8],[1,[26,\"strip-tag-ns\",[[21,2,[]]],null],false],[9],[0,\"\\n              \"],[6,\"input\"],[11,\"value\",[21,1,[]]],[11,\"onchange\",[26,\"action\",[[21,0,[]],\"update-attribute\",[22,[\"node\"]],[21,2,[]]],null]],[10,\"type\",\"text\"],[8],[9],[0,\"\\n            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n          \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n            \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Remove the attribute\"],[3,\"action\",[[21,0,[]],\"remove-attribute\",[22,[\"node\"]],[21,2,[]]]],[8],[0,\"\\n              \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon small\"],[8],[0,\"\\n                \"],[6,\"path\"],[10,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7\"],[8],[9],[0,\"\\n              \"],[9],[0,\"\\n            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null],[4,\"if\",[[26,\"or\",[[22,[\"edit_text\"]],[22,[\"edit_tail\"]]],null]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n      \"],[6,\"h3\"],[8],[0,\"Text\"],[9],[0,\"\\n    \"],[9],[0,\"\\n\"],[4,\"if\",[[22,[\"edit_text\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n        \"],[6,\"label\"],[8],[0,\"Text\\n          \"],[6,\"input\"],[11,\"value\",[22,[\"node\",\"text\"]]],[11,\"onchange\",[26,\"action\",[[21,0,[]],\"update-text\",[22,[\"node\"]],\"text\"],null]],[10,\"type\",\"text\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[22,[\"edit_tail\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n        \"],[6,\"label\"],[8],[0,\"Tail\\n          \"],[6,\"input\"],[11,\"value\",[22,[\"node\",\"tail\"]]],[11,\"onchange\",[26,\"action\",[[21,0,[]],\"update-text\",[22,[\"node\"]],\"tail\"],null]],[10,\"type\",\"text\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/node-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "miXGZIn5", "block": "{\"symbols\":[\"value\",\"key\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y\"],[9],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[7,\"h2\"],[9],[1,[27,\"strip-tag-ns\",[[23,[\"node\",\"tag\"]]],null],false],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"edit_attributes\"]]],null,{\"statements\":[[0,\"    \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n      \"],[7,\"h3\"],[9],[0,\"Attributes\\n        \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Add an attribute\"],[3,\"action\",[[22,0,[]],\"add-attribute\",[23,[\"node\"]]]],[9],[0,\"\\n          \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n            \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z\"],[9],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n\"],[4,\"each\",[[27,\"-each-in\",[[23,[\"node\",\"attrib\"]]],null]],null,{\"statements\":[[0,\"      \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n        \"],[7,\"div\"],[11,\"class\",\"grid-x\"],[9],[0,\"\\n          \"],[7,\"div\"],[11,\"class\",\"cell auto\"],[9],[0,\"\\n            \"],[7,\"label\"],[9],[7,\"span\"],[12,\"title\",[27,\"format-tag-ns\",[[22,2,[]]],null]],[9],[1,[27,\"strip-tag-ns\",[[22,2,[]]],null],false],[10],[0,\"\\n              \"],[7,\"input\"],[12,\"value\",[22,1,[]]],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"update-attribute\",[23,[\"node\"]],[22,2,[]]],null]],[11,\"type\",\"text\"],[9],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n          \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Remove the attribute\"],[3,\"action\",[[22,0,[]],\"remove-attribute\",[23,[\"node\"]],[22,2,[]]]],[9],[0,\"\\n              \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n                \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7\"],[9],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null],[4,\"if\",[[27,\"or\",[[23,[\"edit_text\"]],[23,[\"edit_tail\"]]],null]],null,{\"statements\":[[0,\"    \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n      \"],[7,\"h3\"],[9],[0,\"Text\"],[10],[0,\"\\n    \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"edit_text\"]]],null,{\"statements\":[[0,\"      \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n        \"],[7,\"label\"],[9],[0,\"Text\\n          \"],[7,\"input\"],[12,\"value\",[23,[\"node\",\"text\"]]],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"update-text\",[23,[\"node\"]],\"text\"],null]],[11,\"type\",\"text\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[23,[\"edit_tail\"]]],null,{\"statements\":[[0,\"      \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n        \"],[7,\"label\"],[9],[0,\"Tail\\n          \"],[7,\"input\"],[12,\"value\",[23,[\"node\",\"tail\"]]],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"update-text\",[23,[\"node\"]],\"tail\"],null]],[11,\"type\",\"text\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/node-editor.hbs" } });
 });
 ;define("client/templates/components/tei-tag-render", ["exports"], function (exports) {
   "use strict";
@@ -1344,7 +1169,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "UwdlAPLs", "block": "{\"symbols\":[\"child\"],\"statements\":[[1,[22,[\"elem\",\"text\"]],false],[4,\"each\",[[22,[\"elem\",\"children\"]]],null,{\"statements\":[[1,[26,\"tei-tag-render\",null,[[\"tag\",\"tagName\",\"classNames\"],[[21,1,[]],[26,\"tei-tag-mapper\",[[21,1,[\"tag\"]]],null],[21,1,[\"attrib\",\"style\"]]]]],false],[1,[22,[\"elem\",\"tail\"]],false]],\"parameters\":[1]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tei-tag-render.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "JXiOzgmN", "block": "{\"symbols\":[\"child\"],\"statements\":[[1,[23,[\"elem\",\"text\"]],false],[4,\"each\",[[23,[\"elem\",\"children\"]]],null,{\"statements\":[[1,[27,\"tei-tag-render\",null,[[\"tag\",\"tagName\",\"classNames\"],[[22,1,[]],[27,\"tei-tag-mapper\",[[22,1,[\"tag\"]]],null],[22,1,[\"attrib\",\"style\"]]]]],false],[1,[23,[\"elem\",\"tail\"]],false]],\"parameters\":[1]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tei-tag-render.hbs" } });
 });
 ;define("client/templates/components/tree-view", ["exports"], function (exports) {
   "use strict";
@@ -1352,7 +1177,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "KvHe6ihx", "block": "{\"symbols\":[\"child\"],\"statements\":[[6,\"li\"],[8],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"ellipsis hover-parent\"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"href\",\"#\"],[11,\"title\",[26,\"format-tag-ns\",[[22,[\"node\",\"tag\"]]],null]],[3,\"action\",[[21,0,[]],[22,[\"click-node-title\"]],[22,[\"node\"]]]],[8],[1,[26,\"strip-tag-ns\",[[22,[\"node\",\"tag\"]]],null],false],[9],[0,\"\\n    \"],[6,\"span\"],[10,\"class\",\"hover\"],[8],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Add a child node\"],[3,\"action\",[[21,0,[]],[22,[\"add-child-node\"]],[22,[\"node\"]]]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon small\"],[8],[0,\"\\n          \"],[6,\"path\"],[10,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Remove this node\"],[3,\"action\",[[21,0,[]],[22,[\"remove-node\"]],[22,[\"parent\"]],[22,[\"node\"]]]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon small\"],[8],[0,\"\\n          \"],[6,\"path\"],[10,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Move the node forward\"],[3,\"action\",[[21,0,[]],[22,[\"move-node-forward\"]],[22,[\"parent\"]],[22,[\"node\"]]]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon small\"],[8],[0,\"\\n            \"],[6,\"path\"],[10,\"d\",\"M12,7L17,12H14V16H10V12H7L12,7M12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20Z\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n      \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Move the node backward\"],[3,\"action\",[[21,0,[]],[22,[\"move-node-backward\"]],[22,[\"parent\"]],[22,[\"node\"]]]],[8],[0,\"\\n        \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon small\"],[8],[0,\"\\n            \"],[6,\"path\"],[10,\"d\",\"M12,17L7,12H10V8H14V12H17L12,17M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z\"],[8],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n    \"],[6,\"span\"],[10,\"class\",\"secondary\"],[8],[1,[22,[\"node\",\"text\"]],false],[9],[0,\"\\n  \"],[9],[0,\"\\n\"],[4,\"if\",[[22,[\"node\",\"children\"]]],null,{\"statements\":[[0,\"    \"],[6,\"ul\"],[10,\"class\",\"no-bullet\"],[10,\"style\",\"margin-left:1rem;\"],[8],[0,\"\\n      \"],[4,\"each\",[[22,[\"node\",\"children\"]]],null,{\"statements\":[[1,[26,\"tree-view\",null,[[\"node\",\"parent\",\"click-node-title\",\"add-child-node\",\"remove-node\",\"move-node-forward\",\"move-node-backward\"],[[21,1,[]],[22,[\"node\"]],[22,[\"click-node-title\"]],[22,[\"add-child-node\"]],[22,[\"remove-node\"]],[22,[\"move-node-forward\"]],[22,[\"move-node-backward\"]]]]],false]],\"parameters\":[1]},null],[0,\"\\n    \"],[9],[0,\"\\n\"]],\"parameters\":[]},null],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tree-view.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "tbxhvaTP", "block": "{\"symbols\":[\"child\"],\"statements\":[[7,\"li\"],[9],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"ellipsis hover-parent\"],[9],[0,\"\\n    \"],[7,\"a\"],[11,\"href\",\"#\"],[12,\"title\",[27,\"format-tag-ns\",[[23,[\"node\",\"tag\"]]],null]],[3,\"action\",[[22,0,[]],[23,[\"click-node-title\"]],[23,[\"node\"]]]],[9],[1,[27,\"strip-tag-ns\",[[23,[\"node\",\"tag\"]]],null],false],[10],[0,\"\\n    \"],[7,\"span\"],[11,\"class\",\"hover\"],[9],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Add a child node\"],[3,\"action\",[[22,0,[]],[23,[\"add-child-node\"]],[23,[\"node\"]]]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Remove this node\"],[3,\"action\",[[22,0,[]],[23,[\"remove-node\"]],[23,[\"parent\"]],[23,[\"node\"]]]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Move the node forward\"],[3,\"action\",[[22,0,[]],[23,[\"move-node-forward\"]],[23,[\"parent\"]],[23,[\"node\"]]]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n            \"],[7,\"path\"],[11,\"d\",\"M12,7L17,12H14V16H10V12H7L12,7M12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Move the node backward\"],[3,\"action\",[[22,0,[]],[23,[\"move-node-backward\"]],[23,[\"parent\"]],[23,[\"node\"]]]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n            \"],[7,\"path\"],[11,\"d\",\"M12,17L7,12H10V8H14V12H17L12,17M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n    \"],[7,\"span\"],[11,\"class\",\"secondary\"],[9],[1,[23,[\"node\",\"text\"]],false],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"node\",\"children\"]]],null,{\"statements\":[[0,\"    \"],[7,\"ul\"],[11,\"class\",\"no-bullet\"],[11,\"style\",\"margin-left:1rem;\"],[9],[0,\"\\n      \"],[4,\"each\",[[23,[\"node\",\"children\"]]],null,{\"statements\":[[1,[27,\"tree-view\",null,[[\"node\",\"parent\",\"click-node-title\",\"add-child-node\",\"remove-node\",\"move-node-forward\",\"move-node-backward\"],[[22,1,[]],[23,[\"node\"]],[23,[\"click-node-title\"]],[23,[\"add-child-node\"]],[23,[\"remove-node\"]],[23,[\"move-node-forward\"]],[23,[\"move-node-backward\"]]]]],false]],\"parameters\":[1]},null],[0,\"\\n    \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tree-view.hbs" } });
 });
 ;define("client/templates/components/xml-tree-editor", ["exports"], function (exports) {
   "use strict";
@@ -1360,7 +1185,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "O6HYf30S", "block": "{\"symbols\":[],\"statements\":[[1,[26,\"tree-view\",null,[[\"node\",\"parent\",\"click-node-title\",\"add-child-node\",\"remove-node\",\"move-node-forward\",\"move-node-backward\"],[[22,[\"node\"]],null,[26,\"action\",[[21,0,[]],[22,[\"click-node-title\"]]],null],[26,\"action\",[[21,0,[]],\"add-child-node\"],null],[26,\"action\",[[21,0,[]],\"remove-node\"],null],[26,\"action\",[[21,0,[]],\"move-node-forward\"],null],[26,\"action\",[[21,0,[]],\"move-node-backward\"],null]]]],false],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/xml-tree-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "+WUzs9rK", "block": "{\"symbols\":[],\"statements\":[[1,[27,\"tree-view\",null,[[\"node\",\"parent\",\"click-node-title\",\"add-child-node\",\"remove-node\",\"move-node-forward\",\"move-node-backward\"],[[23,[\"node\"]],null,[27,\"action\",[[22,0,[]],[23,[\"click-node-title\"]]],null],[27,\"action\",[[22,0,[]],\"add-child-node\"],null],[27,\"action\",[[22,0,[]],\"remove-node\"],null],[27,\"action\",[[22,0,[]],\"move-node-forward\"],null],[27,\"action\",[[22,0,[]],\"move-node-backward\"],null]]]],false],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/xml-tree-editor.hbs" } });
 });
 ;define("client/templates/editor", ["exports"], function (exports) {
   "use strict";
@@ -1368,7 +1193,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "9+I8f9UK", "block": "{\"symbols\":[],\"statements\":[[6,\"main\"],[10,\"class\",\"grid-y grid-frame\"],[8],[0,\"\\n  \"],[6,\"nav\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"top-bar\"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",\"top-bar-left\"],[8],[0,\"\\n        \"],[6,\"ul\"],[10,\"class\",\"menu dropdown\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n          \"],[6,\"li\"],[10,\"class\",\"menu-text\"],[8],[0,\"TEI Editor\"],[9],[0,\"\\n          \"],[6,\"li\"],[10,\"title\",\"Open a project from the cloud\"],[10,\"role\",\"menuitem\"],[8],[0,\"\\n\"],[4,\"link-to\",[\"editor.repositories\"],null,{\"statements\":[[0,\"              \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n                \"],[6,\"path\"],[10,\"d\",\"M13,18H14A1,1 0 0,1 15,19H22V21H15A1,1 0 0,1 14,22H10A1,1 0 0,1 9,21H2V19H9A1,1 0 0,1 10,18H11V16H4A1,1 0 0,1 3,15V11A1,1 0 0,1 4,10H20A1,1 0 0,1 21,11V15A1,1 0 0,1 20,16H13V18M4,2H20A1,1 0 0,1 21,3V7A1,1 0 0,1 20,8H4A1,1 0 0,1 3,7V3A1,1 0 0,1 4,2M9,6H10V4H9V6M9,14H10V12H9V14M5,4V6H7V4H5M5,12V14H7V12H5Z\"],[8],[9],[0,\"\\n              \"],[9],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[9],[0,\"\\n\"],[4,\"if\",[[22,[\"selected_repository\"]]],null,{\"statements\":[[0,\"            \"],[6,\"li\"],[10,\"class\",\"menu-text\"],[8],[1,[22,[\"selected_repository\",\"title\"]],false],[9],[0,\"\\n            \"],[6,\"li\"],[10,\"title\",\"Synchronise the project with the cloud\"],[10,\"role\",\"menuitem\"],[8],[0,\"\\n              \"],[6,\"a\"],[10,\"href\",\"#\"],[8],[0,\"\\n                \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n                  \"],[6,\"path\"],[10,\"d\",\"M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z\"],[8],[9],[0,\"\\n                \"],[9],[0,\"\\n              \"],[9],[0,\"\\n            \"],[9],[0,\"\\n            \"],[6,\"li\"],[10,\"class\",\"separator\"],[8],[9],[0,\"\\n            \"],[6,\"li\"],[10,\"title\",\"Open a file for editing\"],[10,\"role\",\"menuitem\"],[8],[0,\"\\n\"],[4,\"link-to\",[\"editor.files\",[22,[\"selected_repository\",\"id\"]]],null,{\"statements\":[[0,\"                \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n                  \"],[6,\"path\"],[10,\"d\",\"M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z\"],[8],[9],[0,\"\\n                \"],[9],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[9],[0,\"\\n\"],[4,\"if\",[[22,[\"selected_file\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[10,\"class\",\"menu-text\"],[8],[1,[22,[\"selected_file\",\"basename\"]],false],[9],[0,\"\\n\"],[4,\"if\",[[22,[\"selected_file\",\"hasDirtyAttributes\"]]],null,{\"statements\":[[0,\"                \"],[6,\"li\"],[10,\"title\",\"Save changes to the file\"],[10,\"role\",\"menuitem\"],[8],[0,\"\\n                  \"],[6,\"a\"],[10,\"href\",\"#\"],[3,\"action\",[[21,0,[]],\"save_file\"]],[8],[0,\"\\n                    \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n                      \"],[6,\"path\"],[10,\"d\",\"M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z\"],[8],[9],[0,\"\\n                    \"],[9],[0,\"\\n                  \"],[9],[0,\"\\n                \"],[9],[0,\"\\n                \"],[6,\"li\"],[10,\"title\",\"Discard changes to the file\"],[10,\"role\",\"menuitem\"],[8],[0,\"\\n                  \"],[6,\"a\"],[10,\"href\",\"#\"],[3,\"action\",[[21,0,[]],\"reset_file\"]],[8],[0,\"\\n                    \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n                      \"],[6,\"path\"],[10,\"d\",\"M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z\"],[8],[9],[0,\"\\n                    \"],[9],[0,\"\\n                  \"],[9],[0,\"\\n                \"],[9],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"              \"],[6,\"li\"],[10,\"class\",\"menu-icon-disabled\"],[8],[0,\"\\n                \"],[6,\"span\"],[8],[0,\"\\n                  \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n                    \"],[6,\"path\"],[10,\"d\",\"M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z\"],[8],[9],[0,\"\\n                  \"],[9],[0,\"\\n                \"],[9],[0,\"\\n              \"],[9],[0,\"\\n              \"],[6,\"li\"],[10,\"class\",\"menu-icon-disabled\"],[8],[0,\"\\n                \"],[6,\"span\"],[8],[0,\"\\n                  \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n                    \"],[6,\"path\"],[10,\"d\",\"M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z\"],[8],[9],[0,\"\\n                  \"],[9],[0,\"\\n                \"],[9],[0,\"\\n              \"],[9],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[]},null]],\"parameters\":[]},null],[0,\"        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",\"top-bar-right\"],[8],[0,\"\\n        \"],[6,\"ul\"],[10,\"class\",\"menu\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n          \"],[6,\"li\"],[10,\"role\",\"menuitem\"],[8],[0,\"\\n            \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Log in\"],[8],[0,\"\\n              \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n                  \"],[6,\"path\"],[10,\"d\",\"M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z\"],[8],[9],[0,\"\\n              \"],[9],[0,\"\\n            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n          \"],[6,\"li\"],[10,\"role\",\"menuitem\"],[8],[0,\"\\n            \"],[6,\"a\"],[10,\"href\",\"#\"],[10,\"title\",\"Log out\"],[8],[0,\"\\n              \"],[6,\"svg\"],[10,\"viewBox\",\"0 0 24 24\"],[10,\"class\",\"icon\"],[8],[0,\"\\n                  \"],[6,\"path\"],[10,\"d\",\"M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z\"],[8],[9],[0,\"\\n              \"],[9],[0,\"\\n            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n  \"],[6,\"article\"],[10,\"class\",\"cell auto cell-block-container grid-padding-x\"],[8],[0,\"\\n    \"],[1,[20,\"outlet\"],false],[0,\"\\n  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "qO8TfHqL", "block": "{\"symbols\":[],\"statements\":[[7,\"main\"],[11,\"class\",\"grid-y grid-frame\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"top-bar\"],[9],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"top-bar-left\"],[9],[0,\"\\n        \"],[7,\"ul\"],[11,\"class\",\"menu dropdown\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n          \"],[7,\"li\"],[11,\"class\",\"menu-text\"],[9],[0,\"TEI Editor\"],[10],[0,\"\\n          \"],[7,\"li\"],[11,\"title\",\"Open a project from the cloud\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n\"],[4,\"link-to\",[\"editor.repositories\"],null,{\"statements\":[[0,\"              \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                \"],[7,\"path\"],[11,\"d\",\"M13,18H14A1,1 0 0,1 15,19H22V21H15A1,1 0 0,1 14,22H10A1,1 0 0,1 9,21H2V19H9A1,1 0 0,1 10,18H11V16H4A1,1 0 0,1 3,15V11A1,1 0 0,1 4,10H20A1,1 0 0,1 21,11V15A1,1 0 0,1 20,16H13V18M4,2H20A1,1 0 0,1 21,3V7A1,1 0 0,1 20,8H4A1,1 0 0,1 3,7V3A1,1 0 0,1 4,2M9,6H10V4H9V6M9,14H10V12H9V14M5,4V6H7V4H5M5,12V14H7V12H5Z\"],[9],[10],[0,\"\\n              \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_repository\"]]],null,{\"statements\":[[0,\"            \"],[7,\"li\"],[11,\"class\",\"menu-text\"],[9],[1,[23,[\"selected_repository\",\"title\"]],false],[10],[0,\"\\n            \"],[7,\"li\"],[11,\"title\",\"Synchronise the project with the cloud\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n              \"],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"\\n                \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                  \"],[7,\"path\"],[11,\"d\",\"M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z\"],[9],[10],[0,\"\\n                \"],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n            \"],[7,\"li\"],[11,\"class\",\"separator\"],[9],[10],[0,\"\\n            \"],[7,\"li\"],[11,\"title\",\"Open a file for editing\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n\"],[4,\"link-to\",[\"editor.files\",[23,[\"selected_repository\",\"id\"]]],null,{\"statements\":[[0,\"                \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                  \"],[7,\"path\"],[11,\"d\",\"M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z\"],[9],[10],[0,\"\\n                \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_file\"]]],null,{\"statements\":[[0,\"              \"],[7,\"li\"],[11,\"class\",\"menu-text\"],[9],[1,[23,[\"selected_file\",\"basename\"]],false],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_file\",\"hasDirtyAttributes\"]]],null,{\"statements\":[[0,\"                \"],[7,\"li\"],[11,\"title\",\"Save changes to the file\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n                  \"],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"save_file\"]],[9],[0,\"\\n                    \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                      \"],[7,\"path\"],[11,\"d\",\"M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z\"],[9],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n                \"],[10],[0,\"\\n                \"],[7,\"li\"],[11,\"title\",\"Discard changes to the file\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n                  \"],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"reset_file\"]],[9],[0,\"\\n                    \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                      \"],[7,\"path\"],[11,\"d\",\"M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z\"],[9],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n                \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"              \"],[7,\"li\"],[11,\"class\",\"menu-icon-disabled\"],[9],[0,\"\\n                \"],[7,\"span\"],[9],[0,\"\\n                  \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                    \"],[7,\"path\"],[11,\"d\",\"M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z\"],[9],[10],[0,\"\\n                  \"],[10],[0,\"\\n                \"],[10],[0,\"\\n              \"],[10],[0,\"\\n              \"],[7,\"li\"],[11,\"class\",\"menu-icon-disabled\"],[9],[0,\"\\n                \"],[7,\"span\"],[9],[0,\"\\n                  \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                    \"],[7,\"path\"],[11,\"d\",\"M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z\"],[9],[10],[0,\"\\n                  \"],[10],[0,\"\\n                \"],[10],[0,\"\\n              \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[]},null]],\"parameters\":[]},null],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"top-bar-right\"],[9],[0,\"\\n        \"],[7,\"ul\"],[11,\"class\",\"menu\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n          \"],[7,\"li\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Log in\"],[9],[0,\"\\n              \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                  \"],[7,\"path\"],[11,\"d\",\"M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z\"],[9],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n          \"],[7,\"li\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Log out\"],[9],[0,\"\\n              \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                  \"],[7,\"path\"],[11,\"d\",\"M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z\"],[9],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"article\"],[11,\"class\",\"cell auto cell-block-container grid-padding-x\"],[9],[0,\"\\n    \"],[1,[21,\"outlet\"],false],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor.hbs" } });
 });
 ;define("client/templates/editor/file", ["exports"], function (exports) {
   "use strict";
@@ -1376,7 +1201,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "jdPPTLkq", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n  \"],[6,\"h1\"],[8],[1,[22,[\"model\",\"filename\"]],false],[9],[0,\"\\n\"],[9],[0,\"\\n\"],[6,\"div\"],[10,\"class\",\"cell auto grid-x grid-padding-x\"],[8],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-container\"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell shrink\"],[8],[0,\"\\n      \"],[6,\"ul\"],[10,\"class\",\"tabs\"],[8],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title is-active\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-metadata\"],null]],[10,\"aria-selected\",\"true\"],[8],[0,\"Metadata\"],[9],[9],[0,\"\\n        \"],[6,\"li\"],[10,\"class\",\"tabs-title\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[11,\"onclick\",[26,\"action\",[[21,0,[]],\"select-tab-panel\",\"#file-annotations\"],null]],[8],[0,\"Annotations\"],[9],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",\"cell auto cell-block-y\"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",\"tabs-content full-height\"],[8],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-metadata\"],[10,\"class\",\"tabs-panel is-active full-height\"],[8],[0,\"\\n          \"],[6,\"div\"],[10,\"class\",\"grid-x grid-padding-x full-height\"],[8],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n              \"],[6,\"ul\"],[10,\"class\",\"no-bullet\"],[8],[1,[26,\"xml-tree-editor\",null,[[\"node\",\"click-node-title\",\"notify-model-change\"],[[22,[\"model\",\"header\"]],[26,\"action\",[[21,0,[]],\"select-metadata-node\"],null],[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[9],[0,\"\\n            \"],[9],[0,\"\\n            \"],[6,\"div\"],[10,\"class\",\"cell small-6 cell-block-y\"],[8],[0,\"\\n\"],[4,\"if\",[[22,[\"selected_metadata_node\"]]],null,{\"statements\":[[0,\"                \"],[1,[26,\"node-editor\",null,[[\"node\",\"edit_tail\",\"notify-model-change\"],[[22,[\"selected_metadata_node\"]],false,[26,\"action\",[[21,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[9],[0,\"\\n          \"],[9],[0,\"\\n        \"],[9],[0,\"\\n        \"],[6,\"div\"],[10,\"id\",\"file-annotations\"],[10,\"class\",\"tabs-panel full-height\"],[8],[0,\"\\n          \"],[6,\"p\"],[8],[0,\"Suspendisse dictum feugiat nisl ut dapibus.  Vivamus hendrerit arcu sed erat molestie vehicula. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.  Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.\"],[9],[0,\"\\n        \"],[9],[0,\"\\n      \"],[9],[0,\"\\n    \"],[9],[0,\"\\n  \"],[9],[0,\"\\n  \"],[6,\"div\"],[10,\"class\",\"cell small-6 full-height\"],[8],[0,\"\\n    \"],[1,[26,\"body-editor\",null,[[\"body\"],[[22,[\"model\",\"body\"]]]]],false],[0,\"\\n  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "rMj6eLhZ", "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"filename\"]],false],[10],[0,\"\\n\"],[10],[0,\"\\n\"],[7,\"div\"],[11,\"class\",\"cell auto grid-x grid-padding-x\"],[9],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell small-6 cell-block-container\"],[9],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n      \"],[7,\"ul\"],[11,\"class\",\"tabs\"],[9],[0,\"\\n        \"],[7,\"li\"],[11,\"class\",\"tabs-title is-active\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[12,\"onclick\",[27,\"action\",[[22,0,[]],\"select-tab-panel\",\"#file-metadata\"],null]],[11,\"aria-selected\",\"true\"],[9],[0,\"Metadata\"],[10],[10],[0,\"\\n        \"],[7,\"li\"],[11,\"class\",\"tabs-title\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[12,\"onclick\",[27,\"action\",[[22,0,[]],\"select-tab-panel\",\"#file-annotations\"],null]],[9],[0,\"Annotations\"],[10],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell auto cell-block-y\"],[9],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"tabs-content full-height\"],[9],[0,\"\\n        \"],[7,\"div\"],[11,\"id\",\"file-metadata\"],[11,\"class\",\"tabs-panel is-active full-height\"],[9],[0,\"\\n          \"],[7,\"div\"],[11,\"class\",\"grid-x grid-padding-x full-height\"],[9],[0,\"\\n            \"],[7,\"div\"],[11,\"class\",\"cell small-6 cell-block-y\"],[9],[0,\"\\n              \"],[7,\"ul\"],[11,\"class\",\"no-bullet\"],[9],[1,[27,\"xml-tree-editor\",null,[[\"node\",\"click-node-title\",\"notify-model-change\"],[[23,[\"model\",\"header\"]],[27,\"action\",[[22,0,[]],\"select-metadata-node\"],null],[27,\"action\",[[22,0,[]],\"notify-model-change\"],null]]]],false],[10],[0,\"\\n            \"],[10],[0,\"\\n            \"],[7,\"div\"],[11,\"class\",\"cell small-6 cell-block-y\"],[9],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_metadata_node\"]]],null,{\"statements\":[[0,\"                \"],[1,[27,\"node-editor\",null,[[\"node\",\"edit_tail\",\"notify-model-change\"],[[23,[\"selected_metadata_node\"]],false,[27,\"action\",[[22,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n        \"],[7,\"div\"],[11,\"id\",\"file-annotations\"],[11,\"class\",\"tabs-panel full-height\"],[9],[0,\"\\n          \"],[7,\"p\"],[9],[0,\"Suspendisse dictum feugiat nisl ut dapibus.  Vivamus hendrerit arcu sed erat molestie vehicula. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.  Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.\"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell small-6 full-height\"],[9],[0,\"\\n    \"],[1,[27,\"body-editor\",null,[[\"body\"],[[23,[\"model\",\"body\"]]]]],false],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/file.hbs" } });
 });
 ;define("client/templates/editor/files", ["exports"], function (exports) {
   "use strict";
@@ -1384,7 +1209,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "MvL/+Fgy", "block": "{\"symbols\":[\"filename\",\"key\"],\"statements\":[[6,\"div\"],[10,\"class\",\"cell\"],[8],[0,\"\\n  \"],[6,\"h1\"],[8],[0,\"Select the file to load\"],[9],[0,\"\\n  \"],[6,\"ul\"],[10,\"class\",\"menu vertical\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n\"],[4,\"each\",[[26,\"-each-in\",[[22,[\"model\",\"tei_files\"]]],null]],null,{\"statements\":[[0,\"      \"],[6,\"li\"],[10,\"role\",\"menuitem\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[3,\"action\",[[21,0,[]],\"select-file\",[22,[\"model\",\"id\"]],[21,2,[]]]],[8],[1,[21,1,[]],false],[9],[9],[0,\"\\n\"]],\"parameters\":[1,2]},null],[0,\"  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/files.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "uUBRcDCz", "block": "{\"symbols\":[\"filename\",\"key\"],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[0,\"Select the file to load\"],[10],[0,\"\\n  \"],[7,\"ul\"],[11,\"class\",\"menu vertical\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n\"],[4,\"each\",[[27,\"-each-in\",[[23,[\"model\",\"tei_files\"]]],null]],null,{\"statements\":[[0,\"      \"],[7,\"li\"],[11,\"role\",\"menuitem\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"select-file\",[23,[\"model\",\"id\"]],[22,2,[]]]],[9],[1,[22,1,[]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[1,2]},null],[0,\"  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/files.hbs" } });
 });
 ;define("client/templates/editor/repositories", ["exports"], function (exports) {
   "use strict";
@@ -1392,7 +1217,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "0mKA1laP", "block": "{\"symbols\":[\"repository\"],\"statements\":[[6,\"div\"],[10,\"class\",\"cell\"],[8],[0,\"\\n  \"],[6,\"h1\"],[8],[0,\"Select the Project to load\"],[9],[0,\"\\n  \"],[6,\"ul\"],[10,\"class\",\"menu vertical\"],[10,\"role\",\"menubar\"],[8],[0,\"\\n\"],[4,\"each\",[[22,[\"model\"]]],null,{\"statements\":[[0,\"      \"],[6,\"li\"],[10,\"role\",\"menuitem\"],[8],[6,\"a\"],[10,\"href\",\"#\"],[3,\"action\",[[21,0,[]],\"select-repository\",[21,1,[\"id\"]]]],[8],[1,[21,1,[\"title\"]],false],[9],[9],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"  \"],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repositories.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "1S02z+p6", "block": "{\"symbols\":[\"repository\"],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[0,\"Select the Project to load\"],[10],[0,\"\\n  \"],[7,\"ul\"],[11,\"class\",\"menu vertical\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\"]]],null,{\"statements\":[[0,\"      \"],[7,\"li\"],[11,\"role\",\"menuitem\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"select-repository\",[22,1,[\"id\"]]]],[9],[1,[22,1,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repositories.hbs" } });
 });
 ;define("client/templates/editor/repository", ["exports"], function (exports) {
   "use strict";
@@ -1400,7 +1225,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "CpfVgEb4", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[10,\"class\",\"cell\"],[8],[0,\"\\n  \"],[6,\"h1\"],[8],[1,[22,[\"model\",\"title\"]],false],[9],[0,\"\\n\"],[9],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repository.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "/b8tmMLt", "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"title\"]],false],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repository.hbs" } });
 });
 ;
 
@@ -1425,7 +1250,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+ad87bef3"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+0ecaedd6"});
           }
         
 //# sourceMappingURL=client.map
