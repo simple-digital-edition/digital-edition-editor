@@ -32,29 +32,44 @@
         block_types: [{ key: 'heading_level_1', label: 'Heading 1' }, { key: 'heading_level_2', label: 'Heading 2' }, { key: 'paragraph', label: 'Paragraph' }, { key: 'paragraph_no_indent', label: 'Paragraph (no Indent)' }],
         selected_block_type: null,
         mark_types: [{ key: '', label: '' }, { key: 'page_break', label: 'Page Number' }, { key: 'foreign_language', label: 'Foreign Language' }, { key: 'letter_sparse', label: 'Sparse Lettering' }, { key: 'sup', label: 'Superscript' }, { key: 'font_size_large', label: 'Large' }, { key: 'font_size_medium', label: 'Medium' }, { key: 'font_size_small', label: 'Small' }],
-        menu: [{
-            id: 'paragraph',
-            title: 'Paragraph',
-            items: [{
-                id: 'heading_level_1',
-                title: 'Heading 1'
-            }, {
-                id: 'heading_level_2',
-                title: 'Heading 2'
-            }, {
-                id: 'paragraph',
-                title: 'Paragraph'
-            }]
-        }],
+        menu: undefined,
         selected_mark_types: null,
 
         didInsertElement() {
             this._super(...arguments);
 
+            let menu = [{
+                id: 'block',
+                title: 'Block',
+                items: [{
+                    id: 'heading_level_1',
+                    title: 'Heading 1',
+                    action: 'select-block-type'
+                }, {
+                    id: 'heading_level_2',
+                    title: 'Heading 2',
+                    action: 'select-block-type'
+                }, {
+                    id: 'paragraph',
+                    title: 'Paragraph',
+                    action: 'select-block-type'
+                }]
+            }, {
+                id: 'inline',
+                title: 'Inline',
+                items: [{
+                    id: 'page_break',
+                    title: 'Page Break',
+                    action: 'select-inline-type'
+                }]
+            }];
+            this.set('menu', menu);
+
             let schema = new _prosemirrorModel.Schema({
                 nodes: {
                     doc: {
                         content: 'block+'
+
                     },
                     heading_level_1: {
                         group: 'block',
@@ -160,11 +175,16 @@
                 dispatchTransaction(transaction) {
                     let new_state = view.state.apply(transaction);
                     let selection = new_state.selection;
+                    // Calculate which block type is currently selected
+                    component.updateMenuState('block.heading_level_1', { is_active: false });
+                    component.updateMenuState('block.heading_level_2', { is_active: false });
+                    component.updateMenuState('block.paragraph', { is_active: false });
                     for (let idx = 0; idx < selection.$anchor.path.length; idx++) {
                         if (typeof selection.$anchor.path[idx] === 'object') {
                             let node_type = selection.$anchor.path[idx].type;
                             if (node_type.name !== 'doc' && node_type.isBlock) {
                                 component.set('selected_block_type', node_type.name);
+                                component.updateMenuState('block.' + node_type.name, { is_active: true });
                             }
                         }
                     }
@@ -217,7 +237,49 @@
             this.get('editor-view').destroy();
         },
 
+        updateMenuState(path, attrs) {
+            let menu = this.get('menu');
+            function recursive_find(items, subpath) {
+                let found = false;
+                for (let idx = 0; idx < items.length; idx++) {
+                    if (items[idx].id === subpath[0]) {
+                        found = true;
+                        if (subpath.length > 1 && items[idx].items) {
+                            let tmp = recursive_find(items[idx].items, subpath.slice(1));
+                            if (tmp !== null) {
+                                tmp.splice(0, 0, idx, 'items');
+                            }
+                            return tmp;
+                        } else if (subpath.length === 1) {
+                            return [idx];
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+                if (!found) {
+                    return null;
+                }
+            }
+            let set_path = recursive_find(menu, path.split('.'));
+            if (set_path !== null) {
+                set_path = set_path.join('.');
+                let keys = Object.keys(attrs);
+                for (let idx = 0; idx < keys.length; idx++) {
+                    menu.set(set_path + '.' + keys[idx], attrs[keys[idx]]);
+                }
+            }
+        },
+
         actions: {
+            'menu-action'(action, param) {
+                if (action === 'select-block-type') {
+                    let view = this.get('editor-view');
+                    let schema = this.get('editor-schema');
+                    view.focus();
+                    (0, _prosemirrorCommands.setBlockType)(schema.nodes[param])(view.state, view.dispatch);
+                }
+            },
             'set-block-type'(value) {
                 this.set('selected_block_type', value);
                 let view = this.get('editor-view');
@@ -243,11 +305,10 @@
     });
     exports.default = Ember.Component.extend({
         tagName: 'li',
-        classNameBindings: ['has_children:is-dropdown-submenu-parent', 'is_nested:is-submenu-item', 'is_nested:is-dropdown-submenu-item', 'has_children:opens-right', 'is_active:is-active'],
+        classNameBindings: ['has_children:is-dropdown-submenu-parent', 'is_nested:is-submenu-item', 'is_nested:is-dropdown-submenu-item', 'has_children:opens-right', 'item.is_active:is-active'],
         is_focus: false,
         has_children: false,
         is_nested: false,
-        is_active: false,
 
         didReceiveAttrs() {
             this._super(...arguments);
@@ -261,7 +322,9 @@
         },
         actions: {
             select() {
-                this.set('is_active', !this.get('is_active'));
+                if (this.get('item.action')) {
+                    this.get('onaction')(this.get('item.action'), this.get('item.id'));
+                }
             }
         }
     });
@@ -1195,7 +1258,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "rVm6w40t", "block": "{\"symbols\":[\"mark_type\",\"block_type\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[1,[27,\"dropdown-menu\",null,[[\"items\"],[[23,[\"menu\"]]]]],false],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"menu dropdown\"],[9],[0,\"\\n      \"],[7,\"li\"],[11,\"class\",\"is-dropdown-submenu-parent opens-right\"],[9],[0,\"\\n        \"],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"Parent\"],[10],[0,\"\\n        \"],[7,\"ul\"],[11,\"class\",\"menu submenu is-dropdown-submenu vertical\"],[9],[0,\"\\n          \"],[7,\"li\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"A\"],[10],[10],[0,\"\\n          \"],[7,\"li\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"B\"],[10],[10],[0,\"\\n          \"],[7,\"li\"],[9],[7,\"a\"],[11,\"href\",\"#\"],[9],[0,\"C\"],[10],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"menu\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n      \"],[7,\"li\"],[9],[0,\"\\n        \"],[7,\"select\"],[11,\"role\",\"menuitem\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-type\"],[[\"value\"],[\"target.value\"]]]],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"block_types\"]]],null,{\"statements\":[[0,\"            \"],[7,\"option\"],[12,\"value\",[22,2,[\"key\"]]],[12,\"selected\",[27,\"eq\",[[22,2,[\"key\"]],[23,[\"selected_block_type\"]]],null]],[9],[1,[22,2,[\"label\"]],false],[10],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"],[4,\"each\",[[23,[\"mark_types\"]]],null,{\"statements\":[[4,\"if\",[[27,\"array-contains\",[[23,[\"selected_mark_types\"]],[22,1,[\"key\"]]],null]],null,{\"statements\":[[0,\"          \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "66zlD2BQ", "block": "{\"symbols\":[\"mark_type\",\"block_type\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[1,[27,\"dropdown-menu\",null,[[\"items\",\"onaction\"],[[23,[\"menu\"]],[27,\"action\",[[22,0,[]],\"menu-action\"],null]]]],false],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"menu\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n      \"],[7,\"li\"],[9],[0,\"\\n        \"],[7,\"select\"],[11,\"role\",\"menuitem\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-type\"],[[\"value\"],[\"target.value\"]]]],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"block_types\"]]],null,{\"statements\":[[0,\"            \"],[7,\"option\"],[12,\"value\",[22,2,[\"key\"]]],[12,\"selected\",[27,\"eq\",[[22,2,[\"key\"]],[23,[\"selected_block_type\"]]],null]],[9],[1,[22,2,[\"label\"]],false],[10],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"],[4,\"each\",[[23,[\"mark_types\"]]],null,{\"statements\":[[4,\"if\",[[27,\"array-contains\",[[23,[\"selected_mark_types\"]],[22,1,[\"key\"]]],null]],null,{\"statements\":[[0,\"          \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
 });
 ;define("client/templates/components/dropdown-menu-item", ["exports"], function (exports) {
   "use strict";
@@ -1203,7 +1266,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "dpKFTcxo", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[23,[\"item\",\"items\"]]],null,{\"statements\":[[0,\"  \"],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"select\"]],[9],[1,[23,[\"item\",\"title\"]],false],[10],[0,\"\\n  \"],[1,[27,\"dropdown-menu\",null,[[\"items\",\"is_nested\",\"is_focus\"],[[23,[\"item\",\"items\"]],true,[23,[\"is_focus\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"select\"]],[9],[1,[23,[\"item\",\"title\"]],false],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/dropdown-menu-item.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "vyJ26BRO", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[23,[\"item\",\"items\"]]],null,{\"statements\":[[0,\"  \"],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"select\"]],[9],[1,[23,[\"item\",\"title\"]],false],[10],[0,\"\\n  \"],[1,[27,\"dropdown-menu\",null,[[\"items\",\"is_nested\",\"is_focus\",\"onaction\"],[[23,[\"item\",\"items\"]],true,[23,[\"is_focus\"]],[23,[\"onaction\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[7,\"a\"],[11,\"href\",\"#\"],[3,\"action\",[[22,0,[]],\"select\"]],[9],[1,[23,[\"item\",\"title\"]],false],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/dropdown-menu-item.hbs" } });
 });
 ;define("client/templates/components/dropdown-menu", ["exports"], function (exports) {
   "use strict";
@@ -1211,7 +1274,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "RgosI1H3", "block": "{\"symbols\":[\"item\"],\"statements\":[[4,\"each\",[[23,[\"items\"]]],null,{\"statements\":[[0,\"  \"],[1,[27,\"dropdown-menu-item\",null,[[\"item\",\"is_nested\"],[[22,1,[]],[23,[\"is_nested\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1]},null]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/dropdown-menu.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "YvFEjaD6", "block": "{\"symbols\":[\"item\"],\"statements\":[[4,\"each\",[[23,[\"items\"]]],null,{\"statements\":[[0,\"  \"],[1,[27,\"dropdown-menu-item\",null,[[\"item\",\"is_nested\",\"onaction\"],[[22,1,[]],[23,[\"is_nested\"]],[23,[\"onaction\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1]},null]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/dropdown-menu.hbs" } });
 });
 ;define("client/templates/components/node-editor", ["exports"], function (exports) {
   "use strict";

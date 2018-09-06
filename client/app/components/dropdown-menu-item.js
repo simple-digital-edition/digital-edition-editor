@@ -7,12 +7,11 @@ export default Component.extend({
         'is_nested:is-submenu-item',
         'is_nested:is-dropdown-submenu-item',
         'has_children:opens-right',
-        'is_active:is-active'
+        'item.is_active:is-active'
     ],
     is_focus: false,
     has_children: false,
     is_nested: false,
-    is_active: false,
 
     didReceiveAttrs() {
         this._super(...arguments);
@@ -26,7 +25,9 @@ export default Component.extend({
     },
     actions: {
         select() {
-            this.set('is_active', !this.get('is_active'));
+            if(this.get('item.action')) {
+                this.get('onaction')(this.get('item.action'), this.get('item.id'));
+            }
         }
     }
 });

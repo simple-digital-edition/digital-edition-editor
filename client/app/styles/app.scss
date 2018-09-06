@@ -167,6 +167,14 @@ svg.icon {
     .separator {
         border-right: 1px solid $medium-gray;
     }
+    &.dropdown {
+        .is-active {
+            a {
+                background: $menu-item-background-active;
+                color: $menu-item-color-active;
+            }
+        }
+    }
 }
 
 /**

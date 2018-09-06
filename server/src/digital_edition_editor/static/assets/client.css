@@ -87,6 +87,10 @@ svg.icon.small {
 .menu .separator {
   border-right: 1px solid #cacaca;
 }
+.menu.dropdown .is-active a {
+  background: #1779ba;
+  color: #fefefe;
+}
 
 /**
  * Editor styling

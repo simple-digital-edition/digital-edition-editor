@@ -26,35 +26,53 @@ export default Component.extend({
         {key: 'font_size_medium', label: 'Medium'},
         {key: 'font_size_small', label: 'Small'},
     ],
-    menu: [
-        {
-            id: 'paragraph',
-            title: 'Paragraph',
-            items: [
-                {
-                    id: 'heading_level_1',
-                    title: 'Heading 1'
-                },
-                {
-                    id: 'heading_level_2',
-                    title: 'Heading 2'
-                },
-                {
-                    id: 'paragraph',
-                    title: 'Paragraph'
-                }
-            ]
-        }
-    ],
+    menu: undefined,
     selected_mark_types: null,
 
     didInsertElement() {
-        this._super(...arguments);
+        this._super(...arguments)
+
+        let menu = [
+            {
+                id: 'block',
+                title: 'Block',
+                items: [
+                    {
+                        id: 'heading_level_1',
+                        title: 'Heading 1',
+                        action: 'select-block-type'
+                    },
+                    {
+                        id: 'heading_level_2',
+                        title: 'Heading 2',
+                        action: 'select-block-type'
+                    },
+                    {
+                        id: 'paragraph',
+                        title: 'Paragraph',
+                        action: 'select-block-type'
+                    }
+                ]
+            },
+            {
+                id: 'inline',
+                title: 'Inline',
+                items: [
+                    {
+                        id: 'page_break',
+                        title: 'Page Break',
+                        action: 'select-inline-type'
+                    }
+                ]
+            }
+        ]
+        this.set('menu', menu)
 
         let schema = new Schema({
             nodes: {
                 doc: {
                     content: 'block+'
+
                 },
                 heading_level_1: {
                     group: 'block',
@@ -143,11 +161,16 @@ export default Component.extend({
             dispatchTransaction(transaction) {
                 let new_state = view.state.apply(transaction)
                 let selection = new_state.selection
+                // Calculate which block type is currently selected
+                component.updateMenuState('block.heading_level_1', {is_active: false});
+                component.updateMenuState('block.heading_level_2', {is_active: false});
+                component.updateMenuState('block.paragraph', {is_active: false});
                 for(let idx = 0; idx < selection.$anchor.path.length; idx++) {
                     if(typeof(selection.$anchor.path[idx]) === 'object') {
                         let node_type = selection.$anchor.path[idx].type
                         if(node_type.name !== 'doc' && node_type.isBlock) {
                             component.set('selected_block_type', node_type.name)
+                            component.updateMenuState('block.' + node_type.name, {is_active: true});
                         }
                     }
                 }
@@ -200,7 +223,49 @@ export default Component.extend({
         this.get('editor-view').destroy()
     },
 
+    updateMenuState(path, attrs) {
+        let menu = this.get('menu')
+        function recursive_find(items, subpath) {
+            let found = false
+            for(let idx = 0; idx < items.length; idx++) {
+                if(items[idx].id === subpath[0]) {
+                    found = true
+                    if(subpath.length > 1 && items[idx].items) {
+                        let tmp = recursive_find(items[idx].items, subpath.slice(1))
+                        if(tmp !== null) {
+                            tmp.splice(0, 0, idx, 'items')
+                        }
+                        return tmp
+                    } else if(subpath.length === 1) {
+                        return [idx]
+                    } else {
+                        return null
+                    }
+                }
+            }
+            if(!found) {
+                return null
+            }
+        }
+        let set_path = recursive_find(menu, path.split('.'))
+        if(set_path !== null) {
+            set_path = set_path.join('.')
+            let keys = Object.keys(attrs)
+            for(let idx = 0; idx < keys.length; idx++) {
+                menu.set(set_path + '.' + keys[idx], attrs[keys[idx]])
+            }
+        }
+    },
+
     actions: {
+        'menu-action'(action, param) {
+            if(action === 'select-block-type') {
+                let view = this.get('editor-view')
+                let schema = this.get('editor-schema')
+                view.focus()
+                setBlockType(schema.nodes[param])(view.state, view.dispatch)
+            }
+        },
         'set-block-type'(value) {
             this.set('selected_block_type', value)
             let view = this.get('editor-view')

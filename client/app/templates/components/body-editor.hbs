@@ -1,16 +1,6 @@
 <div class="grid-y full-height">
   <nav class="cell shrink">
-    {{dropdown-menu items=menu}}
-    <ul class="menu dropdown">
-      <li class="is-dropdown-submenu-parent opens-right">
-        <a href="#">Parent</a>
-        <ul class="menu submenu is-dropdown-submenu vertical">
-          <li><a href="#">A</a></li>
-          <li><a href="#">B</a></li>
-          <li><a href="#">C</a></li>
-        </ul>
-      </li>
-    </ul>
+    {{dropdown-menu items=menu onaction=(action "menu-action")}}
     <ul class="menu" role="menubar">
       <li>
         <select role="menuitem" onchange={{action "set-block-type" value="target.value"}}>
