@@ -194,7 +194,6 @@ export default Component.extend({
             state,
             dispatchTransaction(transaction) {
                 let new_state = view.state.apply(transaction)
-                let selection = new_state.selection
                 // Calculate which block types are currently selected
                 component.setMenuState('block.heading_level_1', {is_active: false})
                 component.setMenuState('block.heading_level_2', {is_active: false})

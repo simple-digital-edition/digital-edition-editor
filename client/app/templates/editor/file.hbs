@@ -4,9 +4,18 @@
 <div class="cell auto grid-x grid-padding-x">
   <div class="cell small-6 cell-block-container">
     <div class="cell shrink">
-      <ul class="tabs">
-        <li class="tabs-title is-active"><a href="#" onclick={{action "select-tab-panel" "#file-metadata"}} aria-selected="true">Metadata</a></li>
-        <li class="tabs-title"><a href="#" onclick={{action "select-tab-panel" "#file-annotations"}}>Annotations</a></li>
+      <ul class="tabs" role="tablist">
+        <li class="tabs-title is-active" role="none">
+          <a {{action "select-tab-panel" "#file-metadata"}}
+            role="tab"
+            aria-selected="true"
+          >
+            Metadata
+          </a>
+        </li>
+        <li class="tabs-title" role="none">
+          <a {{action "select-tab-panel" "#file-annotations"}} role="tab">Annotations</a>
+        </li>
       </ul>
     </div>
     <div class="cell auto cell-block-y">
@@ -14,11 +23,21 @@
         <div id="file-metadata" class="tabs-panel is-active full-height">
           <div class="grid-x grid-padding-x full-height">
             <div class="cell small-6 cell-block-y">
-              <ul class="no-bullet">{{xml-tree-editor node=model.header click-node-title=(action "select-metadata-node") notify-model-change=(action "notify-model-change")}}</ul>
+              <ul class="no-bullet">
+                {{xml-tree-editor
+                  node=model.header
+                  click-node-title=(action "select-metadata-node")
+                  notify-model-change=(action "notify-model-change")
+                }}
+              </ul>
             </div>
             <div class="cell small-6 cell-block-y">
               {{#if selected_metadata_node}}
-                {{node-editor node=selected_metadata_node edit_tail=false notify-model-change=(action "notify-model-change")}}
+                {{node-editor
+                  node=selected_metadata_node
+                  edit_tail=false
+                  notify-model-change=(action "notify-model-change")
+                }}
               {{/if}}
             </div>
           </div>

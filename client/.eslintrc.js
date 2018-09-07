@@ -15,6 +15,7 @@ module.exports = {
     browser: true
   },
   rules: {
+    'self-closing-void-elements': 'off'
   },
   overrides: [
     // node files
