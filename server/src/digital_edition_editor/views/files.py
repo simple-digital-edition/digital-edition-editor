@@ -158,7 +158,6 @@ def build_etree_from_prosemirror(source):
             last_inline = None
             for inline in block['content']:
                 if 'marks' in inline:
-                    print(inline['marks'])
                     if {'type': 'page_break'} in inline['marks']:
                         last_inline = etree.Element('{http://www.tei-c.org/ns/1.0}pb')
                         last_inline.attrib['n'] = inline['text']
