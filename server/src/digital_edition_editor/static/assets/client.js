@@ -169,13 +169,13 @@
                     },
                     font_size_medium: {
                         toDOM() {
-                            return ['sup', { class: 'font-size-medium' }, 0];
+                            return ['span', { class: 'font-size-medium' }, 0];
                         },
                         parseDOM: [{ tag: 'span.font-size-medium' }]
                     },
                     font_size_small: {
                         toDOM() {
-                            return ['sup', { class: 'font-size-small' }, 0];
+                            return ['span', { class: 'font-size-small' }, 0];
                         },
                         parseDOM: [{ tag: 'span.font-size-small' }]
                     },
@@ -196,8 +196,8 @@
                     'Mod-z': _prosemirrorHistory.undo,
                     'Mod-y': _prosemirrorHistory.redo
                 }), (0, _prosemirrorKeymap.keymap)(_prosemirrorCommands.baseKeymap), (0, _prosemirrorKeymap.keymap)({
-                    'Ctrl-1': (0, _prosemirrorCommands.setBlockType)(schema.nodes.main_heading),
-                    'Ctrl-2': (0, _prosemirrorCommands.setBlockType)(schema.nodes.sub_heading),
+                    'Ctrl-1': (0, _prosemirrorCommands.setBlockType)(schema.nodes.heading_level_1),
+                    'Ctrl-2': (0, _prosemirrorCommands.setBlockType)(schema.nodes.heading_level_2),
                     'Ctrl-3': (0, _prosemirrorCommands.setBlockType)(schema.nodes.paragraph)
                 })]
             });

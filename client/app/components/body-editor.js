@@ -156,11 +156,11 @@ export default Component.extend({
                     parseDOM: [{tag: 'span.font-size-large'}]
                 },
                 font_size_medium: {
-                    toDOM() {return ['sup', {class: 'font-size-medium'}, 0]},
+                    toDOM() {return ['span', {class: 'font-size-medium'}, 0]},
                     parseDOM: [{tag: 'span.font-size-medium'}]
                 },
                 font_size_small: {
-                    toDOM() {return ['sup', {class: 'font-size-small'}, 0]},
+                    toDOM() {return ['span', {class: 'font-size-small'}, 0]},
                     parseDOM: [{tag: 'span.font-size-small'}]
                 },
                 page_break: {
@@ -182,8 +182,8 @@ export default Component.extend({
                 }),
                 keymap(baseKeymap),
                 keymap({
-                    'Ctrl-1': setBlockType(schema.nodes.main_heading),
-                    'Ctrl-2': setBlockType(schema.nodes.sub_heading),
+                    'Ctrl-1': setBlockType(schema.nodes.heading_level_1),
+                    'Ctrl-2': setBlockType(schema.nodes.heading_level_2),
                     'Ctrl-3': setBlockType(schema.nodes.paragraph)
                 })
             ]

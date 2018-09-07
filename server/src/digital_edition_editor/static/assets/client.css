@@ -183,7 +183,7 @@ svg.icon.small {
 .tei-body-editor .editor .indent-big {
   margin-left: 3rem;
 }
-.tei-body-editor .editor span {
+.tei-body-editor .editor span:hover {
   background: #e6e6e6;
 }
 

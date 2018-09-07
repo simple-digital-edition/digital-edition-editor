@@ -143,26 +143,33 @@ def build_etree_from_json(source):
 def build_etree_from_prosemirror(source):
     elem = etree.Element('{http://www.tei-c.org/ns/1.0}body')
     for block in source['content']:
-        if block['type'] == 'main_heading':
+        if block['type'] == 'heading_level_1':
             block_elem = etree.Element('{http://www.tei-c.org/ns/1.0}head')
-            block_elem.attrib['style'] = 'main'
-        elif block['type'] == 'sub_heading':
+            block_elem.attrib['type'] = 'level-1'
+        elif block['type'] == 'heading_level_2':
             block_elem = etree.Element('{http://www.tei-c.org/ns/1.0}head')
-            block_elem.attrib['style'] = 'sub'
+            block_elem.attrib['type'] = 'level-2'
         elif block['type'] == 'paragraph':
             block_elem = etree.Element('{http://www.tei-c.org/ns/1.0}p')
-        elif block['type'] == 'paragraph_no_indent':
-            block_elem = etree.Element('{http://www.tei-c.org/ns/1.0}p')
-            block_elem.attrib['style'] = 'no-indent'
+            if 'attrs' in block and 'no_indent' in block['attrs'] and block['attrs']['no_indent']:
+                block_elem.attrib['style'] = 'no-indent'
         elem.append(block_elem)
         if 'content' in block:
             last_inline = None
             for inline in block['content']:
                 if 'marks' in inline:
-                    last_inline = etree.Element('{http://www.tei-c.org/ns/1.0}span')
-                    last_inline.attrib['style'] = ' '.join([mark['type'].replace('_', '-') for mark in inline['marks']])
-                    last_inline.text = inline['text']
-                    block_elem.append(last_inline)
+                    print(inline['marks'])
+                    if {'type': 'page_break'} in inline['marks']:
+                        last_inline = etree.Element('{http://www.tei-c.org/ns/1.0}pb')
+                        last_inline.attrib['n'] = inline['text']
+                        block_elem.append(last_inline)
+                    else:
+                        last_inline = etree.Element('{http://www.tei-c.org/ns/1.0}span')
+                        last_inline.attrib['style'] = ' '.join([mark['type'].replace('_', '-') for mark in inline['marks'] if mark != 'foreign_language'])
+                        if {'type': 'foreign_language'} in inline['marks']:
+                            last_inline.attrib['type'] = 'foreign-language'
+                        last_inline.text = inline['text']
+                        block_elem.append(last_inline)
                 else:
                     if last_inline is not None:
                         last_inline.tail = inline['text']
