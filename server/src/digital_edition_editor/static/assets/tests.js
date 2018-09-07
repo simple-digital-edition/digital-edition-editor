@@ -4706,7 +4706,7 @@ define('client/tests/lint/app.lint-test', [], function () {
 
   QUnit.test('components/body-editor.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/body-editor.js should pass ESLint\n\n12:5 - Only string, number, symbol, boolean, null, undefined, and function are allowed as default properties (ember/avoid-leaking-state-in-ember-objects)\n19:5 - Only string, number, symbol, boolean, null, undefined, and function are allowed as default properties (ember/avoid-leaking-state-in-ember-objects)');
+    assert.ok(false, 'components/body-editor.js should pass ESLint\n\n197:21 - \'selection\' is assigned a value but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/dropdown-menu-item.js', function (assert) {
@@ -4828,6 +4828,11 @@ define('client/tests/lint/app.lint-test', [], function () {
     assert.expect(1);
     assert.ok(true, 'routes/editor/repository.js should pass ESLint\n\n');
   });
+
+  QUnit.test('utils/prosemirror-editor.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'utils/prosemirror-editor.js should pass ESLint\n\n');
+  });
 });
 define('client/tests/lint/templates.template.lint-test', [], function () {
   'use strict';
@@ -4841,7 +4846,7 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
 
   QUnit.test('client/templates/components/body-editor.hbs', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'client/templates/components/body-editor.hbs should pass TemplateLint.\n\nclient/templates/components/body-editor.hbs\n  6:16  error  Incorrect indentation of htmlAttribute \'role\' beginning at L6:C16. Expected \'role\' to be at L7:C10.  attribute-indentation\n  6:32  error  Incorrect indentation of htmlAttribute \'onchange\' beginning at L6:C32. Expected \'onchange\' to be at L8:C10.  attribute-indentation\n  6:89  error  Incorrect indentation of close bracket \'>\' for the element \'<select>\' beginning at L6:C89. Expected \'<select>\' to be at L7:C8.  attribute-indentation\n  8:20  error  Incorrect indentation of htmlAttribute \'value\' beginning at L8:C20. Expected \'value\' to be at L9:C14.  attribute-indentation\n  8:45  error  Incorrect indentation of htmlAttribute \'selected\' beginning at L8:C45. Expected \'selected\' to be at L9:C14.  attribute-indentation\n  8:95  error  Incorrect indentation of close bracket \'>\' for the element \'<option>\' beginning at L8:C95. Expected \'<option>\' to be at L9:C12.  attribute-indentation\n  8:116  error  Incorrect indentation of close tag \'</option>\' for element \'<option>\' beginning at L8:C116. Expected \'</option>\' to be at L8:C12.  attribute-indentation\n');
+    assert.ok(true, 'client/templates/components/body-editor.hbs should pass TemplateLint.\n\n');
   });
 
   QUnit.test('client/templates/components/dropdown-menu-item.hbs', function (assert) {
@@ -5023,6 +5028,11 @@ define('client/tests/lint/tests.lint-test', [], function () {
     assert.expect(1);
     assert.ok(true, 'unit/routes/editor/repository-test.js should pass ESLint\n\n');
   });
+
+  QUnit.test('unit/utils/prosemirror-editor-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'unit/utils/prosemirror-editor-test.js should pass ESLint\n\n4:56 - \'hooks\' is defined but never used. (no-unused-vars)');
+  });
 });
 define("qunit/index", ["exports"], function (exports) {
   "use strict";
@@ -5198,6 +5208,18 @@ define('client/tests/unit/routes/editor/repository-test', ['qunit', 'ember-qunit
     (0, _qunit.test)('it exists', function (assert) {
       let route = this.owner.lookup('route:editor/repository');
       assert.ok(route);
+    });
+  });
+});
+define('client/tests/unit/utils/prosemirror-editor-test', ['client/utils/prosemirror-editor', 'qunit'], function (_prosemirrorEditor, _qunit) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Utility | prosemirror-editor', function (hooks) {
+
+    // Replace this with your real tests.
+    (0, _qunit.test)('it works', function (assert) {
+      let result = (0, _prosemirrorEditor.default)();
+      assert.ok(result);
     });
   });
 });

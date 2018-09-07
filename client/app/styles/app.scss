@@ -218,7 +218,7 @@ svg.icon {
         h1 + .content-heading {
             margin-top: 1.5rem;
         }
-        .paragraph {
+        p {
             font-size: 11pt;
             margin-bottom: 0;
             margin-top: 1rem;
@@ -227,8 +227,12 @@ svg.icon {
                 margin-top: 0;
             }
         }
-        h1 + .paragraph, h2 + .paragraph {
+        h1 + p, h2 + p {
             margin-top: 3rem !important;
+
+            &.no-indent {
+                margin-top: 0 !important;
+            }
         }
         .page-break {
             font-size: 80%;
@@ -268,6 +272,9 @@ svg.icon {
         }
         .indent-big {
             margin-left: 3rem;
+        }
+        span {
+            background: $light-gray;
         }
     }
 }

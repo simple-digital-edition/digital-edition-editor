@@ -20,7 +20,7 @@
 
   exports.default = App;
 });
-;define("client/components/body-editor", ["exports", "prosemirror-model", "prosemirror-state", "prosemirror-view", "prosemirror-history", "prosemirror-keymap", "prosemirror-commands"], function (exports, _prosemirrorModel, _prosemirrorState, _prosemirrorView, _prosemirrorHistory, _prosemirrorKeymap, _prosemirrorCommands) {
+;define("client/components/body-editor", ["exports", "prosemirror-model", "prosemirror-state", "prosemirror-view", "prosemirror-history", "prosemirror-keymap", "prosemirror-commands", "client/utils/prosemirror-editor"], function (exports, _prosemirrorModel, _prosemirrorState, _prosemirrorView, _prosemirrorHistory, _prosemirrorKeymap, _prosemirrorCommands, _prosemirrorEditor) {
     "use strict";
 
     Object.defineProperty(exports, "__esModule", {
@@ -29,11 +29,7 @@
     exports.default = Ember.Component.extend({
         classNames: ['tei-body-editor', 'full-height'],
 
-        block_types: [{ key: 'heading_level_1', label: 'Heading 1' }, { key: 'heading_level_2', label: 'Heading 2' }, { key: 'paragraph', label: 'Paragraph' }, { key: 'paragraph_no_indent', label: 'Paragraph (no Indent)' }],
-        selected_block_type: null,
-        mark_types: [{ key: '', label: '' }, { key: 'page_break', label: 'Page Number' }, { key: 'foreign_language', label: 'Foreign Language' }, { key: 'letter_sparse', label: 'Sparse Lettering' }, { key: 'sup', label: 'Superscript' }, { key: 'font_size_large', label: 'Large' }, { key: 'font_size_medium', label: 'Medium' }, { key: 'font_size_small', label: 'Small' }],
         menu: undefined,
-        selected_mark_types: null,
 
         didInsertElement() {
             this._super(...arguments);
@@ -62,6 +58,50 @@
                     title: 'Page Break',
                     action: 'select-inline-type'
                 }]
+            }, {
+                id: 'styling',
+                title: 'Styling',
+                items: [{
+                    id: 'font_size',
+                    title: 'Font Size',
+                    items: [{
+                        id: 'default',
+                        title: 'Normal',
+                        action: 'set-font-size'
+                    }, {
+                        id: 'font_size_small',
+                        title: 'Small',
+                        action: 'set-font-size'
+                    }, {
+                        id: 'font_size_medium',
+                        title: 'Medium',
+                        action: 'set-font-size'
+                    }, {
+                        id: 'font_size_large',
+                        title: 'Large',
+                        action: 'set-font-size'
+                    }]
+                }, {
+                    id: 'text_styling',
+                    title: 'Text',
+                    items: [{
+                        id: 'no_indent',
+                        title: 'No indentation',
+                        action: 'toggle-block-attr'
+                    }, {
+                        id: 'sup',
+                        title: 'Superscript',
+                        action: 'toggle-mark'
+                    }, {
+                        id: 'letter_sparse',
+                        title: 'Sparse lettering',
+                        action: 'toggle-mark'
+                    }, {
+                        id: 'foreign_language',
+                        title: 'Foreign Language',
+                        action: 'toggle-mark'
+                    }]
+                }]
             }];
             this.set('menu', menu);
 
@@ -69,7 +109,6 @@
                 nodes: {
                     doc: {
                         content: 'block+'
-
                     },
                     heading_level_1: {
                         group: 'block',
@@ -87,21 +126,16 @@
                         },
                         parseDOM: [{ tag: 'h2' }]
                     },
-                    paragraph_no_indent: {
-                        group: 'block',
-                        content: 'inline*',
-                        toDOM() {
-                            return ['p', { class: 'no-indent' }, 0];
-                        },
-                        parseDOM: [{ tag: 'p.no-indent' }]
-                    },
                     paragraph: {
                         group: 'block',
                         content: 'inline*',
-                        toDOM() {
-                            return ['p', 0];
+                        attrs: { no_indent: false },
+                        toDOM(node) {
+                            return ['p', { class: node.attrs.no_indent ? 'no-indent' : null }, 0];
                         },
-                        parseDOM: [{ tag: 'p' }]
+                        parseDOM: [{ tag: 'p', getAttrs(dom) {
+                                return { no_indent: dom.class && dom.class.indexOf('no-indent') >= 0 };
+                            } }]
                     },
                     text: {
                         group: 'inline',
@@ -109,18 +143,11 @@
                     }
                 },
                 marks: {
-                    page_break: {
-                        inclusive: true,
-                        toDOM() {
-                            return ['span', { class: 'page-break' }, 0];
-                        },
-                        parseDOM: [{ tag: 'span.page-break' }]
-                    },
                     foreign_language: {
                         toDOM() {
-                            return ['span', { class: 'foreign_language' }, 0];
+                            return ['span', { class: 'foreign-language' }, 0];
                         },
-                        parseDOM: [{ tag: 'span.foreign_language' }]
+                        parseDOM: [{ tag: 'span.foreign-language' }]
                     },
                     letter_sparse: {
                         toDOM() {
@@ -151,6 +178,12 @@
                             return ['sup', { class: 'font-size-small' }, 0];
                         },
                         parseDOM: [{ tag: 'span.font-size-small' }]
+                    },
+                    page_break: {
+                        toDOM() {
+                            return ['span', { class: 'page-break' }, 0];
+                        },
+                        parseDOM: [{ tag: 'span.page-break' }]
                     }
                 }
             });
@@ -175,57 +208,45 @@
                 dispatchTransaction(transaction) {
                     let new_state = view.state.apply(transaction);
                     let selection = new_state.selection;
-                    // Calculate which block type is currently selected
-                    component.updateMenuState('block.heading_level_1', { is_active: false });
-                    component.updateMenuState('block.heading_level_2', { is_active: false });
-                    component.updateMenuState('block.paragraph', { is_active: false });
-                    for (let idx = 0; idx < selection.$anchor.path.length; idx++) {
-                        if (typeof selection.$anchor.path[idx] === 'object') {
-                            let node_type = selection.$anchor.path[idx].type;
-                            if (node_type.name !== 'doc' && node_type.isBlock) {
-                                component.set('selected_block_type', node_type.name);
-                                component.updateMenuState('block.' + node_type.name, { is_active: true });
-                            }
+                    // Calculate which block types are currently selected
+                    component.setMenuState('block.heading_level_1', { is_active: false });
+                    component.setMenuState('block.heading_level_2', { is_active: false });
+                    component.setMenuState('block.paragraph', { is_active: false });
+                    component.setMenuState('inline.page_break', { is_active: false });
+                    let blocks = (0, _prosemirrorEditor.getBlockHierarchy)(new_state);
+                    blocks.forEach(node => {
+                        if (node.type.isBlock) {
+                            component.setMenuState('block.' + node.type.name, { is_active: true });
+                            component.setMenuState('block', { title: component.getMenuState('block.' + node.type.name).title });
+                            component.setMenuState('styling.text_styling.no_indent', { is_active: node.attrs && node.attrs.no_indent });
+                        } else {
+                            component.setMenuState('inline.' + node.type.name, { is_active: true });
+                            component.setMenuState('inline', { title: component.getMenuState('inline.' + node.type.name).title });
                         }
-                    }
+                    });
                     // Calculate which marks are currently selected
-                    let selected_marks = [];
-                    if (selection.from === selection.to) {
-                        // Get marks at the current cursor position
-                        if (new_state.doc.nodeAt(selection.from)) {
-                            new_state.doc.nodeAt(selection.from).marks.forEach(mark => {
-                                if (selected_marks.indexOf(mark.type.name) === -1) {
-                                    selected_marks.push(mark.type.name);
-                                }
-                            });
+                    let selected_marks = (0, _prosemirrorEditor.getActiveMarks)(new_state);
+                    component.setMenuState('styling.font_size.default', { is_active: true });
+                    component.setMenuState('styling.font_size.font_size_small', { is_active: false });
+                    component.setMenuState('styling.font_size.font_size_medium', { is_active: false });
+                    component.setMenuState('styling.font_size.font_size_large', { is_active: false });
+                    component.setMenuState('styling.text_styling.sup', { is_active: false });
+                    component.setMenuState('styling.text_styling.letter_sparse', { is_active: false });
+                    component.setMenuState('styling.text_styling.foreign_language', { is_active: false });
+                    component.setMenuState('inline.page_break', { is_active: false });
+                    component.setMenuState('inline', { title: 'Text' });
+                    for (let idx = 0; idx < selected_marks.length; idx++) {
+                        let mark = selected_marks[idx];
+                        if (mark.indexOf('font_size_') === 0) {
+                            component.setMenuState('styling.font_size.default', { is_active: false });
+                            component.setMenuState('styling.font_size.' + mark, { is_active: true });
+                        } else if (mark === 'page_break') {
+                            component.setMenuState('inline.page_break', { is_active: true });
+                            component.setMenuState('inline', { title: 'Page Break' });
+                        } else {
+                            component.setMenuState('styling.text_styling.' + mark, { is_active: true });
                         }
-                        // Add marks from the previous cursor position if they are inclusive
-                        if (new_state.doc.nodeAt(selection.from - 1)) {
-                            new_state.doc.nodeAt(selection.from - 1).marks.forEach(mark => {
-                                if (mark.type.spec.inclusive && selected_marks.indexOf(mark.type.name) === -1) {
-                                    selected_marks.push(mark.type.name);
-                                }
-                            });
-                        }
-                        // Add stored marks
-                        if (new_state.storedMarks) {
-                            new_state.storedMarks.forEach(mark => {
-                                if (selected_marks.indexOf(mark.type.name) === -1) {
-                                    selected_marks.push(mark.type.name);
-                                }
-                            });
-                        }
-                    } else {
-                        // Add all marks between the selection markers
-                        new_state.doc.nodesBetween(selection.from, selection.to, node => {
-                            node.marks.forEach(mark => {
-                                if (selected_marks.indexOf(mark.type.name) === -1) {
-                                    selected_marks.push(mark.type.name);
-                                }
-                            });
-                        });
                     }
-                    component.set('selected_mark_types', selected_marks);
                     view.updateState(new_state);
                     component.set('body', new_state.doc.toJSON());
                 }
@@ -237,7 +258,7 @@
             this.get('editor-view').destroy();
         },
 
-        updateMenuState(path, attrs) {
+        setMenuState(path, attrs) {
             let menu = this.get('menu');
             function recursive_find(items, subpath) {
                 let found = false;
@@ -271,28 +292,72 @@
             }
         },
 
+        getMenuState(path) {
+            let menu = this.get('menu');
+            function recursive_find(items, subpath) {
+                let found = false;
+                for (let idx = 0; idx < items.length; idx++) {
+                    if (items[idx].id === subpath[0]) {
+                        found = true;
+                        if (subpath.length > 1 && items[idx].items) {
+                            let tmp = recursive_find(items[idx].items, subpath.slice(1));
+                            if (tmp !== null) {
+                                tmp.splice(0, 0, idx, 'items');
+                            }
+                            return tmp;
+                        } else if (subpath.length === 1) {
+                            return [idx];
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+                if (!found) {
+                    return null;
+                }
+            }
+            let get_path = recursive_find(menu, path.split('.'));
+            if (get_path !== null) {
+                get_path = get_path.join('.');
+                return menu.get(get_path);
+            } else {
+                return null;
+            }
+        },
+
         actions: {
             'menu-action'(action, param) {
+                let view = this.get('editor-view');
+                let schema = this.get('editor-schema');
                 if (action === 'select-block-type') {
-                    let view = this.get('editor-view');
-                    let schema = this.get('editor-schema');
                     view.focus();
-                    (0, _prosemirrorCommands.setBlockType)(schema.nodes[param])(view.state, view.dispatch);
+                    (0, _prosemirrorCommands.setBlockType)(schema.nodes[param], { no_indent: false })(view.state, view.dispatch);
+                } else if (action === 'toggle-mark') {
+                    view.focus();
+                    (0, _prosemirrorCommands.toggleMark)(schema.marks[param])(view.state, view.dispatch);
+                } else if (action === 'set-font-size') {
+                    view.focus();
+                    let marks = (0, _prosemirrorEditor.getActiveMarks)(view.state);
+                    marks.forEach(mark => {
+                        if (mark.indexOf('font_size_') === 0) {
+                            (0, _prosemirrorCommands.toggleMark)(schema.marks[mark])(view.state, view.dispatch);
+                        }
+                    });
+                    if (param.indexOf('font_size_') === 0) {
+                        (0, _prosemirrorCommands.toggleMark)(schema.marks[param])(view.state, view.dispatch);
+                    }
+                } else if (action === 'toggle-block-attr') {
+                    view.focus();
+                    let { $from } = view.state.selection;
+                    if ($from.parent.type.name === 'paragraph') {
+                        let transaction = view.state.tr;
+                        transaction.setBlockType($from.pos, $from.parent.nodeSize, schema.nodes.paragraph, { no_indent: !$from.parent.attrs.no_indent });
+                        view.dispatch(transaction);
+                    }
+                } else if (action === 'select-inline-type') {
+                    view.focus();
+                    (0, _prosemirrorCommands.toggleMark)(schema.marks[param])(view.state, view.dispatch);
                 }
-            },
-            'set-block-type'(value) {
-                this.set('selected_block_type', value);
-                let view = this.get('editor-view');
-                let schema = this.get('editor-schema');
-                view.focus();
-                (0, _prosemirrorCommands.setBlockType)(schema.nodes[value])(view.state, view.dispatch);
-            },
-            'toggle-mark'(value) {
-                this.set('selected_inline_type', value);
-                let view = this.get('editor-view');
-                let schema = this.get('editor-schema');
-                view.focus();
-                (0, _prosemirrorCommands.toggleMark)(schema.marks[value])(view.state, view.dispatch);
             }
         }
     });
@@ -1258,7 +1323,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "66zlD2BQ", "block": "{\"symbols\":[\"mark_type\",\"block_type\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[1,[27,\"dropdown-menu\",null,[[\"items\",\"onaction\"],[[23,[\"menu\"]],[27,\"action\",[[22,0,[]],\"menu-action\"],null]]]],false],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"menu\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n      \"],[7,\"li\"],[9],[0,\"\\n        \"],[7,\"select\"],[11,\"role\",\"menuitem\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-type\"],[[\"value\"],[\"target.value\"]]]],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"block_types\"]]],null,{\"statements\":[[0,\"            \"],[7,\"option\"],[12,\"value\",[22,2,[\"key\"]]],[12,\"selected\",[27,\"eq\",[[22,2,[\"key\"]],[23,[\"selected_block_type\"]]],null]],[9],[1,[22,2,[\"label\"]],false],[10],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"],[4,\"each\",[[23,[\"mark_types\"]]],null,{\"statements\":[[4,\"if\",[[27,\"array-contains\",[[23,[\"selected_mark_types\"]],[22,1,[\"key\"]]],null]],null,{\"statements\":[[0,\"          \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"\"],[3,\"action\",[[22,0,[]],\"toggle-mark\",[22,1,[\"key\"]]]],[9],[1,[22,1,[\"label\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "hV7i93fy", "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[1,[27,\"dropdown-menu\",null,[[\"items\",\"onaction\"],[[23,[\"menu\"]],[27,\"action\",[[22,0,[]],\"menu-action\"],null]]]],false],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
 });
 ;define("client/templates/components/dropdown-menu-item", ["exports"], function (exports) {
   "use strict";
@@ -1348,6 +1413,75 @@
   });
   exports.default = Ember.HTMLBars.template({ "id": "/b8tmMLt", "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"title\"]],false],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repository.hbs" } });
 });
+;define('client/utils/prosemirror-editor', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.getActiveMarks = getActiveMarks;
+    exports.getBlockHierarchy = getBlockHierarchy;
+    /**
+     * Returns a list of active mark names
+     */
+    function getActiveMarks(state) {
+        let selection = state.selection;
+        let active_marks = [];
+        if (selection.from === selection.to) {
+            // Get marks at the current cursor position
+            if (state.doc.nodeAt(selection.from)) {
+                state.doc.nodeAt(selection.from).marks.forEach(mark => {
+                    if (active_marks.indexOf(mark.type.name) === -1) {
+                        active_marks.push(mark.type.name);
+                    }
+                });
+            }
+            // Add marks from the previous cursor position if they are inclusive
+            if (state.doc.nodeAt(selection.from - 1)) {
+                state.doc.nodeAt(selection.from - 1).marks.forEach(mark => {
+                    if (mark.type.spec.inclusive && active_marks.indexOf(mark.type.name) === -1) {
+                        active_marks.push(mark.type.name);
+                    }
+                });
+            }
+            // Add stored marks
+            if (state.storedMarks) {
+                state.storedMarks.forEach(mark => {
+                    if (active_marks.indexOf(mark.type.name) === -1) {
+                        active_marks.push(mark.type.name);
+                    }
+                });
+            }
+        } else {
+            // Add all marks between the selection markers
+            state.doc.nodesBetween(selection.from, selection.to, node => {
+                node.marks.forEach(mark => {
+                    if (active_marks.indexOf(mark.type.name) === -1) {
+                        active_marks.push(mark.type.name);
+                    }
+                });
+            });
+        }
+        return active_marks;
+    }
+
+    /**
+     * Gets a list of nodes from the current selection.
+     */
+    function getBlockHierarchy(state) {
+        let selection = state.selection;
+        let blocks = [];
+        for (let idx = 0; idx < selection.$anchor.path.length; idx++) {
+            if (typeof selection.$anchor.path[idx] === 'object') {
+                let node_type = selection.$anchor.path[idx].type;
+                if (node_type.name !== 'doc') {
+                    blocks.splice(0, 0, selection.$anchor.path[idx]);
+                }
+            }
+        }
+        return blocks;
+    }
+});
 ;
 
 ;define('client/config/environment', [], function() {
@@ -1371,7 +1505,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+43b7b951"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+8d909ef2"});
           }
         
 //# sourceMappingURL=client.map

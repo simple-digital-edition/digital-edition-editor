@@ -59,10 +59,12 @@ def file_to_json(file):
                                                          'text': element.text})
                     elif element.tag == '{http://www.tei-c.org/ns/1.0}p':
                         if 'style' in element.attrib and 'no-indent' in element.attrib['style']:
-                            stack.append({'type': 'paragraph_no_indent',
+                            stack.append({'type': 'paragraph',
+                                          'attrs': {'no_indent': True},
                                           'content': []})
                         else:
                             stack.append({'type': 'paragraph',
+                                          'attrs': {'no_indent': False},
                                           'content': []})
                         if element.text:
                             stack[-1]['content'].append({'type': 'text',

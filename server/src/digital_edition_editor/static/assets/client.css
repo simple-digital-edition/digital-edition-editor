@@ -131,16 +131,19 @@ svg.icon.small {
 .tei-body-editor .editor h1 + .content-heading {
   margin-top: 1.5rem;
 }
-.tei-body-editor .editor .paragraph {
+.tei-body-editor .editor p {
   font-size: 11pt;
   margin-bottom: 0;
   margin-top: 1rem;
 }
-.tei-body-editor .editor .paragraph.no-indent {
+.tei-body-editor .editor p.no-indent {
   margin-top: 0;
 }
-.tei-body-editor .editor h1 + .paragraph, .tei-body-editor .editor h2 + .paragraph {
+.tei-body-editor .editor h1 + p, .tei-body-editor .editor h2 + p {
   margin-top: 3rem !important;
+}
+.tei-body-editor .editor h1 + p.no-indent, .tei-body-editor .editor h2 + p.no-indent {
+  margin-top: 0 !important;
 }
 .tei-body-editor .editor .page-break {
   font-size: 80%;
@@ -179,6 +182,9 @@ svg.icon.small {
 }
 .tei-body-editor .editor .indent-big {
   margin-left: 3rem;
+}
+.tei-body-editor .editor span {
+  background: #e6e6e6;
 }
 
 /*# sourceMappingURL=client.css.map */
