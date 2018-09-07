@@ -16,8 +16,10 @@ export function getActiveMarks(state) {
         // Add marks from the previous cursor position if they are inclusive
         if(state.doc.nodeAt(selection.from - 1)) {
             state.doc.nodeAt(selection.from - 1).marks.forEach((mark) => {
-                if(mark.type.spec.inclusive && active_marks.indexOf(mark.type.name) === -1) {
-                    active_marks.push(mark.type.name)
+                if(mark.type.spec.inclusive || mark.type.spec.inclusive === undefined) {
+                    if(active_marks.indexOf(mark.type.name) === -1) {
+                        active_marks.push(mark.type.name)
+                    }
                 }
             })
         }
