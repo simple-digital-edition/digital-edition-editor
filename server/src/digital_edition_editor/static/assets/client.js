@@ -20,6 +20,37 @@
 
   exports.default = App;
 });
+;define('client/authenticators/local', ['exports', 'ember-simple-auth/authenticators/base'], function (exports, _base) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _base.default.extend({
+        store: Ember.inject.service(),
+
+        restore(data) {},
+
+        authenticate(username, password) {
+            let authenticator = this;
+            return new Ember.RSVP.Promise((resolve, reject) => {
+                authenticator.store.queryRecord('user', {
+                    filter: {
+                        username: username,
+                        password: password
+                    }
+                }).then(data => {
+                    console.log(data);
+                    resolve();
+                }).catch(data => {
+                    reject('Username or password incorrect or unknown');
+                });
+            });
+        },
+
+        invalidate(data) {}
+    });
+});
 ;define("client/components/body-editor", ["exports", "prosemirror-model", "prosemirror-state", "prosemirror-view", "prosemirror-history", "prosemirror-keymap", "prosemirror-commands", "client/utils/prosemirror-editor"], function (exports, _prosemirrorModel, _prosemirrorState, _prosemirrorView, _prosemirrorHistory, _prosemirrorKeymap, _prosemirrorCommands, _prosemirrorEditor) {
     "use strict";
 
@@ -543,6 +574,7 @@
         selected_repository: null,
         selected_file: null,
         file_component: Ember.inject.controller('editor.file'),
+        session: Ember.inject.service(),
 
         actions: {
             select_repository: function (repository_id) {
@@ -630,6 +662,39 @@
         actions: {
             select_file: function (file_id) {
                 this.transitionToRoute('editor.repository.file', file_id);
+            }
+        }
+    });
+});
+;define('client/controllers/users/login', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Controller.extend({
+        session: Ember.inject.service(),
+        username: 'mhall',
+        password: 'test',
+
+        actions: {
+            login() {
+                let username = this.get('username');
+                let password = this.get('password');
+                this.set('errorMessage', null);
+                if (username && password) {
+                    this.get('session').authenticate('authenticator:local', username, password).catch(reason => {
+                        this.set('errorMessage', reason.error || reason);
+                    });
+                } else {
+                    if (!username && !password) {
+                        this.set('errorMessage', 'Please provide a username and password');
+                    } else if (!username) {
+                        this.set('errorMessage', 'Please provide a username');
+                    } else {
+                        this.set('errorMessage', 'Please provide a password');
+                    }
+                }
             }
         }
     });
@@ -1093,6 +1158,26 @@
     initialize: _setupContainer.default
   };
 });
+;define('client/initializers/ember-simple-auth', ['exports', 'client/config/environment', 'ember-simple-auth/configuration', 'ember-simple-auth/initializers/setup-session', 'ember-simple-auth/initializers/setup-session-service', 'ember-simple-auth/initializers/setup-session-restoration'], function (exports, _environment, _configuration, _setupSession, _setupSessionService, _setupSessionRestoration) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = {
+    name: 'ember-simple-auth',
+
+    initialize(registry) {
+      const config = _environment.default['ember-simple-auth'] || {};
+      config.rootURL = _environment.default.rootURL || _environment.default.baseURL;
+      _configuration.default.load(config);
+
+      (0, _setupSession.default)(registry);
+      (0, _setupSessionService.default)(registry);
+      (0, _setupSessionRestoration.default)(registry);
+    }
+  };
+});
 ;define('client/initializers/export-application-global', ['exports', 'client/config/environment'], function (exports, _environment) {
   'use strict';
 
@@ -1154,6 +1239,18 @@
     initialize: _initializeStoreService.default
   };
 });
+;define('client/instance-initializers/ember-simple-auth', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = {
+    name: 'ember-simple-auth',
+
+    initialize() {}
+  };
+});
 ;define('client/models/file', ['exports', 'ember-data'], function (exports, _emberData) {
     'use strict';
 
@@ -1188,6 +1285,17 @@
         tei_files: _emberData.default.attr()
     });
 });
+;define('client/models/user', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _emberData.default.Model.extend({
+        username: _emberData.default.attr(),
+        token: _emberData.default.attr()
+    });
+});
 ;define('client/resolver', ['exports', 'ember-resolver'], function (exports, _emberResolver) {
   'use strict';
 
@@ -1216,9 +1324,26 @@
       this.route('files', { path: 'repositories/:rid/files' });
       this.route('file', { path: 'repositories/:rid/files/:fid' });
     });
+
+    this.route('users', function () {
+      this.route('login');
+    });
   });
 
   exports.default = Router;
+});
+;define('client/routes/application', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+  const { Route } = Ember;
+
+  // Ensure the application route exists for ember-simple-auth's `setup-session-restoration` initializer
+  exports.default = Route.extend();
 });
 ;define('client/routes/editor', ['exports'], function (exports) {
   'use strict';
@@ -1295,6 +1420,14 @@
         }
     });
 });
+;define('client/routes/users/login', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({});
+});
 ;define('client/services/ajax', ['exports', 'ember-ajax/services/ajax'], function (exports, _ajax) {
   'use strict';
 
@@ -1307,6 +1440,30 @@
       return _ajax.default;
     }
   });
+});
+;define('client/services/cookies', ['exports', 'ember-cookies/services/cookies'], function (exports, _cookies) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _cookies.default;
+});
+;define('client/services/session', ['exports', 'ember-simple-auth/services/session'], function (exports, _session) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _session.default;
+});
+;define('client/session-stores/application', ['exports', 'ember-simple-auth/session-stores/adaptive'], function (exports, _adaptive) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _adaptive.default.extend();
 });
 ;define("client/templates/application", ["exports"], function (exports) {
   "use strict";
@@ -1378,7 +1535,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "tQCG7FRI", "block": "{\"symbols\":[],\"statements\":[[7,\"main\"],[11,\"class\",\"grid-y grid-frame\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"top-bar\"],[9],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"top-bar-left\"],[9],[0,\"\\n        \"],[7,\"ul\"],[11,\"class\",\"menu dropdown\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n          \"],[7,\"li\"],[11,\"class\",\"menu-text\"],[9],[0,\"TEI Editor\"],[10],[0,\"\\n          \"],[7,\"li\"],[11,\"title\",\"Open a project from the cloud\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n\"],[4,\"link-to\",[\"editor.repositories\"],null,{\"statements\":[[0,\"              \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                \"],[7,\"path\"],[11,\"d\",\"M13,18H14A1,1 0 0,1 15,19H22V21H15A1,1 0 0,1 14,22H10A1,1 0 0,1 9,21H2V19H9A1,1 0 0,1 10,18H11V16H4A1,1 0 0,1 3,15V11A1,1 0 0,1 4,10H20A1,1 0 0,1 21,11V15A1,1 0 0,1 20,16H13V18M4,2H20A1,1 0 0,1 21,3V7A1,1 0 0,1 20,8H4A1,1 0 0,1 3,7V3A1,1 0 0,1 4,2M9,6H10V4H9V6M9,14H10V12H9V14M5,4V6H7V4H5M5,12V14H7V12H5Z\"],[9],[10],[0,\"\\n              \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_repository\"]]],null,{\"statements\":[[0,\"            \"],[7,\"li\"],[11,\"class\",\"menu-text\"],[9],[1,[23,[\"selected_repository\",\"title\"]],false],[10],[0,\"\\n            \"],[7,\"li\"],[11,\"title\",\"Synchronise the project with the cloud\"],[11,\"role\",\"none\"],[9],[0,\"\\n              \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n                \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                  \"],[7,\"path\"],[11,\"d\",\"M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z\"],[9],[10],[0,\"\\n                \"],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n            \"],[7,\"li\"],[11,\"class\",\"separator\"],[9],[10],[0,\"\\n            \"],[7,\"li\"],[11,\"title\",\"Open a file for editing\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n\"],[4,\"link-to\",[\"editor.files\",[23,[\"selected_repository\",\"id\"]]],null,{\"statements\":[[0,\"                \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                  \"],[7,\"path\"],[11,\"d\",\"M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z\"],[9],[10],[0,\"\\n                \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_file\"]]],null,{\"statements\":[[0,\"              \"],[7,\"li\"],[11,\"class\",\"menu-text\"],[9],[1,[23,[\"selected_file\",\"basename\"]],false],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_file\",\"hasDirtyAttributes\"]]],null,{\"statements\":[[0,\"                \"],[7,\"li\"],[11,\"title\",\"Save changes to the file\"],[11,\"role\",\"none\"],[9],[0,\"\\n                  \"],[7,\"a\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"save_file\"]],[9],[0,\"\\n                    \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                      \"],[7,\"path\"],[11,\"d\",\"M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z\"],[9],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n                \"],[10],[0,\"\\n                \"],[7,\"li\"],[11,\"title\",\"Discard changes to the file\"],[11,\"role\",\"none\"],[9],[0,\"\\n                  \"],[7,\"a\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"reset_file\"]],[9],[0,\"\\n                    \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                      \"],[7,\"path\"],[11,\"d\",\"M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z\"],[9],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n                \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[7,\"li\"],[11,\"class\",\"menu-icon-disabled\"],[9],[0,\"\\n                  \"],[7,\"span\"],[9],[0,\"\\n                    \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                      \"],[7,\"path\"],[11,\"d\",\"M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z\"],[9],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n                \"],[10],[0,\"\\n                \"],[7,\"li\"],[11,\"class\",\"menu-icon-disabled\"],[9],[0,\"\\n                  \"],[7,\"span\"],[9],[0,\"\\n                    \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                      \"],[7,\"path\"],[11,\"d\",\"M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z\"],[9],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n                \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[]},null]],\"parameters\":[]},null],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"top-bar-right\"],[9],[0,\"\\n        \"],[7,\"ul\"],[11,\"class\",\"menu\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n          \"],[7,\"li\"],[11,\"role\",\"none\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"title\",\"Log in\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n              \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                \"],[7,\"path\"],[11,\"d\",\"M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z\"],[9],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n          \"],[7,\"li\"],[11,\"role\",\"none\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"title\",\"Log out\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n              \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                \"],[7,\"path\"],[11,\"d\",\"M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z\"],[9],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"article\"],[11,\"class\",\"cell auto cell-block-container grid-padding-x\"],[9],[0,\"\\n    \"],[1,[21,\"outlet\"],false],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "KQNHAJMt", "block": "{\"symbols\":[],\"statements\":[[7,\"main\"],[11,\"class\",\"grid-y grid-frame\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"top-bar\"],[9],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"top-bar-left\"],[9],[0,\"\\n        \"],[7,\"ul\"],[11,\"class\",\"menu dropdown\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n          \"],[7,\"li\"],[11,\"class\",\"menu-text\"],[9],[0,\"TEI Editor\"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"session\",\"isAuthenticated\"]]],null,{\"statements\":[[0,\"            \"],[7,\"li\"],[11,\"title\",\"Open a project from the cloud\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n\"],[4,\"link-to\",[\"editor.repositories\"],null,{\"statements\":[[0,\"                \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                  \"],[7,\"path\"],[11,\"d\",\"M13,18H14A1,1 0 0,1 15,19H22V21H15A1,1 0 0,1 14,22H10A1,1 0 0,1 9,21H2V19H9A1,1 0 0,1 10,18H11V16H4A1,1 0 0,1 3,15V11A1,1 0 0,1 4,10H20A1,1 0 0,1 21,11V15A1,1 0 0,1 20,16H13V18M4,2H20A1,1 0 0,1 21,3V7A1,1 0 0,1 20,8H4A1,1 0 0,1 3,7V3A1,1 0 0,1 4,2M9,6H10V4H9V6M9,14H10V12H9V14M5,4V6H7V4H5M5,12V14H7V12H5Z\"],[9],[10],[0,\"\\n                \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_repository\"]]],null,{\"statements\":[[0,\"              \"],[7,\"li\"],[11,\"class\",\"menu-text\"],[9],[1,[23,[\"selected_repository\",\"title\"]],false],[10],[0,\"\\n              \"],[7,\"li\"],[11,\"title\",\"Synchronise the project with the cloud\"],[11,\"role\",\"none\"],[9],[0,\"\\n                \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n                  \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                    \"],[7,\"path\"],[11,\"d\",\"M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z\"],[9],[10],[0,\"\\n                  \"],[10],[0,\"\\n                \"],[10],[0,\"\\n              \"],[10],[0,\"\\n              \"],[7,\"li\"],[11,\"class\",\"separator\"],[9],[10],[0,\"\\n              \"],[7,\"li\"],[11,\"title\",\"Open a file for editing\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n\"],[4,\"link-to\",[\"editor.files\",[23,[\"selected_repository\",\"id\"]]],null,{\"statements\":[[0,\"                  \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                    \"],[7,\"path\"],[11,\"d\",\"M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z\"],[9],[10],[0,\"\\n                  \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_file\"]]],null,{\"statements\":[[0,\"                \"],[7,\"li\"],[11,\"class\",\"menu-text\"],[9],[1,[23,[\"selected_file\",\"basename\"]],false],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_file\",\"hasDirtyAttributes\"]]],null,{\"statements\":[[0,\"                  \"],[7,\"li\"],[11,\"title\",\"Save changes to the file\"],[11,\"role\",\"none\"],[9],[0,\"\\n                    \"],[7,\"a\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"save_file\"]],[9],[0,\"\\n                      \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                        \"],[7,\"path\"],[11,\"d\",\"M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z\"],[9],[10],[0,\"\\n                      \"],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n                  \"],[7,\"li\"],[11,\"title\",\"Discard changes to the file\"],[11,\"role\",\"none\"],[9],[0,\"\\n                    \"],[7,\"a\"],[11,\"role\",\"menuitem\"],[3,\"action\",[[22,0,[]],\"reset_file\"]],[9],[0,\"\\n                      \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                        \"],[7,\"path\"],[11,\"d\",\"M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z\"],[9],[10],[0,\"\\n                      \"],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                  \"],[7,\"li\"],[11,\"class\",\"menu-icon-disabled\"],[9],[0,\"\\n                    \"],[7,\"span\"],[9],[0,\"\\n                      \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                        \"],[7,\"path\"],[11,\"d\",\"M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z\"],[9],[10],[0,\"\\n                      \"],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n                  \"],[7,\"li\"],[11,\"class\",\"menu-icon-disabled\"],[9],[0,\"\\n                    \"],[7,\"span\"],[9],[0,\"\\n                      \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                        \"],[7,\"path\"],[11,\"d\",\"M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M12.16,14.31C10.6,14.31 9.19,14.89 8.11,15.83L6,13.72V19H11.28L9.15,16.88C9.97,16.2 11,15.78 12.16,15.78C14.23,15.78 16,17.13 16.61,19L18,18.54C17.19,16.09 14.88,14.31 12.16,14.31Z\"],[9],[10],[0,\"\\n                      \"],[10],[0,\"\\n                    \"],[10],[0,\"\\n                  \"],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[]},null]],\"parameters\":[]},null]],\"parameters\":[]},null],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"top-bar-right\"],[9],[0,\"\\n        \"],[7,\"ul\"],[11,\"class\",\"menu\"],[11,\"role\",\"menubar\"],[9],[0,\"\\n\"],[4,\"if\",[[23,[\"session\",\"isAuthenticated\"]]],null,{\"statements\":[[0,\"            \"],[7,\"li\"],[11,\"role\",\"none\"],[9],[0,\"\\n              \"],[7,\"a\"],[11,\"title\",\"Log out\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n                \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                  \"],[7,\"path\"],[11,\"d\",\"M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z\"],[9],[10],[0,\"\\n                \"],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"            \"],[7,\"li\"],[11,\"role\",\"menuitem\"],[9],[0,\"\\n\"],[4,\"link-to\",[\"users.login\"],null,{\"statements\":[[0,\"                \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon\"],[9],[0,\"\\n                  \"],[7,\"path\"],[11,\"d\",\"M10,17.25V14H3V10H10V6.75L15.25,12L10,17.25M8,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H8A2,2 0 0,1 6,20V16H8V20H17V4H8V8H6V4A2,2 0 0,1 8,2Z\"],[9],[10],[0,\"\\n                \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"article\"],[11,\"class\",\"cell auto cell-block-container grid-padding-x\"],[9],[0,\"\\n    \"],[1,[21,\"outlet\"],false],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor.hbs" } });
 });
 ;define("client/templates/editor/file", ["exports"], function (exports) {
   "use strict";
@@ -1411,6 +1568,14 @@
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "/b8tmMLt", "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"title\"]],false],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repository.hbs" } });
+});
+;define("client/templates/users/login", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "uU1PGlGW", "block": "{\"symbols\":[],\"statements\":[[7,\"form\"],[11,\"class\",\"grid-container\"],[3,\"action\",[[22,0,[]],\"login\"],[[\"on\"],[\"submit\"]]],[9],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"grid-x grid-padding-x\"],[9],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell small-12\"],[9],[0,\"\\n      \"],[7,\"h1\"],[9],[0,\"Login\"],[10],[0,\"\\n    \"],[10],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell small-12 medium-6 large-4 large-offset-2\"],[9],[0,\"\\n      \"],[7,\"label\"],[9],[0,\"\\n        Username\\n        \"],[1,[27,\"input\",null,[[\"id\",\"placeholder\",\"value\"],[\"username\",\"Enter your username\",[23,[\"username\"]]]]],false],[0,\"\\n\"],[4,\"if\",[[23,[\"errorMessage\"]]],null,{\"statements\":[[0,\"          \"],[7,\"span\"],[11,\"class\",\"form-error is-visible\"],[9],[0,\"\\n            \"],[1,[21,\"errorMessage\"],false],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell small-12 medium-6 large-4\"],[9],[0,\"\\n      \"],[7,\"label\"],[9],[0,\"\\n        Password\\n        \"],[1,[27,\"input\",null,[[\"id\",\"placeholder\",\"type\",\"value\"],[\"password\",\"Enter your password\",\"password\",[23,[\"password\"]]]]],false],[0,\"\\n\"],[4,\"if\",[[23,[\"errorMessage\"]]],null,{\"statements\":[[0,\"          \"],[7,\"span\"],[11,\"class\",\"form-error is-visible\"],[9],[0,\"\\n            \"],[1,[21,\"errorMessage\"],false],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell small-12 large-8 large-offset-2 text-right\"],[9],[0,\"\\n      \"],[4,\"link-to\",[\"editor\"],[[\"class\"],[\"button secondary\"]],{\"statements\":[[0,\"Don't Login\"]],\"parameters\":[]},null],[0,\"\\n      \"],[7,\"button\"],[11,\"class\",\"button\"],[11,\"type\",\"submit\"],[9],[0,\"Login\"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/users/login.hbs" } });
 });
 ;define('client/utils/prosemirror-editor', ['exports'], function (exports) {
     'use strict';
@@ -1506,7 +1671,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+148cf67e"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+99060bb9"});
           }
         
 //# sourceMappingURL=client.map

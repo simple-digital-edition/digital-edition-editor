@@ -1,0 +1,33 @@
+<form {{action 'login' on='submit'}} class="grid-container">
+  <div class="grid-x grid-padding-x">
+    <div class="cell small-12">
+      <h1>Login</h1>
+    </div>
+    <div class="cell small-12 medium-6 large-4 large-offset-2">
+      <label>
+        Username
+        {{input id="username" placeholder="Enter your username" value=username}}
+        {{#if errorMessage}}
+          <span class="form-error is-visible">
+            {{errorMessage}}
+          </span>
+        {{/if}}
+      </label>
+    </div>
+    <div class="cell small-12 medium-6 large-4">
+      <label>
+        Password
+        {{input id="password" placeholder="Enter your password" type="password" value=password}}
+        {{#if errorMessage}}
+          <span class="form-error is-visible">
+            {{errorMessage}}
+          </span>
+        {{/if}}
+      </label>
+    </div>
+    <div class="cell small-12 large-8 large-offset-2 text-right">
+      {{#link-to 'editor' class="button secondary"}}Don't Login{{/link-to}}
+      <button type="submit" class="button">Login</button>
+    </div>
+  </div>
+</form>

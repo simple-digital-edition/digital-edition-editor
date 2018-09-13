@@ -13,6 +13,10 @@ Router.map(function() {
     this.route('files', {path: 'repositories/:rid/files'});
     this.route('file', {path: 'repositories/:rid/files/:fid'});
   });
+
+  this.route('users', function() {
+    this.route('login');
+  });
 });
 
 export default Router;

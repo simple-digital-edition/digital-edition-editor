@@ -11205,6 +11205,23 @@ define('ember-cli-test-loader/test-support/index', ['exports'], function (export
   }exports.default = TestLoader;
   ;
 });
+define('ember-cookies/clear-all-cookies', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  exports.default = function () {
+    let cookies = document.cookie.split(';');
+
+    cookies.forEach(cookie => {
+      let cookieName = cookie.split('=')[0];
+
+      document.cookie = `${cookieName}=; expires=${new Date(0).toUTCString()}`;
+    });
+  };
+});
 define('ember-qunit/adapter', ['exports', 'qunit', '@ember/test-helpers/has-ember-version'], function (exports, _qunit, _hasEmberVersion) {
   'use strict';
 
@@ -11829,6 +11846,72 @@ define('ember-qunit/test-loader', ['exports', 'qunit', 'ember-cli-test-loader/te
    */
   function loadTests() {
     new TestLoader().loadModules();
+  }
+});
+define('ember-simple-auth/test-support/index', ['exports', '@ember/test-helpers', 'ember-simple-auth/authenticators/test'], function (exports, _testHelpers, _test) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.authenticateSession = authenticateSession;
+  exports.currentSession = currentSession;
+  exports.invalidateSession = invalidateSession;
+
+
+  const SESSION_SERVICE_KEY = 'service:session';
+  const TEST_CONTAINER_KEY = 'authenticator:test';
+
+  function ensureAuthenticator(owner) {
+    const authenticator = owner.lookup(TEST_CONTAINER_KEY);
+    if (!authenticator) {
+      owner.register(TEST_CONTAINER_KEY, _test.default);
+    }
+  }
+
+  /**
+   * Authenticates the session.
+   *
+   * @param {Object} sessionData Optional argument used to mock an authenticator
+   * response (e.g. a token or user).
+   * @return {Promise}
+   * @public
+   */
+  function authenticateSession(sessionData) {
+    const { owner } = (0, _testHelpers.getContext)();
+    const session = owner.lookup(SESSION_SERVICE_KEY);
+    ensureAuthenticator(owner);
+    return session.authenticate(TEST_CONTAINER_KEY, sessionData).then(() => {
+      return (0, _testHelpers.settled)();
+    });
+  }
+
+  /**
+   * Returns the current session.
+   *
+   * @return {Object} a session service.
+   * @public
+   */
+  function currentSession() {
+    const { owner } = (0, _testHelpers.getContext)();
+    return owner.lookup(SESSION_SERVICE_KEY);
+  }
+
+  /**
+   * Invalidates the session.
+   *
+   * @return {Promise}
+   * @public
+   */
+  function invalidateSession() {
+    const { owner } = (0, _testHelpers.getContext)();
+    const session = owner.lookup(SESSION_SERVICE_KEY);
+    const isAuthenticated = Ember.get(session, 'isAuthenticated');
+    return Ember.RSVP.resolve().then(() => {
+      if (isAuthenticated) {
+        return session.invalidate();
+      }
+    }).then(() => (0, _testHelpers.settled)());
   }
 });
 define('ember-test-helpers/has-ember-version', ['exports', '@ember/test-helpers/has-ember-version'], function (exports, _hasEmberVersion) {
@@ -13233,19 +13316,19 @@ var __ember_auto_import__ =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./tmp/ember_auto_import_webpack-staging_dir-IhnV78ka.tmp/tests.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./tmp/ember_auto_import_webpack-staging_dir-QPKHQBin.tmp/tests.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./tmp/ember_auto_import_webpack-staging_dir-IhnV78ka.tmp/tests.js":
+/***/ "./tmp/ember_auto_import_webpack-staging_dir-QPKHQBin.tmp/tests.js":
 /*!*************************************************************************!*\
-  !*** ./tmp/ember_auto_import_webpack-staging_dir-IhnV78ka.tmp/tests.js ***!
+  !*** ./tmp/ember_auto_import_webpack-staging_dir-QPKHQBin.tmp/tests.js ***!
   \*************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("\nif (typeof document !== 'undefined') {\n  __webpack_require__.p = (function(){\n    var scripts = document.querySelectorAll('script');\n    return scripts[scripts.length - 1].src.replace(/\\/[^/]*$/, '/');\n  })();\n}\n\nmodule.exports = (function(){\n  var w = window;\n  var d = w.define;\n  var r = w.require;\n  w.emberAutoImportDynamic = function(specifier) {\n    return r('_eai_dyn_' + specifier);\n  };\n})();\n\n\n//# sourceURL=webpack://__ember_auto_import__/./tmp/ember_auto_import_webpack-staging_dir-IhnV78ka.tmp/tests.js?");
+eval("\nif (typeof document !== 'undefined') {\n  __webpack_require__.p = (function(){\n    var scripts = document.querySelectorAll('script');\n    return scripts[scripts.length - 1].src.replace(/\\/[^/]*$/, '/');\n  })();\n}\n\nmodule.exports = (function(){\n  var w = window;\n  var d = w.define;\n  var r = w.require;\n  w.emberAutoImportDynamic = function(specifier) {\n    return r('_eai_dyn_' + specifier);\n  };\n})();\n\n\n//# sourceURL=webpack://__ember_auto_import__/./tmp/ember_auto_import_webpack-staging_dir-QPKHQBin.tmp/tests.js?");
 
 /***/ })
 

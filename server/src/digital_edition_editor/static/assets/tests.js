@@ -2492,6 +2492,23 @@ define('ember-cli-test-loader/test-support/index', ['exports'], function (export
   }exports.default = TestLoader;
   ;
 });
+define('ember-cookies/clear-all-cookies', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  exports.default = function () {
+    let cookies = document.cookie.split(';');
+
+    cookies.forEach(cookie => {
+      let cookieName = cookie.split('=')[0];
+
+      document.cookie = `${cookieName}=; expires=${new Date(0).toUTCString()}`;
+    });
+  };
+});
 define('ember-qunit/adapter', ['exports', 'qunit', '@ember/test-helpers/has-ember-version'], function (exports, _qunit, _hasEmberVersion) {
   'use strict';
 
@@ -3116,6 +3133,72 @@ define('ember-qunit/test-loader', ['exports', 'qunit', 'ember-cli-test-loader/te
    */
   function loadTests() {
     new TestLoader().loadModules();
+  }
+});
+define('ember-simple-auth/test-support/index', ['exports', '@ember/test-helpers', 'ember-simple-auth/authenticators/test'], function (exports, _testHelpers, _test) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.authenticateSession = authenticateSession;
+  exports.currentSession = currentSession;
+  exports.invalidateSession = invalidateSession;
+
+
+  const SESSION_SERVICE_KEY = 'service:session';
+  const TEST_CONTAINER_KEY = 'authenticator:test';
+
+  function ensureAuthenticator(owner) {
+    const authenticator = owner.lookup(TEST_CONTAINER_KEY);
+    if (!authenticator) {
+      owner.register(TEST_CONTAINER_KEY, _test.default);
+    }
+  }
+
+  /**
+   * Authenticates the session.
+   *
+   * @param {Object} sessionData Optional argument used to mock an authenticator
+   * response (e.g. a token or user).
+   * @return {Promise}
+   * @public
+   */
+  function authenticateSession(sessionData) {
+    const { owner } = (0, _testHelpers.getContext)();
+    const session = owner.lookup(SESSION_SERVICE_KEY);
+    ensureAuthenticator(owner);
+    return session.authenticate(TEST_CONTAINER_KEY, sessionData).then(() => {
+      return (0, _testHelpers.settled)();
+    });
+  }
+
+  /**
+   * Returns the current session.
+   *
+   * @return {Object} a session service.
+   * @public
+   */
+  function currentSession() {
+    const { owner } = (0, _testHelpers.getContext)();
+    return owner.lookup(SESSION_SERVICE_KEY);
+  }
+
+  /**
+   * Invalidates the session.
+   *
+   * @return {Promise}
+   * @public
+   */
+  function invalidateSession() {
+    const { owner } = (0, _testHelpers.getContext)();
+    const session = owner.lookup(SESSION_SERVICE_KEY);
+    const isAuthenticated = Ember.get(session, 'isAuthenticated');
+    return Ember.RSVP.resolve().then(() => {
+      if (isAuthenticated) {
+        return session.invalidate();
+      }
+    }).then(() => (0, _testHelpers.settled)());
   }
 });
 define('ember-test-helpers/has-ember-version', ['exports', '@ember/test-helpers/has-ember-version'], function (exports, _hasEmberVersion) {
@@ -4411,6 +4494,46 @@ define('ember-test-helpers/wait', ['exports', '@ember/test-helpers/settled', '@e
     }, { timeout: Infinity });
   }
 });
+define('client/tests/helpers/ember-simple-auth', ['exports', 'ember-simple-auth/authenticators/test'], function (exports, _test) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.authenticateSession = authenticateSession;
+  exports.currentSession = currentSession;
+  exports.invalidateSession = invalidateSession;
+
+
+  const TEST_CONTAINER_KEY = 'authenticator:test';
+
+  function ensureAuthenticator(app, container) {
+    const authenticator = container.lookup(TEST_CONTAINER_KEY);
+    if (!authenticator) {
+      app.register(TEST_CONTAINER_KEY, _test.default);
+    }
+  }
+
+  function authenticateSession(app, sessionData) {
+    const { __container__: container } = app;
+    const session = container.lookup('service:session');
+    ensureAuthenticator(app, container);
+    session.authenticate(TEST_CONTAINER_KEY, sessionData);
+    return app.testHelpers.wait();
+  }
+
+  function currentSession(app) {
+    return app.__container__.lookup('service:session');
+  }
+
+  function invalidateSession(app) {
+    const session = app.__container__.lookup('service:session');
+    if (session.get('isAuthenticated')) {
+      session.invalidate();
+    }
+    return app.testHelpers.wait();
+  }
+});
 define('client/tests/integration/components/body-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
   'use strict';
 
@@ -4704,6 +4827,11 @@ define('client/tests/lint/app.lint-test', [], function () {
     assert.ok(true, 'app.js should pass ESLint\n\n');
   });
 
+  QUnit.test('authenticators/local.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'authenticators/local.js should pass ESLint\n\n8:13 - \'data\' is defined but never used. (no-unused-vars)\n20:17 - Unexpected console statement. (no-console)\n22:23 - \'data\' is defined but never used. (no-unused-vars)\n28:16 - \'data\' is defined but never used. (no-unused-vars)');
+  });
+
   QUnit.test('components/body-editor.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/body-editor.js should pass ESLint\n\n');
@@ -4764,6 +4892,11 @@ define('client/tests/lint/app.lint-test', [], function () {
     assert.ok(true, 'controllers/editor/repository.js should pass ESLint\n\n');
   });
 
+  QUnit.test('controllers/users/login.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/users/login.js should pass ESLint\n\n');
+  });
+
   QUnit.test('helpers/format-tag-ns.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'helpers/format-tag-ns.js should pass ESLint\n\n');
@@ -4792,6 +4925,11 @@ define('client/tests/lint/app.lint-test', [], function () {
   QUnit.test('models/repository.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/repository.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('models/user.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/user.js should pass ESLint\n\n');
   });
 
   QUnit.test('resolver.js', function (assert) {
@@ -4827,6 +4965,11 @@ define('client/tests/lint/app.lint-test', [], function () {
   QUnit.test('routes/editor/repository.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/editor/repository.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/users/login.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/users/login.js should pass ESLint\n\n');
   });
 
   QUnit.test('utils/prosemirror-editor.js', function (assert) {
@@ -4902,6 +5045,11 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
   QUnit.test('client/templates/editor/repository.hbs', function (assert) {
     assert.expect(1);
     assert.ok(true, 'client/templates/editor/repository.hbs should pass TemplateLint.\n\n');
+  });
+
+  QUnit.test('client/templates/users/login.hbs', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'client/templates/users/login.hbs should pass TemplateLint.\n\nclient/templates/users/login.hbs\n  20:16  error  Incorrect indentation of attribute \'id\' beginning at L20:C16. Expected \'id\' to be at L21:C10.  attribute-indentation\n  20:30  error  Incorrect indentation of attribute \'placeholder\' beginning at L20:C30. Expected \'placeholder\' to be at L22:C10.  attribute-indentation\n  20:64  error  Incorrect indentation of attribute \'type\' beginning at L20:C64. Expected \'type\' to be at L23:C10.  attribute-indentation\n  20:80  error  Incorrect indentation of attribute \'value\' beginning at L20:C80. Expected \'value\' to be at L24:C10.  attribute-indentation\n  20:94  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{input}}\' beginning at L20:C94. Expected \'{{input}}\' to be at L25:C8.  attribute-indentation\n  1:15  error  you must use double quotes in templates  quotes\n  1:26  error  you must use double quotes in templates  quotes\n  29:17  error  you must use double quotes in templates  quotes\n');
   });
 });
 define('client/tests/lint/tests.lint-test', [], function () {
@@ -4994,6 +5142,11 @@ define('client/tests/lint/tests.lint-test', [], function () {
     assert.ok(true, 'unit/controllers/editor/repository-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/controllers/users/login-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/controllers/users/login-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/file-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/file-test.js should pass ESLint\n\n');
@@ -5002,6 +5155,11 @@ define('client/tests/lint/tests.lint-test', [], function () {
   QUnit.test('unit/models/repository-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/repository-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/models/user-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/user-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/editor-test.js', function (assert) {
@@ -5027,6 +5185,11 @@ define('client/tests/lint/tests.lint-test', [], function () {
   QUnit.test('unit/routes/editor/repository-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/editor/repository-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/users/login-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/users/login-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/utils/prosemirror-editor-test.js', function (assert) {
@@ -5123,6 +5286,19 @@ define('client/tests/unit/controllers/editor/repository-test', ['qunit', 'ember-
     });
   });
 });
+define('client/tests/unit/controllers/users/login-test', ['qunit', 'ember-qunit'], function (_qunit, _emberQunit) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Controller | users/login', function (hooks) {
+    (0, _emberQunit.setupTest)(hooks);
+
+    // Replace this with your real tests.
+    (0, _qunit.test)('it exists', function (assert) {
+      let controller = this.owner.lookup('controller:users/login');
+      assert.ok(controller);
+    });
+  });
+});
 define('client/tests/unit/models/file-test', ['qunit', 'ember-qunit'], function (_qunit, _emberQunit) {
   'use strict';
 
@@ -5147,6 +5323,20 @@ define('client/tests/unit/models/repository-test', ['qunit', 'ember-qunit'], fun
     (0, _qunit.test)('it exists', function (assert) {
       let store = this.owner.lookup('service:store');
       let model = store.createRecord('repository', {});
+      assert.ok(model);
+    });
+  });
+});
+define('client/tests/unit/models/user-test', ['qunit', 'ember-qunit'], function (_qunit, _emberQunit) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Model | user', function (hooks) {
+    (0, _emberQunit.setupTest)(hooks);
+
+    // Replace this with your real tests.
+    (0, _qunit.test)('it exists', function (assert) {
+      let store = this.owner.lookup('service:store');
+      let model = store.createRecord('user', {});
       assert.ok(model);
     });
   });
@@ -5207,6 +5397,18 @@ define('client/tests/unit/routes/editor/repository-test', ['qunit', 'ember-qunit
 
     (0, _qunit.test)('it exists', function (assert) {
       let route = this.owner.lookup('route:editor/repository');
+      assert.ok(route);
+    });
+  });
+});
+define('client/tests/unit/routes/users/login-test', ['qunit', 'ember-qunit'], function (_qunit, _emberQunit) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Route | users/login', function (hooks) {
+    (0, _emberQunit.setupTest)(hooks);
+
+    (0, _qunit.test)('it exists', function (assert) {
+      let route = this.owner.lookup('route:users/login');
       assert.ok(route);
     });
   });
