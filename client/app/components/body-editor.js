@@ -319,7 +319,6 @@ export default Component.extend({
                 } else if(param === 'heading_level_2') {
                     setBlockType(schema.nodes['heading'], {level: 2})(view.state, view.dispatch)
                 }
-
             } else if(action === 'toggle-mark') {
                 view.focus()
                 toggleMark(schema.marks[param])(view.state, view.dispatch)
