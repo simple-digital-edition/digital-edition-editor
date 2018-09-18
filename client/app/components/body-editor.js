@@ -114,22 +114,23 @@ export default Component.extend({
                 doc: {
                     content: 'block+'
                 },
-                heading: {
-                    group: 'block',
-                    content: 'inline*',
-                    attrs: {level: {default: 1}},
-                    toDOM(node) {return ['h' + node.attrs.level, 0]},
-                    parseDOM: [
-                        {tag: "h1", attrs: {level: 1}},
-                        {tag: "h2", attrs: {level: 2}}
-                    ]
-                },
                 paragraph: {
                     group: 'block',
                     content: 'inline*',
                     attrs: {no_indent: {default: false}},
                     toDOM(node) {return ['p', {class: node.attrs.no_indent ? 'no-indent' : null}, 0]},
                     parseDOM: [{tag: 'p', getAttrs(dom) { return {no_indent: dom.class && dom.class.indexOf('no-indent') >= 0} }}]
+                },
+                heading: {
+                    group: 'block',
+                    content: 'inline*',
+                    attrs: {level: {default: 1}},
+                    defining: true,
+                    toDOM(node) {return ['h' + node.attrs.level, 0]},
+                    parseDOM: [
+                        {tag: "h1", attrs: {level: 1}},
+                        {tag: "h2", attrs: {level: 2}}
+                    ]
                 },
                 text: {
                     group: 'inline',

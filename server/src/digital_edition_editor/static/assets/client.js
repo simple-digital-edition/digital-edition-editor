@@ -171,15 +171,6 @@
                     doc: {
                         content: 'block+'
                     },
-                    heading: {
-                        group: 'block',
-                        content: 'inline*',
-                        attrs: { level: { default: 1 } },
-                        toDOM(node) {
-                            return ['h' + node.attrs.level, 0];
-                        },
-                        parseDOM: [{ tag: "h1", attrs: { level: 1 } }, { tag: "h2", attrs: { level: 2 } }]
-                    },
                     paragraph: {
                         group: 'block',
                         content: 'inline*',
@@ -190,6 +181,16 @@
                         parseDOM: [{ tag: 'p', getAttrs(dom) {
                                 return { no_indent: dom.class && dom.class.indexOf('no-indent') >= 0 };
                             } }]
+                    },
+                    heading: {
+                        group: 'block',
+                        content: 'inline*',
+                        attrs: { level: { default: 1 } },
+                        defining: true,
+                        toDOM(node) {
+                            return ['h' + node.attrs.level, 0];
+                        },
+                        parseDOM: [{ tag: "h1", attrs: { level: 1 } }, { tag: "h2", attrs: { level: 2 } }]
                     },
                     text: {
                         group: 'inline',
