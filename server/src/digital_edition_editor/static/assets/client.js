@@ -171,21 +171,14 @@
                     doc: {
                         content: 'block+'
                     },
-                    heading_level_1: {
+                    heading: {
                         group: 'block',
                         content: 'inline*',
-                        toDOM() {
-                            return ['h1', 0];
+                        attrs: { level: { default: 1 } },
+                        toDOM(node) {
+                            return ['h' + node.attrs.level, 0];
                         },
-                        parseDOM: [{ tag: 'h1' }]
-                    },
-                    heading_level_2: {
-                        group: 'block',
-                        content: 'inline*',
-                        toDOM() {
-                            return ['h2', 0];
-                        },
-                        parseDOM: [{ tag: 'h2' }]
+                        parseDOM: [{ tag: "h1", attrs: { level: 1 } }, { tag: "h2", attrs: { level: 2 } }]
                     },
                     paragraph: {
                         group: 'block',
@@ -273,7 +266,9 @@
                     blocks.forEach(node => {
                         if (node.type.isBlock) {
                             component.setMenuState('block.' + node.type.name, { is_active: true });
-                            component.setMenuState('block', { title: component.getMenuState('block.' + node.type.name).title });
+                            component.setMenuState('block.' + node.type.name + '_level_' + node.attrs.level, { is_active: true });
+
+                            component.setMenuState('block', { title: (component.getMenuState('block.' + node.type.name) || component.getMenuState('block.' + node.type.name + '_level_' + node.attrs.level)).title });
                             component.setMenuState('styling.text_styling.no_indent', { is_active: node.attrs && node.attrs.no_indent });
                         } else {
                             component.setMenuState('inline.' + node.type.name, { is_active: true });
@@ -689,10 +684,21 @@
         value: true
     });
     exports.default = Ember.Controller.extend({
+        button_text: 'Synchronise changes',
+        button_class: 'button',
         selected_file: null,
         actions: {
             synchronise: function () {
-                this.get('model').save();
+                this.set('button_text', 'Synchronisation running...');
+                this.set('button_class', 'button secondary');
+                let controller = this;
+                this.get('model').save().then(() => {
+                    controller.set('button_text', 'Synchronisation complete');
+                    this.set('button_class', 'button success');
+                }).catch(() => {
+                    controller.set('button_text', 'Synchronisation failed');
+                    this.set('button_class', 'button alert');
+                });
             }
         }
     });
@@ -1609,7 +1615,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "yG65b+Y3", "block": "{\"symbols\":[\"change\",\"change\"],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"title\"]],false],[10],[0,\"\\n  \"],[7,\"h2\"],[9],[0,\"Local Changes\"],[10],[0,\"\\n  \"],[7,\"ol\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\",\"local_changes\"]]],null,{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[1,[22,2,[\"message\"]],false],[0,\" by \"],[1,[22,2,[\"author\"]],false],[10],[0,\"\\n\"]],\"parameters\":[2]},{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[0,\"No changes\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"  \"],[10],[0,\"\\n  \"],[7,\"h2\"],[9],[0,\"Remote Changes\"],[10],[0,\"\\n  \"],[7,\"ol\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\",\"remote_changes\"]]],null,{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[1,[22,1,[\"message\"]],false],[0,\" by \"],[1,[22,1,[\"author\"]],false],[10],[0,\"\\n\"]],\"parameters\":[1]},{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[0,\"No changes\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"  \"],[10],[0,\"\\n  \"],[7,\"button\"],[11,\"class\",\"button\"],[3,\"action\",[[22,0,[]],\"synchronise\"]],[9],[0,\"Synchronise changes\"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repository.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "JDV5d49Q", "block": "{\"symbols\":[\"change\",\"change\"],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"title\"]],false],[10],[0,\"\\n  \"],[7,\"h2\"],[9],[0,\"Local Changes\"],[10],[0,\"\\n  \"],[7,\"ol\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\",\"local_changes\"]]],null,{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[1,[22,2,[\"message\"]],false],[0,\" by \"],[1,[22,2,[\"author\"]],false],[10],[0,\"\\n\"]],\"parameters\":[2]},{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[0,\"No changes\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"  \"],[10],[0,\"\\n  \"],[7,\"h2\"],[9],[0,\"Remote Changes\"],[10],[0,\"\\n  \"],[7,\"ol\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\",\"remote_changes\"]]],null,{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[1,[22,1,[\"message\"]],false],[0,\" by \"],[1,[22,1,[\"author\"]],false],[10],[0,\"\\n\"]],\"parameters\":[1]},{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[0,\"No changes\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"  \"],[10],[0,\"\\n  \"],[7,\"button\"],[12,\"class\",[21,\"button_class\"]],[3,\"action\",[[22,0,[]],\"synchronise\"]],[9],[1,[21,\"button_text\"],false],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repository.hbs" } });
 });
 ;define("client/templates/loading", ["exports"], function (exports) {
   "use strict";

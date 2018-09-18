@@ -114,17 +114,15 @@ export default Component.extend({
                 doc: {
                     content: 'block+'
                 },
-                heading_level_1: {
+                heading: {
                     group: 'block',
                     content: 'inline*',
-                    toDOM() {return ['h1', 0]},
-                    parseDOM: [{tag: 'h1'}]
-                },
-                heading_level_2: {
-                    group: 'block',
-                    content: 'inline*',
-                    toDOM() {return ['h2', 0]},
-                    parseDOM: [{tag: 'h2'}]
+                    attrs: {level: {default: 1}},
+                    toDOM(node) {return ['h' + node.attrs.level, 0]},
+                    parseDOM: [
+                        {tag: "h1", attrs: {level: 1}},
+                        {tag: "h2", attrs: {level: 2}}
+                    ]
                 },
                 paragraph: {
                     group: 'block',
@@ -198,7 +196,9 @@ export default Component.extend({
                 blocks.forEach((node) => {
                     if(node.type.isBlock) {
                         component.setMenuState('block.' + node.type.name, {is_active: true})
-                        component.setMenuState('block', {title: component.getMenuState('block.' + node.type.name).title})
+                        component.setMenuState('block.' + node.type.name + '_level_' + node.attrs.level, {is_active: true})
+
+                        component.setMenuState('block', {title: (component.getMenuState('block.' + node.type.name) || component.getMenuState('block.' + node.type.name + '_level_' + node.attrs.level)).title})
                         component.setMenuState('styling.text_styling.no_indent', {is_active: node.attrs && node.attrs.no_indent})
                     } else {
                         component.setMenuState('inline.' + node.type.name, {is_active: true})

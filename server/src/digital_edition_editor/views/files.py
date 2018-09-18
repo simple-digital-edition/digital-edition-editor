@@ -52,10 +52,12 @@ def file_to_json(file):
                 elif target == 'body':
                     if element.tag == '{http://www.tei-c.org/ns/1.0}head':
                         if element.attrib['type'] == 'level-1':
-                            stack.append({'type': 'heading_level_1',
+                            stack.append({'type': 'heading',
+                                          'attrs': {'level': 1},
                                           'content': []})
                         else:
-                            stack.append({'type': 'heading_level_2',
+                            stack.append({'type': 'heading',
+                                          'attrs': {'level': 2},
                                           'content': []})
                         if element.text:
                             stack[-1]['content'].append({'type': 'text',
@@ -147,12 +149,9 @@ def build_etree_from_json(source):
 def build_etree_from_prosemirror(source):
     elem = etree.Element('{http://www.tei-c.org/ns/1.0}body')
     for block in source['content']:
-        if block['type'] == 'heading_level_1':
+        if block['type'] == 'heading':
             block_elem = etree.Element('{http://www.tei-c.org/ns/1.0}head')
-            block_elem.attrib['type'] = 'level-1'
-        elif block['type'] == 'heading_level_2':
-            block_elem = etree.Element('{http://www.tei-c.org/ns/1.0}head')
-            block_elem.attrib['type'] = 'level-2'
+            block_elem.attrib['type'] = 'level-%i' % block['attrs']['level']
         elif block['type'] == 'paragraph':
             block_elem = etree.Element('{http://www.tei-c.org/ns/1.0}p')
             if 'attrs' in block and 'no_indent' in block['attrs'] and block['attrs']['no_indent']:
