@@ -22,12 +22,12 @@ a svg.icon:hover path {
 }
 
 svg.icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 svg.icon.small {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .secondary {
@@ -65,6 +65,9 @@ svg.icon.small {
 .top-bar {
   margin-bottom: 1rem;
   border-bottom: 1px solid #cacaca;
+}
+.top-bar .dropdown.menu li a {
+  background: #e6e6e6;
 }
 .top-bar a svg.icon path {
   fill: #0a0a0a;

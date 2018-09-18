@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 
+from git import Repo, Actor
 from lxml import etree
 from pyramid.httpexceptions import HTTPNotFound, HTTPAccepted
 from pyramid.view import view_config
@@ -197,6 +198,13 @@ def patch_file(request):
             tei.append(text)
             with open(file_path, 'wb') as out_f:
                 out_f.write(etree.tostring(tei, pretty_print=True, xml_declaration=True, encoding="UTF-8"))
+            repositories = get_config_setting(request, 'git.repos')
+            base_path = repositories[repository]
+            repo = Repo(base_path)
+            if repo.index.diff(None):
+                repo.index.add([os.path.abspath(file_path)])
+                actor = Actor(request.authorized_user['name'], request.authorized_user['username'])
+                repo.index.commit('TEI Content Update', author=actor, committer=actor)
             with open(file_path, 'rb') as in_f:
                 header, body = file_to_json(in_f)
             return {'data': {'type': 'files',

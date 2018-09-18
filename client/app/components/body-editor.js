@@ -129,7 +129,7 @@ export default Component.extend({
                 paragraph: {
                     group: 'block',
                     content: 'inline*',
-                    attrs: {no_indent: false},
+                    attrs: {no_indent: {default: false}},
                     toDOM(node) {return ['p', {class: node.attrs.no_indent ? 'no-indent' : null}, 0]},
                     parseDOM: [{tag: 'p', getAttrs(dom) { return {no_indent: dom.class && dom.class.indexOf('no-indent') >= 0} }}]
                 },
@@ -180,12 +180,7 @@ export default Component.extend({
                     'Mod-z': undo,
                     'Mod-y': redo
                 }),
-                keymap(baseKeymap),
-                keymap({
-                    'Ctrl-1': setBlockType(schema.nodes.heading_level_1),
-                    'Ctrl-2': setBlockType(schema.nodes.heading_level_2),
-                    'Ctrl-3': setBlockType(schema.nodes.paragraph)
-                })
+                keymap(baseKeymap)
             ]
         })
 
@@ -336,9 +331,7 @@ export default Component.extend({
                 view.focus()
                 let {$from} = view.state.selection
                 if($from.parent.type.name === 'paragraph') {
-                    let transaction = view.state.tr
-                    transaction.setBlockType($from.pos, $from.parent.nodeSize, schema.nodes.paragraph, {no_indent: !$from.parent.attrs.no_indent})
-                    view.dispatch(transaction)
+                    setBlockType(schema.nodes['paragraph'], {no_indent: !$from.parent.attrs.no_indent})(view.state, view.dispatch)
                 }
             } else if(action === 'select-inline-type') {
                 view.focus()

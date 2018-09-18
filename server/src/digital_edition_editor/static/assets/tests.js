@@ -5034,7 +5034,7 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
 
   QUnit.test('client/templates/editor.hbs', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'client/templates/editor.hbs should pass TemplateLint.\n\nclient/templates/editor.hbs\n  88:26  error  you must use double quotes in templates  quotes\n');
+    assert.ok(true, 'client/templates/editor.hbs should pass TemplateLint.\n\n');
   });
 
   QUnit.test('client/templates/editor/file.hbs', function (assert) {
