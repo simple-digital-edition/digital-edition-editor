@@ -5057,6 +5057,11 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
     assert.ok(true, 'client/templates/editor/repository.hbs should pass TemplateLint.\n\n');
   });
 
+  QUnit.test('client/templates/loading.hbs', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'client/templates/loading.hbs should pass TemplateLint.\n\n');
+  });
+
   QUnit.test('client/templates/users/login.hbs', function (assert) {
     assert.expect(1);
     assert.ok(false, 'client/templates/users/login.hbs should pass TemplateLint.\n\nclient/templates/users/login.hbs\n  20:16  error  Incorrect indentation of attribute \'id\' beginning at L20:C16. Expected \'id\' to be at L21:C10.  attribute-indentation\n  20:30  error  Incorrect indentation of attribute \'placeholder\' beginning at L20:C30. Expected \'placeholder\' to be at L22:C10.  attribute-indentation\n  20:64  error  Incorrect indentation of attribute \'type\' beginning at L20:C64. Expected \'type\' to be at L23:C10.  attribute-indentation\n  20:80  error  Incorrect indentation of attribute \'value\' beginning at L20:C80. Expected \'value\' to be at L24:C10.  attribute-indentation\n  20:94  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{input}}\' beginning at L20:C94. Expected \'{{input}}\' to be at L25:C8.  attribute-indentation\n  1:15  error  you must use double quotes in templates  quotes\n  1:26  error  you must use double quotes in templates  quotes\n  29:17  error  you must use double quotes in templates  quotes\n');

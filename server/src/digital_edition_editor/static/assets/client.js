@@ -1616,6 +1616,14 @@
   });
   exports.default = Ember.HTMLBars.template({ "id": "/b8tmMLt", "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"title\"]],false],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repository.hbs" } });
 });
+;define("client/templates/loading", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "h8/hysXA", "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"class\",\"loading\"],[9],[0,\"\\n  \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"animate-rotate\"],[9],[0,\"\\n    \"],[7,\"path\"],[11,\"fill\",\"#000000\"],[11,\"d\",\"M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z\"],[9],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"p\"],[9],[0,\"Loading...\"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/loading.hbs" } });
+});
 ;define("client/templates/users/login", ["exports"], function (exports) {
   "use strict";
 

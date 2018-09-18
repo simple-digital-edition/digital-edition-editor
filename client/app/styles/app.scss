@@ -178,6 +178,36 @@ svg.icon {
 }
 
 /**
+ * Loading indicator
+ */
+.loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+
+    .animate-rotate {
+        width: 48px;
+        height: 48px;
+        animation-duration: 2s;
+        animation-name: rotate;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg)
+    }
+
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+/**
  * Editor styling
  */
 .body-tag-editor {
