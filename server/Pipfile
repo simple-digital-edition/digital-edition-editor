@@ -13,6 +13,7 @@ waitress = "*"
 pywebtools = "*"
 gitpython = "*"
 lxml = "*"
+decorator = "*"
 
 [dev-packages]
 

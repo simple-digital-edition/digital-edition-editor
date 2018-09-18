@@ -4822,6 +4822,11 @@ define('client/tests/lint/app.lint-test', [], function () {
 
   QUnit.module('ESLint | app');
 
+  QUnit.test('adapters/application.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'adapters/application.js should pass ESLint\n\n');
+  });
+
   QUnit.test('app.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'app.js should pass ESLint\n\n');
@@ -4829,7 +4834,7 @@ define('client/tests/lint/app.lint-test', [], function () {
 
   QUnit.test('authenticators/local.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'authenticators/local.js should pass ESLint\n\n8:13 - \'data\' is defined but never used. (no-unused-vars)\n20:17 - Unexpected console statement. (no-console)\n22:23 - \'data\' is defined but never used. (no-unused-vars)\n28:16 - \'data\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'authenticators/local.js should pass ESLint\n\n19:27 - \'data\' is defined but never used. (no-unused-vars)\n38:23 - \'data\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/body-editor.js', function (assert) {
@@ -4942,6 +4947,11 @@ define('client/tests/lint/app.lint-test', [], function () {
     assert.ok(true, 'router.js should pass ESLint\n\n');
   });
 
+  QUnit.test('routes/application.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'routes/application.js should pass ESLint\n\n8:22 - \'transition\' is defined but never used. (no-unused-vars)');
+  });
+
   QUnit.test('routes/editor.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/editor.js should pass ESLint\n\n');
@@ -5024,7 +5034,7 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
 
   QUnit.test('client/templates/editor.hbs', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'client/templates/editor.hbs should pass TemplateLint.\n\n');
+    assert.ok(false, 'client/templates/editor.hbs should pass TemplateLint.\n\nclient/templates/editor.hbs\n  88:26  error  you must use double quotes in templates  quotes\n');
   });
 
   QUnit.test('client/templates/editor/file.hbs', function (assert) {
@@ -5117,6 +5127,11 @@ define('client/tests/lint/tests.lint-test', [], function () {
     assert.ok(true, 'test-helper.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/adapters/application-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/adapters/application-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/controllers/editor-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/controllers/editor-test.js should pass ESLint\n\n');
@@ -5160,6 +5175,11 @@ define('client/tests/lint/tests.lint-test', [], function () {
   QUnit.test('unit/models/user-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/user-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/application-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/application-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/editor-test.js', function (assert) {
@@ -5220,6 +5240,19 @@ define('client/tests/test-helper', ['client/app', 'client/config/environment', '
   (0, _testHelpers.setApplication)(_app.default.create(_environment.default.APP));
 
   (0, _emberQunit.start)();
+});
+define('client/tests/unit/adapters/application-test', ['qunit', 'ember-qunit'], function (_qunit, _emberQunit) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Adapter | application', function (hooks) {
+    (0, _emberQunit.setupTest)(hooks);
+
+    // Replace this with your real tests.
+    (0, _qunit.test)('it exists', function (assert) {
+      let adapter = this.owner.lookup('adapter:application');
+      assert.ok(adapter);
+    });
+  });
 });
 define('client/tests/unit/controllers/editor-test', ['qunit', 'ember-qunit'], function (_qunit, _emberQunit) {
   'use strict';
@@ -5338,6 +5371,18 @@ define('client/tests/unit/models/user-test', ['qunit', 'ember-qunit'], function 
       let store = this.owner.lookup('service:store');
       let model = store.createRecord('user', {});
       assert.ok(model);
+    });
+  });
+});
+define('client/tests/unit/routes/application-test', ['qunit', 'ember-qunit'], function (_qunit, _emberQunit) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Route | application', function (hooks) {
+    (0, _emberQunit.setupTest)(hooks);
+
+    (0, _qunit.test)('it exists', function (assert) {
+      let route = this.owner.lookup('route:application');
+      assert.ok(route);
     });
   });
 });

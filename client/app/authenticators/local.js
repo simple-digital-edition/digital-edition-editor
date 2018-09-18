@@ -6,6 +6,23 @@ export default Base.extend({
     store: service(),
 
     restore(data) {
+        let authenticator = this
+        data = data || {}
+        return new Promise((resolve, reject) => {
+            if(data.token) {
+                authenticator.store.queryRecord('user', {
+                    filter: {
+                        token: data.token
+                    }
+                }).then((data) => {
+                    resolve({token: data.get('token')})
+                }).catch((data) => {
+                    reject()
+                })
+            } else {
+                reject()
+            }
+        })
     },
 
     authenticate(username, password) {
@@ -17,14 +34,10 @@ export default Base.extend({
                     password: password
                 }
             }).then((data) => {
-                console.log(data)
-                resolve()
+                resolve({token: data.get('token')})
             }).catch((data) => {
                 reject('Username or password incorrect or unknown')
             })
         })
-    },
-
-    invalidate(data) {
     }
 });

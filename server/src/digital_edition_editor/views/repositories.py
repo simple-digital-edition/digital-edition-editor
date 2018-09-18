@@ -6,6 +6,8 @@ from pyramid.httpexceptions import HTTPNotFound
 from pyramid.view import view_config
 from pywebtools.pyramid.util import get_config_setting
 
+from .users import is_authenticated
+
 
 def repository_as_json(request, key):
     repositories = get_config_setting(request, 'git.repos')
@@ -31,12 +33,14 @@ def repository_as_json(request, key):
 
 
 @view_config(route_name='repositories.get', renderer='json')
+@is_authenticated()
 def get_repositories(request):
     repositories = get_config_setting(request, 'git.repos')
     return {'data': [repository_as_json(request, key) for key in repositories.keys()]}
 
 
 @view_config(route_name='repository.get', renderer='json')
+@is_authenticated()
 def get_repository(request):
     repositories = get_config_setting(request, 'git.repos')
     if request.matchdict['rid'] in repositories:

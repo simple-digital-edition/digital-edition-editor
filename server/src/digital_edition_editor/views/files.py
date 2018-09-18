@@ -7,6 +7,8 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPAccepted
 from pyramid.view import view_config
 from pywebtools.pyramid.util import get_config_setting
 
+from .users import is_authenticated
+
 
 def find_file(base_path, file_hash):
     for path, _, filenames in os.walk(base_path):
@@ -112,6 +114,7 @@ def file_to_json(file):
 
 
 @view_config(route_name='file.get', renderer='json')
+@is_authenticated()
 def get_file(request):
     repository, fid = request.matchdict['fid'].split(':')
     repositories = get_config_setting(request, 'git.repos')
@@ -178,6 +181,7 @@ def build_etree_from_prosemirror(source):
 
 
 @view_config(route_name='file.patch', renderer='json')
+@is_authenticated()
 def patch_file(request):
     repository, fid = request.matchdict['fid'].split(':')
     repositories = get_config_setting(request, 'git.repos')
