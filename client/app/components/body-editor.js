@@ -312,7 +312,14 @@ export default Component.extend({
             let schema = this.get('editor-schema')
             if(action === 'select-block-type') {
                 view.focus()
-                setBlockType(schema.nodes[param], {no_indent: false})(view.state, view.dispatch)
+                if(param === 'paragraph') {
+                    setBlockType(schema.nodes[param], {no_indent: false})(view.state, view.dispatch)
+                } else if(param === 'heading_level_1') {
+                    setBlockType(schema.nodes['heading'], {level: 1})(view.state, view.dispatch)
+                } else if(param === 'heading_level_2') {
+                    setBlockType(schema.nodes['heading'], {level: 2})(view.state, view.dispatch)
+                }
+
             } else if(action === 'toggle-mark') {
                 view.focus()
                 toggleMark(schema.marks[param])(view.state, view.dispatch)

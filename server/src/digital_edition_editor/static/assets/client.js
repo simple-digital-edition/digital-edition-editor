@@ -382,7 +382,13 @@
                 let schema = this.get('editor-schema');
                 if (action === 'select-block-type') {
                     view.focus();
-                    (0, _prosemirrorCommands.setBlockType)(schema.nodes[param], { no_indent: false })(view.state, view.dispatch);
+                    if (param === 'paragraph') {
+                        (0, _prosemirrorCommands.setBlockType)(schema.nodes[param], { no_indent: false })(view.state, view.dispatch);
+                    } else if (param === 'heading_level_1') {
+                        (0, _prosemirrorCommands.setBlockType)(schema.nodes['heading'], { level: 1 })(view.state, view.dispatch);
+                    } else if (param === 'heading_level_2') {
+                        (0, _prosemirrorCommands.setBlockType)(schema.nodes['heading'], { level: 2 })(view.state, view.dispatch);
+                    }
                 } else if (action === 'toggle-mark') {
                     view.focus();
                     (0, _prosemirrorCommands.toggleMark)(schema.marks[param])(view.state, view.dispatch);
