@@ -20,7 +20,10 @@ export default Controller.extend({
             this.get('selected_file').save()
         },
         logout: function() {
-            this.get('session').invalidate()
+            let controller = this
+            this.get('session').invalidate().then(() => {
+                controller.transitionToRoute('editor')
+            })
         }
     }
 });
