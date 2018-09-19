@@ -209,9 +209,9 @@ def patch_file(request):
                     local_commits[0].author.email == request.authorized_user['username']:
                     repo.index.add([os.path.abspath(file_path)])
                     repo.git.commit('--amend',
-                                    '-m "%s"' % commit_msg,
-                                    '--user "%s <%s>"' % (request.authorized_user['name'],
-                                                          request.authorized_user['username']))
+                                    '-m %s' % commit_msg,
+                                    '--author="%s <%s>"' % (request.authorized_user['name'],
+                                                            request.authorized_user['username']))
                 else:
                     repo.index.add([os.path.abspath(file_path)])
                     actor = Actor(request.authorized_user['name'], request.authorized_user['username'])
