@@ -8,7 +8,7 @@
  *            Portions Copyright 2008-2011 Apple Inc. All rights reserved.
  * @license   Licensed under MIT license
  *            See https://raw.github.com/emberjs/ember.js/master/LICENSE
- * @version   3.4.0
+ * @version   3.4.1
  */
 
 /*globals process */
@@ -13316,19 +13316,19 @@ var __ember_auto_import__ =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./tmp/ember_auto_import_webpack-staging_dir-GRt0BkjY.tmp/tests.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./tmp/ember_auto_import_webpack-staging_dir-RWBjWBex.tmp/tests.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./tmp/ember_auto_import_webpack-staging_dir-GRt0BkjY.tmp/tests.js":
+/***/ "./tmp/ember_auto_import_webpack-staging_dir-RWBjWBex.tmp/tests.js":
 /*!*************************************************************************!*\
-  !*** ./tmp/ember_auto_import_webpack-staging_dir-GRt0BkjY.tmp/tests.js ***!
+  !*** ./tmp/ember_auto_import_webpack-staging_dir-RWBjWBex.tmp/tests.js ***!
   \*************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("\nif (typeof document !== 'undefined') {\n  __webpack_require__.p = (function(){\n    var scripts = document.querySelectorAll('script');\n    return scripts[scripts.length - 1].src.replace(/\\/[^/]*$/, '/');\n  })();\n}\n\nmodule.exports = (function(){\n  var w = window;\n  var d = w.define;\n  var r = w.require;\n  w.emberAutoImportDynamic = function(specifier) {\n    return r('_eai_dyn_' + specifier);\n  };\n})();\n\n\n//# sourceURL=webpack://__ember_auto_import__/./tmp/ember_auto_import_webpack-staging_dir-GRt0BkjY.tmp/tests.js?");
+eval("\nif (typeof document !== 'undefined') {\n  __webpack_require__.p = (function(){\n    var scripts = document.querySelectorAll('script');\n    return scripts[scripts.length - 1].src.replace(/\\/[^/]*$/, '/');\n  })();\n}\n\nmodule.exports = (function(){\n  var w = window;\n  var d = w.define;\n  var r = w.require;\n  w.emberAutoImportDynamic = function(specifier) {\n    return r('_eai_dyn_' + specifier);\n  };\n})();\n\n\n//# sourceURL=webpack://__ember_auto_import__/./tmp/ember_auto_import_webpack-staging_dir-RWBjWBex.tmp/tests.js?");
 
 /***/ })
 

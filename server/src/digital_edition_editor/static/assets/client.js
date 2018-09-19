@@ -1735,7 +1735,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+652f5186"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+823d3072"});
           }
         
 //# sourceMappingURL=client.map
