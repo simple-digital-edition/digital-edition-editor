@@ -202,9 +202,20 @@ def patch_file(request):
             base_path = repositories[repository]
             repo = Repo(base_path)
             if repo.index.diff(None):
-                repo.index.add([os.path.abspath(file_path)])
-                actor = Actor(request.authorized_user['name'], request.authorized_user['username'])
-                repo.index.commit('TEI Content Update', author=actor, committer=actor)
+                local_commits = list(repo.iter_commits('master@{u}..master'))
+                commit_msg = 'Updated %s' % os.path.basename(file_path)
+                # Ammend the last commit if it has the same commit message as the new one
+                if len(local_commits) > 0 and local_commits[0].message == commit_msg and \
+                    local_commits[0].author.email == request.authorized_user['username']:
+                    repo.index.add([os.path.abspath(file_path)])
+                    repo.git.commit('--amend',
+                                    '-m "%s"' % commit_msg,
+                                    '--user "%s <%s>"' % (request.authorized_user['name'],
+                                                          request.authorized_user['username']))
+                else:
+                    repo.index.add([os.path.abspath(file_path)])
+                    actor = Actor(request.authorized_user['name'], request.authorized_user['username'])
+                    repo.index.commit(commit_msg, author=actor, committer=actor)
             with open(file_path, 'rb') as in_f:
                 header, body = file_to_json(in_f)
             return {'data': {'type': 'files',
