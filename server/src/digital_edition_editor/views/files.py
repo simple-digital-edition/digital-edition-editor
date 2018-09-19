@@ -130,6 +130,7 @@ def get_file(request):
             return {'data': {'type': 'files',
                              'id': request.matchdict['fid'],
                              'attributes': {'filename': local_file_path,
+                                            'key': fid,
                                             'header': header,
                                             'body': body}}}
     return HTTPNotFound()

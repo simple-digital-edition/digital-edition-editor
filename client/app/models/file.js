@@ -3,6 +3,7 @@ import {computed} from '@ember/object';
 
 export default DS.Model.extend({
     filename: DS.attr('string'),
+    key: DS.attr('string'),
     header: DS.attr(),
     body: DS.attr(),
 

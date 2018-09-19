@@ -5034,7 +5034,7 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
 
   QUnit.test('client/templates/editor.hbs', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'client/templates/editor.hbs should pass TemplateLint.\n\n');
+    assert.ok(false, 'client/templates/editor.hbs should pass TemplateLint.\n\nclient/templates/editor.hbs\n  44:28  error  Incorrect indentation of htmlAttribute \'fill\' beginning at L44:C28. Expected \'fill\' to be at L45:C24.  attribute-indentation\n  44:43  error  Incorrect indentation of htmlAttribute \'d\' beginning at L44:C43. Expected \'d\' to be at L46:C24.  attribute-indentation\n  44:195  error  Incorrect indentation of close bracket \'>\' for the element \'<path>\' beginning at L44:C195. Expected \'<path>\' to be at L47:C22.  attribute-indentation\n');
   });
 
   QUnit.test('client/templates/editor/file.hbs', function (assert) {
