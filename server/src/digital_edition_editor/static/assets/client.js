@@ -687,8 +687,6 @@
                 title: 'Content',
                 is_active: true
             }, {
-                title: 'Annotations'
-            }, {
                 title: 'Metadata'
             }]);
         },

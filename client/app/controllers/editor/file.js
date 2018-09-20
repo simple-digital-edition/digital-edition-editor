@@ -13,9 +13,6 @@ export default Controller.extend({
                     is_active: true
                 },
                 {
-                    title: 'Annotations'
-                },
-                {
                     title: 'Metadata'
                 }
             ])
