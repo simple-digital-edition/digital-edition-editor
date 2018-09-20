@@ -45,6 +45,9 @@ def get_repositories(request):
 def get_repository(request):
     repositories = get_config_setting(request, 'git.repos')
     if request.matchdict['rid'] in repositories:
+        base_path = repositories[request.matchdict['rid']]
+        repository = Repo(base_path)
+        repository.remotes.origin.fetch()
         return {'data': repository_as_json(request, request.matchdict['rid'])}
     raise HTTPNotFound()
 
