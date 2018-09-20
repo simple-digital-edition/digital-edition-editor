@@ -4931,7 +4931,7 @@ define('client/tests/lint/app.lint-test', [], function () {
 
   QUnit.test('components/body-editor.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/body-editor.js should pass ESLint\n\n334:39 - \'param\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/body-editor.js should pass ESLint\n\n29:20 - \'False\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/dropdown-menu-item.js', function (assert) {

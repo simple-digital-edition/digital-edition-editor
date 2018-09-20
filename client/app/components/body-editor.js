@@ -7,6 +7,41 @@ import {keymap} from "prosemirror-keymap"
 import {baseKeymap, setBlockType, toggleMark} from "prosemirror-commands"
 import {getActiveMarks, getBlockHierarchy} from "../utils/prosemirror-editor"
 
+function paragraph_attrs_to_class(node) {
+    let classes = [];
+    if(node.attrs.no_indent) {
+        classes.push('no-indent')
+    }
+    if(node.attrs.text_align === 'center') {
+        classes.push('text-center')
+    } else if(node.attrs.text_align === 'right') {
+        classes.push('text-right')
+    }
+    if(classes.length > 0) {
+        return classes.join(' ')
+    } else {
+        return null
+    }
+}
+
+function paragraph_class_to_attrs(dom) {
+    let attrs = {
+        no_indent: False,
+        text_align: 'left'
+    }
+    if(dom.class) {
+        if(dom.class.indexOf('no-indent') >= 0) {
+            attrs.no_indent = true
+        }
+        if(dom.class.indexOf('text-center') >= 0) {
+            attrs.text_align = 'center'
+        } else if(dom.class.indexOf('text-right') >= 0) {
+            attrs.text_align = 'right'
+        }
+    }
+    return attrs
+}
+
 export default Component.extend({
     classNames: ['tei-body-editor', 'full-height'],
 
@@ -45,6 +80,21 @@ export default Component.extend({
                         id: 'no_indent',
                         title: 'No indentation',
                         action: 'toggle-block-attr'
+                    },
+                    {
+                        id: 'text_align_left',
+                        title: 'Left align',
+                        action: 'set-block-attr'
+                    },
+                    {
+                        id: 'text_align_center',
+                        title: 'Center align',
+                        action: 'set-block-attr'
+                    },
+                    {
+                        id: 'text_align_right',
+                        title: 'Right align',
+                        action: 'set-block-attr'
                     }
                 ]
             },
@@ -111,14 +161,25 @@ export default Component.extend({
                 paragraph: {
                     group: 'block',
                     content: 'inline*',
-                    attrs: {no_indent: {default: false}},
-                    toDOM(node) {return ['p', {class: node.attrs.no_indent ? 'no-indent' : null}, 0]},
-                    parseDOM: [{tag: 'p', getAttrs(dom) { return {no_indent: dom.class && dom.class.indexOf('no-indent') >= 0} }}]
+                    attrs: {
+                        no_indent: {
+                            default: false
+                        },
+                        text_align: {
+                            default: 'left'
+                        }
+                    },
+                    toDOM(node) {return ['p', {class: paragraph_attrs_to_class(node)}, 0]},
+                    parseDOM: [{tag: 'p', paragraph_class_to_attrs}]
                 },
                 heading: {
                     group: 'block',
                     content: 'inline*',
-                    attrs: {level: {default: 1}},
+                    attrs: {
+                        level: {
+                            default: 1
+                        }
+                    },
                     defining: true,
                     toDOM(node) {return ['h' + node.attrs.level, 0]},
                     parseDOM: [
@@ -187,6 +248,9 @@ export default Component.extend({
                 component.setMenuState('block.heading_level_2', {is_active: false})
                 component.setMenuState('block.paragraph', {is_active: false})
                 component.setMenuState('block_styling.no_indent', {is_active: false})
+                component.setMenuState('block_styling.text_align_left', {is_active: false})
+                component.setMenuState('block_styling.text_align_center', {is_active: false})
+                component.setMenuState('block_styling.text_align_right', {is_active: false})
                 let blocks = getBlockHierarchy(new_state)
                 blocks.forEach((node) => {
                     if(node.type.isBlock) {
@@ -194,6 +258,13 @@ export default Component.extend({
                         component.setMenuState('block.' + node.type.name + '_level_' + node.attrs.level, {is_active: true})
                         if(node.type.name === 'paragraph') {
                             component.setMenuState('block_styling.no_indent', {is_active: node.attrs.no_indent})
+                            if(node.attrs.text_align === 'left') {
+                                component.setMenuState('block_styling.text_align_left', {is_active: true})
+                            } else if(node.attrs.text_align === 'center') {
+                                component.setMenuState('block_styling.text_align_center', {is_active: true})
+                            } else if(node.attrs.text_align === 'right') {
+                                component.setMenuState('block_styling.text_align_right', {is_active: true})
+                            }
                         }
                     } else {
                         component.setMenuState('inline.' + node.type.name, {is_active: true})
@@ -337,7 +408,34 @@ export default Component.extend({
             view.focus()
             let {$from} = view.state.selection
             if($from.parent.type.name === 'paragraph') {
-                setBlockType(schema.nodes['paragraph'], {no_indent: !$from.parent.attrs.no_indent})(view.state, view.dispatch)
+                let attrs = {
+                    no_indent: $from.parent.attrs.no_indent,
+                    text_align: $from.parent.attrs.text_align
+                }
+                if(param === 'no_indent') {
+                    attrs.no_indent = !attrs.no_indent
+                }
+                setBlockType(schema.nodes['paragraph'], attrs)(view.state, view.dispatch)
+            }
+        },
+        'set-block-attr': function(param) {
+            let view = this.get('editor-view')
+            let schema = this.get('editor-schema')
+            view.focus()
+            let {$from} = view.state.selection
+            if($from.parent.type.name === 'paragraph') {
+                let attrs = {
+                    no_indent: $from.parent.attrs.no_indent,
+                    text_align: $from.parent.attrs.text_align
+                }
+                if(param === 'text_align_left') {
+                    attrs.text_align = 'left'
+                } else if(param === 'text_align_center') {
+                    attrs.text_align = 'center'
+                } else if(param === 'text_align_right') {
+                    attrs.text_align = 'right'
+                }
+                setBlockType(schema.nodes['paragraph'], attrs)(view.state, view.dispatch)
             }
         }
     }
