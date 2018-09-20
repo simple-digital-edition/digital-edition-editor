@@ -1,54 +1,36 @@
 <div class="cell shrink">
-  <h1>{{model.filename}}</h1>
+  <h1>Edit File</h1>
 </div>
-<div class="cell auto grid-x grid-padding-x">
-  <div class="cell small-6 cell-block-container">
-    <div class="cell shrink">
-      <ul class="tabs" role="tablist">
-        <li class="tabs-title is-active" role="none">
-          <a {{action "select-tab-panel" "#file-metadata"}}
-            role="tab"
-            aria-selected="true"
-          >
-            Metadata
-          </a>
-        </li>
-        <li class="tabs-title" role="none">
-          <a {{action "select-tab-panel" "#file-annotations"}} role="tab">Annotations</a>
-        </li>
-      </ul>
-    </div>
-    <div class="cell auto cell-block-y">
-      <div class="tabs-content full-height">
-        <div id="file-metadata" class="tabs-panel is-active full-height">
-          <div class="grid-x grid-padding-x full-height">
-            <div class="cell small-6 cell-block-y">
-              <ul class="no-bullet">
-                {{xml-tree-editor
-                  node=model.header
-                  click-node-title=(action "select-metadata-node")
-                  notify-model-change=(action "notify-model-change")
-                }}
-              </ul>
-            </div>
-            <div class="cell small-6 cell-block-y">
-              {{#if selected_metadata_node}}
-                {{node-editor
-                  node=selected_metadata_node
-                  edit_tail=false
-                  notify-model-change=(action "notify-model-change")
-                }}
-              {{/if}}
-            </div>
-          </div>
-        </div>
-        <div id="file-annotations" class="tabs-panel full-height">
-          <p>Suspendisse dictum feugiat nisl ut dapibus.  Vivamus hendrerit arcu sed erat molestie vehicula. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.  Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.</p>
-        </div>
+<div class="cell shrink">
+  {{tabs-title tabs=tabs}}
+</div>
+<div class="cell auto tabs-content">
+  {{#tabs-panel tabs=tabs idx=0}}
+    {{body-editor body=model.body}}
+  {{/tabs-panel}}
+  {{#tabs-panel tabs=tabs idx=1}}
+    Not implemented yet.
+  {{/tabs-panel}}
+  {{#tabs-panel tabs=tabs idx=2}}
+    <div class="grid-x grid-padding-x full-height">
+      <div class="cell small-6 cell-block-y">
+        <ul class="no-bullet">
+          {{xml-tree-editor
+            node=model.header
+            click-node-title=(action "select-metadata-node")
+            notify-model-change=(action "notify-model-change")
+          }}
+        </ul>
+      </div>
+      <div class="cell small-6 cell-block-y">
+        {{#if selected_metadata_node}}
+          {{node-editor
+            node=selected_metadata_node
+            edit_tail=false
+            notify-model-change=(action "notify-model-change")
+          }}
+        {{/if}}
       </div>
     </div>
-  </div>
-  <div class="cell small-6 full-height">
-    {{body-editor body=model.body}}
-  </div>
+  {{/tabs-panel}}
 </div>

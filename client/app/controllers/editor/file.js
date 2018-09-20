@@ -2,6 +2,24 @@ import Controller from '@ember/controller';
 
 export default Controller.extend({
     selected_metadata_node: null,
+    tabs: null,
+
+    init() {
+        this._super(...arguments)
+        this.set('tabs',
+            [
+                {
+                    title: 'Content',
+                    is_active: true
+                },
+                {
+                    title: 'Annotations'
+                },
+                {
+                    title: 'Metadata'
+                }
+            ])
+    },
 
     actions: {
         'select-tab-panel': function(target, ev) {

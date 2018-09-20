@@ -515,6 +515,41 @@
         }
     });
 });
+;define('client/components/tabs-panel', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        classNames: ['tabs-panel', 'full-height'],
+        classNameBindings: ['tab.is_active:is-active'],
+        tab: Ember.computed('tabs', 'idx', function () {
+            return this.get('tabs.' + this.get('idx'));
+        })
+    });
+});
+;define('client/components/tabs-title', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        tagName: 'ul',
+        classNames: ['tabs'],
+
+        actions: {
+            'select-tab': function (tab) {
+                let tabs = this.get('tabs');
+                tabs.forEach(old_tab => {
+                    Ember.set(old_tab, 'is_active', false);
+                });
+                Ember.set(tab, 'is_active', true);
+            }
+        }
+    });
+});
 ;define('client/components/tei-tag-render', ['exports'], function (exports) {
   'use strict';
 
@@ -631,6 +666,19 @@
     });
     exports.default = Ember.Controller.extend({
         selected_metadata_node: null,
+        tabs: null,
+
+        init() {
+            this._super(...arguments);
+            this.set('tabs', [{
+                title: 'Content',
+                is_active: true
+            }, {
+                title: 'Annotations'
+            }, {
+                title: 'Metadata'
+            }]);
+        },
 
         actions: {
             'select-tab-panel': function (target, ev) {
@@ -1561,6 +1609,22 @@
   });
   exports.default = Ember.HTMLBars.template({ "id": "Bx1+VJcz", "block": "{\"symbols\":[\"value\",\"key\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y\"],[9],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[7,\"h2\"],[9],[1,[27,\"strip-tag-ns\",[[23,[\"node\",\"tag\"]]],null],false],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"edit_attributes\"]]],null,{\"statements\":[[0,\"    \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n      \"],[7,\"h3\"],[9],[0,\"\\n        Attributes\\n        \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Add an attribute\"],[3,\"action\",[[22,0,[]],\"add-attribute\",[23,[\"node\"]]]],[9],[0,\"\\n          \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n            \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z\"],[9],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n\"],[4,\"each\",[[27,\"-each-in\",[[23,[\"node\",\"attrib\"]]],null]],null,{\"statements\":[[0,\"      \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n        \"],[7,\"div\"],[11,\"class\",\"grid-x\"],[9],[0,\"\\n          \"],[7,\"div\"],[11,\"class\",\"cell auto\"],[9],[0,\"\\n            \"],[7,\"label\"],[9],[0,\"\\n              \"],[7,\"span\"],[12,\"title\",[27,\"format-tag-ns\",[[22,2,[]]],null]],[9],[1,[27,\"strip-tag-ns\",[[22,2,[]]],null],false],[10],[0,\"\\n              \"],[7,\"input\"],[12,\"value\",[22,1,[]]],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"update-attribute\",[23,[\"node\"]],[22,2,[]]],null]],[11,\"type\",\"text\"],[9],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n          \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Remove the attribute\"],[3,\"action\",[[22,0,[]],\"remove-attribute\",[23,[\"node\"]],[22,2,[]]]],[9],[0,\"\\n              \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n                \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7\"],[9],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null],[4,\"if\",[[27,\"or\",[[23,[\"edit_text\"]],[23,[\"edit_tail\"]]],null]],null,{\"statements\":[[0,\"    \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n      \"],[7,\"h3\"],[9],[0,\"Text\"],[10],[0,\"\\n    \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"edit_text\"]]],null,{\"statements\":[[0,\"      \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n        \"],[7,\"label\"],[9],[0,\"\\n          Text\\n          \"],[7,\"input\"],[12,\"value\",[23,[\"node\",\"text\"]]],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"update-text\",[23,[\"node\"]],\"text\"],null]],[11,\"type\",\"text\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[23,[\"edit_tail\"]]],null,{\"statements\":[[0,\"      \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n        \"],[7,\"label\"],[9],[0,\"\\n          Tail\\n          \"],[7,\"input\"],[12,\"value\",[23,[\"node\",\"tail\"]]],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"update-text\",[23,[\"node\"]],\"tail\"],null]],[11,\"type\",\"text\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/node-editor.hbs" } });
 });
+;define("client/templates/components/tabs-panel", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "xnMvggZc", "block": "{\"symbols\":[\"&default\"],\"statements\":[[14,1]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tabs-panel.hbs" } });
+});
+;define("client/templates/components/tabs-title", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "I6CGCkmO", "block": "{\"symbols\":[\"tab\"],\"statements\":[[4,\"each\",[[23,[\"tabs\"]]],null,{\"statements\":[[4,\"if\",[[22,1,[\"is_active\"]]],null,{\"statements\":[[0,\"    \"],[7,\"li\"],[11,\"class\",\"tabs-title is-active\"],[11,\"role\",\"none\"],[9],[7,\"a\"],[11,\"role\",\"tab\"],[11,\"aria-selected\",\"true\"],[3,\"action\",[[22,0,[]],\"select-tab\",[22,1,[]]]],[9],[1,[22,1,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[7,\"li\"],[11,\"class\",\"tabs-title\"],[11,\"role\",\"none\"],[9],[7,\"a\"],[11,\"role\",\"tab\"],[11,\"aria-selected\",\"false\"],[3,\"action\",[[22,0,[]],\"select-tab\",[22,1,[]]]],[9],[1,[22,1,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tabs-title.hbs" } });
+});
 ;define("client/templates/components/tei-tag-render", ["exports"], function (exports) {
   "use strict";
 
@@ -1599,7 +1663,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "8Vzg2SUG", "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"filename\"]],false],[10],[0,\"\\n\"],[10],[0,\"\\n\"],[7,\"div\"],[11,\"class\",\"cell auto grid-x grid-padding-x\"],[9],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell small-6 cell-block-container\"],[9],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n      \"],[7,\"ul\"],[11,\"class\",\"tabs\"],[11,\"role\",\"tablist\"],[9],[0,\"\\n        \"],[7,\"li\"],[11,\"class\",\"tabs-title is-active\"],[11,\"role\",\"none\"],[9],[0,\"\\n          \"],[7,\"a\"],[11,\"role\",\"tab\"],[11,\"aria-selected\",\"true\"],[3,\"action\",[[22,0,[]],\"select-tab-panel\",\"#file-metadata\"]],[9],[0,\"\\n            Metadata\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n        \"],[7,\"li\"],[11,\"class\",\"tabs-title\"],[11,\"role\",\"none\"],[9],[0,\"\\n          \"],[7,\"a\"],[11,\"role\",\"tab\"],[3,\"action\",[[22,0,[]],\"select-tab-panel\",\"#file-annotations\"]],[9],[0,\"Annotations\"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell auto cell-block-y\"],[9],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"tabs-content full-height\"],[9],[0,\"\\n        \"],[7,\"div\"],[11,\"id\",\"file-metadata\"],[11,\"class\",\"tabs-panel is-active full-height\"],[9],[0,\"\\n          \"],[7,\"div\"],[11,\"class\",\"grid-x grid-padding-x full-height\"],[9],[0,\"\\n            \"],[7,\"div\"],[11,\"class\",\"cell small-6 cell-block-y\"],[9],[0,\"\\n              \"],[7,\"ul\"],[11,\"class\",\"no-bullet\"],[9],[0,\"\\n                \"],[1,[27,\"xml-tree-editor\",null,[[\"node\",\"click-node-title\",\"notify-model-change\"],[[23,[\"model\",\"header\"]],[27,\"action\",[[22,0,[]],\"select-metadata-node\"],null],[27,\"action\",[[22,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n            \"],[7,\"div\"],[11,\"class\",\"cell small-6 cell-block-y\"],[9],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_metadata_node\"]]],null,{\"statements\":[[0,\"                \"],[1,[27,\"node-editor\",null,[[\"node\",\"edit_tail\",\"notify-model-change\"],[[23,[\"selected_metadata_node\"]],false,[27,\"action\",[[22,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n        \"],[7,\"div\"],[11,\"id\",\"file-annotations\"],[11,\"class\",\"tabs-panel full-height\"],[9],[0,\"\\n          \"],[7,\"p\"],[9],[0,\"Suspendisse dictum feugiat nisl ut dapibus.  Vivamus hendrerit arcu sed erat molestie vehicula. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.  Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.\"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell small-6 full-height\"],[9],[0,\"\\n    \"],[1,[27,\"body-editor\",null,[[\"body\"],[[23,[\"model\",\"body\"]]]]],false],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "8WxTktIY", "block": "{\"symbols\":[],\"statements\":[[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[0,\"Edit File\"],[10],[0,\"\\n\"],[10],[0,\"\\n\"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n  \"],[1,[27,\"tabs-title\",null,[[\"tabs\"],[[23,[\"tabs\"]]]]],false],[0,\"\\n\"],[10],[0,\"\\n\"],[7,\"div\"],[11,\"class\",\"cell auto tabs-content\"],[9],[0,\"\\n\"],[4,\"tabs-panel\",null,[[\"tabs\",\"idx\"],[[23,[\"tabs\"]],0]],{\"statements\":[[0,\"    \"],[1,[27,\"body-editor\",null,[[\"body\"],[[23,[\"model\",\"body\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"tabs-panel\",null,[[\"tabs\",\"idx\"],[[23,[\"tabs\"]],1]],{\"statements\":[[0,\"    Not implemented yet.\\n\"]],\"parameters\":[]},null],[4,\"tabs-panel\",null,[[\"tabs\",\"idx\"],[[23,[\"tabs\"]],2]],{\"statements\":[[0,\"    \"],[7,\"div\"],[11,\"class\",\"grid-x grid-padding-x full-height\"],[9],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"cell small-6 cell-block-y\"],[9],[0,\"\\n        \"],[7,\"ul\"],[11,\"class\",\"no-bullet\"],[9],[0,\"\\n          \"],[1,[27,\"xml-tree-editor\",null,[[\"node\",\"click-node-title\",\"notify-model-change\"],[[23,[\"model\",\"header\"]],[27,\"action\",[[22,0,[]],\"select-metadata-node\"],null],[27,\"action\",[[22,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"div\"],[11,\"class\",\"cell small-6 cell-block-y\"],[9],[0,\"\\n\"],[4,\"if\",[[23,[\"selected_metadata_node\"]]],null,{\"statements\":[[0,\"          \"],[1,[27,\"node-editor\",null,[[\"node\",\"edit_tail\",\"notify-model-change\"],[[23,[\"selected_metadata_node\"]],false,[27,\"action\",[[22,0,[]],\"notify-model-change\"],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/file.hbs" } });
 });
 ;define("client/templates/editor/files", ["exports"], function (exports) {
   "use strict";
@@ -1735,7 +1799,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+823d3072"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+322cc0b6"});
           }
         
 //# sourceMappingURL=client.map

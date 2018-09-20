@@ -62,6 +62,10 @@ svg.icon.small {
 /**
  * Foundation overrides
  */
+h1 {
+  font-size: 18pt;
+}
+
 .top-bar {
   margin-bottom: 1rem;
   border-bottom: 1px solid #cacaca;

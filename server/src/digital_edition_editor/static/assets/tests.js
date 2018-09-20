@@ -4650,6 +4650,64 @@ define('client/tests/integration/components/node-editor-test', ['qunit', 'ember-
     });
   });
 });
+define('client/tests/integration/components/tabs-panel-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Component | tabs-panel', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    (0, _qunit.test)('it renders', async function (assert) {
+      // Set any properties with this.set('myProperty', 'value');
+      // Handle any actions with this.set('myAction', function(val) { ... });
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "x4nI5qiq",
+        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"tabs-panel\"],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '');
+
+      // Template block usage:
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "kVS28HIt",
+        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"tabs-panel\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), 'template block text');
+    });
+  });
+});
+define('client/tests/integration/components/tabs-title-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Component | tabs-title', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    (0, _qunit.test)('it renders', async function (assert) {
+      // Set any properties with this.set('myProperty', 'value');
+      // Handle any actions with this.set('myAction', function(val) { ... });
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "E/1ueSpv",
+        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"tabs-title\"],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '');
+
+      // Template block usage:
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "qPqEXJ4y",
+        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"tabs-title\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), 'template block text');
+    });
+  });
+});
 define('client/tests/integration/components/tei-tag-render-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
   'use strict';
 
@@ -4857,6 +4915,16 @@ define('client/tests/lint/app.lint-test', [], function () {
     assert.ok(true, 'components/node-editor.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/tabs-panel.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/tabs-panel.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/tabs-title.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/tabs-title.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/tei-tag-render.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/tei-tag-render.js should pass ESLint\n\n');
@@ -5017,6 +5085,16 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
     assert.ok(false, 'client/templates/components/node-editor.hbs should pass TemplateLint.\n\nclient/templates/components/node-editor.hbs\n  24:14  error  Self-closing a void element is redundant  self-closing-void-elements\n  52:10  error  Self-closing a void element is redundant  self-closing-void-elements\n  64:10  error  Self-closing a void element is redundant  self-closing-void-elements\n');
   });
 
+  QUnit.test('client/templates/components/tabs-panel.hbs', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'client/templates/components/tabs-panel.hbs should pass TemplateLint.\n\n');
+  });
+
+  QUnit.test('client/templates/components/tabs-title.hbs', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'client/templates/components/tabs-title.hbs should pass TemplateLint.\n\n');
+  });
+
   QUnit.test('client/templates/components/tei-tag-render.hbs', function (assert) {
     assert.expect(1);
     assert.ok(false, 'client/templates/components/tei-tag-render.hbs should pass TemplateLint.\n\nclient/templates/components/tei-tag-render.hbs\n  1:64  error  Incorrect indentation of attribute \'tag\' beginning at L1:C64. Expected \'tag\' to be at L2:C49.  attribute-indentation\n  1:74  error  Incorrect indentation of attribute \'tagName\' beginning at L1:C74. Expected \'tagName\' to be at L3:C49.  attribute-indentation\n  1:109  error  Incorrect indentation of attribute \'classNames\' beginning at L1:C109. Expected \'classNames\' to be at L4:C49.  attribute-indentation\n  1:138  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{tei-tag-render}}\' beginning at L1:C138. Expected \'{{tei-tag-render}}\' to be at L5:C47.  attribute-indentation\n');
@@ -5090,6 +5168,16 @@ define('client/tests/lint/tests.lint-test', [], function () {
   QUnit.test('integration/components/node-editor-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/node-editor-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/tabs-panel-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/tabs-panel-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/tabs-title-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/tabs-title-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/tei-tag-render-test.js', function (assert) {
