@@ -1,7 +1,21 @@
-<div class="grid-y full-height">
-  <nav class="cell shrink">
-    {{dropdown-menu items=menu onaction=(action "menu-action")}}
+<div class="grid-x full-height">
+  <nav class="cell medium-3 full-height auto-overflow">
+    <ul class="accordion">
+      {{#each menu as |item|}}
+        {{#accordion-item title=item.title}}
+          <ul class="menu vertical">
+            {{#each item.items as |action|}}
+              {{#if action.is_active}}
+                <li class="is-active"><a {{action action.action action.id}}>{{action.title}}</a></li>
+              {{else}}
+                <li><a {{action action.action action.id}}>{{action.title}}</a></li>
+              {{/if}}
+            {{/each}}
+          </ul>
+        {{/accordion-item}}
+      {{/each}}
+    </ul>
   </nav>
-  <div class="editor auto-overflow">
+  <div class="cell auto full-height editor auto-overflow">
   </div>
 </div>

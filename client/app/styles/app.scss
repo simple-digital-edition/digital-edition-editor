@@ -186,6 +186,10 @@ svg.icon {
         }
     }
 }
+.accordion-content {
+    padding-left: 0;
+    padding-right: 0;
+}
 
 /**
  * Loading indicator
@@ -231,6 +235,7 @@ svg.icon {
     }
     .editor {
         font-family: 'Open Sans', sans-serif;
+        max-width: 43rem;
 
         *:last-child() {
             padding-bottom: 100vh;

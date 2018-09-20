@@ -99,6 +99,11 @@ h1 {
   color: #fefefe;
 }
 
+.accordion-content {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 /**
  * Loading indicator
  */
@@ -138,6 +143,7 @@ h1 {
 }
 .tei-body-editor .editor {
   font-family: "Open Sans", sans-serif;
+  max-width: 43rem;
 }
 .tei-body-editor .editor *:last-child() {
   padding-bottom: 100vh;

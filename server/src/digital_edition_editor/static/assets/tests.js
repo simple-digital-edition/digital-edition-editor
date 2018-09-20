@@ -4534,6 +4534,35 @@ define('client/tests/helpers/ember-simple-auth', ['exports', 'ember-simple-auth/
     return app.testHelpers.wait();
   }
 });
+define('client/tests/integration/components/accordion-item-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Component | accordion-item', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    (0, _qunit.test)('it renders', async function (assert) {
+      // Set any properties with this.set('myProperty', 'value');
+      // Handle any actions with this.set('myAction', function(val) { ... });
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "w9q5yhBv",
+        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"accordion-item\"],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '');
+
+      // Template block usage:
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "li/qeQs7",
+        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"accordion-item\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), 'template block text');
+    });
+  });
+});
 define('client/tests/integration/components/body-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
   'use strict';
 
@@ -4895,9 +4924,14 @@ define('client/tests/lint/app.lint-test', [], function () {
     assert.ok(false, 'authenticators/local.js should pass ESLint\n\n19:27 - \'data\' is defined but never used. (no-unused-vars)\n38:23 - \'data\' is defined but never used. (no-unused-vars)');
   });
 
+  QUnit.test('components/accordion-item.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/accordion-item.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/body-editor.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/body-editor.js should pass ESLint\n\n');
+    assert.ok(false, 'components/body-editor.js should pass ESLint\n\n334:39 - \'param\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/dropdown-menu-item.js', function (assert) {
@@ -5065,9 +5099,14 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
     assert.ok(true, 'client/templates/application.hbs should pass TemplateLint.\n\n');
   });
 
+  QUnit.test('client/templates/components/accordion-item.hbs', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'client/templates/components/accordion-item.hbs should pass TemplateLint.\n\nclient/templates/components/accordion-item.hbs\n  3:33  error  elements cannot have inline styles  no-inline-styles\n  2:5  error  Interaction added to non-interactive element  no-invalid-interactive\n  7:5  error  Interaction added to non-interactive element  no-invalid-interactive\n');
+  });
+
   QUnit.test('client/templates/components/body-editor.hbs', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'client/templates/components/body-editor.hbs should pass TemplateLint.\n\n');
+    assert.ok(false, 'client/templates/components/body-editor.hbs should pass TemplateLint.\n\nclient/templates/components/body-editor.hbs\n  9:41  error  Interaction added to non-interactive element  no-invalid-interactive\n  11:23  error  Interaction added to non-interactive element  no-invalid-interactive\n');
   });
 
   QUnit.test('client/templates/components/dropdown-menu-item.hbs', function (assert) {
@@ -5149,6 +5188,11 @@ define('client/tests/lint/tests.lint-test', [], function () {
   'use strict';
 
   QUnit.module('ESLint | tests');
+
+  QUnit.test('integration/components/accordion-item-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/accordion-item-test.js should pass ESLint\n\n');
+  });
 
   QUnit.test('integration/components/body-editor-test.js', function (assert) {
     assert.expect(1);
