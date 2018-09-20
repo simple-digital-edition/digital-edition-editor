@@ -190,18 +190,6 @@ def build_etree_from_prosemirror(source):
                                 parent.text = ''
                         parent.append(text_elem)
                         parent = text_elem
-                    #if {'type': 'page_break'} in inline['marks']:
-                    #    last_inline = etree.Element('{http://www.tei-c.org/ns/1.0}pb')
-                    #    last_inline.attrib['n'] = inline['text']
-                    #    block_elem.append(last_inline)
-                    #else:
-                    #    last_inline = etree.Element('{http://www.tei-c.org/ns/1.0}span')
-                    #    last_inline.attrib['style'] = ' '.join([mark['type'].replace('_', '-') for mark in inline['marks'] if mark != 'foreign_language'])
-                    #    if {'type': 'foreign_language'} in inline['marks']:
-                    #        last_inline.attrib['type'] = 'foreign-language'
-                    #    last_inline.text = inline['text']
-                    #    block_elem.append(last_inline)
-                    pass
                 else:
                     text_elem = etree.Element('{http://www.tei-c.org/ns/1.0}span')
                     text_elem.text = inline['text']
@@ -233,17 +221,17 @@ def patch_file(request):
                 local_commits = list(repo.iter_commits('master@{u}..master'))
                 commit_msg = 'Updated %s' % os.path.basename(file_path)
                 # Ammend the last commit if it has the same commit message as the new one
-                #if len(local_commits) > 0 and local_commits[0].message == commit_msg and \
-                #    local_commits[0].author.email == request.authorized_user['username']:
-                #    repo.index.add([os.path.abspath(file_path)])
-                #    repo.git.commit('--amend',
-                #                    '-m %s' % commit_msg,
-                #                    '--author="%s <%s>"' % (request.authorized_user['name'],
-                #                                            request.authorized_user['username']))
-                #else:
-                #    repo.index.add([os.path.abspath(file_path)])
-                #    actor = Actor(request.authorized_user['name'], request.authorized_user['username'])
-                #    repo.index.commit(commit_msg, author=actor, committer=actor)
+                if len(local_commits) > 0 and local_commits[0].message == commit_msg and \
+                    local_commits[0].author.email == request.authorized_user['username']:
+                    repo.index.add([os.path.abspath(file_path)])
+                    repo.git.commit('--amend',
+                                    '-m %s' % commit_msg,
+                                    '--author="%s <%s>"' % (request.authorized_user['name'],
+                                                            request.authorized_user['username']))
+                else:
+                    repo.index.add([os.path.abspath(file_path)])
+                    actor = Actor(request.authorized_user['name'], request.authorized_user['username'])
+                    repo.index.commit(commit_msg, author=actor, committer=actor)
             with open(file_path, 'rb') as in_f:
                 header, body = file_to_json(in_f)
             return {'data': {'type': 'files',
