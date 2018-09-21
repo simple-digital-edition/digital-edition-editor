@@ -72,11 +72,8 @@ def file_to_json(file):
                             elif 'text-right' in element.attrib['style']:
                                 block['attrs']['text_align'] = 'right'
                         stack.append(block)
-                    elif element.tag == '{http://www.tei-c.org/ns/1.0}span':
+                    elif element.tag == '{http://www.tei-c.org/ns/1.0}hi':
                         marks = []
-                        if 'type' in element.attrib:
-                            if element.attrib['type'] == 'foreign-language':
-                                marks.append({'type': 'foreign_language'})
                         if 'style' in element.attrib:
                             if 'letter-sparse' in element.attrib['style']:
                                 marks.append({'type': 'letter_sparse'})
@@ -88,7 +85,9 @@ def file_to_json(file):
                                 marks.append({'type': 'font_size_medium'})
                             if 'font-size-small' in element.attrib['style']:
                                 marks.append({'type': 'font_size_small'})
-                        if element.getparent().tag == '{http://www.tei-c.org/ns/1.0}span' :
+                            if 'font-weight_bold' in element.attrib['style']:
+                                marks.append({'type': 'font_weight_bold'})
+                        if element.getparent().tag not in ['{http://www.tei-c.org/ns/1.0}head', '{http://www.tei-c.org/ns/1.0}p']:
                             if element.text:
                                 stack[-1]['content'][-1]['text'] = element.text
                             stack[-1]['content'][-1]['marks'].extend(marks)
@@ -97,10 +96,34 @@ def file_to_json(file):
                                 stack[-1]['content'].append({'type': 'text',
                                                              'text': element.text,
                                                              'marks': marks})
+                    elif element.tag == '{http://www.tei-c.org/ns/1.0}foreign':
+                        if element.getparent().tag not in ['{http://www.tei-c.org/ns/1.0}head', '{http://www.tei-c.org/ns/1.0}p']:
+                            if element.text:
+                                stack[-1]['content'][-1]['text'] = element.text
+                            stack[-1]['content'][-1]['marks'].append({'type': 'foreign_language'})
+                        else:
+                            if element.text or len(element) > 0:
+                                stack[-1]['content'].append({'type': 'text',
+                                                             'text': element.text,
+                                                             'marks': [{'type': 'foreign_language'}]})
                     elif element.tag == '{http://www.tei-c.org/ns/1.0}pb':
-                        stack[-1]['content'].append({'type': 'text',
-                                                     'text': element.attrib['n'],
-                                                     'marks': [{'type': 'page_break'}]})
+                        if element.getparent().tag not in ['{http://www.tei-c.org/ns/1.0}head', '{http://www.tei-c.org/ns/1.0}p']:
+                            if element.text:
+                                stack[-1]['content'][-1]['text'] = element.attrib['n']
+                            stack[-1]['content'][-1]['marks'].append({'type': 'page_break'})
+                        else:
+                            stack[-1]['content'].append({'type': 'text',
+                                                         'text': element.attrib['n'],
+                                                         'marks': [{'type': 'page_break'}]})
+                    elif element.tag == '{http://www.tei-c.org/ns/1.0}seg':
+                        if element.getparent().tag not in ['{http://www.tei-c.org/ns/1.0}head', '{http://www.tei-c.org/ns/1.0}p']:
+                            if element.text:
+                                stack[-1]['content'][-1]['text'] = element.text
+                        else:
+                            if element.text or len(element) > 0:
+                                stack[-1]['content'].append({'type': 'text',
+                                                             'text': element.text,
+                                                             'marks': []})
                     else:
                         print(element.tag)
         elif event == 'end':
@@ -179,19 +202,29 @@ def build_etree_from_prosemirror(source):
                             text_elem.attrib['n'] = inline['text']
                             if parent.text:
                                 parent.text = ''
-                        else:
-                            text_elem = etree.Element('{http://www.tei-c.org/ns/1.0}span')
+                            parent.append(text_elem)
+                            parent = text_elem
+                        elif mark['type'] == 'foreign_language':
+                            text_elem = etree.Element('{http://www.tei-c.org/ns/1.0}foreign')
                             text_elem.text = inline['text']
-                            if mark['type'] == 'foreign_language':
-                                text_elem.attrib['type'] = 'foreign-language'
-                            else:
-                                text_elem.attrib['style'] = mark['type'].replace('_', '-')
                             if parent.text:
                                 parent.text = ''
-                        parent.append(text_elem)
-                        parent = text_elem
+                            parent.append(text_elem)
+                            parent = text_elem
+                        else:
+                            if parent.tag == '{http://www.tei-c.org/ns/1.0}hi':
+                                text_elem.attrib['style'] = '%s %s' % (text_elem.attrib['style'],
+                                                                       mark['type'].replace('_', '-'))
+                            else:
+                                text_elem = etree.Element('{http://www.tei-c.org/ns/1.0}hi')
+                                text_elem.text = inline['text']
+                                text_elem.attrib['style'] = mark['type'].replace('_', '-')
+                                if parent.text:
+                                    parent.text = ''
+                                parent.append(text_elem)
+                                parent = text_elem
                 else:
-                    text_elem = etree.Element('{http://www.tei-c.org/ns/1.0}span')
+                    text_elem = etree.Element('{http://www.tei-c.org/ns/1.0}seg')
                     text_elem.text = inline['text']
                     block_elem.append(text_elem)
     return elem
@@ -221,17 +254,17 @@ def patch_file(request):
                 local_commits = list(repo.iter_commits('master@{u}..master'))
                 commit_msg = 'Updated %s' % os.path.basename(file_path)
                 # Ammend the last commit if it has the same commit message as the new one
-                if len(local_commits) > 0 and local_commits[0].message == commit_msg and \
-                    local_commits[0].author.email == request.authorized_user['username']:
-                    repo.index.add([os.path.abspath(file_path)])
-                    repo.git.commit('--amend',
-                                    '-m %s' % commit_msg,
-                                    '--author="%s <%s>"' % (request.authorized_user['name'],
-                                                            request.authorized_user['username']))
-                else:
-                    repo.index.add([os.path.abspath(file_path)])
-                    actor = Actor(request.authorized_user['name'], request.authorized_user['username'])
-                    repo.index.commit(commit_msg, author=actor, committer=actor)
+                #if len(local_commits) > 0 and local_commits[0].message == commit_msg and \
+                #    local_commits[0].author.email == request.authorized_user['username']:
+                #    repo.index.add([os.path.abspath(file_path)])
+                #    repo.git.commit('--amend',
+                #                    '-m %s' % commit_msg,
+                #                    '--author="%s <%s>"' % (request.authorized_user['name'],
+                #                                            request.authorized_user['username']))
+                #else:
+                #    repo.index.add([os.path.abspath(file_path)])
+                #    actor = Actor(request.authorized_user['name'], request.authorized_user['username'])
+                #    repo.index.commit(commit_msg, author=actor, committer=actor)
             with open(file_path, 'rb') as in_f:
                 header, body = file_to_json(in_f)
             return {'data': {'type': 'files',
