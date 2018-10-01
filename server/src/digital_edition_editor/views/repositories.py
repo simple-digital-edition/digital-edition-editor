@@ -11,7 +11,9 @@ from .users import is_authenticated
 
 def repository_as_json(request, key):
     repositories = get_config_setting(request, 'git.repos')
-    base_path = repositories[key]
+    base_path = os.path.join(get_config_setting(request, 'git.basedir'),
+                             request.authorized_user['userid'],
+                             key)
     repository = Repo(base_path)
     tei_files = {}
     for path, _, filenames in os.walk(base_path):
@@ -25,9 +27,9 @@ def repository_as_json(request, key):
             'id': key,
             'attributes': {
                 'title': key.title(),
-                'is-dirty': repository.is_dirty(),
                 'local-changes': [{'message': commit.message, 'author': commit.author.name}
-                                  for commit in repository.iter_commits('master@{u}..master')],
+                                  for commit in repository.iter_commits('%s@{u}..%s' % (request.authorized_user['userid'],
+                                                                                        request.authorized_user['userid']))],
                 'remote-changes': [{'message': commit.message, 'author': commit.author.name}
                                    for commit in repository.iter_commits('master..master@{u}')],
                 'tei-files': tei_files}}
@@ -37,7 +39,9 @@ def repository_as_json(request, key):
 @is_authenticated()
 def get_repositories(request):
     repositories = get_config_setting(request, 'git.repos')
-    return {'data': [repository_as_json(request, key) for key in repositories.keys()]}
+    return {'data': [{'type': 'repositories',
+                      'id': key,
+                      'attributes': {'title': key.title()}} for key in repositories.keys()]}
 
 
 @view_config(route_name='repository.get', renderer='json')
@@ -45,9 +49,25 @@ def get_repositories(request):
 def get_repository(request):
     repositories = get_config_setting(request, 'git.repos')
     if request.matchdict['rid'] in repositories:
-        base_path = repositories[request.matchdict['rid']]
-        repository = Repo(base_path)
-        repository.remotes.origin.fetch()
+        base_path = os.path.join(get_config_setting(request, 'git.basedir'),
+                                 request.authorized_user['userid'],
+                                 request.matchdict['rid'])
+        # Clone or load the repository
+        if not os.path.exists(base_path):
+            repository = Repo.clone_from(repositories[request.matchdict['rid']], base_path)
+            # Ensure local and remote user branch exist
+            if request.authorized_user['userid'] in repository.remotes.origin.refs:
+                branch = repository.create_head(request.authorized_user['userid'])
+                branch.set_tracking_branch(repository.remotes.origin.refs[request.authorized_user['userid']])
+                branch.checkout()
+            else:
+                branch = repository.create_head(request.authorized_user['userid'])
+                branch.checkout()
+                repository.git.push('--set-upstream', 'origin', request.authorized_user['userid'])
+        else:
+            repository = Repo(base_path)
+            # Fetch remote change information
+            repository.remotes.origin.fetch()
         return {'data': repository_as_json(request, request.matchdict['rid'])}
     raise HTTPNotFound()
 
@@ -57,9 +77,14 @@ def get_repository(request):
 def patch_repository(request):
     repositories = get_config_setting(request, 'git.repos')
     if request.matchdict['rid'] in repositories:
-        base_path = repositories[request.matchdict['rid']]
+        base_path = os.path.join(get_config_setting(request, 'git.basedir'),
+                                 request.authorized_user['userid'],
+                                 request.matchdict['rid'])
         repository = Repo(base_path)
-        repository.remotes.origin.pull(rebase=True)
+        repository.heads.master.checkout()
+        repository.remotes.origin.pull()
+        repository.heads[request.authorized_user['userid']].checkout()
+        repository.git.merge('master')
         repository.remotes.origin.push()
         return {'data': repository_as_json(request, request.matchdict['rid'])}
     raise HTTPNotFound()

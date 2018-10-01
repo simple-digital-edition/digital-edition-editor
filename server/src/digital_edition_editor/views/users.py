@@ -12,13 +12,13 @@ def is_authenticated():
         if 'Authorization' in request.headers:
             users = get_config_setting(request, 'app.users', target_type='list')
             for user in users:
-                username, name, password = user.split(':')
+                userid, username, name, password = user.split(':')
                 hash = hashlib.sha256()
                 hash.update(username.encode('utf-8'))
                 hash.update('::'.encode('utf-8'))
                 hash.update(password.encode('utf-8'))
                 if hash.hexdigest() == request.headers['Authorization'][7:]:
-                    request.authorized_user = {'username': username, 'name': name}
+                    request.authorized_user = {'userid': userid, 'username': username, 'name': name}
                     return f(*args, **kwargs)
             raise HTTPUnauthorized()
         else:
@@ -31,7 +31,7 @@ def get_file(request):
     if 'filter[username]' in request.params and 'filter[password]' in request.params:
         users = get_config_setting(request, 'app.users', target_type='list')
         for user in users:
-            username, _, password = user.split(':')
+            _, username, _, password = user.split(':')
             if username == request.params['filter[username]'] and password == request.params['filter[password]']:
                 hash = hashlib.sha256()
                 hash.update(username.encode('utf-8'))
@@ -44,7 +44,7 @@ def get_file(request):
     elif 'filter[token]' in request.params:
         users = get_config_setting(request, 'app.users', target_type='list')
         for user in users:
-            username, _, password = user.split(':')
+            _, username, _, password = user.split(':')
             hash = hashlib.sha256()
             hash.update(username.encode('utf-8'))
             hash.update('::'.encode('utf-8'))

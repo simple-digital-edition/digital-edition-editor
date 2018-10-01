@@ -1388,6 +1388,7 @@
         title: _emberData.default.attr('string'),
         is_dirty: _emberData.default.attr('boolean'),
         local_changes: _emberData.default.attr(),
+        remote_changes: _emberData.default.attr(),
         tei_files: _emberData.default.attr()
     });
 });

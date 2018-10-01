@@ -153,9 +153,12 @@ def get_file(request):
     repository, fid = request.matchdict['fid'].split(':')
     repositories = get_config_setting(request, 'git.repos')
     if repository in repositories:
-        local_file_path = find_file(repositories[repository], fid)
+        base_path = os.path.join(get_config_setting(request, 'git.basedir'),
+                                 request.authorized_user['userid'],
+                                 repository)
+        local_file_path = find_file(base_path, fid)
         if local_file_path:
-            file_path = os.path.join(repositories[repository], local_file_path)
+            file_path = os.path.join(base_path, local_file_path)
             with open(file_path, 'rb') as in_f:
                 doc = etree.parse(in_f)
                 header = load_header(doc)
@@ -303,9 +306,12 @@ def patch_file(request):
     repository, fid = request.matchdict['fid'].split(':')
     repositories = get_config_setting(request, 'git.repos')
     if repository in repositories:
-        local_file_path = find_file(repositories[repository], fid)
+        base_path = os.path.join(get_config_setting(request, 'git.basedir'),
+                                 request.authorized_user['userid'],
+                                 repository)
+        local_file_path = find_file(base_path, fid)
         if local_file_path:
-            file_path = os.path.join(repositories[repository], local_file_path)
+            file_path = os.path.join(base_path, local_file_path)
             request_body = json.loads(request.body)
             with open(file_path, 'rb') as in_f:
                 doc = etree.parse(in_f)
@@ -325,10 +331,10 @@ def patch_file(request):
             with open(file_path, 'wb') as out_f:
                 out_f.write(etree.tostring(tei, pretty_print=True, xml_declaration=True, encoding="UTF-8"))
             repositories = get_config_setting(request, 'git.repos')
-            base_path = repositories[repository]
             repo = Repo(base_path)
             if repo.index.diff(None):
-                local_commits = list(repo.iter_commits('master@{u}..master'))
+                local_commits = list(repo.iter_commits('%s@{u}..%s' % (request.authorized_user['userid'],
+                                                                       request.authorized_user['userid'])))
                 commit_msg = 'Updated %s' % os.path.basename(file_path)
                 # Ammend the last commit if it has the same commit message as the new one
                 if len(local_commits) > 0 and local_commits[0].message == commit_msg and \
