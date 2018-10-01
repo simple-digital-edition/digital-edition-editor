@@ -81,10 +81,15 @@ def patch_repository(request):
                                  request.authorized_user['userid'],
                                  request.matchdict['rid'])
         repository = Repo(base_path)
+        # Pull the latest changes from the master branch
         repository.heads.master.checkout()
         repository.remotes.origin.pull()
         repository.heads[request.authorized_user['userid']].checkout()
+        # Merge them in
         repository.git.merge('master')
+        # Pull any branch changes
+        repository.remotes.origin.pull()
+        # Push all changes
         repository.remotes.origin.push()
         return {'data': repository_as_json(request, request.matchdict['rid'])}
     raise HTTPNotFound()
