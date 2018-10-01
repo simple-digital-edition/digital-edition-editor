@@ -4679,35 +4679,6 @@ define('client/tests/integration/components/header-editor-test', ['qunit', 'embe
     });
   });
 });
-define('client/tests/integration/components/node-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
-  'use strict';
-
-  (0, _qunit.module)('Integration | Component | node-editor', function (hooks) {
-    (0, _emberQunit.setupRenderingTest)(hooks);
-
-    (0, _qunit.test)('it renders', async function (assert) {
-      // Set any properties with this.set('myProperty', 'value');
-      // Handle any actions with this.set('myAction', function(val) { ... });
-
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "p1rde+3w",
-        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"node-editor\"],false]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), '');
-
-      // Template block usage:
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "epgKcr3T",
-        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"node-editor\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), 'template block text');
-    });
-  });
-});
 define('client/tests/integration/components/tabs-panel-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
   'use strict';
 
@@ -4766,193 +4737,6 @@ define('client/tests/integration/components/tabs-title-test', ['qunit', 'ember-q
     });
   });
 });
-define('client/tests/integration/components/tei-tag-render-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
-  'use strict';
-
-  (0, _qunit.module)('Integration | Component | tei-tag-render', function (hooks) {
-    (0, _emberQunit.setupRenderingTest)(hooks);
-
-    (0, _qunit.test)('it renders', async function (assert) {
-      // Set any properties with this.set('myProperty', 'value');
-      // Handle any actions with this.set('myAction', function(val) { ... });
-
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "lXwuvJ5F",
-        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"tei-tag-render\"],false]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), '');
-
-      // Template block usage:
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "7Jr+S/KN",
-        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"tei-tag-render\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), 'template block text');
-    });
-  });
-});
-define('client/tests/integration/components/tree-view-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
-  'use strict';
-
-  (0, _qunit.module)('Integration | Component | tree-view', function (hooks) {
-    (0, _emberQunit.setupRenderingTest)(hooks);
-
-    (0, _qunit.test)('it renders', async function (assert) {
-      // Set any properties with this.set('myProperty', 'value');
-      // Handle any actions with this.set('myAction', function(val) { ... });
-
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "nxJ6akgb",
-        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"tree-view\"],false]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), '');
-
-      // Template block usage:
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "nAx4nklJ",
-        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"tree-view\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), 'template block text');
-    });
-  });
-});
-define('client/tests/integration/components/xml-tree-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
-  'use strict';
-
-  (0, _qunit.module)('Integration | Component | xml-tree-editor', function (hooks) {
-    (0, _emberQunit.setupRenderingTest)(hooks);
-
-    (0, _qunit.test)('it renders', async function (assert) {
-      // Set any properties with this.set('myProperty', 'value');
-      // Handle any actions with this.set('myAction', function(val) { ... });
-
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "Xx2EM9XP",
-        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"xml-tree-editor\"],false]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), '');
-
-      // Template block usage:
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "uqAR8NeT",
-        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"xml-tree-editor\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), 'template block text');
-    });
-  });
-});
-define('client/tests/integration/helpers/format-tag-ns-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
-  'use strict';
-
-  (0, _qunit.module)('Integration | Helper | format-tag-ns', function (hooks) {
-    (0, _emberQunit.setupRenderingTest)(hooks);
-
-    // Replace this with your real tests.
-    (0, _qunit.test)('it renders', async function (assert) {
-      this.set('inputValue', '1234');
-
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "OIJyURAl",
-        "block": "{\"symbols\":[],\"statements\":[[1,[27,\"format-tag-ns\",[[23,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), '1234');
-    });
-  });
-});
-define('client/tests/integration/helpers/path-access-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
-  'use strict';
-
-  (0, _qunit.module)('Integration | Helper | path-access', function (hooks) {
-    (0, _emberQunit.setupRenderingTest)(hooks);
-
-    // Replace this with your real tests.
-    (0, _qunit.test)('it renders', async function (assert) {
-      this.set('inputValue', '1234');
-
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "JXKySWve",
-        "block": "{\"symbols\":[],\"statements\":[[1,[27,\"path-access\",[[23,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), '1234');
-    });
-  });
-});
-define('client/tests/integration/helpers/strip-tag-ns-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
-  'use strict';
-
-  (0, _qunit.module)('Integration | Helper | strip-tag-ns', function (hooks) {
-    (0, _emberQunit.setupRenderingTest)(hooks);
-
-    // Replace this with your real tests.
-    (0, _qunit.test)('it renders', async function (assert) {
-      this.set('inputValue', '1234');
-
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "hb7wj6il",
-        "block": "{\"symbols\":[],\"statements\":[[1,[27,\"strip-tag-ns\",[[23,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), '1234');
-    });
-  });
-});
-define('client/tests/integration/helpers/tei-tag-mapper-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
-  'use strict';
-
-  (0, _qunit.module)('Integration | Helper | tei-tag-mapper', function (hooks) {
-    (0, _emberQunit.setupRenderingTest)(hooks);
-
-    // Replace this with your real tests.
-    (0, _qunit.test)('it renders', async function (assert) {
-      this.set('inputValue', '1234');
-
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "2vY8Kn/n",
-        "block": "{\"symbols\":[],\"statements\":[[1,[27,\"tei-tag-mapper\",[[23,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), '1234');
-    });
-  });
-});
-define('client/tests/integration/helpers/tei-tag-source-code-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
-  'use strict';
-
-  (0, _qunit.module)('Integration | Helper | tei-tag-source-code', function (hooks) {
-    (0, _emberQunit.setupRenderingTest)(hooks);
-
-    // Replace this with your real tests.
-    (0, _qunit.test)('it renders', async function (assert) {
-      this.set('inputValue', '1234');
-
-      await (0, _testHelpers.render)(Ember.HTMLBars.template({
-        "id": "5xJptcFa",
-        "block": "{\"symbols\":[],\"statements\":[[1,[27,\"tei-tag-source-code\",[[23,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
-        "meta": {}
-      }));
-
-      assert.equal(this.element.textContent.trim(), '1234');
-    });
-  });
-});
 define('client/tests/lint/app.lint-test', [], function () {
   'use strict';
 
@@ -4998,11 +4782,6 @@ define('client/tests/lint/app.lint-test', [], function () {
     assert.ok(true, 'components/header-editor.js should pass ESLint\n\n');
   });
 
-  QUnit.test('components/node-editor.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/node-editor.js should pass ESLint\n\n');
-  });
-
   QUnit.test('components/tabs-panel.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/tabs-panel.js should pass ESLint\n\n');
@@ -5011,21 +4790,6 @@ define('client/tests/lint/app.lint-test', [], function () {
   QUnit.test('components/tabs-title.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/tabs-title.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/tei-tag-render.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/tei-tag-render.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/tree-view.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/tree-view.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('components/xml-tree-editor.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'components/xml-tree-editor.js should pass ESLint\n\n');
   });
 
   QUnit.test('controllers/editor.js', function (assert) {
@@ -5056,31 +4820,6 @@ define('client/tests/lint/app.lint-test', [], function () {
   QUnit.test('controllers/users/login.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'controllers/users/login.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('helpers/format-tag-ns.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'helpers/format-tag-ns.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('helpers/path-access.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'helpers/path-access.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('helpers/strip-tag-ns.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'helpers/strip-tag-ns.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('helpers/tei-tag-mapper.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'helpers/tei-tag-mapper.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('helpers/tei-tag-source-code.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'helpers/tei-tag-source-code.js should pass ESLint\n\n');
   });
 
   QUnit.test('models/file.js', function (assert) {
@@ -5183,11 +4922,6 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
     assert.ok(false, 'client/templates/components/header-editor.hbs should pass TemplateLint.\n\nclient/templates/components/header-editor.hbs\n  7:20  error  Incorrect indentation of attribute \'type\' beginning at L7:C20. Expected \'type\' to be at L8:C14.  attribute-indentation\n  7:32  error  Incorrect indentation of attribute \'value\' beginning at L7:C32. Expected \'value\' to be at L9:C14.  attribute-indentation\n  7:62  error  Incorrect indentation of attribute \'change\' beginning at L7:C62. Expected \'change\' to be at L10:C14.  attribute-indentation\n  7:103  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{input}}\' beginning at L7:C103. Expected \'{{input}}\' to be at L11:C12.  attribute-indentation\n  15:26  error  Incorrect indentation of attribute \'type\' beginning at L15:C26. Expected \'type\' to be at L16:C20.  attribute-indentation\n  15:38  error  Incorrect indentation of attribute \'value\' beginning at L15:C38. Expected \'value\' to be at L17:C20.  attribute-indentation\n  15:72  error  Incorrect indentation of attribute \'change\' beginning at L15:C72. Expected \'change\' to be at L18:C20.  attribute-indentation\n  15:117  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{input}}\' beginning at L15:C117. Expected \'{{input}}\' to be at L19:C18.  attribute-indentation\n  29:32  error  Incorrect indentation of attribute \'type\' beginning at L29:C32. Expected \'type\' to be at L30:C26.  attribute-indentation\n  29:44  error  Incorrect indentation of attribute \'value\' beginning at L29:C44. Expected \'value\' to be at L31:C26.  attribute-indentation\n  29:81  error  Incorrect indentation of attribute \'change\' beginning at L29:C81. Expected \'change\' to be at L32:C26.  attribute-indentation\n  29:146  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{input}}\' beginning at L29:C146. Expected \'{{input}}\' to be at L33:C24.  attribute-indentation\n  6:17  error  Incorrect indentation for `{{item.title}}` beginning at L6:C17. Expected `{{item.title}}` to be at an indentation of 12 but was found at 17.  block-indentation\n  14:23  error  Incorrect indentation for `{{sub_item.title}}` beginning at L14:C23. Expected `{{sub_item.title}}` to be at an indentation of 18 but was found at 23.  block-indentation\n  28:29  error  Incorrect indentation for `{{sub_item.title}}` beginning at L28:C29. Expected `{{sub_item.title}}` to be at an indentation of 24 but was found at 29.  block-indentation\n  21:28  error  you must use double quotes in templates  quotes\n  24:41  error  you must use double quotes in templates  quotes\n');
   });
 
-  QUnit.test('client/templates/components/node-editor.hbs', function (assert) {
-    assert.expect(1);
-    assert.ok(false, 'client/templates/components/node-editor.hbs should pass TemplateLint.\n\nclient/templates/components/node-editor.hbs\n  24:14  error  Self-closing a void element is redundant  self-closing-void-elements\n  52:10  error  Self-closing a void element is redundant  self-closing-void-elements\n  64:10  error  Self-closing a void element is redundant  self-closing-void-elements\n');
-  });
-
   QUnit.test('client/templates/components/tabs-panel.hbs', function (assert) {
     assert.expect(1);
     assert.ok(true, 'client/templates/components/tabs-panel.hbs should pass TemplateLint.\n\n');
@@ -5196,21 +4930,6 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
   QUnit.test('client/templates/components/tabs-title.hbs', function (assert) {
     assert.expect(1);
     assert.ok(true, 'client/templates/components/tabs-title.hbs should pass TemplateLint.\n\n');
-  });
-
-  QUnit.test('client/templates/components/tei-tag-render.hbs', function (assert) {
-    assert.expect(1);
-    assert.ok(false, 'client/templates/components/tei-tag-render.hbs should pass TemplateLint.\n\nclient/templates/components/tei-tag-render.hbs\n  1:64  error  Incorrect indentation of attribute \'tag\' beginning at L1:C64. Expected \'tag\' to be at L2:C49.  attribute-indentation\n  1:74  error  Incorrect indentation of attribute \'tagName\' beginning at L1:C74. Expected \'tagName\' to be at L3:C49.  attribute-indentation\n  1:109  error  Incorrect indentation of attribute \'classNames\' beginning at L1:C109. Expected \'classNames\' to be at L4:C49.  attribute-indentation\n  1:138  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{tei-tag-render}}\' beginning at L1:C138. Expected \'{{tei-tag-render}}\' to be at L5:C47.  attribute-indentation\n');
-  });
-
-  QUnit.test('client/templates/components/tree-view.hbs', function (assert) {
-    assert.expect(1);
-    assert.ok(false, 'client/templates/components/tree-view.hbs should pass TemplateLint.\n\nclient/templates/components/tree-view.hbs\n  19:9  error  Incorrect indentation of htmlAttribute \'title\' beginning at L19:C9. Expected \'title\' to be at L20:C8.  attribute-indentation\n  19:80  error  Incorrect indentation of htmlAttribute \'role\' beginning at L19:C80. Expected \'role\' to be at L21:C8.  attribute-indentation\n  19:93  error  Incorrect indentation of close bracket \'>\' for the element \'<a>\' beginning at L19:C93. Expected \'<a>\' to be at L22:C6.  attribute-indentation\n  26:9  error  Incorrect indentation of htmlAttribute \'title\' beginning at L26:C9. Expected \'title\' to be at L27:C8.  attribute-indentation\n  26:82  error  Incorrect indentation of htmlAttribute \'role\' beginning at L26:C82. Expected \'role\' to be at L28:C8.  attribute-indentation\n  26:95  error  Incorrect indentation of close bracket \'>\' for the element \'<a>\' beginning at L26:C95. Expected \'<a>\' to be at L29:C6.  attribute-indentation\n  38:52  error  Incorrect indentation of attribute \'node\' beginning at L38:C52. Expected \'node\' to be at L39:C8.  attribute-indentation\n  38:63  error  Incorrect indentation of attribute \'parent\' beginning at L38:C63. Expected \'parent\' to be at L40:C8.  attribute-indentation\n  38:75  error  Incorrect indentation of attribute \'click-node-title\' beginning at L38:C75. Expected \'click-node-title\' to be at L41:C8.  attribute-indentation\n  38:109  error  Incorrect indentation of attribute \'add-child-node\' beginning at L38:C109. Expected \'add-child-node\' to be at L42:C8.  attribute-indentation\n  38:139  error  Incorrect indentation of attribute \'remove-node\' beginning at L38:C139. Expected \'remove-node\' to be at L43:C8.  attribute-indentation\n  38:163  error  Incorrect indentation of attribute \'move-node-forward\' beginning at L38:C163. Expected \'move-node-forward\' to be at L44:C8.  attribute-indentation\n  38:199  error  Incorrect indentation of attribute \'move-node-backward\' beginning at L38:C199. Expected \'move-node-backward\' to be at L45:C8.  attribute-indentation\n  38:236  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{tree-view}}\' beginning at L38:C236. Expected \'{{tree-view}}\' to be at L46:C6.  attribute-indentation\n  37:26  error  elements cannot have inline styles  no-inline-styles\n');
-  });
-
-  QUnit.test('client/templates/components/xml-tree-editor.hbs', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'client/templates/components/xml-tree-editor.hbs should pass TemplateLint.\n\n');
   });
 
   QUnit.test('client/templates/editor.hbs', function (assert) {
@@ -5278,11 +4997,6 @@ define('client/tests/lint/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/header-editor-test.js should pass ESLint\n\n');
   });
 
-  QUnit.test('integration/components/node-editor-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'integration/components/node-editor-test.js should pass ESLint\n\n');
-  });
-
   QUnit.test('integration/components/tabs-panel-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/tabs-panel-test.js should pass ESLint\n\n');
@@ -5291,46 +5005,6 @@ define('client/tests/lint/tests.lint-test', [], function () {
   QUnit.test('integration/components/tabs-title-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/tabs-title-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('integration/components/tei-tag-render-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'integration/components/tei-tag-render-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('integration/components/tree-view-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'integration/components/tree-view-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('integration/components/xml-tree-editor-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'integration/components/xml-tree-editor-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('integration/helpers/format-tag-ns-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'integration/helpers/format-tag-ns-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('integration/helpers/path-access-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'integration/helpers/path-access-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('integration/helpers/strip-tag-ns-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'integration/helpers/strip-tag-ns-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('integration/helpers/tei-tag-mapper-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'integration/helpers/tei-tag-mapper-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('integration/helpers/tei-tag-source-code-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'integration/helpers/tei-tag-source-code-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('test-helper.js', function (assert) {

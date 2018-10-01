@@ -697,42 +697,6 @@
         }
     });
 });
-;define('client/components/node-editor', ['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.default = Ember.Component.extend({
-        edit_attributes: true,
-        edit_text: true,
-        edit_tail: true,
-
-        actions: {
-            'add-attribute': function (node) {
-                var attrib = prompt('New attribute name');
-                if (attrib) {
-                    attrib = attrib.replace(/\./g, '::');
-                    Ember.set(node.attrib, attrib, '');
-                    this.get('notify-model-change')(node);
-                }
-            },
-            'remove-attribute': function (node, attrib) {
-                Ember.set(node.attrib, attrib, null);
-                delete node.attrib[attrib];
-                this.get('notify-model-change')();
-            },
-            'update-attribute': function (node, attrib, ev) {
-                Ember.set(node.attrib, attrib, ev.target.value);
-                this.get('notify-model-change')();
-            },
-            'update-text': function (node, key, ev) {
-                Ember.set(node, key, ev.target.value);
-                this.get('notify-model-change')();
-            }
-        }
-    });
-});
 ;define('client/components/tabs-panel', ['exports'], function (exports) {
     'use strict';
 
@@ -768,22 +732,6 @@
         }
     });
 });
-;define('client/components/tei-tag-render', ['exports'], function (exports) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.Component.extend({});
-});
-;define('client/components/tree-view', ['exports'], function (exports) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.Component.extend({});
-});
 ;define('client/components/welcome-page', ['exports', 'ember-welcome-page/components/welcome-page'], function (exports, _welcomePage) {
   'use strict';
 
@@ -796,52 +744,6 @@
       return _welcomePage.default;
     }
   });
-});
-;define('client/components/xml-tree-editor', ['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.default = Ember.Component.extend({
-        actions: {
-            'add-child-node': function (node) {
-                var tag = prompt('New node tag');
-                if (tag) {
-                    tag = tag.replace(/\./g, '::');
-                    var new_node = {
-                        'tag': tag,
-                        'children': [],
-                        'attrib': {},
-                        'text': '',
-                        'tail': ''
-                    };
-                    node.children.pushObject(new_node);
-                    this.get('notify-model-change')();
-                }
-            },
-            'remove-node': function (parent, node) {
-                parent.children.removeObject(node);
-                this.get('notify-model-change')();
-            },
-            'move-node-forward': function (parent, node) {
-                var idx = parent.children.indexOf(node);
-                if (idx > 0) {
-                    parent.children.removeObject(node);
-                    parent.children.insertAt(idx - 1, node);
-                    this.get('notify-model-change')();
-                }
-            },
-            'move-node-backward': function (parent, node) {
-                var idx = parent.children.indexOf(node);
-                if (idx < parent.children.length - 1) {
-                    parent.children.removeObject(node);
-                    parent.children.insertAt(idx + 1, node);
-                    this.get('notify-model-change')();
-                }
-            }
-        }
-    });
 });
 ;define('client/controllers/editor', ['exports'], function (exports) {
     'use strict';
@@ -1095,21 +997,6 @@
     }
   });
 });
-;define('client/helpers/format-tag-ns', ['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.formatTagNs = formatTagNs;
-    function formatTagNs(params /*, hash*/) {
-        return params.map(function (item) {
-            return item.replace(/::/g, '.');
-        });
-    }
-
-    exports.default = Ember.Helper.helper(formatTagNs);
-});
 ;define('client/helpers/gt', ['exports', 'ember-truth-helpers/helpers/gt'], function (exports, _gt) {
   'use strict';
 
@@ -1294,51 +1181,6 @@
     }
   });
 });
-;define('client/helpers/path-access', ['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.pathAccess = pathAccess;
-
-
-    function tree_access(node, path, type) {
-        if (node.tag === path[0]) {
-            if (path.length === 1) {
-                if (type === 'text') {
-                    return node.text;
-                } else if (type === 'node') {
-                    return node;
-                } else {
-                    return null;
-                }
-            } else {
-                if (type === 'list' && path.length === 2) {
-                    return node.children.filter(child => {
-                        return child.tag === path[1];
-                    });
-                } else {
-                    for (let idx = 0; idx < node.children.length; idx++) {
-                        let tmp = tree_access(node.children[idx], path.slice(1), type);
-                        if (tmp !== null) {
-                            return tmp;
-                        }
-                    }
-                    return null;
-                }
-            }
-        } else {
-            return null;
-        }
-    }
-
-    function pathAccess(params /*, hash*/) {
-        return tree_access(params[0], params[1], params[2]);
-    }
-
-    exports.default = Ember.Helper.helper(pathAccess);
-});
 ;define('client/helpers/pluralize', ['exports', 'ember-inflector/lib/helpers/pluralize'], function (exports, _pluralize) {
   'use strict';
 
@@ -1354,91 +1196,6 @@
     value: true
   });
   exports.default = _singularize.default;
-});
-;define('client/helpers/strip-tag-ns', ['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.stripTagNs = stripTagNs;
-    function stripTagNs(params /*, hash*/) {
-        return params.map(function (item) {
-            if (item.indexOf('{') >= 0 && item.indexOf('}') >= 0) {
-                return item.substring(item.indexOf('}') + 1);
-            } else {
-                return item;
-            }
-        });
-    }
-
-    exports.default = Ember.Helper.helper(stripTagNs);
-});
-;define('client/helpers/tei-tag-mapper', ['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.teiTagMapper = teiTagMapper;
-    function teiTagMapper(params /*, hash*/) {
-        return params.map(function (item) {
-            if (item === '{http://www::tei-c::org/ns/1::0}head') {
-                return 'header';
-            } else if (item === '{http://www::tei-c::org/ns/1::0}p') {
-                return 'p';
-            } else if (item === '{http://www::tei-c::org/ns/1::0}span') {
-                return 'span';
-            } else {
-                if (item.indexOf('{') >= 0 && item.indexOf('}') >= 0) {
-                    return item.substring(item.indexOf('}') + 1);
-                } else {
-                    return item;
-                }
-            }
-        });
-    }
-
-    exports.default = Ember.Helper.helper(teiTagMapper);
-});
-;define('client/helpers/tei-tag-source-code', ['exports'], function (exports) {
-    'use strict';
-
-    Object.defineProperty(exports, "__esModule", {
-        value: true
-    });
-    exports.teiTagSourceCode = teiTagSourceCode;
-
-
-    function recursive_text(tag) {
-        var text = '<' + tag.tag.replace('{http://www::tei-c::org/ns/1::0}', 'tei:');
-        Object.keys(tag.attrib).forEach(function (key) {
-            text = text + ' ' + key + '="' + tag.attrib[key] + '"';
-        });
-        text = text + '>';
-        if (tag.text) {
-            text = text + tag.text;
-        }
-        tag.children.forEach(function (child) {
-            text = text + recursive_text(child);
-            if (child.tail) {
-                text = text + child.tail;
-            }
-        });
-        text = text + '</' + tag.tag.replace('{http://www::tei-c::org/ns/1::0}', 'tei:') + '>';
-        if (tag.tail) {
-            text = text + tag.tail;
-        }
-        return text;
-    }
-
-    function teiTagSourceCode(params /*, hash*/) {
-        return params.map(function (item) {
-            return recursive_text(item);
-        });
-    }
-
-    exports.default = Ember.Helper.helper(teiTagSourceCode);
 });
 ;define('client/helpers/xor', ['exports', 'ember-truth-helpers/helpers/xor'], function (exports, _xor) {
   'use strict';
@@ -1870,14 +1627,6 @@
   });
   exports.default = Ember.HTMLBars.template({ "id": "+88CtP+K", "block": "{\"symbols\":[\"group\",\"item\",\"data_item\",\"idx\",\"sub_item\",\"sub_item\"],\"statements\":[[7,\"ul\"],[11,\"class\",\"accordion\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"fields\"]]],null,{\"statements\":[[4,\"accordion-item\",null,[[\"title\"],[[22,1,[\"title\"]]]],{\"statements\":[[4,\"each\",[[22,1,[\"items\"]]],null,{\"statements\":[[4,\"if\",[[27,\"eq\",[[22,2,[\"type\"]],\"single\"],null]],null,{\"statements\":[[0,\"          \"],[7,\"label\"],[9],[1,[22,2,[\"title\"]],false],[0,\"\\n            \"],[1,[27,\"input\",null,[[\"type\",\"value\",\"change\"],[\"text\",[27,\"get\",[[23,[\"header\"]],[22,2,[\"field\"]]],null],[27,\"action\",[[22,0,[]],\"update-field\",[22,2,[\"field\"]]],null]]]],false],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[27,\"eq\",[[22,2,[\"type\"]],\"multiple\"],null]],null,{\"statements\":[[0,\"          \"],[7,\"div\"],[11,\"class\",\"grid-x\"],[9],[0,\"\\n\"],[4,\"each\",[[22,2,[\"schema\",\"items\"]]],null,{\"statements\":[[0,\"              \"],[7,\"div\"],[11,\"class\",\"cell auto\"],[9],[0,\"\\n                \"],[7,\"label\"],[9],[1,[22,6,[\"title\"]],false],[0,\"\\n                  \"],[1,[27,\"input\",null,[[\"type\",\"value\",\"change\"],[\"text\",[27,\"get\",[[23,[\"header\"]],[22,6,[\"field\"]]],null],[27,\"action\",[[22,0,[]],\"update-field\",[22,6,[\"field\"]]],null]]]],false],[0,\"\\n                \"],[10],[0,\"\\n              \"],[10],[0,\"\\n\"]],\"parameters\":[6]},null],[0,\"          \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[27,\"eq\",[[22,2,[\"type\"]],\"list\"],null]],null,{\"statements\":[[0,\"          \"],[7,\"ul\"],[11,\"class\",\"no-indent\"],[9],[0,\"\\n\"],[4,\"each\",[[27,\"get\",[[23,[\"header\"]],[22,2,[\"field\"]]],null]],null,{\"statements\":[[4,\"if\",[[27,\"eq\",[[22,2,[\"schema\",\"type\"]],\"multiple\"],null]],null,{\"statements\":[[0,\"                \"],[7,\"li\"],[11,\"class\",\"grid-x\"],[9],[0,\"\\n\"],[4,\"each\",[[22,2,[\"schema\",\"items\"]]],null,{\"statements\":[[0,\"                    \"],[7,\"div\"],[11,\"class\",\"cell auto\"],[9],[0,\"\\n                      \"],[7,\"label\"],[9],[1,[22,5,[\"title\"]],false],[0,\"\\n                        \"],[1,[27,\"input\",null,[[\"type\",\"value\",\"change\"],[\"text\",[27,\"get\",[[22,3,[]],[22,5,[\"field\"]]],null],[27,\"action\",[[22,0,[]],\"update-list-field\",[22,2,[\"field\"]],[22,4,[]],[22,5,[\"field\"]]],null]]]],false],[0,\"\\n                      \"],[10],[0,\"\\n                    \"],[10],[0,\"\\n\"]],\"parameters\":[5]},null],[0,\"                \"],[10],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[3,4]},null],[0,\"          \"],[10],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[2]},null]],\"parameters\":[]},null]],\"parameters\":[1]},null],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/header-editor.hbs" } });
 });
-;define("client/templates/components/node-editor", ["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.HTMLBars.template({ "id": "Bx1+VJcz", "block": "{\"symbols\":[\"value\",\"key\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-y\"],[9],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n    \"],[7,\"h2\"],[9],[1,[27,\"strip-tag-ns\",[[23,[\"node\",\"tag\"]]],null],false],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"edit_attributes\"]]],null,{\"statements\":[[0,\"    \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n      \"],[7,\"h3\"],[9],[0,\"\\n        Attributes\\n        \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Add an attribute\"],[3,\"action\",[[22,0,[]],\"add-attribute\",[23,[\"node\"]]]],[9],[0,\"\\n          \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n            \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z\"],[9],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n\"],[4,\"each\",[[27,\"-each-in\",[[23,[\"node\",\"attrib\"]]],null]],null,{\"statements\":[[0,\"      \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n        \"],[7,\"div\"],[11,\"class\",\"grid-x\"],[9],[0,\"\\n          \"],[7,\"div\"],[11,\"class\",\"cell auto\"],[9],[0,\"\\n            \"],[7,\"label\"],[9],[0,\"\\n              \"],[7,\"span\"],[12,\"title\",[27,\"format-tag-ns\",[[22,2,[]]],null]],[9],[1,[27,\"strip-tag-ns\",[[22,2,[]]],null],false],[10],[0,\"\\n              \"],[7,\"input\"],[12,\"value\",[22,1,[]]],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"update-attribute\",[23,[\"node\"]],[22,2,[]]],null]],[11,\"type\",\"text\"],[9],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n          \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n            \"],[7,\"a\"],[11,\"href\",\"#\"],[11,\"title\",\"Remove the attribute\"],[3,\"action\",[[22,0,[]],\"remove-attribute\",[23,[\"node\"]],[22,2,[]]]],[9],[0,\"\\n              \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n                \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7\"],[9],[10],[0,\"\\n              \"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null],[4,\"if\",[[27,\"or\",[[23,[\"edit_text\"]],[23,[\"edit_tail\"]]],null]],null,{\"statements\":[[0,\"    \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n      \"],[7,\"h3\"],[9],[0,\"Text\"],[10],[0,\"\\n    \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"edit_text\"]]],null,{\"statements\":[[0,\"      \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n        \"],[7,\"label\"],[9],[0,\"\\n          Text\\n          \"],[7,\"input\"],[12,\"value\",[23,[\"node\",\"text\"]]],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"update-text\",[23,[\"node\"]],\"text\"],null]],[11,\"type\",\"text\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[23,[\"edit_tail\"]]],null,{\"statements\":[[0,\"      \"],[7,\"div\"],[11,\"class\",\"cell shrink\"],[9],[0,\"\\n        \"],[7,\"label\"],[9],[0,\"\\n          Tail\\n          \"],[7,\"input\"],[12,\"value\",[23,[\"node\",\"tail\"]]],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"update-text\",[23,[\"node\"]],\"tail\"],null]],[11,\"type\",\"text\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/node-editor.hbs" } });
-});
 ;define("client/templates/components/tabs-panel", ["exports"], function (exports) {
   "use strict";
 
@@ -1893,30 +1642,6 @@
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "I6CGCkmO", "block": "{\"symbols\":[\"tab\"],\"statements\":[[4,\"each\",[[23,[\"tabs\"]]],null,{\"statements\":[[4,\"if\",[[22,1,[\"is_active\"]]],null,{\"statements\":[[0,\"    \"],[7,\"li\"],[11,\"class\",\"tabs-title is-active\"],[11,\"role\",\"none\"],[9],[7,\"a\"],[11,\"role\",\"tab\"],[11,\"aria-selected\",\"true\"],[3,\"action\",[[22,0,[]],\"select-tab\",[22,1,[]]]],[9],[1,[22,1,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[7,\"li\"],[11,\"class\",\"tabs-title\"],[11,\"role\",\"none\"],[9],[7,\"a\"],[11,\"role\",\"tab\"],[11,\"aria-selected\",\"false\"],[3,\"action\",[[22,0,[]],\"select-tab\",[22,1,[]]]],[9],[1,[22,1,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1]},null]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tabs-title.hbs" } });
-});
-;define("client/templates/components/tei-tag-render", ["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.HTMLBars.template({ "id": "JXiOzgmN", "block": "{\"symbols\":[\"child\"],\"statements\":[[1,[23,[\"elem\",\"text\"]],false],[4,\"each\",[[23,[\"elem\",\"children\"]]],null,{\"statements\":[[1,[27,\"tei-tag-render\",null,[[\"tag\",\"tagName\",\"classNames\"],[[22,1,[]],[27,\"tei-tag-mapper\",[[22,1,[\"tag\"]]],null],[22,1,[\"attrib\",\"style\"]]]]],false],[1,[23,[\"elem\",\"tail\"]],false]],\"parameters\":[1]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tei-tag-render.hbs" } });
-});
-;define("client/templates/components/tree-view", ["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.HTMLBars.template({ "id": "BmxVJjYY", "block": "{\"symbols\":[\"child\"],\"statements\":[[7,\"li\"],[9],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"ellipsis hover-parent\"],[9],[0,\"\\n    \"],[7,\"a\"],[11,\"href\",\"#\"],[12,\"title\",[27,\"format-tag-ns\",[[23,[\"node\",\"tag\"]]],null]],[3,\"action\",[[22,0,[]],[23,[\"click-node-title\"]],[23,[\"node\"]]]],[9],[1,[27,\"strip-tag-ns\",[[23,[\"node\",\"tag\"]]],null],false],[10],[0,\"\\n    \"],[7,\"span\"],[11,\"class\",\"hover\"],[9],[0,\"\\n      \"],[7,\"a\"],[11,\"title\",\"Add a child node\"],[11,\"role\",\"button\"],[3,\"action\",[[22,0,[]],[23,[\"add-child-node\"]],[23,[\"node\"]]]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"a\"],[11,\"title\",\"Remove this node\"],[11,\"role\",\"button\"],[3,\"action\",[[22,0,[]],[23,[\"remove-node\"]],[23,[\"parent\"]],[23,[\"node\"]]]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H17V11H7\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"a\"],[11,\"title\",\"Move the node forward\"],[11,\"role\",\"button\"],[3,\"action\",[[22,0,[]],[23,[\"move-node-forward\"]],[23,[\"parent\"]],[23,[\"node\"]]]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M12,7L17,12H14V16H10V12H7L12,7M12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n      \"],[7,\"a\"],[11,\"title\",\"Move the node backward\"],[11,\"role\",\"button\"],[3,\"action\",[[22,0,[]],[23,[\"move-node-backward\"]],[23,[\"parent\"]],[23,[\"node\"]]]],[9],[0,\"\\n        \"],[7,\"svg\"],[11,\"viewBox\",\"0 0 24 24\"],[11,\"class\",\"icon small\"],[9],[0,\"\\n          \"],[7,\"path\"],[11,\"d\",\"M12,17L7,12H10V8H14V12H17L12,17M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z\"],[9],[10],[0,\"\\n        \"],[10],[0,\"\\n      \"],[10],[0,\"\\n    \"],[10],[0,\"\\n    \"],[7,\"span\"],[11,\"class\",\"secondary\"],[9],[1,[23,[\"node\",\"text\"]],false],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"node\",\"children\"]]],null,{\"statements\":[[0,\"    \"],[7,\"ul\"],[11,\"class\",\"no-bullet\"],[11,\"style\",\"margin-left:1rem;\"],[9],[0,\"\\n      \"],[4,\"each\",[[23,[\"node\",\"children\"]]],null,{\"statements\":[[1,[27,\"tree-view\",null,[[\"node\",\"parent\",\"click-node-title\",\"add-child-node\",\"remove-node\",\"move-node-forward\",\"move-node-backward\"],[[22,1,[]],[23,[\"node\"]],[23,[\"click-node-title\"]],[23,[\"add-child-node\"]],[23,[\"remove-node\"]],[23,[\"move-node-forward\"]],[23,[\"move-node-backward\"]]]]],false]],\"parameters\":[1]},null],[0,\"\\n    \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/tree-view.hbs" } });
-});
-;define("client/templates/components/xml-tree-editor", ["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.HTMLBars.template({ "id": "+WUzs9rK", "block": "{\"symbols\":[],\"statements\":[[1,[27,\"tree-view\",null,[[\"node\",\"parent\",\"click-node-title\",\"add-child-node\",\"remove-node\",\"move-node-forward\",\"move-node-backward\"],[[23,[\"node\"]],null,[27,\"action\",[[22,0,[]],[23,[\"click-node-title\"]]],null],[27,\"action\",[[22,0,[]],\"add-child-node\"],null],[27,\"action\",[[22,0,[]],\"remove-node\"],null],[27,\"action\",[[22,0,[]],\"move-node-forward\"],null],[27,\"action\",[[22,0,[]],\"move-node-backward\"],null]]]],false],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/xml-tree-editor.hbs" } });
 });
 ;define("client/templates/editor", ["exports"], function (exports) {
   "use strict";
@@ -2068,7 +1793,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+74b5888e"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+345e1852"});
           }
         
 //# sourceMappingURL=client.map
