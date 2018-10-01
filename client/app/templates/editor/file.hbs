@@ -9,24 +9,9 @@
     {{body-editor body=model.body}}
   {{/tabs-panel}}
   {{#tabs-panel tabs=tabs idx=1}}
-    <div class="grid-x grid-padding-x full-height">
-      <div class="cell small-6 cell-block-y">
-        <ul class="no-bullet">
-          {{xml-tree-editor
-            node=model.header
-            click-node-title=(action "select-metadata-node")
-            notify-model-change=(action "notify-model-change")
-          }}
-        </ul>
-      </div>
-      <div class="cell small-6 cell-block-y">
-        {{#if selected_metadata_node}}
-          {{node-editor
-            node=selected_metadata_node
-            edit_tail=false
-            notify-model-change=(action "notify-model-change")
-          }}
-        {{/if}}
+    <div class="grid-x full-height">
+      <div class="cell small-12 medium-6 full-height auto-overflow">
+        {{header-editor model=model header=model.header}}
       </div>
     </div>
   {{/tabs-panel}}

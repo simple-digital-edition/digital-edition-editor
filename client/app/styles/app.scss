@@ -123,6 +123,9 @@ svg.icon {
         z-index: 1;
     }
 }
+ul.no-indent, ol.no-indent {
+    margin-left: 0;
+}
 
 /**
  * Foundation overrides
@@ -186,9 +189,11 @@ svg.icon {
         }
     }
 }
-.accordion-content {
-    padding-left: 0;
-    padding-right: 0;
+.accordion.no-padding {
+    .accordion-content {
+        padding-left: 0;
+        padding-right: 0;
+    }
 }
 
 /**

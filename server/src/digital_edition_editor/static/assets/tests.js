@@ -4650,6 +4650,35 @@ define('client/tests/integration/components/dropdown-menu-test', ['qunit', 'embe
     });
   });
 });
+define('client/tests/integration/components/header-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Component | header-editor', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    (0, _qunit.test)('it renders', async function (assert) {
+      // Set any properties with this.set('myProperty', 'value');
+      // Handle any actions with this.set('myAction', function(val) { ... });
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "XpW7+BDD",
+        "block": "{\"symbols\":[],\"statements\":[[1,[21,\"header-editor\"],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '');
+
+      // Template block usage:
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "ItSbSelv",
+        "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"header-editor\",null,null,{\"statements\":[[0,\"        template block text\\n\"]],\"parameters\":[]},null],[0,\"    \"]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), 'template block text');
+    });
+  });
+});
 define('client/tests/integration/components/node-editor-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
   'use strict';
 
@@ -4844,6 +4873,26 @@ define('client/tests/integration/helpers/format-tag-ns-test', ['qunit', 'ember-q
     });
   });
 });
+define('client/tests/integration/helpers/path-access-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
+  'use strict';
+
+  (0, _qunit.module)('Integration | Helper | path-access', function (hooks) {
+    (0, _emberQunit.setupRenderingTest)(hooks);
+
+    // Replace this with your real tests.
+    (0, _qunit.test)('it renders', async function (assert) {
+      this.set('inputValue', '1234');
+
+      await (0, _testHelpers.render)(Ember.HTMLBars.template({
+        "id": "JXKySWve",
+        "block": "{\"symbols\":[],\"statements\":[[1,[27,\"path-access\",[[23,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+        "meta": {}
+      }));
+
+      assert.equal(this.element.textContent.trim(), '1234');
+    });
+  });
+});
 define('client/tests/integration/helpers/strip-tag-ns-test', ['qunit', 'ember-qunit', '@ember/test-helpers'], function (_qunit, _emberQunit, _testHelpers) {
   'use strict';
 
@@ -4944,6 +4993,11 @@ define('client/tests/lint/app.lint-test', [], function () {
     assert.ok(true, 'components/dropdown-menu.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/header-editor.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/header-editor.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/node-editor.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/node-editor.js should pass ESLint\n\n');
@@ -5007,6 +5061,11 @@ define('client/tests/lint/app.lint-test', [], function () {
   QUnit.test('helpers/format-tag-ns.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'helpers/format-tag-ns.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/path-access.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/path-access.js should pass ESLint\n\n');
   });
 
   QUnit.test('helpers/strip-tag-ns.js', function (assert) {
@@ -5119,6 +5178,11 @@ define('client/tests/lint/templates.template.lint-test', [], function () {
     assert.ok(true, 'client/templates/components/dropdown-menu.hbs should pass TemplateLint.\n\n');
   });
 
+  QUnit.test('client/templates/components/header-editor.hbs', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'client/templates/components/header-editor.hbs should pass TemplateLint.\n\nclient/templates/components/header-editor.hbs\n  7:20  error  Incorrect indentation of attribute \'type\' beginning at L7:C20. Expected \'type\' to be at L8:C14.  attribute-indentation\n  7:32  error  Incorrect indentation of attribute \'value\' beginning at L7:C32. Expected \'value\' to be at L9:C14.  attribute-indentation\n  7:62  error  Incorrect indentation of attribute \'change\' beginning at L7:C62. Expected \'change\' to be at L10:C14.  attribute-indentation\n  7:103  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{input}}\' beginning at L7:C103. Expected \'{{input}}\' to be at L11:C12.  attribute-indentation\n  15:26  error  Incorrect indentation of attribute \'type\' beginning at L15:C26. Expected \'type\' to be at L16:C20.  attribute-indentation\n  15:38  error  Incorrect indentation of attribute \'value\' beginning at L15:C38. Expected \'value\' to be at L17:C20.  attribute-indentation\n  15:72  error  Incorrect indentation of attribute \'change\' beginning at L15:C72. Expected \'change\' to be at L18:C20.  attribute-indentation\n  15:117  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{input}}\' beginning at L15:C117. Expected \'{{input}}\' to be at L19:C18.  attribute-indentation\n  29:32  error  Incorrect indentation of attribute \'type\' beginning at L29:C32. Expected \'type\' to be at L30:C26.  attribute-indentation\n  29:44  error  Incorrect indentation of attribute \'value\' beginning at L29:C44. Expected \'value\' to be at L31:C26.  attribute-indentation\n  29:81  error  Incorrect indentation of attribute \'change\' beginning at L29:C81. Expected \'change\' to be at L32:C26.  attribute-indentation\n  29:146  error  Incorrect indentation of close curly braces \'}}\' for the component \'{{input}}\' beginning at L29:C146. Expected \'{{input}}\' to be at L33:C24.  attribute-indentation\n  6:17  error  Incorrect indentation for `{{item.title}}` beginning at L6:C17. Expected `{{item.title}}` to be at an indentation of 12 but was found at 17.  block-indentation\n  14:23  error  Incorrect indentation for `{{sub_item.title}}` beginning at L14:C23. Expected `{{sub_item.title}}` to be at an indentation of 18 but was found at 23.  block-indentation\n  28:29  error  Incorrect indentation for `{{sub_item.title}}` beginning at L28:C29. Expected `{{sub_item.title}}` to be at an indentation of 24 but was found at 29.  block-indentation\n  21:28  error  you must use double quotes in templates  quotes\n  24:41  error  you must use double quotes in templates  quotes\n');
+  });
+
   QUnit.test('client/templates/components/node-editor.hbs', function (assert) {
     assert.expect(1);
     assert.ok(false, 'client/templates/components/node-editor.hbs should pass TemplateLint.\n\nclient/templates/components/node-editor.hbs\n  24:14  error  Self-closing a void element is redundant  self-closing-void-elements\n  52:10  error  Self-closing a void element is redundant  self-closing-void-elements\n  64:10  error  Self-closing a void element is redundant  self-closing-void-elements\n');
@@ -5209,6 +5273,11 @@ define('client/tests/lint/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/dropdown-menu-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/header-editor-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/header-editor-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/node-editor-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/node-editor-test.js should pass ESLint\n\n');
@@ -5242,6 +5311,11 @@ define('client/tests/lint/tests.lint-test', [], function () {
   QUnit.test('integration/helpers/format-tag-ns-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/helpers/format-tag-ns-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/path-access-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/path-access-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/helpers/strip-tag-ns-test.js', function (assert) {

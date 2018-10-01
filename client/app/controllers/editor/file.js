@@ -32,12 +32,6 @@ export default Controller.extend({
             ev.target.parentElement.classList.add('is-active');
             ev.target.setAttribute('aria-selected', 'true');
             panel_root.querySelector(target + '.tabs-panel').classList.add('is-active');
-        },
-        'select-metadata-node': function(node) {
-            this.set('selected_metadata_node', node);
-        },
-        'notify-model-change': function() {
-            this.get('model').send('becomeDirty');
         }
     }
 });

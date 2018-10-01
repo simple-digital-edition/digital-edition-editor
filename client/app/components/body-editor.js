@@ -129,6 +129,11 @@ export default Component.extend({
                 title: 'Inline Styles',
                 items: [
                     {
+                        id: 'font_weight_bold',
+                        title: 'Bold',
+                        action: 'toggle-mark'
+                    },
+                    {
                         id: 'page_break',
                         title: 'Page Break',
                         action: 'toggle-mark'
@@ -220,6 +225,10 @@ export default Component.extend({
                 page_break: {
                     toDOM() {return ['span', {class: 'page-break'}, 0]},
                     parseDOM: [{tag: 'span.page-break'}]
+                },
+                font_weight_bold: {
+                    toDOM() {return ['span', {class: 'font-weight-bold'}, 0]},
+                    parseDOM: [{tag: 'span.font-weight-bold'}]
                 },
             }
         })

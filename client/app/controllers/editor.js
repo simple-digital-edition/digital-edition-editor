@@ -13,9 +13,7 @@ export default Controller.extend({
             this.transitionToRoute('editor.repository', repository_id)
         },
         reset_file: function() {
-            //this.get('file_component').get('model').reload()
             window.location.reload()
-            //this.get('file_component').set('selected_metadata_node', null)
         },
         save_file: function() {
             this.get('selected_file').save()
