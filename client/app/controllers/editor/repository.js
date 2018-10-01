@@ -4,6 +4,7 @@ export default Controller.extend({
     button_text: 'Synchronise changes',
     button_class: 'button',
     selected_file: null,
+
     actions: {
         synchronise: function() {
             this.set('button_text', 'Synchronisation running...')

@@ -1,5 +1,8 @@
 <div class="cell">
   <h1>{{model.title}}</h1>
+  {{#if model.isReloading}}
+    <span class="label">Checking the remote server for changes...</span>
+  {{/if}}
   <h2>Local Changes</h2>
   <ol>
     {{#each model.local_changes as |change|}}
