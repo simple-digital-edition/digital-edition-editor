@@ -1,23 +1,54 @@
 <div class="cell">
   <h1>{{model.title}}</h1>
-  {{#if model.isReloading}}
-    <span class="label">Checking the remote server for changes...</span>
-  {{/if}}
-  <h2>Local Changes</h2>
-  <ol>
-    {{#each model.local_changes as |change|}}
-      <li>{{change.message}} by {{change.author}}</li>
-    {{else}}
-      <li>No changes</li>
-    {{/each}}
-  </ol>
-  <h2>Remote Changes</h2>
-  <ol>
-    {{#each model.remote_changes as |change|}}
-      <li>{{change.message}} by {{change.author}}</li>
-    {{else}}
-      <li>No changes</li>
-    {{/each}}
-  </ol>
-  <button {{action "synchronise"}} class={{button_class}}>{{button_text}}</button>
+  <div class="grid-x">
+    <div class="cell medium-4">
+      {{#if model.isReloading}}
+        <span class="label">Checking the remote server for changes...</span>
+      {{/if}}
+      <h2>Your local changes</h2>
+      <ol class="no-bullet">
+        {{#each model.local_changes as |change|}}
+          <li>
+            <div>{{change.message}}</div>
+            <div class="secondary">{{change.author}} on {{change.datetime}}</div>
+          </li>
+        {{else}}
+          <li>No changes</li>
+        {{/each}}
+      </ol>
+      <h2>Changes by others</h2>
+      <ol class="no-bullet">
+        {{#each model.master_changes as |change|}}
+          <li>
+            <div>{{change.message}}</div>
+            <div class="secondary">{{change.author}} on {{change.datetime}}</div>
+          </li>
+        {{else}}
+          <li>No changes</li>
+        {{/each}}
+      </ol>
+      {{#if (or model.local_changes model.master_changes)}}
+        <button {{action "synchronise"}} class={{sync_button_class}}>{{sync_button_text}}</button>
+      {{/if}}
+    </div>
+    <div class="cell medium-4">
+      <h2>Your changes to merge</h2>
+      <ol class="no-bullet">
+        {{#each model.remote_changes as |change|}}
+          <li>
+            <div>{{change.message}}</div>
+            <div class="secondary">{{change.author}} on {{change.datetime}}</div>
+          </li>
+        {{else}}
+          <li>No changes</li>
+        {{/each}}
+      </ol>
+      {{#if model.remote_changes}}
+        <button {{action "merge"}} class={{merge_button_class}}>{{merge_button_text}}</button>
+      {{/if}}
+      {{#if merge_errors}}
+        <div class="callout small alert">{{merge_errors}}</div>
+      {{/if}}
+    </div>
+  </div>
 </div>

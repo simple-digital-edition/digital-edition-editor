@@ -849,21 +849,46 @@
         value: true
     });
     exports.default = Ember.Controller.extend({
-        button_text: 'Synchronise changes',
-        button_class: 'button',
+        ajax: Ember.inject.service(),
+        session: Ember.inject.service(),
+        sync_button_text: 'Synchronise changes',
+        sync_button_class: 'button',
+        merge_button_text: 'Merge changes',
+        merge_button_class: 'button',
         selected_file: null,
 
         actions: {
             synchronise: function () {
-                this.set('button_text', 'Synchronisation running...');
-                this.set('button_class', 'button secondary');
-                let controller = this;
+                this.set('sync_button_text', 'Synchronisation running...');
+                this.set('sync_button_class', 'button secondary');
                 this.get('model').save().then(() => {
-                    controller.set('button_text', 'Synchronisation complete');
-                    this.set('button_class', 'button success');
+                    this.set('sync_button_text', 'Synchronisation complete');
+                    this.set('sync_button_class', 'button success');
+                    Ember.run.later(this, function () {
+                        this.set('sync_button_text', 'Synchronise changes');
+                        this.set('sync_button_class', 'button');
+                    }, 5000);
                 }).catch(() => {
-                    controller.set('button_text', 'Synchronisation failed');
-                    this.set('button_class', 'button alert');
+                    this.set('sync_button_text', 'Synchronisation failed');
+                    this.set('sync_button_class', 'button alert');
+                });
+            },
+            merge: function () {
+                this.set('merge_button_text', 'Creating merge...');
+                this.set('merge_button_class', 'button secondary');
+                this.get('ajax').put('/repositories/' + this.get('model.id'), {
+                    headers: { 'Authorization': 'Bearer ' + this.get('session.data.authenticated.token') }
+                }).then(() => {
+                    this.set('merge_button_text', 'Merge request created');
+                    this.set('merge_button_class', 'button success');
+                    Ember.run.later(this, function () {
+                        this.set('merge_button_text', 'Merge changes');
+                        this.set('merge_button_class', 'button');
+                    }, 10000);
+                }).catch(({ payload }) => {
+                    this.set('merge_errors', payload.message[0]);
+                    this.set('merge_button_text', 'Merge request failed');
+                    this.set('merge_button_class', 'button alert');
                 });
             }
         }
@@ -1390,6 +1415,7 @@
         is_dirty: _emberData.default.attr('boolean'),
         local_changes: _emberData.default.attr(),
         remote_changes: _emberData.default.attr(),
+        master_changes: _emberData.default.attr(),
         tei_files: _emberData.default.attr()
     });
 });
@@ -1683,7 +1709,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "+XPYtCB4", "block": "{\"symbols\":[\"change\",\"change\"],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"title\"]],false],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"model\",\"isReloading\"]]],null,{\"statements\":[[0,\"    \"],[7,\"span\"],[11,\"class\",\"label\"],[9],[0,\"Checking the remote server for changes...\"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"  \"],[7,\"h2\"],[9],[0,\"Local Changes\"],[10],[0,\"\\n  \"],[7,\"ol\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\",\"local_changes\"]]],null,{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[1,[22,2,[\"message\"]],false],[0,\" by \"],[1,[22,2,[\"author\"]],false],[10],[0,\"\\n\"]],\"parameters\":[2]},{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[0,\"No changes\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"  \"],[10],[0,\"\\n  \"],[7,\"h2\"],[9],[0,\"Remote Changes\"],[10],[0,\"\\n  \"],[7,\"ol\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\",\"remote_changes\"]]],null,{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[1,[22,1,[\"message\"]],false],[0,\" by \"],[1,[22,1,[\"author\"]],false],[10],[0,\"\\n\"]],\"parameters\":[1]},{\"statements\":[[0,\"      \"],[7,\"li\"],[9],[0,\"No changes\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"  \"],[10],[0,\"\\n  \"],[7,\"button\"],[12,\"class\",[21,\"button_class\"]],[3,\"action\",[[22,0,[]],\"synchronise\"]],[9],[1,[21,\"button_text\"],false],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repository.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "z0H6Uj/T", "block": "{\"symbols\":[\"change\",\"change\",\"change\"],\"statements\":[[7,\"div\"],[11,\"class\",\"cell\"],[9],[0,\"\\n  \"],[7,\"h1\"],[9],[1,[23,[\"model\",\"title\"]],false],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"grid-x\"],[9],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell medium-4\"],[9],[0,\"\\n\"],[4,\"if\",[[23,[\"model\",\"isReloading\"]]],null,{\"statements\":[[0,\"        \"],[7,\"span\"],[11,\"class\",\"label\"],[9],[0,\"Checking the remote server for changes...\"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"      \"],[7,\"h2\"],[9],[0,\"Your local changes\"],[10],[0,\"\\n      \"],[7,\"ol\"],[11,\"class\",\"no-bullet\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\",\"local_changes\"]]],null,{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"\\n            \"],[7,\"div\"],[9],[1,[22,3,[\"message\"]],false],[10],[0,\"\\n            \"],[7,\"div\"],[11,\"class\",\"secondary\"],[9],[1,[22,3,[\"author\"]],false],[0,\" on \"],[1,[22,3,[\"datetime\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[3]},{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"No changes\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"      \"],[10],[0,\"\\n      \"],[7,\"h2\"],[9],[0,\"Changes by others\"],[10],[0,\"\\n      \"],[7,\"ol\"],[11,\"class\",\"no-bullet\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\",\"master_changes\"]]],null,{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"\\n            \"],[7,\"div\"],[9],[1,[22,2,[\"message\"]],false],[10],[0,\"\\n            \"],[7,\"div\"],[11,\"class\",\"secondary\"],[9],[1,[22,2,[\"author\"]],false],[0,\" on \"],[1,[22,2,[\"datetime\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[2]},{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"No changes\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"      \"],[10],[0,\"\\n\"],[4,\"if\",[[27,\"or\",[[23,[\"model\",\"local_changes\"]],[23,[\"model\",\"master_changes\"]]],null]],null,{\"statements\":[[0,\"        \"],[7,\"button\"],[12,\"class\",[21,\"sync_button_class\"]],[3,\"action\",[[22,0,[]],\"synchronise\"]],[9],[1,[21,\"sync_button_text\"],false],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[10],[0,\"\\n    \"],[7,\"div\"],[11,\"class\",\"cell medium-4\"],[9],[0,\"\\n      \"],[7,\"h2\"],[9],[0,\"Your changes to merge\"],[10],[0,\"\\n      \"],[7,\"ol\"],[11,\"class\",\"no-bullet\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"model\",\"remote_changes\"]]],null,{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"\\n            \"],[7,\"div\"],[9],[1,[22,1,[\"message\"]],false],[10],[0,\"\\n            \"],[7,\"div\"],[11,\"class\",\"secondary\"],[9],[1,[22,1,[\"author\"]],false],[0,\" on \"],[1,[22,1,[\"datetime\"]],false],[10],[0,\"\\n          \"],[10],[0,\"\\n\"]],\"parameters\":[1]},{\"statements\":[[0,\"          \"],[7,\"li\"],[9],[0,\"No changes\"],[10],[0,\"\\n\"]],\"parameters\":[]}],[0,\"      \"],[10],[0,\"\\n\"],[4,\"if\",[[23,[\"model\",\"remote_changes\"]]],null,{\"statements\":[[0,\"        \"],[7,\"button\"],[12,\"class\",[21,\"merge_button_class\"]],[3,\"action\",[[22,0,[]],\"merge\"]],[9],[1,[21,\"merge_button_text\"],false],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[23,[\"merge_errors\"]]],null,{\"statements\":[[0,\"        \"],[7,\"div\"],[11,\"class\",\"callout small alert\"],[9],[1,[21,\"merge_errors\"],false],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/editor/repository.hbs" } });
 });
 ;define("client/templates/loading", ["exports"], function (exports) {
   "use strict";
@@ -1795,7 +1821,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+345e1852"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+bc5d9387"});
           }
         
 //# sourceMappingURL=client.map

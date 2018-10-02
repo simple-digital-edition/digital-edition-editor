@@ -130,9 +130,12 @@ ul.no-indent, ol.no-indent {
 /**
  * Foundation overrides
  */
- h1 {
-     font-size: 18pt;
- }
+h1 {
+    font-size: 18pt;
+}
+h2 {
+    font-size: 16pt;
+}
 .top-bar {
     margin-bottom: $global-margin;
     border-bottom: 1px solid $medium-gray;

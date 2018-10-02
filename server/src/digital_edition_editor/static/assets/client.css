@@ -70,6 +70,10 @@ h1 {
   font-size: 18pt;
 }
 
+h2 {
+  font-size: 16pt;
+}
+
 .top-bar {
   margin-bottom: 1rem;
   border-bottom: 1px solid #cacaca;
