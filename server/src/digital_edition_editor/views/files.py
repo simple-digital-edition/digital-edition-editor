@@ -235,9 +235,6 @@ def save_header(source):
                         elif sub_path[-1].startswith('@'):
                             sub_element.attrib[to_ns(sub_path[-1][1:])] = sub_source[sub_field] if sub_field in sub_source else ''
                     parent.append(element)
-    #for key, value in source.items():
-    #    print(key)
-    #    print(value)
     return header
 
 
