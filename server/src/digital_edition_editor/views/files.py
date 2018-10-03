@@ -163,9 +163,17 @@ def get_file(request):
                 doc = etree.parse(in_f)
                 header = load_header(doc)
                 body = load_body(doc)
+            repo = Repo(base_path)
+            commit_msg = 'Updated %s' % os.path.basename(file_path)
+            local_commits = list(repo.iter_commits('%s@{u}..%s' % (request.authorized_user['userid'],
+                                                                   request.authorized_user['userid'])))
+            if len(local_commits) > 0:
+                if local_file_path in local_commits[0].stats.files:
+                    commit_msg = local_commits[0].message
             return {'data': {'type': 'files',
                              'id': request.matchdict['fid'],
                              'attributes': {'filename': local_file_path,
+                                            'commit-msg': commit_msg,
                                             'key': fid,
                                             'header': header,
                                             'body': body}}}
@@ -329,10 +337,14 @@ def patch_file(request):
                 out_f.write(etree.tostring(tei, pretty_print=True, xml_declaration=True, encoding="UTF-8"))
             repositories = get_config_setting(request, 'git.repos')
             repo = Repo(base_path)
+            if 'commit-msg' in request_body['data']['attributes']:
+                commit_msg = request_body['data']['attributes']['commit-msg']
+            else:
+                commit_msg = 'Updated %s' % os.path.basename(file_path)
             if repo.index.diff(None):
                 local_commits = list(repo.iter_commits('%s@{u}..%s' % (request.authorized_user['userid'],
                                                                        request.authorized_user['userid'])))
-                commit_msg = 'Updated %s' % os.path.basename(file_path)
+
                 # Ammend the last commit if it has the same commit message as the new one
                 if len(local_commits) > 0 and local_commits[0].message == commit_msg and \
                     local_commits[0].author.email == request.authorized_user['username']:
@@ -352,6 +364,7 @@ def patch_file(request):
             return {'data': {'type': 'files',
                              'id': request.matchdict['fid'],
                              'attributes': {'filename': local_file_path,
+                                            'commit-msg': commit_msg,
                                             'header': header,
                                             'body': body}}}
     raise HTTPNotFound

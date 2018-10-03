@@ -46,7 +46,7 @@
                   {{/link-to}}
                 </li>
                 {{#if selected_file.hasDirtyAttributes}}
-                  <li title="Save changes to the file" role="none">
+                  <li title="Save changes to the file" role="none" class="hover-drop-down-parent">
                     <a {{action "save_file"}} role="menuitem">
                       <svg viewBox="0 0 24 24" class="icon">
                         <path
@@ -54,6 +54,15 @@
                         />
                       </svg>
                     </a>
+                    <div class="hover-drop-down-child" style="width:30rem;">
+                      <div class="input-group">
+                        <span class="input-group-label">Change</span>
+                        {{input type="text" value=(mut selected_file.commit_msg) class="input-group-field"}}
+                        <div class="input-group-button">
+                          <button class="button" {{action "save_file"}}>Save</button>
+                        </div>
+                      </div>
+                    </div>
                   </li>
                   <li title="Discard changes to the file" role="none">
                     <a {{action "reset_file"}} role="menuitem">
