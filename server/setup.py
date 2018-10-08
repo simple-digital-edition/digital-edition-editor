@@ -16,7 +16,9 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'decorator',
-    'requests'
+    'requests',
+    'kajiki',
+    'click'
     ]
 
 tests_require = [
@@ -52,6 +54,6 @@ setup(name='digital-edition-editor',
       [paste.app_factory]
       main = digital_edition_editor:main
       [console_scripts]
-      digital-edition-editor = digital_edition_editor.scripts.initializedb:main
+      digital-edition-editor = digital_edition_editor.scripts:main
       """,
       )

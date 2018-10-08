@@ -1,12 +1,9 @@
 [[source]]
-
 url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 pyramid = "*"
 pyramid-tm = "*"
 sqlalchemy = "*"
@@ -18,12 +15,10 @@ gitpython = "*"
 lxml = "*"
 decorator = "*"
 requests = "*"
-
+kajiki = "*"
+click = "*"
 
 [dev-packages]
 
-
-
 [requires]
-
 python_version = "3.6"
