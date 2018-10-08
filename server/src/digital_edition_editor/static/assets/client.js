@@ -1822,7 +1822,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+4fab255b"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+b1375667"});
           }
         
 //# sourceMappingURL=client.map
