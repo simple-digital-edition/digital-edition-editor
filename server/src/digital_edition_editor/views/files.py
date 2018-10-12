@@ -317,7 +317,10 @@ def patch_file(request):
         local_file_path = find_file(base_path, fid)
         if local_file_path:
             file_path = os.path.join(base_path, local_file_path)
-            request_body = json.loads(request.body)
+            if isinstance(request.body, str):
+                request_body = json.loads(request.body)
+            else:
+                request_body = json.loads(request.body.decode('utf-8'))
             with open(file_path, 'rb') as in_f:
                 doc = etree.parse(in_f)
                 old_header = load_header(doc)
