@@ -5,10 +5,6 @@ name = "pypi"
 
 [packages]
 pyramid = "*"
-pyramid-tm = "*"
-sqlalchemy = "*"
-transaction = "*"
-"zope.sqlalchemy" = "*"
 waitress = "*"
 pywebtools = "*"
 gitpython = "*"

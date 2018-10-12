@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b4d84cea31eb0a65f0ad93ad60a1650253e280ecf093feb8d427cb0066c08b36"
+            "sha256": "35ab5138ea90f44ae991d0337104deaf5ac83ca8437506e9d0b97bcf70f98524"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -160,14 +160,6 @@
             "index": "pypi",
             "version": "==1.9.2"
         },
-        "pyramid-tm": {
-            "hashes": [
-                "sha256:07d03bab7bdd265c3920db4e68dbaa8cbaff27da828700f404b1424244ad617f",
-                "sha256:11b0f31482339d655358081bc1366d39679d02588782b5c8019bfb41ae02ba3d"
-            ],
-            "index": "pypi",
-            "version": "==2.2"
-        },
         "pywebtools": {
             "hashes": [
                 "sha256:17202fb8b982099105912c599e9fc8dc838410bb606a8157d8717f48e03550a6",
@@ -202,7 +194,6 @@
             "hashes": [
                 "sha256:c5951d9ef1d5404ed04bae5a16b60a0779087378928f997a294d1229c6ca4d3e"
             ],
-            "index": "pypi",
             "version": "==1.2.12"
         },
         "transaction": {
@@ -211,7 +202,6 @@
                 "sha256:9de0f93f833713270fbceaf6092194313c1de0afb660e66dea8e089855eb281c",
                 "sha256:f2242070e437e5d555ea3df809cb517860513254c828f33847df1c5e4b776c7a"
             ],
-            "index": "pypi",
             "version": "==2.2.1"
         },
         "translationstring": {
@@ -285,7 +275,6 @@
             "hashes": [
                 "sha256:9316a1a8bb9e4f9f59332acf1ad2cc8b664f19a4bde5f68be7f61f3e11f80514"
             ],
-            "index": "pypi",
             "version": "==1.0"
         }
     },
