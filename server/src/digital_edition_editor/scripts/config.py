@@ -27,7 +27,7 @@ app.users ={%if debug %}
 # -----------------
 # Base storage path
 # -----------------
-git.basedir = {%if debug %}%(here)s/../local-repositories
+git.basedir = {%if debug %}%(here)s/../local-repositories{%end%}
 # ----------------
 # Git Repositories
 # ----------------
