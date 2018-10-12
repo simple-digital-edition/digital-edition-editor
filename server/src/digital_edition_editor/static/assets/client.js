@@ -10,11 +10,13 @@
     });
     exports.default = _emberData.default.JSONAPIAdapter.extend({
         session: Ember.inject.service(),
+        config: Ember.inject.service(),
         headers: Ember.computed('session.data.authenticated.token', function () {
             return {
                 'Authorization': 'Bearer ' + this.session.data.authenticated.token
             };
-        })
+        }),
+        namespace: Ember.computed.alias('config.api.namespace')
     });
 });
 ;define('client/app', ['exports', 'client/resolver', 'ember-load-initializers', 'client/config/environment'], function (exports, _resolver, _emberLoadInitializers, _environment) {
@@ -851,6 +853,7 @@
     exports.default = Ember.Controller.extend({
         ajax: Ember.inject.service(),
         session: Ember.inject.service(),
+        config: Ember.inject.service(),
         sync_button_text: 'Synchronise changes',
         sync_button_class: 'button',
         merge_button_text: 'Merge changes',
@@ -876,7 +879,11 @@
             merge: function () {
                 this.set('merge_button_text', 'Creating merge...');
                 this.set('merge_button_class', 'button secondary');
-                this.get('ajax').put('/repositories/' + this.get('model.id'), {
+                let namespace = this.get('config.api.namespace');
+                if (namespace) {
+                    namespace = '/' + namespace;
+                }
+                this.get('ajax').put(namespace + '/repositories/' + this.get('model.id'), {
                     headers: { 'Authorization': 'Bearer ' + this.get('session.data.authenticated.token') }
                 }).then(() => {
                     this.set('merge_button_text', 'Merge request created');
@@ -902,8 +909,8 @@
     });
     exports.default = Ember.Controller.extend({
         session: Ember.inject.service(),
-        username: 'mhall',
-        password: 'test',
+        username: '',
+        password: '',
 
         actions: {
             login() {
@@ -1584,6 +1591,19 @@
     }
   });
 });
+;define('client/services/config', ['exports', 'ember-config-service/services/config'], function (exports, _config) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _config.default;
+    }
+  });
+});
 ;define('client/services/cookies', ['exports', 'ember-cookies/services/cookies'], function (exports, _cookies) {
   'use strict';
 
@@ -1822,7 +1842,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+b1375667"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+7eba082b"});
           }
         
 //# sourceMappingURL=client.map

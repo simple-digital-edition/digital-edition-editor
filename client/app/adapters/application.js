@@ -4,9 +4,11 @@ import { computed } from '@ember/object';
 
 export default DS.JSONAPIAdapter.extend({
     session: service(),
+    config: service(),
     headers: computed('session.data.authenticated.token', function() {
         return {
             'Authorization': 'Bearer ' + this.session.data.authenticated.token
         }
-    })
+    }),
+    namespace: computed.alias('config.api.namespace')
 });

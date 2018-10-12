@@ -5,6 +5,7 @@ import {inject as service} from '@ember/service';
 export default Controller.extend({
     ajax: service(),
     session: service(),
+    config: service(),
     sync_button_text: 'Synchronise changes',
     sync_button_class: 'button',
     merge_button_text: 'Merge changes',
@@ -30,7 +31,11 @@ export default Controller.extend({
         merge: function() {
             this.set('merge_button_text', 'Creating merge...')
             this.set('merge_button_class', 'button secondary')
-            this.get('ajax').put('/repositories/' + this.get('model.id'), {
+            let namespace = this.get('config.api.namespace')
+            if(namespace) {
+                namespace = '/' + namespace
+            }
+            this.get('ajax').put(namespace + '/repositories/' + this.get('model.id'), {
                 headers: {'Authorization': 'Bearer ' + this.get('session.data.authenticated.token')}
             }).then(() => {
                 this.set('merge_button_text', 'Merge request created')

@@ -5,6 +5,9 @@ module.exports = function(environment) {
     modulePrefix: 'client',
     environment,
     rootURL: '/',
+    api: {
+        namespace: '${filter-prefix}'
+    },
     locationType: 'hash',
     EmberENV: {
       FEATURES: {

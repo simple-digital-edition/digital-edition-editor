@@ -3,8 +3,8 @@ import {inject as service} from '@ember/service';
 
 export default Controller.extend({
     session: service(),
-    username: 'mhall',
-    password: 'test',
+    username: '',
+    password: '',
 
     actions: {
         login() {
