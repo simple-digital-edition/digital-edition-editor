@@ -44,6 +44,7 @@ function paragraph_class_to_attrs(dom) {
 
 export default Component.extend({
     classNames: ['tei-body-editor', 'full-height'],
+    blockPropertiesView: '',
 
     menu: undefined,
 
@@ -56,13 +57,8 @@ export default Component.extend({
                 title: 'Current Block',
                 items: [
                     {
-                        id: 'heading_level_1',
-                        title: 'Heading 1',
-                        action: 'select-block-type'
-                    },
-                    {
-                        id: 'heading_level_2',
-                        title: 'Heading 2',
+                        id: 'heading',
+                        title: 'Heading',
                         action: 'select-block-type'
                     },
                     {
@@ -186,10 +182,10 @@ export default Component.extend({
                         }
                     },
                     defining: true,
-                    toDOM(node) {return ['h' + node.attrs.level, 0]},
+                    toDOM(node) {return ['h' + node.attrs.level.substring(6), 0]},
                     parseDOM: [
-                        {tag: "h1", attrs: {level: 1}},
-                        {tag: "h2", attrs: {level: 2}}
+                        {tag: "h1", attrs: {level: 'level-1'}},
+                        {tag: "h2", attrs: {level: 'level-2'}}
                     ]
                 },
                 text: {
@@ -253,8 +249,7 @@ export default Component.extend({
             dispatchTransaction(transaction) {
                 let new_state = view.state.apply(transaction)
                 // Calculate which block types are currently selected
-                component.setMenuState('block.heading_level_1', {is_active: false})
-                component.setMenuState('block.heading_level_2', {is_active: false})
+                component.setMenuState('block.heading', {is_active: false})
                 component.setMenuState('block.paragraph', {is_active: false})
                 component.setMenuState('block_styling.no_indent', {is_active: false})
                 component.setMenuState('block_styling.text_align_left', {is_active: false})
@@ -264,7 +259,7 @@ export default Component.extend({
                 blocks.forEach((node) => {
                     if(node.type.isBlock) {
                         component.setMenuState('block.' + node.type.name, {is_active: true})
-                        component.setMenuState('block.' + node.type.name + '_level_' + node.attrs.level, {is_active: true})
+                        component.set('blockPropertiesView', {category: node.type.name, attrs: node.attrs})
                         if(node.type.name === 'paragraph') {
                             component.setMenuState('block_styling.no_indent', {is_active: node.attrs.no_indent})
                             if(node.attrs.text_align === 'left') {
@@ -385,11 +380,15 @@ export default Component.extend({
             view.focus()
             if(param === 'paragraph') {
                 setBlockType(schema.nodes[param], {no_indent: false})(view.state, view.dispatch)
-            } else if(param === 'heading_level_1') {
-                setBlockType(schema.nodes['heading'], {level: 1})(view.state, view.dispatch)
-            } else if(param === 'heading_level_2') {
-                setBlockType(schema.nodes['heading'], {level: 2})(view.state, view.dispatch)
+            } else if(param === 'heading') {
+                setBlockType(schema.nodes['heading'], {level: 'level-1'})(view.state, view.dispatch)
             }
+        },
+        'select-heading-level': function(param) {
+            let view = this.get('editor-view')
+            let schema = this.get('editor-schema')
+            view.focus()
+            setBlockType(schema.nodes['heading'], {level: param})(view.state, view.dispatch)
         },
         'toggle-mark': function(param) {
             let view = this.get('editor-view')

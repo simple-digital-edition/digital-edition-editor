@@ -123,11 +123,11 @@ def load_body(doc):
         if element.tag == '{http://www.tei-c.org/ns/1.0}head':
             if element.attrib['type'] == 'level-1':
                 block = {'type': 'heading',
-                         'attrs': {'level': 1},
+                         'attrs': {'level': 'level-1'},
                          'content': []}
             else:
                 block = {'type': 'heading',
-                         'attrs': {'level': 2},
+                         'attrs': {'level': 'level-2'},
                          'content': []}
         elif element.tag == '{http://www.tei-c.org/ns/1.0}p':
             block = {'type': 'paragraph',

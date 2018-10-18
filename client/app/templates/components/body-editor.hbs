@@ -18,4 +18,32 @@
   </nav>
   <div class="cell auto full-height editor auto-overflow">
   </div>
+  <div class="cell medium-3 full-height auto-overflow">
+    <dl>
+      {{#if (eq blockPropertiesView.category 'heading')}}
+        <dt>Heading</dt>
+        <dd>
+          <label>Heading Type
+            <select onchange={{action "select-heading-level" value="target.value"}}>
+              <option value="level-1" selected={{eq blockPropertiesView.attrs.level "level-1"}}>Level 1</option>
+              <option value="level-2" selected={{eq blockPropertiesView.attrs.level "level-2"}}>Level 2</option>
+              <option value="level-3" selected={{eq blockPropertiesView.attrs.level "level-3"}}>Level 3</option>
+            </select>
+          </label>
+        </dd>
+      {{/if}}
+      {{#if (eq blockPropertiesView.category 'paragraph')}}
+        <dt>Paragraph</dt>
+        <dd>
+          <label>Text Alignment
+            <select>
+              <option value="left" selected={{eq blockPropertiesView.attrs.text_align "left"}}>Left</option>
+              <option value="center" selected={{eq blockPropertiesView.attrs.text_align "center"}}>Center</option>
+              <option value="right" selected={{eq blockPropertiesView.attrs.text_align "right"}}>Right</option>
+            </select>
+          </label>
+        </dd>
+      {{/if}}
+    </dl>
+  </div>
 </div>
