@@ -142,9 +142,18 @@
         return attrs;
     }
 
+    function mark_font_size_attr(dom) {
+        let attrs = {
+            size: ''
+        };
+        console.log('hm');
+        return attrs;
+    }
+
     exports.default = Ember.Component.extend({
         classNames: ['tei-body-editor', 'full-height'],
-        blockPropertiesView: '',
+        blockPropertiesView: null,
+        inlinePropertiesView: null,
 
         menu: undefined,
 
@@ -162,26 +171,6 @@
                     id: 'paragraph',
                     title: 'Paragraph',
                     action: 'select-block-type'
-                }]
-            }, {
-                id: 'block_styling',
-                title: 'Block Styling',
-                items: [{
-                    id: 'no_indent',
-                    title: 'No indentation',
-                    action: 'toggle-block-attr'
-                }, {
-                    id: 'text_align_left',
-                    title: 'Left align',
-                    action: 'set-block-attr'
-                }, {
-                    id: 'text_align_center',
-                    title: 'Center align',
-                    action: 'set-block-attr'
-                }, {
-                    id: 'text_align_right',
-                    title: 'Right align',
-                    action: 'set-block-attr'
                 }]
             }, {
                 id: 'font_size',
@@ -288,6 +277,12 @@
                             return ['sup', 0];
                         },
                         parseDOM: [{ tag: 'sup' }]
+                    },
+                    font_size: {
+                        toDOM(mark) {
+                            return ['span', { class: 'font-size-' + mark.attrs.size }];
+                        },
+                        parseDOM: [{ tag: 'span.font-size', mark_font_size_attr }]
                     },
                     font_size_large: {
                         toDOM() {
@@ -499,41 +494,23 @@
                     (0, _prosemirrorCommands.toggleMark)(schema.marks[param])(view.state, view.dispatch);
                 }
             },
-            'toggle-block-attr': function (param) {
+            'toggle-block-attr': function (attr) {
                 let view = this.get('editor-view');
                 let schema = this.get('editor-schema');
                 view.focus();
                 let { $from } = view.state.selection;
-                if ($from.parent.type.name === 'paragraph') {
-                    let attrs = {
-                        no_indent: $from.parent.attrs.no_indent,
-                        text_align: $from.parent.attrs.text_align
-                    };
-                    if (param === 'no_indent') {
-                        attrs.no_indent = !attrs.no_indent;
-                    }
-                    (0, _prosemirrorCommands.setBlockType)(schema.nodes['paragraph'], attrs)(view.state, view.dispatch);
-                }
+                let attrs = Object.assign({}, $from.parent.attrs);
+                attrs[attr] = !attrs[attr];
+                (0, _prosemirrorCommands.setBlockType)(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch);
             },
-            'set-block-attr': function (param) {
+            'set-block-attr': function (attr, ev) {
                 let view = this.get('editor-view');
                 let schema = this.get('editor-schema');
                 view.focus();
                 let { $from } = view.state.selection;
-                if ($from.parent.type.name === 'paragraph') {
-                    let attrs = {
-                        no_indent: $from.parent.attrs.no_indent,
-                        text_align: $from.parent.attrs.text_align
-                    };
-                    if (param === 'text_align_left') {
-                        attrs.text_align = 'left';
-                    } else if (param === 'text_align_center') {
-                        attrs.text_align = 'center';
-                    } else if (param === 'text_align_right') {
-                        attrs.text_align = 'right';
-                    }
-                    (0, _prosemirrorCommands.setBlockType)(schema.nodes['paragraph'], attrs)(view.state, view.dispatch);
-                }
+                let attrs = Object.assign({}, $from.parent.attrs);
+                attrs[attr] = ev.target.value;
+                (0, _prosemirrorCommands.setBlockType)(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch);
             }
         }
     });
@@ -1650,7 +1627,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "X7pYhCHi", "block": "{\"symbols\":[\"item\",\"action\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-x grid-padding-x full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell medium-3 full-height auto-overflow\"],[9],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"accordion no-padding\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"menu\"]]],null,{\"statements\":[[4,\"accordion-item\",null,[[\"title\"],[[22,1,[\"title\"]]]],{\"statements\":[[0,\"          \"],[7,\"ul\"],[11,\"class\",\"menu vertical\"],[9],[0,\"\\n\"],[4,\"each\",[[22,1,[\"items\"]]],null,{\"statements\":[[4,\"if\",[[22,2,[\"is_active\"]]],null,{\"statements\":[[0,\"                \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[7,\"a\"],[3,\"action\",[[22,0,[]],[22,2,[\"action\"]],[22,2,[\"id\"]]]],[9],[1,[22,2,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[7,\"li\"],[9],[7,\"a\"],[3,\"action\",[[22,0,[]],[22,2,[\"action\"]],[22,2,[\"id\"]]]],[9],[1,[22,2,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[2]},null],[0,\"          \"],[10],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell auto full-height editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell medium-3 full-height auto-overflow\"],[9],[0,\"\\n    \"],[7,\"dl\"],[9],[0,\"\\n\"],[4,\"if\",[[27,\"eq\",[[23,[\"blockPropertiesView\",\"category\"]],\"heading\"],null]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Heading\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Heading Type\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"select-heading-level\"],[[\"value\"],[\"target.value\"]]]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-1\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-1\"],null]],[9],[0,\"Level 1\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-2\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-2\"],null]],[9],[0,\"Level 2\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-3\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-3\"],null]],[9],[0,\"Level 3\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[27,\"eq\",[[23,[\"blockPropertiesView\",\"category\"]],\"paragraph\"],null]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Paragraph\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Text Alignment\\n            \"],[7,\"select\"],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"left\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"left\"],null]],[9],[0,\"Left\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"center\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"center\"],null]],[9],[0,\"Center\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"right\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"right\"],null]],[9],[0,\"Right\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "+1Gxjnvg", "block": "{\"symbols\":[\"item\",\"action\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-x grid-padding-x full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell medium-3 full-height auto-overflow\"],[9],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"accordion no-padding\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"menu\"]]],null,{\"statements\":[[4,\"accordion-item\",null,[[\"title\"],[[22,1,[\"title\"]]]],{\"statements\":[[0,\"          \"],[7,\"ul\"],[11,\"class\",\"menu vertical\"],[9],[0,\"\\n\"],[4,\"each\",[[22,1,[\"items\"]]],null,{\"statements\":[[4,\"if\",[[22,2,[\"is_active\"]]],null,{\"statements\":[[0,\"                \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[7,\"a\"],[3,\"action\",[[22,0,[]],[22,2,[\"action\"]],[22,2,[\"id\"]]]],[9],[1,[22,2,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[7,\"li\"],[9],[7,\"a\"],[3,\"action\",[[22,0,[]],[22,2,[\"action\"]],[22,2,[\"id\"]]]],[9],[1,[22,2,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[2]},null],[0,\"          \"],[10],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell auto full-height editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell medium-3 full-height auto-overflow\"],[9],[0,\"\\n    \"],[7,\"dl\"],[9],[0,\"\\n\"],[4,\"if\",[[27,\"eq\",[[23,[\"blockPropertiesView\",\"category\"]],\"heading\"],null]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Heading\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Heading Type\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-attr\",\"level\"],null]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-1\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-1\"],null]],[9],[0,\"Level 1\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-2\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-2\"],null]],[9],[0,\"Level 2\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-3\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-3\"],null]],[9],[0,\"Level 3\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[27,\"eq\",[[23,[\"blockPropertiesView\",\"category\"]],\"paragraph\"],null]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Paragraph\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Text Alignment\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-attr\",\"text_align\"],null]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"left\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"left\"],null]],[9],[0,\"Left\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"center\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"center\"],null]],[9],[0,\"Center\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"right\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"right\"],null]],[9],[0,\"Right\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n          \"],[7,\"label\"],[9],[1,[27,\"input\",null,[[\"type\",\"checked\",\"change\"],[\"checkbox\",[23,[\"blockPropertiesView\",\"attrs\",\"no_indent\"]],[27,\"action\",[[22,0,[]],\"toggle-block-attr\",\"no_indent\"],null]]]],false],[0,\"\\n            No Indentation\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[23,[\"inlinePropertiesView\"]]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Text\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Font Size\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-mark\",\"font_size\"],null]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"small\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"size\"]],\"small\"],null]],[9],[0,\"Small\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"size\"]],\"\"],null]],[9],[0,\"Normal\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"medium\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"size\"]],\"medium\"],null]],[9],[0,\"Medium\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"large\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"size\"]],\"large\"],null]],[9],[0,\"Large\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
 });
 ;define("client/templates/components/dropdown-menu-item", ["exports"], function (exports) {
   "use strict";

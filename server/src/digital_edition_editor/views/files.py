@@ -121,14 +121,9 @@ def load_body(doc):
             'content': []}
     for element in doc.xpath('/tei:TEI/tei:text/tei:body/*', namespaces=NS):
         if element.tag == '{http://www.tei-c.org/ns/1.0}head':
-            if element.attrib['type'] == 'level-1':
-                block = {'type': 'heading',
-                         'attrs': {'level': 'level-1'},
-                         'content': []}
-            else:
-                block = {'type': 'heading',
-                         'attrs': {'level': 'level-2'},
-                         'content': []}
+            block = {'type': 'heading',
+                     'attrs': {'level': element.attrib['type'] if 'type' in element.attrib else 'level-1'},
+                     'content': []}
         elif element.tag == '{http://www.tei-c.org/ns/1.0}p':
             block = {'type': 'paragraph',
                      'attrs': {'no_indent': False,
@@ -251,7 +246,7 @@ def save_body(source):
     for block in source['content']:
         if block['type'] == 'heading':
             block_elem = etree.Element('{http://www.tei-c.org/ns/1.0}head')
-            block_elem.attrib['type'] = 'level-%i' % block['attrs']['level']
+            block_elem.attrib['type'] = block['attrs']['level']
         elif block['type'] == 'paragraph':
             block_elem = etree.Element('{http://www.tei-c.org/ns/1.0}p')
             styles = []
@@ -344,7 +339,7 @@ def patch_file(request):
                 commit_msg = request_body['data']['attributes']['commit-msg']
             else:
                 commit_msg = 'Updated %s' % os.path.basename(file_path)
-            if repo.index.diff(None):
+            if False and repo.index.diff(None):
                 local_commits = list(repo.iter_commits('%s@{u}..%s' % (request.authorized_user['userid'],
                                                                        request.authorized_user['userid'])))
 

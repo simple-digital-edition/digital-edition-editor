@@ -42,9 +42,18 @@ function paragraph_class_to_attrs(dom) {
     return attrs
 }
 
+function mark_font_size_attr(dom) {
+    let attrs = {
+        size: ''
+    }
+    console.log('hm')
+    return attrs
+}
+
 export default Component.extend({
     classNames: ['tei-body-editor', 'full-height'],
-    blockPropertiesView: '',
+    blockPropertiesView: null,
+    inlinePropertiesView: null,
 
     menu: undefined,
 
@@ -65,32 +74,6 @@ export default Component.extend({
                         id: 'paragraph',
                         title: 'Paragraph',
                         action: 'select-block-type'
-                    }
-                ]
-            },
-            {
-                id: 'block_styling',
-                title: 'Block Styling',
-                items: [
-                    {
-                        id: 'no_indent',
-                        title: 'No indentation',
-                        action: 'toggle-block-attr'
-                    },
-                    {
-                        id: 'text_align_left',
-                        title: 'Left align',
-                        action: 'set-block-attr'
-                    },
-                    {
-                        id: 'text_align_center',
-                        title: 'Center align',
-                        action: 'set-block-attr'
-                    },
-                    {
-                        id: 'text_align_right',
-                        title: 'Right align',
-                        action: 'set-block-attr'
                     }
                 ]
             },
@@ -205,6 +188,10 @@ export default Component.extend({
                 sup: {
                     toDOM() {return ['sup', 0]},
                     parseDOM: [{tag: 'sup'}]
+                },
+                font_size: {
+                    toDOM(mark) {return ['span', {class: 'font-size-' + mark.attrs.size}]},
+                    parseDOM: [{tag: 'span.font-size', mark_font_size_attr}]
                 },
                 font_size_large: {
                     toDOM() {return ['span', {class: 'font-size-large'}, 0]},
@@ -410,41 +397,23 @@ export default Component.extend({
                 toggleMark(schema.marks[param])(view.state, view.dispatch)
             }
         },
-        'toggle-block-attr': function(param) {
+        'toggle-block-attr': function(attr) {
             let view = this.get('editor-view')
             let schema = this.get('editor-schema')
             view.focus()
             let {$from} = view.state.selection
-            if($from.parent.type.name === 'paragraph') {
-                let attrs = {
-                    no_indent: $from.parent.attrs.no_indent,
-                    text_align: $from.parent.attrs.text_align
-                }
-                if(param === 'no_indent') {
-                    attrs.no_indent = !attrs.no_indent
-                }
-                setBlockType(schema.nodes['paragraph'], attrs)(view.state, view.dispatch)
-            }
+            let attrs = Object.assign({}, $from.parent.attrs)
+            attrs[attr] = !attrs[attr]
+            setBlockType(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch)
         },
-        'set-block-attr': function(param) {
+        'set-block-attr': function(attr, ev) {
             let view = this.get('editor-view')
             let schema = this.get('editor-schema')
             view.focus()
             let {$from} = view.state.selection
-            if($from.parent.type.name === 'paragraph') {
-                let attrs = {
-                    no_indent: $from.parent.attrs.no_indent,
-                    text_align: $from.parent.attrs.text_align
-                }
-                if(param === 'text_align_left') {
-                    attrs.text_align = 'left'
-                } else if(param === 'text_align_center') {
-                    attrs.text_align = 'center'
-                } else if(param === 'text_align_right') {
-                    attrs.text_align = 'right'
-                }
-                setBlockType(schema.nodes['paragraph'], attrs)(view.state, view.dispatch)
-            }
+            let attrs = Object.assign({}, $from.parent.attrs)
+            attrs[attr] = ev.target.value
+            setBlockType(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch)
         }
     }
 });

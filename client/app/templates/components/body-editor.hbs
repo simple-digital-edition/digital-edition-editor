@@ -24,7 +24,7 @@
         <dt>Heading</dt>
         <dd>
           <label>Heading Type
-            <select onchange={{action "select-heading-level" value="target.value"}}>
+            <select onchange={{action "set-block-attr" "level"}}>
               <option value="level-1" selected={{eq blockPropertiesView.attrs.level "level-1"}}>Level 1</option>
               <option value="level-2" selected={{eq blockPropertiesView.attrs.level "level-2"}}>Level 2</option>
               <option value="level-3" selected={{eq blockPropertiesView.attrs.level "level-3"}}>Level 3</option>
@@ -36,10 +36,26 @@
         <dt>Paragraph</dt>
         <dd>
           <label>Text Alignment
-            <select>
+            <select onchange={{action "set-block-attr" "text_align"}}>
               <option value="left" selected={{eq blockPropertiesView.attrs.text_align "left"}}>Left</option>
               <option value="center" selected={{eq blockPropertiesView.attrs.text_align "center"}}>Center</option>
               <option value="right" selected={{eq blockPropertiesView.attrs.text_align "right"}}>Right</option>
+            </select>
+          </label>
+          <label>{{input type="checkbox" checked=blockPropertiesView.attrs.no_indent change=(action "toggle-block-attr" "no_indent")}}
+            No Indentation
+          </label>
+        </dd>
+      {{/if}}
+      {{#if inlinePropertiesView}}
+        <dt>Text</dt>
+        <dd>
+          <label>Font Size
+            <select onchange={{action "set-mark" "font_size"}}>
+              <option value="small" selected={{eq inlinePropertiesView.attrs.size "small"}}>Small</option>
+              <option value="" selected={{eq inlinePropertiesView.attrs.size ""}}>Normal</option>
+              <option value="medium" selected={{eq inlinePropertiesView.attrs.size "medium"}}>Medium</option>
+              <option value="large" selected={{eq inlinePropertiesView.attrs.size "large"}}>Large</option>
             </select>
           </label>
         </dd>
