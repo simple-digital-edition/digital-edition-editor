@@ -179,6 +179,22 @@ def get_file(request):
 
 
 def save_header(source):
+    sort_order = {'tei:fileDesc': 0,
+                  'tei:sourceDesc': 1,
+                  'tei:profileDesc': 2,
+                  'tei:revisionDesc': 3,
+                  'tei:titleStmt': 0,
+                  'tei:title': 0,
+                  'tei:author': 1,
+                  'tei:respStmt': 2,
+                  'tei:name': 0,
+                  'tei:resp': 1,
+                  'tei:bibl': 0,
+                  'tei:creation': 0,
+                  'tei:textClass': 1,
+                  'tei:date': 0,
+                  'tei:catRef': 0,
+                  'tei:change': 0}
     def mkpath(parent, path):
         for child in parent:
             if child.tag == to_ns(path[0]):
@@ -187,7 +203,17 @@ def save_header(source):
                 else:
                     return child
         element = etree.Element(to_ns(path[0]))
-        parent.append(element)
+        if len(parent) == 0:
+            parent.append(element)
+        else:
+            inserted = False
+            for idx, child in enumerate(parent):
+                if sort_order[path[0]] < sort_order[to_prefix(child.tag)]:
+                    parent.insert(idx, element)
+                    inserted = True
+                    break
+            if not inserted:
+                parent.append(element)
         if len(path) > 1:
             return mkpath(element, path[1:])
         else:
@@ -342,7 +368,8 @@ def patch_file(request):
                 commit_msg = request_body['data']['attributes']['commit-msg']
             else:
                 commit_msg = 'Updated %s' % os.path.basename(file_path)
-            if repo.index.diff(None):
+            print(repo.index.diff(None))
+            if False and repo.index.diff(None):
                 local_commits = list(repo.iter_commits('%s@{u}..%s' % (request.authorized_user['userid'],
                                                                        request.authorized_user['userid'])))
 
