@@ -312,12 +312,19 @@ def save_body(source):
                             parent = text_elem
                         else:
                             if parent.tag == '{http://www.tei-c.org/ns/1.0}hi':
-                                text_elem.attrib['style'] = '%s %s' % (text_elem.attrib['style'],
-                                                                       mark['type'].replace('_', '-'))
+                                if mark['type'] == 'font_size':
+                                    text_elem.attrib['style'] = '%s font-size-%s' % (text_elem.attrib['style'],
+                                                                                     mark['attrs']['size'])
+                                else:
+                                    text_elem.attrib['style'] = '%s %s' % (text_elem.attrib['style'],
+                                                                           mark['type'].replace('_', '-'))
                             else:
                                 text_elem = etree.Element('{http://www.tei-c.org/ns/1.0}hi')
                                 text_elem.text = inline['text']
-                                text_elem.attrib['style'] = mark['type'].replace('_', '-')
+                                if mark['type'] == 'font_size':
+                                    text_elem.attrib['style'] = 'font-size-%s' % mark['attrs']['size']
+                                else:
+                                    text_elem.attrib['style'] = mark['type'].replace('_', '-')
                                 if parent.text:
                                     parent.text = ''
                                 parent.append(text_elem)
