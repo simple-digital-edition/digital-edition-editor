@@ -375,8 +375,7 @@ def patch_file(request):
                 commit_msg = request_body['data']['attributes']['commit-msg']
             else:
                 commit_msg = 'Updated %s' % os.path.basename(file_path)
-            print(repo.index.diff(None))
-            if False and repo.index.diff(None):
+            if repo.index.diff(None):
                 local_commits = list(repo.iter_commits('%s@{u}..%s' % (request.authorized_user['userid'],
                                                                        request.authorized_user['userid'])))
 
