@@ -19,7 +19,7 @@ def repository_as_json(request, key):
     tei_files = {}
     for path, _, filenames in os.walk(base_path):
         for filename in filenames:
-            if filename.endswith('.tei'):
+            if path[len(base_path) + 1:].startswith('content') and filename.endswith('.tei'):
                 filename = os.path.join(path[len(base_path) + 1:], filename)
                 hash = hashlib.sha256()
                 hash.update(filename.encode('utf-8'))
