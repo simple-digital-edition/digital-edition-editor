@@ -8,36 +8,28 @@ export function getActiveMarks(state) {
         // Get marks at the current cursor position
         if(state.doc.nodeAt(selection.from)) {
             state.doc.nodeAt(selection.from).marks.forEach((mark) => {
-                if(active_marks.indexOf(mark.type.name) === -1) {
-                    active_marks.push(mark.type.name)
-                }
+                active_marks.push(mark)
             })
         }
         // Add marks from the previous cursor position if they are inclusive
         if(state.doc.nodeAt(selection.from - 1)) {
             state.doc.nodeAt(selection.from - 1).marks.forEach((mark) => {
                 if(mark.type.spec.inclusive || mark.type.spec.inclusive === undefined) {
-                    if(active_marks.indexOf(mark.type.name) === -1) {
-                        active_marks.push(mark.type.name)
-                    }
+                    active_marks.push(mark)
                 }
             })
         }
         // Add stored marks
         if(state.storedMarks) {
             state.storedMarks.forEach((mark) => {
-                if(active_marks.indexOf(mark.type.name) === -1) {
-                    active_marks.push(mark.type.name)
-                }
+                active_marks.push(mark)
             })
         }
     } else {
         // Add all marks between the selection markers
         state.doc.nodesBetween(selection.from, selection.to, (node) => {
             node.marks.forEach((mark) => {
-                if(active_marks.indexOf(mark.type.name) === -1) {
-                    active_marks.push(mark.type.name)
-                }
+                active_marks.push(mark)
             })
         })
     }

@@ -23,7 +23,7 @@
       {{#if (eq blockPropertiesView.category 'heading')}}
         <dt>Heading</dt>
         <dd>
-          <label>Heading Type
+          <label>Level
             <select onchange={{action "set-block-attr" "level"}}>
               <option value="level-1" selected={{eq blockPropertiesView.attrs.level "level-1"}}>Level 1</option>
               <option value="level-2" selected={{eq blockPropertiesView.attrs.level "level-2"}}>Level 2</option>
@@ -51,12 +51,21 @@
         <dt>Text</dt>
         <dd>
           <label>Font Size
-            <select onchange={{action "set-mark" "font_size"}}>
-              <option value="small" selected={{eq inlinePropertiesView.attrs.size "small"}}>Small</option>
-              <option value="" selected={{eq inlinePropertiesView.attrs.size ""}}>Normal</option>
-              <option value="medium" selected={{eq inlinePropertiesView.attrs.size "medium"}}>Medium</option>
-              <option value="large" selected={{eq inlinePropertiesView.attrs.size "large"}}>Large</option>
+            <select onchange={{action "set-inline-attr" "font_size"}}>
+              <option value="small" selected={{eq inlinePropertiesView.attrs.font_size "small"}}>Small</option>
+              <option value="" selected={{eq inlinePropertiesView.attrs.font_size ""}}>Normal</option>
+              <option value="medium" selected={{eq inlinePropertiesView.attrs.font_size "medium"}}>Medium</option>
+              <option value="large" selected={{eq inlinePropertiesView.attrs.font_size "large"}}>Large</option>
             </select>
+          </label>
+          <label>{{input type="checkbox" checked=inlinePropertiesView.attrs.font_weight_bold change=(action "toggle-inline-attr" "font_weight_bold")}}
+            Bold
+          </label>
+          <label>{{input type="checkbox" checked=inlinePropertiesView.attrs.superscript change=(action "toggle-inline-attr" "sup")}}
+            Superscript
+          </label>
+          <label>{{input type="checkbox" checked=inlinePropertiesView.attrs.letter_sparse change=(action "toggle-inline-attr" "letter_sparse")}}
+            Sparse Lettering
           </label>
         </dd>
       {{/if}}

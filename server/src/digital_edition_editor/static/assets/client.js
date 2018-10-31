@@ -162,59 +162,27 @@
 
             let menu = [{
                 id: 'block',
-                title: 'Current Block',
+                title: 'Block Type',
                 items: [{
                     id: 'heading',
                     title: 'Heading',
-                    action: 'select-block-type'
+                    action: 'set-block-type'
                 }, {
                     id: 'paragraph',
                     title: 'Paragraph',
-                    action: 'select-block-type'
-                }]
-            }, {
-                id: 'font_size',
-                title: 'Font Size',
-                items: [{
-                    id: 'default',
-                    title: 'Normal',
-                    action: 'set-font-size'
-                }, {
-                    id: 'font_size_small',
-                    title: 'Small',
-                    action: 'set-font-size'
-                }, {
-                    id: 'font_size_medium',
-                    title: 'Medium',
-                    action: 'set-font-size'
-                }, {
-                    id: 'font_size_large',
-                    title: 'Large',
-                    action: 'set-font-size'
+                    action: 'set-block-type'
                 }]
             }, {
                 id: 'inline',
-                title: 'Inline Styles',
+                title: 'Inline Elements',
                 items: [{
-                    id: 'font_weight_bold',
-                    title: 'Bold',
-                    action: 'toggle-mark'
-                }, {
                     id: 'page_break',
                     title: 'Page Break',
-                    action: 'toggle-mark'
-                }, {
-                    id: 'sup',
-                    title: 'Superscript',
-                    action: 'toggle-mark'
-                }, {
-                    id: 'letter_sparse',
-                    title: 'Sparse lettering',
-                    action: 'toggle-mark'
+                    action: 'toggle-inline-attr'
                 }, {
                     id: 'foreign_language',
                     title: 'Foreign Language',
-                    action: 'toggle-mark'
+                    action: 'toggle-inline-attr'
                 }]
             }];
             this.set('menu', menu);
@@ -279,28 +247,15 @@
                         parseDOM: [{ tag: 'sup' }]
                     },
                     font_size: {
+                        attrs: {
+                            size: {
+                                default: ''
+                            }
+                        },
                         toDOM(mark) {
                             return ['span', { class: 'font-size-' + mark.attrs.size }];
                         },
                         parseDOM: [{ tag: 'span.font-size', mark_font_size_attr }]
-                    },
-                    font_size_large: {
-                        toDOM() {
-                            return ['span', { class: 'font-size-large' }, 0];
-                        },
-                        parseDOM: [{ tag: 'span.font-size-large' }]
-                    },
-                    font_size_medium: {
-                        toDOM() {
-                            return ['span', { class: 'font-size-medium' }, 0];
-                        },
-                        parseDOM: [{ tag: 'span.font-size-medium' }]
-                    },
-                    font_size_small: {
-                        toDOM() {
-                            return ['span', { class: 'font-size-small' }, 0];
-                        },
-                        parseDOM: [{ tag: 'span.font-size-small' }]
                     },
                     page_break: {
                         toDOM() {
@@ -335,51 +290,45 @@
                     // Calculate which block types are currently selected
                     component.setMenuState('block.heading', { is_active: false });
                     component.setMenuState('block.paragraph', { is_active: false });
-                    component.setMenuState('block_styling.no_indent', { is_active: false });
-                    component.setMenuState('block_styling.text_align_left', { is_active: false });
-                    component.setMenuState('block_styling.text_align_center', { is_active: false });
-                    component.setMenuState('block_styling.text_align_right', { is_active: false });
                     let blocks = (0, _prosemirrorEditor.getBlockHierarchy)(new_state);
                     blocks.forEach(node => {
                         if (node.type.isBlock) {
                             component.setMenuState('block.' + node.type.name, { is_active: true });
                             component.set('blockPropertiesView', { category: node.type.name, attrs: node.attrs });
-                            if (node.type.name === 'paragraph') {
-                                component.setMenuState('block_styling.no_indent', { is_active: node.attrs.no_indent });
-                                if (node.attrs.text_align === 'left') {
-                                    component.setMenuState('block_styling.text_align_left', { is_active: true });
-                                } else if (node.attrs.text_align === 'center') {
-                                    component.setMenuState('block_styling.text_align_center', { is_active: true });
-                                } else if (node.attrs.text_align === 'right') {
-                                    component.setMenuState('block_styling.text_align_right', { is_active: true });
-                                }
-                            }
                         } else {
                             component.setMenuState('inline.' + node.type.name, { is_active: true });
                         }
                     });
                     // Calculate which marks are currently selected
                     let selected_marks = (0, _prosemirrorEditor.getActiveMarks)(new_state);
-                    component.setMenuState('font_size.default', { is_active: true });
-                    component.setMenuState('font_size.font_size_small', { is_active: false });
-                    component.setMenuState('font_size.font_size_medium', { is_active: false });
-                    component.setMenuState('font_size.font_size_large', { is_active: false });
-                    component.setMenuState('inline.sup', { is_active: false });
-                    component.setMenuState('inline.letter_sparse', { is_active: false });
+                    let inlinePropertiesView = {
+                        'attrs': {
+                            'font_size': '',
+                            'font_weight_bold': false,
+                            'superscript': false,
+                            'letter_sparse': false
+                        }
+                    };
                     component.setMenuState('inline.foreign_language', { is_active: false });
                     component.setMenuState('inline.page_break', { is_active: false });
                     for (let idx = 0; idx < selected_marks.length; idx++) {
                         let mark = selected_marks[idx];
-                        if (mark.indexOf('font_size_') === 0) {
-                            component.setMenuState('font_size.default', { is_active: false });
-                            component.setMenuState('font_size.' + mark, { is_active: true });
-                        } else if (mark === 'page_break') {
+                        if (mark.type.name === 'font_size') {
+                            inlinePropertiesView.attrs.font_size = mark.attrs.size;
+                        } else if (mark.type.name === 'font_weight_bold') {
+                            inlinePropertiesView.attrs.font_weight_bold = true;
+                        } else if (mark.type.name === 'sup') {
+                            inlinePropertiesView.attrs.superscript = true;
+                        } else if (mark.type.name === 'letter_sparse') {
+                            inlinePropertiesView.attrs.letter_sparse = true;
+                        } else if (mark.type.name === 'foreign_language') {
+                            component.setMenuState('inline.foreign_language', { is_active: true });
+                        } else if (mark.type.name === 'page_break') {
                             component.setMenuState('inline.page_break', { is_active: true });
-                        } else {
-                            component.setMenuState('inline.' + mark, { is_active: true });
                         }
                     }
                     view.updateState(new_state);
+                    component.set('inlinePropertiesView', inlinePropertiesView);
                     component.set('body', new_state.doc.toJSON());
                 }
             });
@@ -458,7 +407,7 @@
         },
 
         actions: {
-            'select-block-type': function (param) {
+            'set-block-type'(param) {
                 let view = this.get('editor-view');
                 let schema = this.get('editor-schema');
                 view.focus();
@@ -468,33 +417,16 @@
                     (0, _prosemirrorCommands.setBlockType)(schema.nodes['heading'], { level: 'level-1' })(view.state, view.dispatch);
                 }
             },
-            'select-heading-level': function (param) {
+            'set-block-attr'(attr, ev) {
                 let view = this.get('editor-view');
                 let schema = this.get('editor-schema');
                 view.focus();
-                (0, _prosemirrorCommands.setBlockType)(schema.nodes['heading'], { level: param })(view.state, view.dispatch);
+                let { $from } = view.state.selection;
+                let attrs = Object.assign({}, $from.parent.attrs);
+                attrs[attr] = ev.target.value;
+                (0, _prosemirrorCommands.setBlockType)(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch);
             },
-            'toggle-mark': function (param) {
-                let view = this.get('editor-view');
-                let schema = this.get('editor-schema');
-                view.focus();
-                (0, _prosemirrorCommands.toggleMark)(schema.marks[param])(view.state, view.dispatch);
-            },
-            'set-font-size': function (param) {
-                let view = this.get('editor-view');
-                let schema = this.get('editor-schema');
-                view.focus();
-                let marks = (0, _prosemirrorEditor.getActiveMarks)(view.state);
-                marks.forEach(mark => {
-                    if (mark.indexOf('font_size_') === 0) {
-                        (0, _prosemirrorCommands.toggleMark)(schema.marks[mark])(view.state, view.dispatch);
-                    }
-                });
-                if (param.indexOf('font_size_') === 0) {
-                    (0, _prosemirrorCommands.toggleMark)(schema.marks[param])(view.state, view.dispatch);
-                }
-            },
-            'toggle-block-attr': function (attr) {
+            'toggle-block-attr'(attr) {
                 let view = this.get('editor-view');
                 let schema = this.get('editor-schema');
                 view.focus();
@@ -503,14 +435,25 @@
                 attrs[attr] = !attrs[attr];
                 (0, _prosemirrorCommands.setBlockType)(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch);
             },
-            'set-block-attr': function (attr, ev) {
+            'set-inline-attr'(attr, ev) {
                 let view = this.get('editor-view');
                 let schema = this.get('editor-schema');
                 view.focus();
-                let { $from } = view.state.selection;
-                let attrs = Object.assign({}, $from.parent.attrs);
-                attrs[attr] = ev.target.value;
-                (0, _prosemirrorCommands.setBlockType)(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch);
+                let marks = (0, _prosemirrorEditor.getActiveMarks)(view.state);
+                marks.forEach(mark => {
+                    if (mark.type.name === attr) {
+                        (0, _prosemirrorCommands.toggleMark)(schema.marks[mark.type.name])(view.state, view.dispatch);
+                    }
+                });
+                if (ev.target.value !== '') {
+                    (0, _prosemirrorCommands.toggleMark)(schema.marks[attr], { size: ev.target.value })(view.state, view.dispatch);
+                }
+            },
+            'toggle-inline-attr'(attr) {
+                let view = this.get('editor-view');
+                let schema = this.get('editor-schema');
+                view.focus();
+                (0, _prosemirrorCommands.toggleMark)(schema.marks[attr])(view.state, view.dispatch);
             }
         }
     });
@@ -856,6 +799,7 @@
             merge: function () {
                 this.set('merge_button_text', 'Creating merge...');
                 this.set('merge_button_class', 'button secondary');
+                this.set('merge_errors', '');
                 let namespace = this.get('config.api.namespace');
                 if (namespace) {
                     namespace = '/' + namespace;
@@ -870,7 +814,7 @@
                         this.set('merge_button_class', 'button');
                     }, 10000);
                 }).catch(({ payload }) => {
-                    this.set('merge_errors', payload.message[0]);
+                    this.set('merge_errors', payload.message);
                     this.set('merge_button_text', 'Merge request failed');
                     this.set('merge_button_class', 'button alert');
                 });
@@ -1627,7 +1571,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "+1Gxjnvg", "block": "{\"symbols\":[\"item\",\"action\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-x grid-padding-x full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell medium-3 full-height auto-overflow\"],[9],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"accordion no-padding\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"menu\"]]],null,{\"statements\":[[4,\"accordion-item\",null,[[\"title\"],[[22,1,[\"title\"]]]],{\"statements\":[[0,\"          \"],[7,\"ul\"],[11,\"class\",\"menu vertical\"],[9],[0,\"\\n\"],[4,\"each\",[[22,1,[\"items\"]]],null,{\"statements\":[[4,\"if\",[[22,2,[\"is_active\"]]],null,{\"statements\":[[0,\"                \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[7,\"a\"],[3,\"action\",[[22,0,[]],[22,2,[\"action\"]],[22,2,[\"id\"]]]],[9],[1,[22,2,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[7,\"li\"],[9],[7,\"a\"],[3,\"action\",[[22,0,[]],[22,2,[\"action\"]],[22,2,[\"id\"]]]],[9],[1,[22,2,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[2]},null],[0,\"          \"],[10],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell auto full-height editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell medium-3 full-height auto-overflow\"],[9],[0,\"\\n    \"],[7,\"dl\"],[9],[0,\"\\n\"],[4,\"if\",[[27,\"eq\",[[23,[\"blockPropertiesView\",\"category\"]],\"heading\"],null]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Heading\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Heading Type\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-attr\",\"level\"],null]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-1\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-1\"],null]],[9],[0,\"Level 1\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-2\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-2\"],null]],[9],[0,\"Level 2\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-3\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-3\"],null]],[9],[0,\"Level 3\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[27,\"eq\",[[23,[\"blockPropertiesView\",\"category\"]],\"paragraph\"],null]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Paragraph\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Text Alignment\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-attr\",\"text_align\"],null]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"left\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"left\"],null]],[9],[0,\"Left\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"center\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"center\"],null]],[9],[0,\"Center\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"right\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"right\"],null]],[9],[0,\"Right\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n          \"],[7,\"label\"],[9],[1,[27,\"input\",null,[[\"type\",\"checked\",\"change\"],[\"checkbox\",[23,[\"blockPropertiesView\",\"attrs\",\"no_indent\"]],[27,\"action\",[[22,0,[]],\"toggle-block-attr\",\"no_indent\"],null]]]],false],[0,\"\\n            No Indentation\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[23,[\"inlinePropertiesView\"]]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Text\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Font Size\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-mark\",\"font_size\"],null]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"small\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"size\"]],\"small\"],null]],[9],[0,\"Small\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"size\"]],\"\"],null]],[9],[0,\"Normal\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"medium\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"size\"]],\"medium\"],null]],[9],[0,\"Medium\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"large\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"size\"]],\"large\"],null]],[9],[0,\"Large\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "w6EOC97b", "block": "{\"symbols\":[\"item\",\"action\"],\"statements\":[[7,\"div\"],[11,\"class\",\"grid-x grid-padding-x full-height\"],[9],[0,\"\\n  \"],[7,\"nav\"],[11,\"class\",\"cell medium-3 full-height auto-overflow\"],[9],[0,\"\\n    \"],[7,\"ul\"],[11,\"class\",\"accordion no-padding\"],[9],[0,\"\\n\"],[4,\"each\",[[23,[\"menu\"]]],null,{\"statements\":[[4,\"accordion-item\",null,[[\"title\"],[[22,1,[\"title\"]]]],{\"statements\":[[0,\"          \"],[7,\"ul\"],[11,\"class\",\"menu vertical\"],[9],[0,\"\\n\"],[4,\"each\",[[22,1,[\"items\"]]],null,{\"statements\":[[4,\"if\",[[22,2,[\"is_active\"]]],null,{\"statements\":[[0,\"                \"],[7,\"li\"],[11,\"class\",\"is-active\"],[9],[7,\"a\"],[3,\"action\",[[22,0,[]],[22,2,[\"action\"]],[22,2,[\"id\"]]]],[9],[1,[22,2,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[7,\"li\"],[9],[7,\"a\"],[3,\"action\",[[22,0,[]],[22,2,[\"action\"]],[22,2,[\"id\"]]]],[9],[1,[22,2,[\"title\"]],false],[10],[10],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[2]},null],[0,\"          \"],[10],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell auto full-height editor auto-overflow\"],[9],[0,\"\\n  \"],[10],[0,\"\\n  \"],[7,\"div\"],[11,\"class\",\"cell medium-3 full-height auto-overflow\"],[9],[0,\"\\n    \"],[7,\"dl\"],[9],[0,\"\\n\"],[4,\"if\",[[27,\"eq\",[[23,[\"blockPropertiesView\",\"category\"]],\"heading\"],null]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Heading\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Level\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-attr\",\"level\"],null]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-1\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-1\"],null]],[9],[0,\"Level 1\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-2\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-2\"],null]],[9],[0,\"Level 2\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"level-3\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"level\"]],\"level-3\"],null]],[9],[0,\"Level 3\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[27,\"eq\",[[23,[\"blockPropertiesView\",\"category\"]],\"paragraph\"],null]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Paragraph\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Text Alignment\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-block-attr\",\"text_align\"],null]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"left\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"left\"],null]],[9],[0,\"Left\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"center\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"center\"],null]],[9],[0,\"Center\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"right\"],[12,\"selected\",[27,\"eq\",[[23,[\"blockPropertiesView\",\"attrs\",\"text_align\"]],\"right\"],null]],[9],[0,\"Right\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n          \"],[7,\"label\"],[9],[1,[27,\"input\",null,[[\"type\",\"checked\",\"change\"],[\"checkbox\",[23,[\"blockPropertiesView\",\"attrs\",\"no_indent\"]],[27,\"action\",[[22,0,[]],\"toggle-block-attr\",\"no_indent\"],null]]]],false],[0,\"\\n            No Indentation\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[23,[\"inlinePropertiesView\"]]],null,{\"statements\":[[0,\"        \"],[7,\"dt\"],[9],[0,\"Text\"],[10],[0,\"\\n        \"],[7,\"dd\"],[9],[0,\"\\n          \"],[7,\"label\"],[9],[0,\"Font Size\\n            \"],[7,\"select\"],[12,\"onchange\",[27,\"action\",[[22,0,[]],\"set-inline-attr\",\"font_size\"],null]],[9],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"small\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"font_size\"]],\"small\"],null]],[9],[0,\"Small\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"font_size\"]],\"\"],null]],[9],[0,\"Normal\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"medium\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"font_size\"]],\"medium\"],null]],[9],[0,\"Medium\"],[10],[0,\"\\n              \"],[7,\"option\"],[11,\"value\",\"large\"],[12,\"selected\",[27,\"eq\",[[23,[\"inlinePropertiesView\",\"attrs\",\"font_size\"]],\"large\"],null]],[9],[0,\"Large\"],[10],[0,\"\\n            \"],[10],[0,\"\\n          \"],[10],[0,\"\\n          \"],[7,\"label\"],[9],[1,[27,\"input\",null,[[\"type\",\"checked\",\"change\"],[\"checkbox\",[23,[\"inlinePropertiesView\",\"attrs\",\"font_weight_bold\"]],[27,\"action\",[[22,0,[]],\"toggle-inline-attr\",\"font_weight_bold\"],null]]]],false],[0,\"\\n            Bold\\n          \"],[10],[0,\"\\n          \"],[7,\"label\"],[9],[1,[27,\"input\",null,[[\"type\",\"checked\",\"change\"],[\"checkbox\",[23,[\"inlinePropertiesView\",\"attrs\",\"superscript\"]],[27,\"action\",[[22,0,[]],\"toggle-inline-attr\",\"sup\"],null]]]],false],[0,\"\\n            Superscript\\n          \"],[10],[0,\"\\n          \"],[7,\"label\"],[9],[1,[27,\"input\",null,[[\"type\",\"checked\",\"change\"],[\"checkbox\",[23,[\"inlinePropertiesView\",\"attrs\",\"letter_sparse\"]],[27,\"action\",[[22,0,[]],\"toggle-inline-attr\",\"letter_sparse\"],null]]]],false],[0,\"\\n            Sparse Lettering\\n          \"],[10],[0,\"\\n        \"],[10],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[10],[0,\"\\n  \"],[10],[0,\"\\n\"],[10],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "client/templates/components/body-editor.hbs" } });
 });
 ;define("client/templates/components/dropdown-menu-item", ["exports"], function (exports) {
   "use strict";
@@ -1743,36 +1687,28 @@
             // Get marks at the current cursor position
             if (state.doc.nodeAt(selection.from)) {
                 state.doc.nodeAt(selection.from).marks.forEach(mark => {
-                    if (active_marks.indexOf(mark.type.name) === -1) {
-                        active_marks.push(mark.type.name);
-                    }
+                    active_marks.push(mark);
                 });
             }
             // Add marks from the previous cursor position if they are inclusive
             if (state.doc.nodeAt(selection.from - 1)) {
                 state.doc.nodeAt(selection.from - 1).marks.forEach(mark => {
                     if (mark.type.spec.inclusive || mark.type.spec.inclusive === undefined) {
-                        if (active_marks.indexOf(mark.type.name) === -1) {
-                            active_marks.push(mark.type.name);
-                        }
+                        active_marks.push(mark);
                     }
                 });
             }
             // Add stored marks
             if (state.storedMarks) {
                 state.storedMarks.forEach(mark => {
-                    if (active_marks.indexOf(mark.type.name) === -1) {
-                        active_marks.push(mark.type.name);
-                    }
+                    active_marks.push(mark);
                 });
             }
         } else {
             // Add all marks between the selection markers
             state.doc.nodesBetween(selection.from, selection.to, node => {
                 node.marks.forEach(mark => {
-                    if (active_marks.indexOf(mark.type.name) === -1) {
-                        active_marks.push(mark.type.name);
-                    }
+                    active_marks.push(mark);
                 });
             });
         }
@@ -1819,7 +1755,7 @@ catch(err) {
 
 ;
           if (!runningTests) {
-            require("client/app")["default"].create({"name":"client","version":"0.0.0+5e103c07"});
+            require("client/app")["default"].create({"name":"client","version":"0.0.0+b78605e0"});
           }
         
 //# sourceMappingURL=client.map

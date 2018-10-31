@@ -103,11 +103,14 @@ def load_body(doc):
                 if 'sup' in element.attrib['style']:
                     inline['marks'].append({'type': 'sup'})
                 if 'font-size-large' in element.attrib['style']:
-                    inline['marks'].append({'type': 'font_size_large'})
+                    inline['marks'].append({'type': 'font_size',
+                                            'attrs': {'size': 'large'}})
                 if 'font-size-medium' in element.attrib['style']:
-                    inline['marks'].append({'type': 'font_size_medium'})
+                    inline['marks'].append({'type': 'font_size',
+                                            'attrs': {'size': 'medium'}})
                 if 'font-size-small' in element.attrib['style']:
-                    inline['marks'].append({'type': 'font_size_small'})
+                    inline['marks'].append({'type': 'font_size',
+                                            'attrs': {'size': 'small'}})
                 if 'font-weight-bold' in element.attrib['style']:
                     inline['marks'].append({'type': 'font_weight_bold'})
         elif element.tag == '{http://www.tei-c.org/ns/1.0}foreign':
@@ -339,7 +342,7 @@ def patch_file(request):
                 commit_msg = request_body['data']['attributes']['commit-msg']
             else:
                 commit_msg = 'Updated %s' % os.path.basename(file_path)
-            if False and repo.index.diff(None):
+            if repo.index.diff(None):
                 local_commits = list(repo.iter_commits('%s@{u}..%s' % (request.authorized_user['userid'],
                                                                        request.authorized_user['userid'])))
 

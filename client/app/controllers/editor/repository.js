@@ -31,6 +31,7 @@ export default Controller.extend({
         merge: function() {
             this.set('merge_button_text', 'Creating merge...')
             this.set('merge_button_class', 'button secondary')
+            this.set('merge_errors', '')
             let namespace = this.get('config.api.namespace')
             if(namespace) {
                 namespace = '/' + namespace
@@ -45,7 +46,7 @@ export default Controller.extend({
                     this.set('merge_button_class', 'button')
                 }, 10000)
             }).catch(({payload}) => {
-                this.set('merge_errors', payload.message[0])
+                this.set('merge_errors', payload.message)
                 this.set('merge_button_text', 'Merge request failed')
                 this.set('merge_button_class', 'button alert')
             })

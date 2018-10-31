@@ -63,74 +63,33 @@ export default Component.extend({
         let menu = [
             {
                 id: 'block',
-                title: 'Current Block',
+                title: 'Block Type',
                 items: [
                     {
                         id: 'heading',
                         title: 'Heading',
-                        action: 'select-block-type'
+                        action: 'set-block-type'
                     },
                     {
                         id: 'paragraph',
                         title: 'Paragraph',
-                        action: 'select-block-type'
-                    }
-                ]
-            },
-            {
-                id: 'font_size',
-                title: 'Font Size',
-                items: [
-                    {
-                        id: 'default',
-                        title: 'Normal',
-                        action: 'set-font-size'
-                    },
-                    {
-                        id: 'font_size_small',
-                        title: 'Small',
-                        action: 'set-font-size'
-                    },
-                    {
-                        id: 'font_size_medium',
-                        title: 'Medium',
-                        action: 'set-font-size'
-                    },
-                    {
-                        id: 'font_size_large',
-                        title: 'Large',
-                        action: 'set-font-size'
+                        action: 'set-block-type'
                     }
                 ]
             },
             {
                 id: 'inline',
-                title: 'Inline Styles',
+                title: 'Inline Elements',
                 items: [
-                    {
-                        id: 'font_weight_bold',
-                        title: 'Bold',
-                        action: 'toggle-mark'
-                    },
                     {
                         id: 'page_break',
                         title: 'Page Break',
-                        action: 'toggle-mark'
-                    },
-                    {
-                        id: 'sup',
-                        title: 'Superscript',
-                        action: 'toggle-mark'
-                    },
-                    {
-                        id: 'letter_sparse',
-                        title: 'Sparse lettering',
-                        action: 'toggle-mark'
+                        action: 'toggle-inline-attr'
                     },
                     {
                         id: 'foreign_language',
                         title: 'Foreign Language',
-                        action: 'toggle-mark'
+                        action: 'toggle-inline-attr'
                     }
                 ]
             }
@@ -190,20 +149,13 @@ export default Component.extend({
                     parseDOM: [{tag: 'sup'}]
                 },
                 font_size: {
+                    attrs: {
+                        size: {
+                            default: ''
+                        }
+                    },
                     toDOM(mark) {return ['span', {class: 'font-size-' + mark.attrs.size}]},
                     parseDOM: [{tag: 'span.font-size', mark_font_size_attr}]
-                },
-                font_size_large: {
-                    toDOM() {return ['span', {class: 'font-size-large'}, 0]},
-                    parseDOM: [{tag: 'span.font-size-large'}]
-                },
-                font_size_medium: {
-                    toDOM() {return ['span', {class: 'font-size-medium'}, 0]},
-                    parseDOM: [{tag: 'span.font-size-medium'}]
-                },
-                font_size_small: {
-                    toDOM() {return ['span', {class: 'font-size-small'}, 0]},
-                    parseDOM: [{tag: 'span.font-size-small'}]
                 },
                 page_break: {
                     toDOM() {return ['span', {class: 'page-break'}, 0]},
@@ -238,51 +190,45 @@ export default Component.extend({
                 // Calculate which block types are currently selected
                 component.setMenuState('block.heading', {is_active: false})
                 component.setMenuState('block.paragraph', {is_active: false})
-                component.setMenuState('block_styling.no_indent', {is_active: false})
-                component.setMenuState('block_styling.text_align_left', {is_active: false})
-                component.setMenuState('block_styling.text_align_center', {is_active: false})
-                component.setMenuState('block_styling.text_align_right', {is_active: false})
                 let blocks = getBlockHierarchy(new_state)
                 blocks.forEach((node) => {
                     if(node.type.isBlock) {
                         component.setMenuState('block.' + node.type.name, {is_active: true})
                         component.set('blockPropertiesView', {category: node.type.name, attrs: node.attrs})
-                        if(node.type.name === 'paragraph') {
-                            component.setMenuState('block_styling.no_indent', {is_active: node.attrs.no_indent})
-                            if(node.attrs.text_align === 'left') {
-                                component.setMenuState('block_styling.text_align_left', {is_active: true})
-                            } else if(node.attrs.text_align === 'center') {
-                                component.setMenuState('block_styling.text_align_center', {is_active: true})
-                            } else if(node.attrs.text_align === 'right') {
-                                component.setMenuState('block_styling.text_align_right', {is_active: true})
-                            }
-                        }
                     } else {
                         component.setMenuState('inline.' + node.type.name, {is_active: true})
                     }
                 })
                 // Calculate which marks are currently selected
                 let selected_marks = getActiveMarks(new_state)
-                component.setMenuState('font_size.default', {is_active: true})
-                component.setMenuState('font_size.font_size_small', {is_active: false})
-                component.setMenuState('font_size.font_size_medium', {is_active: false})
-                component.setMenuState('font_size.font_size_large', {is_active: false})
-                component.setMenuState('inline.sup', {is_active: false})
-                component.setMenuState('inline.letter_sparse', {is_active: false})
+                let inlinePropertiesView = {
+                    'attrs': {
+                        'font_size': '',
+                        'font_weight_bold': false,
+                        'superscript': false,
+                        'letter_sparse': false
+                    }
+                }
                 component.setMenuState('inline.foreign_language', {is_active: false})
                 component.setMenuState('inline.page_break', {is_active: false})
                 for(let idx = 0; idx < selected_marks.length; idx++) {
                     let mark = selected_marks[idx]
-                    if(mark.indexOf('font_size_') === 0) {
-                        component.setMenuState('font_size.default', {is_active: false})
-                        component.setMenuState('font_size.' + mark, {is_active: true})
-                    } else if(mark === 'page_break') {
+                    if(mark.type.name === 'font_size') {
+                        inlinePropertiesView.attrs.font_size = mark.attrs.size
+                    } else if(mark.type.name === 'font_weight_bold') {
+                        inlinePropertiesView.attrs.font_weight_bold = true
+                    } else if(mark.type.name === 'sup') {
+                        inlinePropertiesView.attrs.superscript = true
+                    } else if(mark.type.name === 'letter_sparse') {
+                        inlinePropertiesView.attrs.letter_sparse = true
+                    } else if(mark.type.name === 'foreign_language') {
+                        component.setMenuState('inline.foreign_language', {is_active: true})
+                    } else if(mark.type.name === 'page_break') {
                         component.setMenuState('inline.page_break', {is_active: true})
-                    } else {
-                        component.setMenuState('inline.' + mark, {is_active: true})
                     }
                 }
                 view.updateState(new_state)
+                component.set('inlinePropertiesView', inlinePropertiesView)
                 component.set('body', new_state.doc.toJSON())
             }
         })
@@ -361,7 +307,7 @@ export default Component.extend({
     },
 
     actions: {
-        'select-block-type': function(param) {
+        'set-block-type'(param) {
             let view = this.get('editor-view')
             let schema = this.get('editor-schema')
             view.focus()
@@ -371,33 +317,16 @@ export default Component.extend({
                 setBlockType(schema.nodes['heading'], {level: 'level-1'})(view.state, view.dispatch)
             }
         },
-        'select-heading-level': function(param) {
+        'set-block-attr'(attr, ev) {
             let view = this.get('editor-view')
             let schema = this.get('editor-schema')
             view.focus()
-            setBlockType(schema.nodes['heading'], {level: param})(view.state, view.dispatch)
+            let {$from} = view.state.selection
+            let attrs = Object.assign({}, $from.parent.attrs)
+            attrs[attr] = ev.target.value
+            setBlockType(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch)
         },
-        'toggle-mark': function(param) {
-            let view = this.get('editor-view')
-            let schema = this.get('editor-schema')
-            view.focus()
-            toggleMark(schema.marks[param])(view.state, view.dispatch)
-        },
-        'set-font-size': function(param) {
-            let view = this.get('editor-view')
-            let schema = this.get('editor-schema')
-            view.focus()
-            let marks = getActiveMarks(view.state)
-            marks.forEach((mark) => {
-                if(mark.indexOf('font_size_') === 0) {
-                    toggleMark(schema.marks[mark])(view.state, view.dispatch)
-                }
-            })
-            if(param.indexOf('font_size_') === 0) {
-                toggleMark(schema.marks[param])(view.state, view.dispatch)
-            }
-        },
-        'toggle-block-attr': function(attr) {
+        'toggle-block-attr'(attr) {
             let view = this.get('editor-view')
             let schema = this.get('editor-schema')
             view.focus()
@@ -406,14 +335,25 @@ export default Component.extend({
             attrs[attr] = !attrs[attr]
             setBlockType(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch)
         },
-        'set-block-attr': function(attr, ev) {
+        'set-inline-attr'(attr, ev) {
             let view = this.get('editor-view')
             let schema = this.get('editor-schema')
             view.focus()
-            let {$from} = view.state.selection
-            let attrs = Object.assign({}, $from.parent.attrs)
-            attrs[attr] = ev.target.value
-            setBlockType(schema.nodes[$from.parent.type.name], attrs)(view.state, view.dispatch)
+            let marks = getActiveMarks(view.state)
+            marks.forEach((mark) => {
+                if(mark.type.name === attr) {
+                    toggleMark(schema.marks[mark.type.name])(view.state, view.dispatch)
+                }
+            })
+            if(ev.target.value !== '') {
+                toggleMark(schema.marks[attr], {size: ev.target.value})(view.state, view.dispatch)
+            }
+        },
+        'toggle-inline-attr'(attr) {
+            let view = this.get('editor-view')
+            let schema = this.get('editor-schema')
+            view.focus()
+            toggleMark(schema.marks[attr])(view.state, view.dispatch)
         }
     }
 });
