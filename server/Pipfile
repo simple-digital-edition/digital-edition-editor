@@ -15,3 +15,4 @@ kajiki = "*"
 click = "*"
 
 [dev-packages]
+pyramid-debugtoolbar = "*"
