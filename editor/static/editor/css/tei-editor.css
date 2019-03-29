@@ -1,0 +1,251 @@
+/**
+ * Foundation for Sites by ZURB
+ * Version 6.5.3
+ * foundation.zurb.com
+ * Licensed under MIT Open Source
+ */
+/**
+ * Grid structure
+ */
+.tei-editor {
+  display: flex;
+  flex-flow: column wrap;
+  height: 100%;
+}
+.tei-editor > div:nth-child(1) {
+  flex: 0 0 auto;
+}
+.tei-editor > div:nth-child(2) {
+  flex: 1 1 0px;
+  overflow: hidden;
+}
+.tei-editor #tei-editor-main-text {
+  display: flex;
+  flex-flow: row nowrap;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-main-text > div:nth-child(1) {
+  flex: 0 0 auto;
+  min-height: 0px;
+  min-width: 0px;
+  width: 66.6666666667%;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-main-text > div:nth-child(2) {
+  flex: 0 0 auto;
+  min-height: 0px;
+  min-width: 0px;
+  width: 33.3333333333%;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-global-annotations {
+  display: flex;
+  flex-flow: row nowrap;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-global-annotations > div:nth-child(1) {
+  flex: 0 0 auto;
+  min-height: 0px;
+  min-width: 0px;
+  width: 66.6666666667%;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-global-annotations > div:nth-child(2) {
+  flex: 0 0 auto;
+  min-height: 0px;
+  min-width: 0px;
+  width: 33.3333333333%;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-individual-annotations {
+  display: flex;
+  flex-flow: column wrap;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-individual-annotations > div:nth-child(1) {
+  flex: 0 0 auto;
+}
+.tei-editor #tei-editor-individual-annotations > div:nth-child(2) {
+  flex: 1 1 0px;
+  display: flex;
+  flex-flow: row nowrap;
+}
+.tei-editor #tei-editor-individual-annotations > div:nth-child(2) > div:nth-child(1) {
+  width: 66.6666666667%;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-individual-annotations > div:nth-child(2) > div:nth-child(2) {
+  width: 33.3333333333%;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-metadata {
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor #tei-editor-metadata > dl {
+  padding: 1rem;
+}
+.tei-editor #tei-editor-metadata > dl ul li {
+  list-style-type: none;
+}
+.tei-editor #tei-editor-metadata > dl ul li.tei-editor-metadata-single {
+  max-width: 43rem;
+}
+.tei-editor #tei-editor-metadata > dl ul li.tei-editor-metadata-multiple > div {
+  display: flex;
+  flex-flow: row nowrap;
+}
+.tei-editor #tei-editor-metadata > dl ul li.tei-editor-metadata-multiple > div div {
+  flex: 0 0 auto;
+  min-height: 0px;
+  min-width: 0px;
+  flex: 1 1 0px;
+  width: auto;
+}
+.tei-editor #tei-editor-metadata > dl ul li.tei-editor-metadata-multiple > div nav {
+  align-self: flex-end;
+  padding-bottom: 0.5rem;
+}
+.tei-editor .tei-editor-prosemirror-editor {
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+.tei-editor .tei-editor-prosemirror-sidebar {
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+/*
+ * ARIA Compliant Menu
+ */
+*[role=menu] {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+}
+[data-whatinput=mouse] *[role=menu] li {
+  outline: 0;
+}
+*[role=menu] a,
+*[role=menu] .button {
+  line-height: 1;
+  text-decoration: none;
+  display: block;
+  padding: 0.7rem 1rem;
+}
+*[role=menu] input,
+*[role=menu] select,
+*[role=menu] a,
+*[role=menu] button {
+  margin-bottom: 0;
+}
+*[role=menu] input {
+  display: inline-block;
+}
+*[role=menu][aria-orientation=vertical] {
+  flex-wrap: nowrap;
+  flex-direction: column;
+}
+*[role=menu][aria-orientation=vertical] li.separator {
+  padding-right: 0;
+  padding-bottom: 1rem;
+}
+*[role=menu] li {
+  position: relative;
+}
+*[role=menu] li.menu-text {
+  padding: 0.7rem 1rem;
+  font-weight: bold;
+  line-height: 1;
+  color: inherit;
+}
+*[role=menu] li.separator {
+  padding-right: 1rem;
+}
+*[role=menu] li *[role=menuitem] {
+  cursor: pointer;
+  height: 100%;
+}
+*[role=menu] li *[role=menuitem][aria-disabled=true] {
+  cursor: not-allowed;
+}
+*[role=menu] li > *[role=menu] {
+  display: none;
+  position: absolute;
+  z-index: 1;
+}
+*[role=menu] li > *[role=menu] *[role=menu] {
+  position: absolute;
+  top: 0;
+  left: 100%;
+}
+*[role=menu] li:hover > *[role=menu] {
+  display: block;
+}
+
+/**
+ * Icons
+ */
+svg.mdi-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/**
+ * Generic
+ */
+*[aria-hidden=true] {
+  display: none !important;
+}
+
+*[contenteditable]:focus {
+  outline: 0px solid transparent;
+}

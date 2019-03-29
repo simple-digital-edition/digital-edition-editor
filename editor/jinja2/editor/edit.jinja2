@@ -1,0 +1,38 @@
+{% import 'macros/icons.jinja2' as icons %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf"/>
+    <title>{% block title %}Digital Edition Editor{% endblock title %}</title>
+    <link rel="stylesheet" href="{{ static('editor/css/app.css') }}"/>
+    <link rel="stylesheet" href="{{ static('editor/css/tei-editor.css') }}"/>
+  </head>
+  <body>
+    <div class="grid-frame grid-y">
+      <div class="cell shrink">
+        <header class="top-bar">
+        <nav class="top-bar-left">
+          <ul role="menu">
+            <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="Repositories">{{ icons.icon('server-network') }}</a></li>
+            <li role="presentation"><a href="{{ url('editor:repository', kwargs={'rid': repository.id}) }}" role="menuitem">{{ repository.title }}</a></li>
+            <li role="presentation"><a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}" role="menuitem" aria-label="Files for the {{ repository.title }} repository" >{{ icons.icon('file-multiple') }}</a></li>
+            <li role="presentation"><a href="{{ url('editor:repository', kwargs={'rid': repository.id}) }}" role="menuitem" aria-current="true">{{ filename }}</a></li>
+          </ul>
+        </nav>
+        <nav class="top-bar-right">
+          <ul role="menu">
+            {% if request.user.is_authenticated %}
+              <li class="presentation"><a href="{{ url('logout') }}?next={{ request.path }}" role="menuitem">Logout</a></li>
+            {% else %}
+              <li class="presentation"><a href="{{ url('login') }}?next={{ request.path }}" role="menuitem">Login</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+      </header>
+    </div>
+    <main class="cell auto">
+      <script src="{{ static('editor/js/tei-editor.js') }}"></script>
+      <tei-editor></tei-editor>
+    </main>
+  </body>
+</html>

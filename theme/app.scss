@@ -1,0 +1,17 @@
+/* Load Foundation */
+@import 'foundation';
+@import 'settings';
+
+@include foundation-everything;
+
+@import 'aria-menu';
+
+[role="menuitem"] svg {
+    width: 24px;
+    height: 24px;
+}
+
+header.top-bar {
+    padding-top: 0;
+    padding-bottom: 0;
+}

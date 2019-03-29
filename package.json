@@ -1,0 +1,18 @@
+{
+  "name": "digital-edition-editor",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": "git@gitlab.informatik.uni-halle.de:gutzkow/digital-edition-editor.git",
+  "author": "Mark Hall <mark.hall@informatik.uni-halle.de>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "foundation-sites": "^6.5.3",
+    "gulp": "^4.0.0",
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-sass": "^4.0.2",
+    "pump": "^3.0.0",
+    "tei-editor": "^0.0.2"
+  }
+}

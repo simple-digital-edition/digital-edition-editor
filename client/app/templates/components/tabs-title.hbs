@@ -1,7 +1,0 @@
-{{#each tabs as |tab|}}
-  {{#if tab.is_active}}
-    <li class="tabs-title is-active" role="none"><a {{action "select-tab" tab}} role="tab" aria-selected="true">{{tab.title}}</a></li>
-  {{else}}
-    <li class="tabs-title" role="none"><a {{action "select-tab" tab}} role="tab" aria-selected="false">{{tab.title}}</a></li>
-  {{/if}}
-{{/each}}

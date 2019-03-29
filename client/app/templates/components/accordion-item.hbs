@@ -1,8 +1,0 @@
-{{#if is_active}}
-  <a {{action "toggle"}} class="accordion-title">{{title}}</a>
-  <div class="accordion-content" style="display:block;">
-    {{yield}}
-  </div>
-{{else}}
-  <a {{action "toggle"}} class="accordion-title">{{title}}</a>
-{{/if}}

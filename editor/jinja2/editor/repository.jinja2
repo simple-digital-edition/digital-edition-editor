@@ -1,0 +1,43 @@
+{% extends 'base.jinja2' %}
+{% import 'macros/icons.jinja2' as icons %}
+
+{% block menubar %}
+  <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="Repositories">{{ icons.icon('server-network') }}</a></li>
+  <li role="presentation"><a href="{{ url('editor:repository', kwargs={'rid': repository.id}) }}" role="menuitem" aria-current="true">{{ repository.title }}</a></li>
+  <li role="presentation"><a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}" role="menuitem" aria-label="Files for the {{ repository.title }} repository" >{{ icons.icon('file-multiple') }}</a></li>
+{% endblock menubar %}
+
+{% block content %}
+  <div class="grid-x grid-padding-x">
+    <div class="cell small-12">
+      <h1>{{ repository.title }}</h1>
+      <h2>Local Changes</h2>
+      <ul class="no-bullet">
+        {% for change in local_changes %}
+          <li>
+            <h3>{{ change.message }}</h3>
+            <p>{{ change.author }} - {{ change.datetime}}</p>
+          </li>
+        {% endfor %}
+      </ul>
+      <h2>Remote Changes</h2>
+      <ul class="no-bullet">
+        {% for change in remote_changes %}
+          <li>
+            <h3>{{ change.message }}</h3>
+            <p>{{ change.author }} - {{ change.datetime}}</p>
+          </li>
+        {% endfor %}
+      </ul>
+      <h2>Other Changes</h2>
+      <ul class="no-bullet">
+        {% for change in master_changes %}
+          <li>
+            <h3>{{ change.message }}</h3>
+            <p>{{ change.author }} - {{ change.datetime}}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock content %}

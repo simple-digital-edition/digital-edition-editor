@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf"/>
+    <title>{% block title %}Digital Edition Editor{% endblock title %}</title>
+    <link rel="stylesheet" href="{{ static('editor/css/app.css') }}"/>
+  </head>
+  <body>
+    <header class="top-bar">
+      <nav class="top-bar-left">
+        <ul role="menu">
+          {% block menubar %}
+          {% endblock menubar %}
+        </ul>
+      </nav>
+      <nav class="top-bar-right">
+        <ul role="menu">
+          {% if request.user.is_authenticated %}
+            <li class="presentation"><a href="{{ url('logout') }}?next={{ request.path }}" role="menuitem">Logout</a></li>
+          {% else %}
+            <li class="presentation"><a href="{{ url('login') }}?next={{ request.path }}" role="menuitem">Login</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+    {% block content %}
+    {% endblock content %}
+  </body>
+</html>
