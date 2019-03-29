@@ -6,9 +6,9 @@
 
 @import 'aria-menu';
 
-[role="menuitem"] svg {
-    width: 24px;
-    height: 24px;
+[role="menuitem"] svg, [role="menuitem"] svg.mdi-icon {
+    width: 18px;
+    height: 18px;
 }
 
 header.top-bar {
