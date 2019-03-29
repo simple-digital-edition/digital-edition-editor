@@ -3,6 +3,7 @@
  */
 *[role="menu"] {
     @include menu-base;
+    background: $light-gray;
 
     &[aria-orientation="vertical"] {
         @include menu-direction('vertical');

@@ -5327,7 +5327,8 @@ html.is-reveal-open {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-wrap: wrap;
-  flex-wrap: wrap; }
+  flex-wrap: wrap;
+  background: #e6e6e6; }
   [data-whatinput='mouse'] *[role="menu"] li {
     outline: 0; }
   *[role="menu"] a,
@@ -5389,4 +5390,38 @@ html.is-reveal-open {
 
 header.top-bar {
   padding-top: 0;
-  padding-bottom: 0; }
+  padding-bottom: 0;
+  border-bottom: 1px solid #cacaca; }
+
+.tei-editor-menubar > [role="menu"] {
+  border-bottom: 1px solid #cacaca; }
+  .tei-editor-menubar > [role="menu"] [role="menu"] {
+    -webkit-box-shadow: 2px 5px 3px #8a8a8a;
+    box-shadow: 2px 5px 3px #8a8a8a; }
+
+#loading {
+  z-index: -10;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #00000000;
+  -webkit-transition: background-color 0.5s;
+  transition: background-color 0.5s;
+  visibility: hidden; }
+  #loading.is-visible {
+    z-index: 2000;
+    visibility: visible;
+    background-color: #00000066; }
+  #loading svg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 110px;
+    background: #ffffff;
+    padding: 30px 50px;
+    border-radius: 10px; }
