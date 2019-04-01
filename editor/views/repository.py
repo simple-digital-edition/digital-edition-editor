@@ -31,17 +31,13 @@ def repository(request, rid):
         else:
             branch = repo.create_head(request.user.username)
             branch.checkout()
-            repo.git.push('--set-upstream', 'origin', request.user.username)
+        repo.git.push('--set-upstream', 'origin', request.user.username)
     else:
         repo = Repo(base_path)
         # Fetch remote change information
         repo.remotes.origin.fetch()
+        repo.git.push('--set-upstream', 'origin', request.user.username)
     # Identify the changes
-    local_changes = [{'message': commit.message,
-                      'author': commit.author.name,
-                      'datetime': commit.committed_datetime.strftime('%d %B %Y %H:%M')}
-                     for commit in repo.iter_commits('%s@{u}..%s' % (request.user.username,
-                                                                     request.user.username))]
     remote_changes = [{'message': commit.message,
                        'author': commit.author.name,
                        'datetime': commit.committed_datetime.strftime('%d %B %Y %H:%M')}
@@ -51,6 +47,5 @@ def repository(request, rid):
                        'datetime': commit.committed_datetime.strftime('%d %B %Y %H:%M')}
                       for commit in repo.iter_commits('master..master@{u}')]
     return render(request, 'editor/repository.jinja2', {'repository': repository,
-                                                        'local_changes': local_changes,
                                                         'remote_changes': remote_changes,
                                                         'master_changes': master_changes})
