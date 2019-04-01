@@ -32,6 +32,7 @@
     </div>
     <main class="cell auto">
       <script>
+      var last_commit_msg = '{{ last_commit_msg }}';
       window.teiEditorConfig = window.teiEditorConfig || {};
       window.teiEditorConfig.actions = {
           initLoad: function() {
@@ -51,19 +52,23 @@
               return promise;
           },
           save: function(data) {
-              document.querySelector('#loading').classList.add('is-visible');
-              window.fetch('{{ url('editor:raw_tei', kwargs={'rid': repository.id, 'fid': fid}) }}', {
-                  method: 'PATCH',
-                  body: data,
-                  headers: {
-                      'X-CSRFToken': '{{ csrf_token }}',
-                      'X-Commit-Message': prompt('Change Description')
-                  }
-              }).then(function() {
-                  document.querySelector('#loading').classList.remove('is-visible');
-              }).catch(function() {
-                  document.querySelector('#loading').classList.remove('is-visible');
-              });
+              var commit_msg = prompt('Describe the change you made', last_commit_msg);
+              if (commit_msg) {
+                  document.querySelector('#loading').classList.add('is-visible');
+                  window.fetch('{{ url('editor:raw_tei', kwargs={'rid': repository.id, 'fid': fid}) }}', {
+                      method: 'PATCH',
+                      body: data,
+                      headers: {
+                          'X-CSRFToken': '{{ csrf_token }}',
+                          'X-Commit-Message': commit_msg
+                      }
+                  }).then(function() {
+                      last_commit_msg = commit_msg;
+                      document.querySelector('#loading').classList.remove('is-visible');
+                  }).catch(function() {
+                      document.querySelector('#loading').classList.remove('is-visible');
+                  });
+              }
           }
       }
       </script>

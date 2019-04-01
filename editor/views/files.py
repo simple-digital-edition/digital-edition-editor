@@ -41,9 +41,16 @@ def edit(request, rid, fid):
                 hash.update(filename.encode('utf-8'))
                 if hash.hexdigest() == fid:
                     tei_file = filename
+    commits = repo.iter_commits('--all', max_count=1, since='2.months.ago', paths=tei_file)
+    try:
+        commit = next(commits)
+        last_commit_msg = commit.message.replace('\n', ' ').replace('\'', '\\\'')
+    except StopIteration:
+        last_commit_msg = 'Edited %s' % os.path.basename(tei_file)
     return render(request, 'editor/edit.jinja2', {'repository': repository,
                                                   'filename': os.path.basename(tei_file),
-                                                  'fid': fid})
+                                                  'fid': fid,
+                                                  'last_commit_msg': last_commit_msg})
 
 
 @permission_required('editor.repository.can_read')
