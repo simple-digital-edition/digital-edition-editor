@@ -10,6 +10,7 @@ django = "*"
 jinja2 = "*"
 django-widget-tweaks = "*"
 gitpython = "*"
+requests = "*"
 
 [requires]
 python_version = "3.6"

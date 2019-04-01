@@ -28,5 +28,7 @@
     {% endblock content %}
     <div id="loading">{{ icons.spinner() }}</div>
     <script src="{{ static('editor/js/app.js') }}"></script>
+    {% block body_scripts %}
+    {% endblock body_scripts %}
   </body>
 </html>
