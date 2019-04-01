@@ -21,7 +21,7 @@ def index(request):
 @permission_required('editor.repository.can_read')
 def repository(request, rid):
     repository = Repository.objects.get(pk=rid)
-    base_path = os.path.join(settings.REPOSITORY_BASE, str(rid), str(request.user.username))
+    base_path = os.path.join(repository.local_path, str(request.user.username))
     # Clone or load the repository
     if not os.path.exists(base_path):
         repo = Repo.clone_from(repository.url, base_path)
@@ -72,7 +72,7 @@ def pull_request(request, rid):
 def local_merge(request, rid):
     if request.method == 'POST':
         repository = Repository.objects.get(pk=rid)
-        base_path = os.path.join(settings.REPOSITORY_BASE, str(rid), str(request.user.username))
+        base_path = os.path.join(repository.local_path, str(request.user.username))
         repository = Repo(base_path)
         # Pull the latest changes from the master branch
         repository.heads.master.checkout()

@@ -13,7 +13,7 @@ from ..models import Repository
 @permission_required('editor.repository.can_read')
 def listing(request, rid):
     repository = Repository.objects.get(pk=rid)
-    base_path = os.path.join(settings.REPOSITORY_BASE, str(rid), str(request.user.username))
+    base_path = os.path.join(repository.local_path, str(request.user.username))
     repo = Repo(base_path)
     tei_files = {}
     for path, _, filenames in os.walk(base_path):
@@ -30,7 +30,7 @@ def listing(request, rid):
 @permission_required('editor.repository.can_read')
 def edit(request, rid, fid):
     repository = Repository.objects.get(pk=rid)
-    base_path = os.path.join(settings.REPOSITORY_BASE, str(rid), str(request.user.username))
+    base_path = os.path.join(repository.local_path, str(request.user.username))
     repo = Repo(base_path)
     tei_file = None
     for path, _, filenames in os.walk(base_path):
@@ -56,7 +56,7 @@ def edit(request, rid, fid):
 @permission_required('editor.repository.can_read')
 def raw_tei(request, rid, fid):
     repository = Repository.objects.get(pk=rid)
-    base_path = os.path.join(settings.REPOSITORY_BASE, str(rid), str(request.user.username))
+    base_path = os.path.join(repository.local_path, str(request.user.username))
     repo = Repo(base_path)
     tei_file = None
     for path, _, filenames in os.walk(base_path):

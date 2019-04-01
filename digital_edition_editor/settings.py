@@ -128,7 +128,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# Repository base path
-
-REPOSITORY_BASE = '/home/mhall/Projects/digital-edition-editor-local-repositories'
