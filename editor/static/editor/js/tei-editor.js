@@ -1,17 +1,1441 @@
+(function() {
+    var individualAnnotations = {
+        type: 'doc',
+        attrs: {
+            id: ''
+        },
+        content: [
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        marks: [
+                            {
+                                type: 'pageLineRef'
+                            }
+                        ],
+                        text: 'Page & Line'
+                    },
+                    {
+                        type: 'text',
+                        marks: [
+                            {
+                                type: 'wordRange'
+                            }
+                        ],
+                        text: 'Word Range'
+                    }
+                ]
+            },
+            {
+                type: 'paragraph',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Type your annotation here'
+                    }
+                ]
+            }
+        ]
+    };
+
+    window.teiEditorConfig = window.teiEditorConfig || {};
+    window.teiEditorConfig.default = {
+        individualAnnotations: individualAnnotations
+    };
+})();
+
+(function() {
+    /**
+     * Recursively clone the object.
+     */
+    function recursive_clone(obj) {
+        if (obj === undefined) {
+            return undefined;
+        } else if (obj === null) {
+            return null;
+        } else if (Array.isArray(obj)) {
+            return obj.slice();
+        } else if (typeof(obj) === 'object') {
+            let clone = {};
+            Object.keys(obj).forEach(function(key) {
+                clone[key] = recursive_clone(obj[key]);
+            });
+            return clone;
+        } else {
+            return obj;
+        }
+    }
+
+    var fullTextParser = {
+        selector: '/tei:TEI/tei:text/tei:body/tei:*',
+        blocks: {
+            paragraph: {
+                selector: 'tei:p',
+                attrs: {
+                    no_indent: {
+                        selector: '@style',
+                        values: {
+                            'no-indent': true
+                        }
+                    },
+                    text_align: {
+                        selector: '@style',
+                        values: {
+                            'text-left': 'left',
+                            'text-center': 'center',
+                            'text-right': 'right',
+                            'text-justify': 'justify'
+                        }
+                    }
+                }
+            },
+            heading: {
+                selector: 'tei:head',
+                attrs: {
+                    level: {
+                        selector: '@type',
+                        values: {
+                            'level-1': '1',
+                            'level-2': '2',
+                            'level-3': '3'
+                        }
+                    },
+                    heading_id: {
+                        selector: '@data-heading-id'
+                    }
+                }
+            }
+        },
+        inline: {
+            text: [
+                {
+                    selector: 'tei:seg',
+                    text: 'text()'
+                },
+                {
+                    selector: 'tei:hi',
+                    text: 'text()',
+                    marks: {
+                        font_size: {
+                            selector: '@style',
+                            values: ['font-size-small', 'font-size-medium', 'font-size-large'],
+                            attrs: {
+                                size: {
+                                    selector: '@style',
+                                    values: {
+                                        'font-size-small': 'small',
+                                        'font-size-medium': 'medium',
+                                        'font-size-large': 'large'
+                                    }
+                                }
+                            }
+                        },
+                        font_weight_bold: {
+                            selector: '@style',
+                            values: ['font-weight-bold']
+                        },
+                        letter_sparse: {
+                            selector: '@style',
+                            values: ['letter-sparse']
+                        },
+                        sup: {
+                            selector: '@style',
+                            values: ['sup']
+                        }
+                    }
+                },
+                {
+                    selector: 'tei:ref',
+                    text: 'text()',
+                    marks: {
+                        annotation: {
+                            selector: '@target',
+                            attrs: {
+                                target: {
+                                    selector: '@target',
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    selector: 'tei:foreign',
+                    text: 'text()',
+                    marks: {
+                        foreign: true
+                    }
+                },
+                {
+                    selector: 'tei:pb',
+                    text: '@n',
+                    marks: {
+                        page_break: true
+                    }
+                }
+            ]
+        }
+    };
+
+    var individualAnnotationsParser = {
+        selector: '/tei:TEI/tei:text/tei:interpGrp[@type="individual"]/tei:interp',
+        blockSelector: 'tei:*',
+        blocks: {
+            paragraph: {
+                selector: 'tei:p',
+                attrs: {
+                    no_indent: {
+                        selector: '@style',
+                        values: {
+                            'no-indent': true
+                        }
+                    },
+                    text_align: {
+                        selector: '@style',
+                        values: {
+                            'text-left': 'left',
+                            'text-center': 'center',
+                            'text-right': 'right',
+                            'text-justify': 'justify'
+                        }
+                    }
+                }
+            }
+        },
+        inline: {
+            text: [
+                {
+                    selector: 'tei:seg',
+                    text: 'text()'
+                },
+                {
+                    selector: 'tei:hi',
+                    text: 'text()',
+                    marks: {
+                        font_size: {
+                            selector: '@style',
+                            values: ['font-size-small', 'font-size-medium', 'font-size-large'],
+                            attrs: {
+                                size: {
+                                    selector: '@style',
+                                    values: {
+                                        'font-size-small': 'small',
+                                        'font-size-medium': 'medium',
+                                        'font-size-large': 'large'
+                                    }
+                                }
+                            }
+                        },
+                        font_weight_bold: {
+                            selector: '@style',
+                            values: ['font-weight-bold']
+                        },
+                        letter_sparse: {
+                            selector: '@style',
+                            values: ['letter-sparse']
+                        },
+                        sup: {
+                            selector: '@style',
+                            values: ['sup']
+                        }
+                    }
+                },
+                {
+                    selector: 'tei:foreign',
+                    text: 'text()',
+                    marks: {
+                        foreign: true
+                    }
+                },
+                {
+                    selector: 'tei:pb',
+                    text: '@n',
+                    marks: {
+                        page_break: true
+                    }
+                },
+                {
+                    selector: 'tei:citedRange[@type="page-line-ref"]',
+                    text: 'text()',
+                    marks: {
+                        pageLineRef: true
+                    }
+                },
+                {
+                    selector: 'tei:citedRange[@type="word-range"]',
+                    text: 'text()',
+                    marks: {
+                        wordRange: true
+                    }
+                },
+                {
+                    selector: 'tei:q',
+                    text: 'text()',
+                    marks: {
+                        quotation: true
+                    }
+                }
+            ]
+        }
+    };
+
+    window.teiEditorConfig = window.teiEditorConfig || {};
+    window.teiEditorConfig.parser = {
+        mainText: fullTextParser,
+        globalAnnotations: recursive_clone(fullTextParser),
+        individualAnnotations: individualAnnotationsParser
+    };
+    window.teiEditorConfig.parser.globalAnnotations.selector = '/tei:TEI/tei:text/tei:interpGrp[@type="global"]/tei:*';
+})();
+
+(function() {
+    function paragraph_attrs_to_class(node) {
+        let classes = [];
+        if(node.attrs.no_indent) {
+            classes.push('no-indent')
+        }
+        if(node.attrs.text_align === 'center') {
+            classes.push('text-center')
+        } else if(node.attrs.text_align === 'right') {
+            classes.push('text-right')
+        } else if(node.attrs.text_align === 'justify') {
+            classes.push('text-justify')
+        }
+        if(classes.length > 0) {
+            return classes.join(' ')
+        } else {
+            return null
+        }
+    }
+
+    function paragraph_class_to_attrs(dom) {
+        let attrs = {
+            no_indent: false,
+            text_align: 'left'
+        }
+        if(dom.class) {
+            if(dom.class.indexOf('no-indent') >= 0) {
+                attrs.no_indent = true
+            }
+            if(dom.class.indexOf('text-center') >= 0) {
+                attrs.text_align = 'center'
+            } else if(dom.class.indexOf('text-right') >= 0) {
+                attrs.text_align = 'right'
+            } else if(dom.class.indexOf('text-justify') >= 0) {
+                attrs.text_align = 'justify'
+            }
+        }
+        return attrs
+    }
+
+    function mark_font_size_attr(dom) {
+        let attrs = {
+            size: ''
+        }
+        return attrs
+    }
+
+    /**
+     * Recursively clone the object.
+     */
+    function recursive_clone(obj) {
+        if (obj === undefined) {
+            return undefined;
+        } else if (obj === null) {
+            return null;
+        } else if (Array.isArray(obj)) {
+            return obj.slice();
+        } else if (typeof(obj) === 'object') {
+            let clone = {};
+            Object.keys(obj).forEach(function(key) {
+                clone[key] = recursive_clone(obj[key]);
+            });
+            return clone;
+        } else {
+            return obj;
+        }
+    }
+
+
+    // Schema for the full text
+    var fullTextSchema = {
+        nodes: {
+            doc: {
+                content: 'block+'
+            },
+            paragraph: {
+                group: 'block',
+                content: 'inline*',
+                attrs: {
+                    no_indent: {
+                        default: false
+                    },
+                    text_align: {
+                        default: 'left'
+                    }
+                },
+                toDOM(node) {return ['p', {class: paragraph_attrs_to_class(node)}, 0]},
+                parseDOM: [{tag: 'p', paragraph_class_to_attrs}]
+            },
+            heading: {
+                group: 'block',
+                content: 'inline*',
+                attrs: {
+                    heading_id: {
+                        default: null
+                    },
+                    level: {
+                        default: 1
+                    }
+                },
+                defining: true,
+                toDOM(node) {return ['h' + node.attrs.level, 0]},
+                parseDOM: [
+                    {tag: 'h1', attrs: {level: '1'}},
+                    {tag: 'h2', attrs: {level: '2'}}
+                ]
+            },
+            text: {
+                group: 'inline',
+                inline: true
+            }
+        },
+        marks: {
+            foreign: {
+                toDOM() {return ['span', {class: 'foreign-language'}, 0]},
+                parseDOM: [{tag: 'span.foreign-language'}]
+            },
+            letter_sparse: {
+                toDOM() {return ['span', {class: 'letter-sparse'}, 0]},
+                parseDOM: [{tag: 'span.letter-sparse'}]
+            },
+            sup: {
+                toDOM() {return ['sup', 0]},
+                parseDOM: [{tag: 'sup'}]
+            },
+            font_size: {
+                attrs: {
+                    size: {
+                        default: ''
+                    }
+                },
+                toDOM(mark) {return ['span', {class: 'font-size-' + mark.attrs.size}]},
+                parseDOM: [{tag: 'span.font-size', mark_font_size_attr}]
+            },
+            page_break: {
+                toDOM() {return ['span', {class: 'page-break'}, 0]},
+                parseDOM: [{tag: 'span.page-break'}]
+            },
+            font_weight_bold: {
+                toDOM() {return ['span', {class: 'font-weight-bold'}, 0]},
+                parseDOM: [{tag: 'span.font-weight-bold'}]
+            },
+            annotation: {
+                attrs: {
+                    target: {
+                        default: ''
+                    }
+                },
+                toDOM() {return ['span', {class: 'annotation'}, 0]},
+                parseDOM: [{tag: 'span.annotation'}]
+            }
+        }
+    };
+
+    // Schema for the individual annotations
+    var individualAnnotationSchema = {
+        nodes: {
+            doc: {
+                content: 'block+',
+                attrs: {
+                    id: {
+                        default: ''
+                    }
+                }
+            },
+            paragraph: {
+                group: 'block',
+                content: 'inline*',
+                attrs: {
+                    no_indent: {
+                        default: false
+                    },
+                    text_align: {
+                        default: 'left'
+                    }
+                },
+                toDOM(node) {return ['p', {class: paragraph_attrs_to_class(node)}, 0]},
+                parseDOM: [{tag: 'p', paragraph_class_to_attrs}]
+            },
+            text: {
+                group: 'inline',
+                inline: true
+            }
+        },
+        marks: {
+            foreign: {
+                toDOM() {return ['span', {class: 'foreign-language'}, 0]},
+                parseDOM: [{tag: 'span.foreign-language'}]
+            },
+            letter_sparse: {
+                toDOM() {return ['span', {class: 'letter-sparse'}, 0]},
+                parseDOM: [{tag: 'span.letter-sparse'}]
+            },
+            sup: {
+                toDOM() {return ['sup', 0]},
+                parseDOM: [{tag: 'sup'}]
+            },
+            font_size: {
+                attrs: {
+                    size: {
+                        default: ''
+                    }
+                },
+                toDOM(mark) {return ['span', {class: 'font-size-' + mark.attrs.size}]},
+                parseDOM: [{tag: 'span.font-size', mark_font_size_attr}]
+            },
+            page_break: {
+                toDOM() {return ['span', {class: 'page-break'}, 0]},
+                parseDOM: [{tag: 'span.page-break'}]
+            },
+            font_weight_bold: {
+                toDOM() {return ['span', {class: 'font-weight-bold'}, 0]},
+                parseDOM: [{tag: 'span.font-weight-bold'}]
+            },
+            pageLineRef: {
+                toDOM() {return ['span', {class: 'page-line-range'}, 0]},
+                parseDOM: [{tag: 'span.page-line-range'}]
+            },
+            wordRange: {
+                toDOM() {return ['span', {class: 'word-range'}, 0]},
+                parseDOM: [{tag: 'span.word-range'}]
+            },
+            quotation: {
+                toDOM() {return ['span', {class: 'quotation'}, 0]},
+                parseDOM: [{tag: 'span.quotation'}]
+            }
+        }
+    };
+
+    window.teiEditorConfig = window.teiEditorConfig || {};
+    window.teiEditorConfig.schema = {
+        mainText: fullTextSchema,
+        globalAnnotations: recursive_clone(fullTextSchema),
+        individualAnnotations: individualAnnotationSchema
+    };
+})();
+
+(function() {
+    /**
+     * Recursively clone the object.
+     */
+    function recursive_clone(obj) {
+        if (obj === undefined) {
+            return undefined;
+        } else if (obj === null) {
+            return null;
+        } else if (Array.isArray(obj)) {
+            return obj.slice();
+        } else if (typeof(obj) === 'object') {
+            let clone = {};
+            Object.keys(obj).forEach(function(key) {
+                clone[key] = recursive_clone(obj[key]);
+            });
+            return clone;
+        } else {
+            return obj;
+        }
+    }
+
+    // Serializer for the metadata block
+    var metadataSerializer = {
+        node: 'tei:teiHeader',
+        type: 'container',
+        children: [
+            {
+                node: 'tei:fileDesc',
+                children: [
+                    {
+                        node: 'tei:titleStmt',
+                        children: [
+                            {
+                                node: 'tei:title',
+                                text: 'fileDesc.titleStmt.title._text'
+                            },
+                            {
+                                node: 'tei:author',
+                                text: 'fileDesc.titleStmt.author._text'
+                            },
+                            {
+                                node: 'tei:respStmt',
+                                multiple: 'fileDesc.titleStmt.respStmt',
+                                attrs: {
+                                    'xml:id': '_attrs.xml:id'
+                                },
+                                children: [
+                                    {
+                                        node: 'tei:resp',
+                                        text: 'resp._text'
+                                    },
+                                    {
+                                        node: 'tei:name',
+                                        text: 'name._text'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        node: 'tei:publicationStmt',
+                        children: [
+                            {
+                                node: 'tei:distributor',
+                                text: 'fileDesc.publicationStmt.distributor._text'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                node: 'tei:encodingDesc',
+                children: [
+                    {
+                        node: 'tei:classDecl',
+                        children: [
+                            {
+                                node: 'tei:taxonomy',
+                                attrs: {
+                                    'xml:id': 'encodingDesc.classDecl.taxonomy._attrs.xml:id'
+                                },
+                                children: [
+                                    {
+                                        node: 'tei:bibl',
+                                        text: 'encodingDesc.classDecl.taxonomy.bibl._text'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                node: 'tei:sourceDesc',
+                children: [
+                    {
+                        node: 'tei:bibl',
+                        text: 'sourceDesc.bibl._text'
+                    }
+                ]
+            },
+            {
+                node: 'tei:profileDesc',
+                children: [
+                    {
+                        node: 'tei:creation',
+                        children: [
+                            {
+                                node: 'tei:date',
+                                attrs: {
+                                    when: 'profileDesc.creation.date._attrs.when'
+                                },
+                                text: 'profileDesc.creation.date._text'
+                            }
+                        ]
+                    },
+                    {
+                        node: 'tei:textClass',
+                        children: [
+                            {
+                                node: 'tei:catRef',
+                                attrs: {
+                                    target: 'profileDesc.textClass.catRef._attrs.target'
+                                },
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                node: 'tei:revisionDesc',
+                children: [
+                    {
+                        node: 'tei:change',
+                        multiple: 'revisionDesc.change',
+                        attrs: {
+                            when: '_attrs.when',
+                            who: '_attrs.who'
+                        },
+                        text: '_text'
+                    }
+                ]
+            }
+        ]
+    }
+
+    // Serialize for the main text block
+    var fullTextSerializer = {
+        doc: {
+            node: 'tei:body'
+        },
+        heading: {
+            node: 'tei:head',
+            attrs: [
+                {
+                    name: 'type',
+                    selector: 'level',
+                    values: {
+                        '1': 'level-1',
+                        '2': 'level-2',
+                        '3': 'level-3'
+                    }
+                },
+                {
+                    name: 'data-heading-id',
+                    selector: 'heading_id',
+                    value: '${value}'
+                }
+            ]
+        },
+        paragraph: {
+            node: 'tei:p',
+            attrs: [
+                {
+                    name: 'style',
+                    selector: 'no_indent',
+                    values: {
+                        true: 'no-indent'
+                    }
+                },
+                {
+                    name: 'style',
+                    selector: 'text_align',
+                    values: {
+                        left: 'text-left',
+                        center: 'text-center',
+                        right: 'text-right',
+                        justify: 'text-justify'
+                    }
+                }
+            ]
+        },
+        text: {
+            node: 'tei:seg',
+            inline: true,
+            marks: {
+                foreign: {
+                    node: 'tei:foreign'
+                },
+                letter_sparse: {
+                    node: 'tei:hi',
+                    attrs: [
+                        {
+                            name: 'style',
+                            value: 'letter-sparse'
+                        }
+                    ]
+                },
+                sup: {
+                    node: 'tei:hi'
+                },
+                font_size: {
+                    node: 'tei:hi',
+                    attrs: [
+                        {
+                            name: 'style',
+                            selector: 'size',
+                            values: {
+                                small: 'font-size-small',
+                                medium: 'font-size-medium',
+                                large: 'font-size-large'
+                            }
+                        }
+                    ]
+                },
+                page_break: {
+                    node: 'tei:pb',
+                    attrs: [
+                        {
+                            name: 'n',
+                            selector: 'text()'
+                        }
+                    ],
+                    text: null
+                },
+                font_weight_bold: {
+                    node: 'tei:hi',
+                    attrs: [
+                        {
+                            name: 'style',
+                            value: 'font-weight-bold'
+                        }
+                    ]
+                },
+                annotation: {
+                    node: 'tei:ref',
+                    attrs: [
+                        {
+                            name: 'target',
+                            selector: 'target',
+                            value: '${value}'
+                        }
+                    ]
+                }
+            }
+        }
+    }
+
+    // Serialize for the main text block
+    var individualAnnotationsSerializer = {
+        '_collection': {
+            node: 'tei:interpGrp',
+            attrs: [
+                {
+                    name: 'type',
+                    value: 'individual'
+                }
+            ]
+        },
+        doc: {
+            node: 'tei:interp',
+            attrs: [
+                {
+                    name: 'xml:id',
+                    selector: 'id',
+                    value: '${value}'
+                }
+            ]
+        },
+        heading: {
+            node: 'tei:head',
+            attrs: [
+                {
+                    name: 'type',
+                    selector: 'level',
+                    values: {
+                        '1': 'level-1',
+                        '2': 'level-2',
+                        '3': 'level-3'
+                    }
+                },
+                {
+                    name: 'data-heading-id',
+                    selector: 'heading_id',
+                    value: '${value}'
+                }
+            ]
+        },
+        paragraph: {
+            node: 'tei:p',
+            attrs: [
+                {
+                    name: 'style',
+                    selector: 'no_indent',
+                    values: {
+                        true: 'no-indent'
+                    }
+                },
+                {
+                    name: 'style',
+                    selector: 'text_align',
+                    values: {
+                        left: 'text-left',
+                        center: 'text-center',
+                        right: 'text-right',
+                        justify: 'text-justify'
+                    }
+                }
+            ]
+        },
+        text: {
+            node: 'tei:seg',
+            inline: true,
+            marks: {
+                foreign: {
+                    node: 'tei:foreign'
+                },
+                letter_sparse: {
+                    node: 'tei:hi',
+                    attrs: [
+                        {
+                            name: 'style',
+                            value: 'letter-sparse'
+                        }
+                    ]
+                },
+                sup: {
+                    node: 'tei:hi'
+                },
+                font_size: {
+                    node: 'tei:hi',
+                    attrs: [
+                        {
+                            name: 'style',
+                            selector: 'size',
+                            values: {
+                                small: 'font-size-small',
+                                medium: 'font-size-medium',
+                                large: 'font-size-large'
+                            }
+                        }
+                    ]
+                },
+                font_weight_bold: {
+                    node: 'tei:hi',
+                    attrs: [
+                        {
+                            name: 'style',
+                            value: 'font-weight-bold'
+                        }
+                    ]
+                },
+                pageLineRef: {
+                    node: 'tei:citedRange',
+                    attrs: [
+                        {
+                            name: 'type',
+                            value: 'page-line-ref'
+                        }
+                    ]
+                },
+                wordRange: {
+                    node: 'tei:citedRange',
+                    attrs: [
+                        {
+                            name: 'type',
+                            value: 'word-range'
+                        }
+                    ]
+                },
+                quotation: {
+                    node: 'tei:q'
+                }
+            }
+        }
+    };
+
+    window.teiEditorConfig = window.teiEditorConfig || {};
+    window.teiEditorConfig.serializer = {
+        metadata: metadataSerializer,
+        mainText: fullTextSerializer,
+        globalAnnotations: recursive_clone(fullTextSerializer),
+        individualAnnotations: individualAnnotationsSerializer
+    };
+    window.teiEditorConfig.serializer.globalAnnotations.doc.node = 'tei:interpGrp';
+    window.teiEditorConfig.serializer.globalAnnotations.doc.attrs = [
+        {
+            name: 'type',
+            value: 'global'
+        }
+    ];
+})();
+
+(function() {
+    var fullTextUI = {
+        sidebar: [
+            {
+                title: 'Block Type',
+                test: 'block',
+                entries: [
+                    {
+                        type: 'select',
+                        value_key: 'block.type.name',
+                        action: 'setBlockType',
+                        values: [
+                            {
+                                key: 'paragraph',
+                                value: 'Paragraph'
+                            },
+                            {
+                                key: 'heading',
+                                value: 'Heading'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: 'Heading',
+                test: {
+                    key: 'block.type.name',
+                    value: 'heading'
+                },
+                entries: [
+                    {
+                        type: 'select',
+                        value_key: 'block.attrs.level',
+                        action: 'setBlockAttribute',
+                        attribute: 'level',
+                        values: [
+                            {
+                                key: '1',
+                                value: 'Level 1'
+                            },
+                            {
+                                key: '2',
+                                value: 'Level 2'
+                            },
+                            {
+                                key: '3',
+                                value: 'Level 3'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: 'Heading Menu ID',
+                test: {
+                    key: 'block.type.name',
+                    value: 'heading'
+                },
+                entries: [
+                    {
+                        type: 'text',
+                        value_key: 'block.attrs.heading_id',
+                        action: 'setBlockAttribute',
+                        attribute: 'heading_id'
+                    }
+                ]
+            },
+            {
+                title: 'Paragraph',
+                test: {
+                    key: 'block.type.name',
+                    value: 'paragraph'
+                },
+                entries: [
+                    {
+                        type: 'button',
+                        value_key: 'block.attrs.text_align',
+                        label: 'Left align',
+                        icon: 'FormatAlignLeft',
+                        action: 'setBlockAttribute',
+                        attribute: 'text_align',
+                        value: 'left'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'block.attrs.text_align',
+                        label: 'Center align',
+                        icon: 'FormatAlignCenter',
+                        action: 'setBlockAttribute',
+                        attribute: 'text_align',
+                        value: 'center'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'block.attrs.text_align',
+                        label: 'Right align',
+                        icon: 'FormatAlignRight',
+                        action: 'setBlockAttribute',
+                        attribute: 'text_align',
+                        value: 'right'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'block.attrs.text_align',
+                        label: 'Align justify',
+                        icon: 'FormatAlignJustify',
+                        action: 'setBlockAttribute',
+                        attribute: 'text_align',
+                        value: 'justify'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'block.attrs.no_indent',
+                        label: 'Do not indent the paragraph',
+                        icon: 'FormatHorizontalAlignLeft',
+                        action: 'toggleBlockAttribute',
+                        attribute: 'no_indent',
+                        value: true
+                    }
+                ]
+            },
+            {
+                title: 'Styling',
+                test: 'marks',
+                entries: [
+                    {
+                        type: 'select',
+                        value_key: 'marks.font_size.attrs.size',
+                        action: 'setMarkAttribute',
+                        attribute: 'font_size.size',
+                        values: [
+                            {
+                                key: '',
+                                value: 'Default Size'
+                            },
+                            {
+                                key: 'small',
+                                value: 'Small Font'
+                            },
+                            {
+                                key: 'medium',
+                                value: 'Medium Font'
+                            },
+                            {
+                                key: 'large',
+                                value: 'Large Font'
+                            },
+                        ]
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'marks.letter_sparse',
+                        label: 'Sparse Lettering',
+                        icon: 'MapMarkerDistance',
+                        action: 'toggleMark',
+                        attribute: 'letter_sparse',
+                        value: 'toggle'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'marks.font_weight_bold',
+                        label: 'Bold Font',
+                        icon: 'FormatBold',
+                        action: 'toggleMark',
+                        attribute: 'font_weight_bold',
+                        value: 'toggle'
+                    }
+                ]
+            },
+            {
+                title: 'Markup',
+                test: 'marks',
+                entries: [
+                    {
+                        type: 'button',
+                        value_key: 'marks.page_break',
+                        label: 'Page Break',
+                        icon: 'FormatPageBreak',
+                        action: 'toggleMark',
+                        attribute: 'page_break',
+                        value: 'toggle'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'marks.foreign',
+                        label: 'Foreign Language',
+                        icon: 'Translate',
+                        action: 'toggleMark',
+                        attribute: 'foreign',
+                        value: 'toggle'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'marks.annotation',
+                        label: 'Annotation',
+                        icon: 'MessageBulleted',
+                        action: 'toggleMark',
+                        attribute: 'annotation',
+                        value: 'toggle'
+                    }
+                ]
+            },
+            {
+                title: 'Annotations',
+                test: 'marks.annotation',
+                entries: [
+                    {
+                        type: 'select-annotation',
+                        value_key: 'marks.annotation.attrs.target',
+                        action: 'setMarkAttribute',
+                        attribute: 'annotation.target',
+                    }
+                ]
+            }
+        ]
+    };
+
+    // Individual annoation UI configuration
+    var individualAnnotationsUI = {
+        sidebar: [
+            {
+                title: 'Identifier',
+                test: 'blocks.doc',
+                entries: [
+                    {
+                        type: 'text',
+                        value_key: 'blocks.doc.attrs.id',
+                        action: 'setDocAttribute',
+                        attribute: 'id'
+                    }
+                ]
+            },
+            {
+                title: 'Paragraph',
+                test: {
+                    key: 'block.type.name',
+                    value: 'paragraph'
+                },
+                entries: [
+                    {
+                        type: 'button',
+                        value_key: 'block.attrs.text_align',
+                        label: 'Left align',
+                        icon: 'FormatAlignLeft',
+                        action: 'setBlockAttribute',
+                        attribute: 'text_align',
+                        value: 'left'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'block.attrs.text_align',
+                        label: 'Center align',
+                        icon: 'FormatAlignCenter',
+                        action: 'setBlockAttribute',
+                        attribute: 'text_align',
+                        value: 'center'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'block.attrs.text_align',
+                        label: 'Right align',
+                        icon: 'FormatAlignRight',
+                        action: 'setBlockAttribute',
+                        attribute: 'text_align',
+                        value: 'right'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'block.attrs.text_align',
+                        label: 'Align justify',
+                        icon: 'FormatAlignJustify',
+                        action: 'setBlockAttribute',
+                        attribute: 'text_align',
+                        value: 'justify'
+                    }
+                ]
+            },
+            {
+                title: 'Styling',
+                test: 'marks',
+                entries: [
+                    {
+                        type: 'select',
+                        value_key: 'marks.font_size.attrs.size',
+                        action: 'setMarkAttribute',
+                        attribute: 'font_size.size',
+                        values: [
+                            {
+                                key: '',
+                                value: 'Default Size'
+                            },
+                            {
+                                key: 'small',
+                                value: 'Small Font'
+                            },
+                            {
+                                key: 'medium',
+                                value: 'Medium Font'
+                            },
+                            {
+                                key: 'large',
+                                value: 'Large Font'
+                            },
+                        ]
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'marks.letter_sparse',
+                        label: 'Sparse Lettering',
+                        icon: 'MapMarkerDistance',
+                        action: 'toggleMark',
+                        attribute: 'letter_sparse',
+                        value: 'toggle'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'marks.font_weight_bold',
+                        label: 'Bold Font',
+                        icon: 'FormatBold',
+                        action: 'toggleMark',
+                        attribute: 'font_weight_bold',
+                        value: 'toggle'
+                    }
+                ]
+            },
+            {
+                title: 'Markup',
+                test: 'marks',
+                entries: [
+                    {
+                        type: 'button',
+                        value_key: 'marks.pageLineRef',
+                        label: 'Annotation page and line range',
+                        icon: 'PagePreviousOutline',
+                        action: 'toggleMark',
+                        attribute: 'pageLineRef',
+                        value: 'toggle'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'marks.wordRange',
+                        label: 'Annotation word range',
+                        icon: 'FileWordBox',
+                        action: 'toggleMark',
+                        attribute: 'wordRange',
+                        value: 'toggle'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'marks.quotation',
+                        label: 'Quotation from the text',
+                        icon: 'FormatQuoteClose',
+                        action: 'toggleMark',
+                        attribute: 'quotation',
+                        value: 'toggle'
+                    },
+                    {
+                        type: 'button',
+                        value_key: 'marks.foreign',
+                        label: 'Foreign Language',
+                        icon: 'Translate',
+                        action: 'toggleMark',
+                        attribute: 'foreign',
+                        value: 'toggle'
+                    }
+                ]
+            }
+        ]
+    };
+
+    // UI configuration for the metadata view
+    var metadataUI = [
+        {
+            title: 'Bibliography',
+            entries: [
+                {
+                    type: 'single-text',
+                    label: 'Title',
+                    value_key: 'fileDesc.titleStmt.title._text'
+                },
+                {
+                    type: 'single-text',
+                    label: 'Author',
+                    value_key: 'fileDesc.titleStmt.author._text'
+                },
+                {
+                    type: 'single-text',
+                    label: 'Source',
+                    value_key: 'sourceDesc.bibl._text'
+                },
+                {
+                    type: 'single-text',
+                    label: 'Publication Date (machine-readable)',
+                    value_key: 'profileDesc.creation.date._attrs.when'
+                },
+                {
+                    type: 'single-text',
+                    label: 'Publication Date (human-readable)',
+                    value_key: 'profileDesc.creation.date._text'
+                }
+            ]
+        },
+        {
+            title: 'Digital Version',
+            entries: [
+                {
+                    type: 'single-text',
+                    label: 'Distributor',
+                    value_key: 'fileDesc.publicationStmt.distributor._text'
+                },
+                {
+                    type: 'single-text',
+                    label: 'Taxonomy Identifier',
+                    value_key: 'encodingDesc.classDecl.taxonomy._attrs.xml:id'
+                },
+                {
+                    type: 'single-text',
+                    label: 'Taxonomy Label',
+                    value_key: 'encodingDesc.classDecl.taxonomy.bibl._text'
+                },
+                {
+                    type: 'single-text',
+                    label: 'Categorisation',
+                    value_key: 'profileDesc.textClass.catRef._attrs.target'
+                }
+            ]
+        },
+        {
+            title: 'Responsibilities',
+            entries: [
+                {
+                    type: 'multi-field',
+                    value_key: 'fileDesc.titleStmt.respStmt',
+                    entries: [
+                        {
+                            type: 'single-text',
+                            label: 'Identifier',
+                            value_key: '_attrs.xml:id'
+                        },
+                        {
+                            type: 'single-text',
+                            label: 'Responsible for',
+                            value_key: 'resp._text'
+                        },
+                        {
+                            type: 'single-text',
+                            label: 'Name',
+                            value_key: 'name._text'
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            title: 'Revisions',
+            entries: [
+                {
+                    type: 'multi-field',
+                    value_key: 'revisionDesc.change',
+                    entries: [
+                        {
+                            type: 'single-text',
+                            label: 'Change',
+                            value_key: '_text'
+                        },
+                        {
+                            type: 'single-text',
+                            label: 'Who',
+                            value_key: '_attrs.who'
+                        },
+                        {
+                            type: 'single-text',
+                            label: 'When',
+                            value_key: '_attrs.when'
+                        }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    window.teiEditorConfig = window.teiEditorConfig || {};
+    window.teiEditorConfig.ui = {
+        main: {},
+        mainText: fullTextUI,
+        globalAnnotations: fullTextUI,
+        individualAnnotations: individualAnnotationsUI,
+        metadata: metadataUI
+    };
+})();
+
 (function(C,e){"object"==typeof exports&&"undefined"!=typeof module?e():"function"==typeof define&&define.amd?define(e):e()})(0,function(){"use strict"
 function C(C="unreachable"){return new Error(C)}let e=0
 function t(){return Object.create(null)}const H=Object.freeze([]),i=1
 class V{validate(C){return this.value()===C}}V.id=0
 const n=[],r=[]
-class L{constructor(C,e){this.type=C,this.inner=e}value(){return(0,n[this.type])(this.inner)}validate(C){return(0,r[this.type])(this.inner,C)}}function o(C){let e=n.length
+class o{constructor(C,e){this.type=C,this.inner=e}value(){return(0,n[this.type])(this.inner)}validate(C){return(0,r[this.type])(this.inner,C)}}function L(C){let e=n.length
 n.push(C=>C.value()),r.push((C,e)=>C.validate(e)),C.id=e}n.push(()=>0),r.push((C,e)=>0===e)
-const s=new L(0,null)
+const s=new o(0,null)
 n.push(()=>NaN),r.push((C,e)=>NaN===e)
-const a=new L(1,null)
+const a=new o(1,null)
 n.push(()=>c),r.push((C,e)=>e===c)
-const M=new L(2,null)
+const M=new o(2,null)
 function l({tag:C}){return C===s}function d(C){return C===s}let c=i
-class u extends V{static create(C=c){return new L(this.id,new u(C))}constructor(C=c){super(),this.revision=C}value(){return this.revision}dirty(){this.revision=++c}}function h(C){let e=[]
+class u extends V{static create(C=c){return new o(this.id,new u(C))}constructor(C=c){super(),this.revision=C}value(){return this.revision}dirty(){this.revision=++c}}function h(C){let e=[]
 for(let t=0,H=C.length;t<H;t++){let H=C[t].tag
 if(H===a)return a
 H!==s&&e.push(H)}return f(e)}function p(C){let e=[],t=C.head()
@@ -23,13 +1447,13 @@ if(H===a)return a
 H!==s&&e.push(H)}return f(e)}function f(C){switch(C.length){case 0:return s
 case 1:return C[0]
 case 2:return Z.create(C[0],C[1])
-default:return v.create(C)}}o(u)
+default:return v.create(C)}}L(u)
 class g extends V{constructor(){super(...arguments),this.lastChecked=null,this.lastValue=null}value(){let C=this.lastChecked,e=this.lastValue
-return C!==c&&(this.lastChecked=c,this.lastValue=e=this.compute()),this.lastValue}invalidate(){this.lastChecked=null}}class Z extends g{static create(C,e){return new L(this.id,new Z(C,e))}constructor(C,e){super(),this.first=C,this.second=e}compute(){return Math.max(this.first.value(),this.second.value())}}o(Z)
-class v extends g{static create(C){return new L(this.id,new v(C))}constructor(C){super(),this.tags=C}compute(){let C=this.tags,e=-1
+return C!==c&&(this.lastChecked=c,this.lastValue=e=this.compute()),this.lastValue}invalidate(){this.lastChecked=null}}class Z extends g{static create(C,e){return new o(this.id,new Z(C,e))}constructor(C,e){super(),this.first=C,this.second=e}compute(){return Math.max(this.first.value(),this.second.value())}}L(Z)
+class v extends g{static create(C){return new o(this.id,new v(C))}constructor(C){super(),this.tags=C}compute(){let C=this.tags,e=-1
 for(let t=0;t<C.length;t++){let H=C[t].value()
-e=Math.max(H,e)}return e}}o(v)
-class y extends g{static create(C){return new L(this.id,new y(C))}constructor(C){super(),this.tag=C,this.lastUpdated=i}compute(){return Math.max(this.lastUpdated,this.tag.value())}update(C){C!==this.tag&&(this.tag=C,this.lastUpdated=c,this.invalidate())}}o(y)
+e=Math.max(H,e)}return e}}L(v)
+class y extends g{static create(C){return new o(this.id,new y(C))}constructor(C){super(),this.tag=C,this.lastUpdated=i}compute(){return Math.max(this.lastUpdated,this.tag.value())}update(C){C!==this.tag&&(this.tag=C,this.lastUpdated=c,this.invalidate())}}L(y)
 class b{constructor(){this.lastRevision=null,this.lastValue=null}value(){let C=this.tag,e=this.lastRevision,t=this.lastValue
 return null!==e&&C.validate(e)||(t=this.lastValue=this.compute(),this.lastRevision=C.value()),t}invalidate(){this.lastRevision=null}}class k{constructor(C){this.lastValue=null,this.lastRevision=null,this.initialized=!1,this.tag=C.tag,this.reference=C}peek(){return this.initialized?this.lastValue:this.initialize()}revalidate(){if(!this.initialized)return this.initialize()
 let C=this.reference,e=this.lastRevision,t=C.tag
@@ -95,8 +1519,8 @@ for(let t=0;t<C;t++)e[t]=null
 return e}(98).slice()}add(C,e,t="syscall"){this.evaluateOpcode[C]={syscall:"syscall"===t,evaluate:e}}debugBefore(C,e,t){return{sp:void 0,state:void 0}}debugAfter(C,e,t,H){H.sp,H.state}evaluate(C,e,t){let H=this.evaluateOpcode[t]
 H.syscall?H.evaluate(C,e):H.evaluate(C.inner,e)}}
 class CC{constructor(){this._guid=++e}}class eC extends CC{constructor(){super(...arguments),this.next=null,this.prev=null}}var tC;(function(C){C[C.pc=0]="pc",C[C.ra=1]="ra",C[C.fp=2]="fp",C[C.sp=3]="sp",C[C.s0=4]="s0",C[C.s1=5]="s1",C[C.t0=6]="t0",C[C.t1=7]="t1",C[C.v0=8]="v0"})(tC||(tC={}))
-class HC extends O{constructor(C){super(C)}static create(C){return void 0===C?nC:null===C?rC:!0===C?LC:!1===C?oC:"number"==typeof C?new VC(C):new iC(C)}get(C){return nC}}class iC extends HC{constructor(){super(...arguments),this.lengthReference=null}get(C){if("length"===C){let C=this.lengthReference
-return null===C&&(C=this.lengthReference=new VC(this.inner.length)),C}return super.get(C)}}class VC extends HC{constructor(C){super(C)}}const nC=new VC(void 0),rC=new VC(null),LC=new VC(!0),oC=new VC(!1)
+class HC extends O{constructor(C){super(C)}static create(C){return void 0===C?nC:null===C?rC:!0===C?oC:!1===C?LC:"number"==typeof C?new VC(C):new iC(C)}get(C){return nC}}class iC extends HC{constructor(){super(...arguments),this.lengthReference=null}get(C){if("length"===C){let C=this.lengthReference
+return null===C&&(C=this.lengthReference=new VC(this.inner.length)),C}return super.get(C)}}class VC extends HC{constructor(C){super(C)}}const nC=new VC(void 0),rC=new VC(null),oC=new VC(!0),LC=new VC(!1)
 class sC{constructor(C){this.inner=C,this.tag=C.tag}value(){return this.toBool(this.inner.value())}toBool(C){return!!C}}class aC extends b{constructor(C){super(),this.parts=C,this.tag=h(C)}compute(){let C=new Array
 for(let e=0;e<this.parts.length;e++){let t=this.parts[e].value()
 null!=t&&(C[e]=MC(t))}return C.length>0?C.join(""):null}}function MC(C){return"function"!=typeof C.toString?"":String(C)}Q.add(1,(C,{op1:e})=>{let t=C.stack,H=C.constants.resolveHandle(e)(C,t.pop())
@@ -107,9 +1531,9 @@ C.scope().bindBlock(e,V)}),Q.add(96,(C,{op1:e})=>{let t=C.constants.getString(e)
 void 0===H&&(H=C.getSelf().get(t)),C.stack.push(H)}),Q.add(20,(C,{op1:e,op2:t})=>{C.pushRootScope(e,!!t)}),Q.add(7,(C,{op1:e})=>{let t=C.constants.getString(e),H=C.stack.pop()
 C.stack.push(H.get(t))}),Q.add(8,(C,{op1:e})=>{let t=C.stack,H=C.scope().getBlock(e)
 H?(t.push(H[2]),t.push(H[1]),t.push(H[0])):(t.push(null),t.push(null),t.push(null))}),Q.add(9,(C,{op1:e})=>{let t=!!C.scope().getBlock(e)
-C.stack.push(t?LC:oC)}),Q.add(10,C=>{C.stack.pop(),C.stack.pop()
+C.stack.push(t?oC:LC)}),Q.add(10,C=>{C.stack.pop(),C.stack.pop()
 let e=C.stack.pop(),t=e&&e.parameters.length
-C.stack.push(t?LC:oC)}),Q.add(11,(C,{op1:e})=>{let t=new Array(e)
+C.stack.push(t?oC:LC)}),Q.add(11,(C,{op1:e})=>{let t=new Array(e)
 for(let H=e;H>0;H--){t[H-1]=C.stack.pop()}C.stack.push(new aC(t))})
 const lC="CURRIED COMPONENT DEFINITION [id=6f00feb9-a0ef-4547-99ea-ac328f80acea]"
 function dC(C){return!(!C||!C[lC])}class cC{constructor(C,e){this.inner=C,this.args=e,this[lC]=!0}unwrap(C){C.realloc(this.offset)
@@ -165,16 +1589,16 @@ else{let e=new k(i)
 t=e.peek(),C.updateWith(new vC(e))}C.elements().pushRemoteElement(e,V,t)}),Q.add(42,C=>{C.elements().popRemoteElement()}),Q.add(38,C=>{let e=C.fetchValue(tC.t0)
 e&&(e.flush(C),C.loadValue(tC.t0,null)),C.elements().flushElement()}),Q.add(39,C=>{C.elements().closeElement()}),Q.add(40,(C,{op1:e})=>{let t=C.constants.resolveHandle(e),H=C.stack.pop()
 var i=C.elements()
-let V=i.constructing,n=i.updateOperations,r=C.dynamicScope(),L=t.create(V,H,r,n)
-C.env.scheduleInstallModifier(L,t)
-let o=t.getDestructor(L)
-o&&C.newDestroyable(o)
-let s=t.getTag(L)
-d(s)||C.updateWith(new yC(s,t,L))})
+let V=i.constructing,n=i.updateOperations,r=C.dynamicScope(),o=t.create(V,H,r,n)
+C.env.scheduleInstallModifier(o,t)
+let L=t.getDestructor(o)
+L&&C.newDestroyable(L)
+let s=t.getTag(o)
+d(s)||C.updateWith(new yC(s,t,o))})
 class yC extends eC{constructor(C,e,t){super(),this.tag=C,this.manager=e,this.modifier=t,this.type="update-modifier",this.lastUpdated=C.value()}evaluate(C){let e=this.manager,t=this.modifier,H=this.tag,i=this.lastUpdated
 H.validate(i)||(C.env.scheduleUpdateModifier(t,e),this.lastUpdated=H.value())}}Q.add(35,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants.getString(e),V=C.constants.getString(t),n=H?C.constants.getString(H):null
-C.elements().setStaticAttribute(i,V,n)}),Q.add(36,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants.getString(e),V=C.stack.pop(),n=V.value(),r=H?C.constants.getString(H):null,L=C.elements().setDynamicAttribute(i,n,!!t,r)
-l(V)||C.updateWith(new bC(V,L))})
+C.elements().setStaticAttribute(i,V,n)}),Q.add(36,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants.getString(e),V=C.stack.pop(),n=V.value(),r=H?C.constants.getString(H):null,o=C.elements().setDynamicAttribute(i,n,!!t,r)
+l(V)||C.updateWith(new bC(V,o))})
 class bC extends eC{constructor(C,e){super(),this.reference=C,this.attribute=e,this.type="patch-element",this.tag=C.tag,this.lastRevision=this.tag.value()}evaluate(C){let e=this.attribute,t=this.reference,H=this.tag
 H.validate(this.lastRevision)||(this.lastRevision=H.value(),e.update(t.value(),C.env))}}function kC(C,e,t){return C.lookupComponentDefinition(e,t)}class wC{constructor(C,e,t,H){this.inner=C,this.resolver=e,this.meta=t,this.args=H,this.tag=C.tag,this.lastValue=null,this.lastDefinition=null}value(){let C=this.inner,e=this.lastValue,t=C.value()
 if(t===e)return this.lastDefinition
@@ -199,22 +1623,22 @@ e.push(t)}),Q.add(79,(C,{op1:e})=>{let t=C.stack,H=C.fetchValue(e),i=t.pop(),V=H
 dC(V)&&(V=function(C,e,t){let H=C.definition=e.unwrap(t),i=H.manager,V=H.state
 return C.manager=i,C.capabilities=OC(i.getCapabilities(V)),H}(H,V,i))
 var n=V
-let r=n.manager,L=n.state
+let r=n.manager,o=n.state
 if(!0!==xC(H.capabilities,4))return void t.push(i)
-let o=i.blocks.values,s=i.blocks.names,a=r.prepareArgs(L,i)
+let L=i.blocks.values,s=i.blocks.names,a=r.prepareArgs(o,i)
 if(a){i.clear()
-for(let i=0;i<o.length;i++)t.push(o[i])
+for(let i=0;i<L.length;i++)t.push(L[i])
 let C=a.positional,e=a.named,H=C.length
 for(let i=0;i<H;i++)t.push(C[i])
 let V=Object.keys(e)
 for(let i=0;i<V.length;i++)t.push(e[V[i]])
 i.setup(t,V,s,H,!0)}t.push(i)}),Q.add(81,(C,{op1:e,op2:t})=>{let H=C.fetchValue(t),i=H.definition,V=H.manager,n=H.capabilities=OC(V.getCapabilities(i.state)),r=null
 xC(n,64)&&(r=C.dynamicScope())
-let L=1&e,o=null
-xC(n,8)&&(o=C.stack.peek())
+let o=1&e,L=null
+xC(n,8)&&(L=C.stack.peek())
 let s=null
 xC(n,128)&&(s=C.getSelf())
-let a=V.create(C.env,i.state,o,r,s,!!L)
+let a=V.create(C.env,i.state,L,r,s,!!o)
 H.state=a
 let M=V.getTag(a)
 xC(n,256)&&!d(M)&&C.updateWith(new BC(M,a,V,r))}),Q.add(82,(C,{op1:e})=>{var t=C.fetchValue(e)
@@ -232,10 +1656,10 @@ V.didCreateElement(i,C.elements().expectConstructing("DidCreateElementOpcode#eva
 let H=t.definition,i=t.state,V=H.manager
 C.stack.push(V.getSelf(i))}),Q.add(85,(C,{op1:e})=>{var t=C.fetchValue(e)
 let H=t.definition,i=t.state,V=H.manager
-C.stack.push(V.getTagName(i))}),Q.add(86,(e,{op1:t})=>{let H,i=e.fetchValue(t),V=i.manager,n=i.definition,r=e.constants.resolver,L=e.stack,o=i.state,s=i.capabilities,a=n.state
+C.stack.push(V.getTagName(i))}),Q.add(86,(e,{op1:t})=>{let H,i=e.fetchValue(t),V=i.manager,n=i.definition,r=e.constants.resolver,o=e.stack,L=i.state,s=i.capabilities,a=n.state
 if(function(C,e){return!1===xC(C,1)}(s))H=V.getLayout(a,r)
 else{if(!function(C,e){return!0===xC(C,1)}(s))throw C()
-H=V.getDynamicLayout(o,r)}L.push(H.symbolTable),L.push(H.handle)}),Q.add(68,(C,{op1:e})=>{let t=C.stack.pop(),H=C.stack.pop(),i=t.manager,V=OC(i.getCapabilities(t.state)),n={definition:t,manager:i,capabilities:V,state:null,handle:H.handle,table:H.symbolTable,lookup:null}
+H=V.getDynamicLayout(L,r)}o.push(H.symbolTable),o.push(H.handle)}),Q.add(68,(C,{op1:e})=>{let t=C.stack.pop(),H=C.stack.pop(),i=t.manager,V=OC(i.getCapabilities(t.state)),n={definition:t,manager:i,capabilities:V,state:null,handle:H.handle,table:H.symbolTable,lookup:null}
 C.loadValue(e,n)}),Q.add(89,(C,{op1:e})=>{let t=C.stack,H=t.pop(),i=t.pop(),V=C.fetchValue(e)
 V.handle=H,V.table=i}),Q.add(21,(C,{op1:e})=>{let t=C.fetchValue(e).table.symbols
 C.pushRootScope(t.length+1,!0)}),Q.add(87,(C,{op1:e})=>{let H=C.fetchValue(e)
@@ -254,15 +1678,15 @@ class NC{constructor(C,e,H){this.scope=C,this.locals=t()
 for(let t=0;t<H.length;t++){let i=H[t],V=e[i-1],n=C.getSymbol(i)
 this.locals[V]=n}}get(C){let e=this.scope,t=this.locals,H=C.split(".")
 var i=C.split(".")
-let V,n=i[0],r=i.slice(1),L=e.getEvalScope()
-return"this"===n?V=e.getSelf():t[n]?V=t[n]:0===n.indexOf("@")&&L[n]?V=L[n]:(V=this.scope.getSelf(),r=H),r.reduce((C,e)=>C.get(e),V)}}Q.add(97,(C,{op1:e,op2:t})=>{let H=C.constants.getStringArray(e),i=C.constants.getArray(t),V=new NC(C.scope(),H,i)
-DC(C.getSelf().value(),C=>V.get(C).value())}),Q.add(95,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants,V=C.constants.resolver,n=C.stack.pop().value(),r=i.getSerializable(e),L=i.getStringArray(t),o=i.getArray(H),s=V.lookupPartial(n,r)
+let V,n=i[0],r=i.slice(1),o=e.getEvalScope()
+return"this"===n?V=e.getSelf():t[n]?V=t[n]:0===n.indexOf("@")&&o[n]?V=o[n]:(V=this.scope.getSelf(),r=H),r.reduce((C,e)=>C.get(e),V)}}Q.add(97,(C,{op1:e,op2:t})=>{let H=C.constants.getStringArray(e),i=C.constants.getArray(t),V=new NC(C.scope(),H,i)
+DC(C.getSelf().value(),C=>V.get(C).value())}),Q.add(95,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants,V=C.constants.resolver,n=C.stack.pop().value(),r=i.getSerializable(e),o=i.getStringArray(t),L=i.getArray(H),s=V.lookupPartial(n,r)
 var a=V.resolve(s).getPartial()
 let M=a.symbolTable,l=a.handle
 {let e=M.symbols,t=C.scope(),H=C.pushRootScope(e.length,!1),i=t.getEvalScope()
 H.bindCallerScope(t.getCallerScope()),H.bindEvalScope(i),H.bindSelf(t.getSelf())
 let V=Object.create(t.getPartialMap())
-for(let C=0;C<o.length;C++){let e=o[C],H=L[e-1],i=t.getSymbol(e)
+for(let C=0;C<L.length;C++){let e=L[C],H=o[e-1],i=t.getSymbol(e)
 V[H]=i}if(i)for(let C=0;C<e.length;C++){let t=C+1,V=i[e[C]]
 void 0!==V&&H.bind(t,V)}H.bindPartialMap(V),C.pushFrame(),C.call(l)}})
 class PC{constructor(C){this.tag=C.tag,this.artifacts=C}value(){return!this.artifacts.isEmpty()}}Q.add(66,C=>{let e=C.stack,t=e.pop(),H=e.pop(),i=C.env.iterableFor(t,H.value()),V=new E(i)
@@ -293,8 +1717,8 @@ if(e?(t=e.namespaceURI===zC||"svg"===C,H=WC[e.tagName]):(t="svg"===C,H=!1),t&&!H
 return this.document.createElementNS(zC,C)}return this.document.createElement(C)}insertBefore(C,e,t){C.insertBefore(e,t)}insertHTMLBefore(C,e,t){return function(C,e,t,H){let i,V=e,n=t,r=n?n.previousSibling:V.lastChild
 if(null===H||""===H)return new RC(V,null,null)
 null===n?(V.insertAdjacentHTML("beforeend",H),i=V.lastChild):n instanceof HTMLElement?(n.insertAdjacentHTML("beforebegin",H),i=n.previousSibling):(V.insertBefore(C,n),C.insertAdjacentHTML("beforebegin",H),i=C.previousSibling,V.removeChild(C))
-let L=r?r.nextSibling:V.firstChild
-return new RC(V,L,i)}(this.uselessElement,C,e,t)}createTextNode(C){return this.document.createTextNode(C)}createComment(C){return this.document.createComment(C)}}var $C;(function(C){class e extends GC{createElementNS(C,e){return this.document.createElementNS(C,e)}setAttribute(C,e,t,H=null){H?C.setAttributeNS(H,e,t):C.setAttribute(e,t)}}C.TreeConstruction=e
+let o=r?r.nextSibling:V.firstChild
+return new RC(V,o,i)}(this.uselessElement,C,e,t)}createTextNode(C){return this.document.createTextNode(C)}createComment(C){return this.document.createComment(C)}}var $C;(function(C){class e extends GC{createElementNS(C,e){return this.document.createElementNS(C,e)}setAttribute(C,e,t,H=null){H?C.setAttributeNS(H,e,t):C.setAttribute(e,t)}}C.TreeConstruction=e
 let t=e
 t=_C(UC,t),t=IC(UC,t,zC),C.DOMTreeConstruction=t})($C||($C={}))
 let qC=class extends GC{constructor(C){super(C),this.document=C,this.namespace=null}setAttribute(C,e,t){C.setAttribute(e,t)}removeAttribute(C,e){C.removeAttribute(e)}insertAfter(C,e,t){this.insertBefore(C,e,t.nextSibling)}}
@@ -326,7 +1750,7 @@ H.insertBefore(e,this),H.removeChild(this),C.renderComponent(t,H,e),function C(e
 e.remove(),function(C,e){let t=C.attributes
 for(let i=0;i<t.length;i++){var H=t.item(i)
 let C=H.name,V=H.value
-e.setAttribute(C,V)}}(this,C)})}}}),window.customElements.define(e,H)}class Le{constructor(C,e=null){this._registry=C,this._resolver=e,this._lookups={},this._factoryDefinitionLookups={}}factoryFor(C){let e=this._factoryDefinitionLookups[C]
+e.setAttribute(C,V)}}(this,C)})}}}),window.customElements.define(e,H)}class oe{constructor(C,e=null){this._registry=C,this._resolver=e,this._lookups={},this._factoryDefinitionLookups={}}factoryFor(C){let e=this._factoryDefinitionLookups[C]
 if(e||(this._resolver&&(e=this._resolver.retrieve(C)),e||(e=this._registry.registration(C)),e&&(this._factoryDefinitionLookups[C]=e)),e)return this.buildFactory(C,e)}lookup(C){let e=!1!==this._registry.registeredOption(C,"singleton")
 if(e&&this._lookups[C])return this._lookups[C]
 let t=this.factoryFor(C)
@@ -337,7 +1761,7 @@ return e&&H&&(this._lookups[C]=H),H}defaultInjections(C){return{}}buildInjection
 for(let i=0;i<H.length;i++)t[(e=H[i]).property]=this.lookup(e.source)
 return t}buildFactory(C,e){let t=this.buildInjections(C)
 return{class:e,create(C){let H=Object.assign({},t,C)
-return e.create(H)}}}}class oe{constructor(C){this._registrations={},this._registeredOptions={},this._registeredInjections={},C&&C.fallback&&(this._fallback=C.fallback)}register(C,e,t){this._registrations[C]=e,t&&(this._registeredOptions[C]=t)}registration(C){let e=this._registrations[C]
+return e.create(H)}}}}class Le{constructor(C){this._registrations={},this._registeredOptions={},this._registeredInjections={},C&&C.fallback&&(this._fallback=C.fallback)}register(C,e,t){this._registrations[C]=e,t&&(this._registeredOptions[C]=t)}registration(C){let e=this._registrations[C]
 return void 0===e&&this._fallback&&(e=this._fallback.registration(C)),e}unregister(C){delete this._registrations[C],delete this._registeredOptions[C],delete this._registeredInjections[C]}registerOption(C,e,t){let H=this._registeredOptions[C]
 H||(H={},this._registeredOptions[C]=H),H[e]=t}registeredOption(C,e){let t,H=this.registeredOptions(C)
 return H&&(t=H[e]),void 0===t&&void 0!==this._fallback&&(t=this._fallback.registeredOption(C,e)),t}registeredOptions(C){let e=this._registeredOptions[C]
@@ -444,16 +1868,16 @@ else{let e=new k(i)
 t=e.peek(),C.updateWith(new Ye(e))}C.elements().pushRemoteElement(e,V,t)}),ke.add(42,C=>{C.elements().popRemoteElement()}),ke.add(38,C=>{let e=C.fetchValue(Oe.t0)
 e&&(e.flush(C),C.loadValue(Oe.t0,null)),C.elements().flushElement()}),ke.add(39,C=>{C.elements().closeElement()}),ke.add(40,(C,{op1:e})=>{let t=C.constants.resolveHandle(e),H=C.stack.pop()
 var i=C.elements()
-let V=i.constructing,n=i.updateOperations,r=C.dynamicScope(),L=t.create(V,H,r,n)
-C.env.scheduleInstallModifier(L,t)
-let o=t.getDestructor(L)
-o&&C.newDestroyable(o)
-let s=t.getTag(L)
-d(s)||C.updateWith(new et(s,t,L))})
+let V=i.constructing,n=i.updateOperations,r=C.dynamicScope(),o=t.create(V,H,r,n)
+C.env.scheduleInstallModifier(o,t)
+let L=t.getDestructor(o)
+L&&C.newDestroyable(L)
+let s=t.getTag(o)
+d(s)||C.updateWith(new et(s,t,o))})
 class et extends Se{constructor(C,e,t){super(),this.tag=C,this.manager=e,this.modifier=t,this.type="update-modifier",this.lastUpdated=C.value()}evaluate(C){let e=this.manager,t=this.modifier,H=this.tag,i=this.lastUpdated
 H.validate(i)||(C.env.scheduleUpdateModifier(t,e),this.lastUpdated=H.value())}}ke.add(35,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants.getString(e),V=C.constants.getString(t),n=H?C.constants.getString(H):null
-C.elements().setStaticAttribute(i,V,n)}),ke.add(36,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants.getString(e),V=C.stack.pop(),n=V.value(),r=H?C.constants.getString(H):null,L=C.elements().setDynamicAttribute(i,n,!!t,r)
-l(V)||C.updateWith(new tt(V,L))})
+C.elements().setStaticAttribute(i,V,n)}),ke.add(36,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants.getString(e),V=C.stack.pop(),n=V.value(),r=H?C.constants.getString(H):null,o=C.elements().setDynamicAttribute(i,n,!!t,r)
+l(V)||C.updateWith(new tt(V,o))})
 class tt extends Se{constructor(C,e){super(),this.reference=C,this.attribute=e,this.type="patch-element",this.tag=C.tag,this.lastRevision=this.tag.value()}evaluate(C){let e=this.attribute,t=this.reference,H=this.tag
 H.validate(this.lastRevision)||(this.lastRevision=H.value(),e.update(t.value(),C.env))}}function Ht(C,e,t){return C.lookupComponentDefinition(e,t)}class it{constructor(C,e,t,H){this.inner=C,this.resolver=e,this.meta=t,this.args=H,this.tag=C.tag,this.lastValue=null,this.lastDefinition=null}value(){let C=this.inner,e=this.lastValue,t=C.value()
 if(t===e)return this.lastDefinition
@@ -478,43 +1902,43 @@ e.push(t)}),ke.add(79,(C,{op1:e})=>{let t=C.stack,H=C.fetchValue(e),i=t.pop(),V=
 _e(V)&&(V=function(C,e,t){let H=C.definition=e.unwrap(t),i=H.manager,V=H.state
 return C.manager=i,C.capabilities=nt(i.getCapabilities(V)),H}(H,V,i))
 var n=V
-let r=n.manager,L=n.state
+let r=n.manager,o=n.state
 if(!0!==rt(H.capabilities,4))return void t.push(i)
-let o=i.blocks.values,s=i.blocks.names,a=r.prepareArgs(L,i)
+let L=i.blocks.values,s=i.blocks.names,a=r.prepareArgs(o,i)
 if(a){i.clear()
-for(let i=0;i<o.length;i++)t.push(o[i])
+for(let i=0;i<L.length;i++)t.push(L[i])
 let C=a.positional,e=a.named,H=C.length
 for(let i=0;i<H;i++)t.push(C[i])
 let V=Object.keys(e)
 for(let i=0;i<V.length;i++)t.push(e[V[i]])
 i.setup(t,V,s,H,!0)}t.push(i)}),ke.add(81,(C,{op1:e,op2:t})=>{let H=C.fetchValue(t),i=H.definition,V=H.manager,n=H.capabilities=nt(V.getCapabilities(i.state)),r=null
 rt(n,64)&&(r=C.dynamicScope())
-let L=1&e,o=null
-rt(n,8)&&(o=C.stack.peek())
+let o=1&e,L=null
+rt(n,8)&&(L=C.stack.peek())
 let s=null
 rt(n,128)&&(s=C.getSelf())
-let a=V.create(C.env,i.state,o,r,s,!!L)
+let a=V.create(C.env,i.state,L,r,s,!!o)
 H.state=a
 let M=V.getTag(a)
 rt(n,256)&&!d(M)&&C.updateWith(new st(M,a,V,r))}),ke.add(82,(C,{op1:e})=>{var t=C.fetchValue(e)
 let H=t.manager,i=t.state,V=H.getDestructor(i)
-V&&C.newDestroyable(V)}),ke.add(91,C=>{C.beginCacheGroup(),C.elements().pushSimpleBlock()}),ke.add(83,C=>{C.loadValue(Oe.t0,new Lt)}),ke.add(37,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants.getString(e),V=C.stack.pop(),n=H?C.constants.getString(H):null
+V&&C.newDestroyable(V)}),ke.add(91,C=>{C.beginCacheGroup(),C.elements().pushSimpleBlock()}),ke.add(83,C=>{C.loadValue(Oe.t0,new ot)}),ke.add(37,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants.getString(e),V=C.stack.pop(),n=H?C.constants.getString(H):null
 C.fetchValue(Oe.t0).setAttribute(i,V,!!t,n)})
-class Lt{constructor(){this.attributes=me(),this.classes=[]}setAttribute(C,e,t,H){let i={value:e,namespace:H,trusting:t}
+class ot{constructor(){this.attributes=me(),this.classes=[]}setAttribute(C,e,t,H){let i={value:e,namespace:H,trusting:t}
 "class"===C&&this.classes.push(e),this.attributes[C]=i}flush(C){for(let e in this.attributes){let t=this.attributes[e],H=t.value,i=t.namespace,V=t.trusting
 if("class"===e&&(H=new Vt(this.classes)),"type"===e)continue
 let n=C.elements().setDynamicAttribute(e,H.value(),V,i)
 l(H)||C.updateWith(new tt(H,n))}if("type"in this.attributes){let e=this.attributes.type,t=e.value,H=e.namespace,i=e.trusting,V=C.elements().setDynamicAttribute("type",t.value(),i,H)
-l(t)||C.updateWith(new tt(t,V))}}}function ot(C,e,t,H,i){let V=t.table.symbols.indexOf(C),n=H.get(e);-1!==V&&i.scope().bindBlock(V+1,n),t.lookup&&(t.lookup[C]=n)}ke.add(93,(C,{op1:e})=>{var t=C.fetchValue(e)
+l(t)||C.updateWith(new tt(t,V))}}}function Lt(C,e,t,H,i){let V=t.table.symbols.indexOf(C),n=H.get(e);-1!==V&&i.scope().bindBlock(V+1,n),t.lookup&&(t.lookup[C]=n)}ke.add(93,(C,{op1:e})=>{var t=C.fetchValue(e)
 let H=t.definition,i=t.state,V=H.manager,n=C.fetchValue(Oe.t0)
 V.didCreateElement(i,C.elements().expectConstructing("DidCreateElementOpcode#evaluate"),n)}),ke.add(84,(C,{op1:e})=>{var t=C.fetchValue(e)
 let H=t.definition,i=t.state,V=H.manager
 C.stack.push(V.getSelf(i))}),ke.add(85,(C,{op1:e})=>{var t=C.fetchValue(e)
 let H=t.definition,i=t.state,V=H.manager
-C.stack.push(V.getTagName(i))}),ke.add(86,(C,{op1:e})=>{let t,H=C.fetchValue(e),i=H.manager,V=H.definition,n=C.constants.resolver,r=C.stack,L=H.state,o=H.capabilities,s=V.state
-if(function(C,e){return!1===rt(C,1)}(o))t=i.getLayout(s,n)
-else{if(!function(C,e){return!0===rt(C,1)}(o))throw le()
-t=i.getDynamicLayout(L,n)}r.push(t.symbolTable),r.push(t.handle)}),ke.add(68,(C,{op1:e})=>{let t=C.stack.pop(),H=C.stack.pop(),i=t.manager,V=nt(i.getCapabilities(t.state)),n={definition:t,manager:i,capabilities:V,state:null,handle:H.handle,table:H.symbolTable,lookup:null}
+C.stack.push(V.getTagName(i))}),ke.add(86,(C,{op1:e})=>{let t,H=C.fetchValue(e),i=H.manager,V=H.definition,n=C.constants.resolver,r=C.stack,o=H.state,L=H.capabilities,s=V.state
+if(function(C,e){return!1===rt(C,1)}(L))t=i.getLayout(s,n)
+else{if(!function(C,e){return!0===rt(C,1)}(L))throw le()
+t=i.getDynamicLayout(o,n)}r.push(t.symbolTable),r.push(t.handle)}),ke.add(68,(C,{op1:e})=>{let t=C.stack.pop(),H=C.stack.pop(),i=t.manager,V=nt(i.getCapabilities(t.state)),n={definition:t,manager:i,capabilities:V,state:null,handle:H.handle,table:H.symbolTable,lookup:null}
 C.loadValue(e,n)}),ke.add(89,(C,{op1:e})=>{let t=C.stack,H=t.pop(),i=t.pop(),V=C.fetchValue(e)
 V.handle=H,V.table=i}),ke.add(21,(C,{op1:e})=>{let t=C.fetchValue(e).table.symbols
 C.pushRootScope(t.length+1,!0)}),ke.add(87,(C,{op1:e})=>{let t=C.fetchValue(e)
@@ -522,7 +1946,7 @@ if(t.table.hasEval){let e=t.lookup=me()
 C.scope().bindEvalScope(e)}}),ke.add(2,(C,{op1:e})=>{let t=C.fetchValue(e),H=C.scope(),i=C.stack.peek(),V=i.named.atNames
 for(let n=V.length-1;n>=0;n--){let C=V[n],e=t.table.symbols.indexOf(V[n]),r=i.named.get(C,!1);-1!==e&&H.bindSymbol(e+1,r),t.lookup&&(t.lookup[C]=r)}}),ke.add(3,(C,{op1:e})=>{let t=C.fetchValue(e)
 let H=C.stack.peek().blocks
-ot("&attrs","attrs",t,H,C),ot("&inverse","else",t,H,C),ot("&default","main",t,H,C)}),ke.add(90,(C,{op1:e})=>{let t=C.fetchValue(e)
+Lt("&attrs","attrs",t,H,C),Lt("&inverse","else",t,H,C),Lt("&default","main",t,H,C)}),ke.add(90,(C,{op1:e})=>{let t=C.fetchValue(e)
 C.call(t.handle)}),ke.add(94,(C,{op1:e})=>{var t=C.fetchValue(e)
 let H=t.manager,i=t.state,V=C.elements().popBlock()
 H.didRenderLayout(i,V),C.env.didCreate(i,H),C.updateWith(new at(H,i,V))}),ke.add(92,C=>{C.commitCacheGroup()})
@@ -533,15 +1957,15 @@ class lt{constructor(C,e,t){this.scope=C,this.locals=me()
 for(let H=0;H<t.length;H++){let i=t[H],V=e[i-1],n=C.getSymbol(i)
 this.locals[V]=n}}get(C){let e=this.scope,t=this.locals,H=C.split(".")
 var i=C.split(".")
-let V,n=i[0],r=i.slice(1),L=e.getEvalScope()
-return"this"===n?V=e.getSelf():t[n]?V=t[n]:0===n.indexOf("@")&&L[n]?V=L[n]:(V=this.scope.getSelf(),r=H),r.reduce((C,e)=>C.get(e),V)}}ke.add(97,(C,{op1:e,op2:t})=>{let H=C.constants.getStringArray(e),i=C.constants.getArray(t),V=new lt(C.scope(),H,i)
-Mt(C.getSelf().value(),C=>V.get(C).value())}),ke.add(95,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants,V=C.constants.resolver,n=C.stack.pop().value(),r=i.getSerializable(e),L=i.getStringArray(t),o=i.getArray(H),s=V.lookupPartial(n,r)
+let V,n=i[0],r=i.slice(1),o=e.getEvalScope()
+return"this"===n?V=e.getSelf():t[n]?V=t[n]:0===n.indexOf("@")&&o[n]?V=o[n]:(V=this.scope.getSelf(),r=H),r.reduce((C,e)=>C.get(e),V)}}ke.add(97,(C,{op1:e,op2:t})=>{let H=C.constants.getStringArray(e),i=C.constants.getArray(t),V=new lt(C.scope(),H,i)
+Mt(C.getSelf().value(),C=>V.get(C).value())}),ke.add(95,(C,{op1:e,op2:t,op3:H})=>{let i=C.constants,V=C.constants.resolver,n=C.stack.pop().value(),r=i.getSerializable(e),o=i.getStringArray(t),L=i.getArray(H),s=V.lookupPartial(n,r)
 var a=V.resolve(s).getPartial()
 let M=a.symbolTable,l=a.handle
 {let e=M.symbols,t=C.scope(),H=C.pushRootScope(e.length,!1),i=t.getEvalScope()
 H.bindCallerScope(t.getCallerScope()),H.bindEvalScope(i),H.bindSelf(t.getSelf())
 let V=Object.create(t.getPartialMap())
-for(let C=0;C<o.length;C++){let e=o[C],H=L[e-1],i=t.getSymbol(e)
+for(let C=0;C<L.length;C++){let e=L[C],H=o[e-1],i=t.getSymbol(e)
 V[H]=i}if(i)for(let C=0;C<e.length;C++){let t=C+1,V=i[e[C]]
 void 0!==V&&H.bind(t,V)}H.bindPartialMap(V),C.pushFrame(),C.call(l)}})
 class dt{constructor(C){this.tag=C.tag,this.artifacts=C}value(){return!this.artifacts.isEmpty()}}ke.add(66,C=>{let e=C.stack,t=e.pop(),H=e.pop(),i=C.env.iterableFor(t,H.value()),V=new E(i)
@@ -578,8 +2002,8 @@ if(e?(t=e.namespaceURI===yt||"svg"===C,H=bt[e.tagName]):(t="svg"===C,H=!1),t&&!H
 return this.document.createElementNS(yt,C)}return this.document.createElement(C)}insertBefore(C,e,t){C.insertBefore(e,t)}insertHTMLBefore(C,e,t){return function(C,e,t,H){let i,V=e,n=t,r=n?n.previousSibling:V.lastChild
 if(null===H||""===H)return new ut(V,null,null)
 null===n?(V.insertAdjacentHTML("beforeend",H),i=V.lastChild):n instanceof HTMLElement?(n.insertAdjacentHTML("beforebegin",H),i=n.previousSibling):(V.insertBefore(C,n),C.insertAdjacentHTML("beforebegin",H),i=C.previousSibling,V.removeChild(C))
-let L=r?r.nextSibling:V.firstChild
-return new ut(V,L,i)}(this.uselessElement,C,e,t)}createTextNode(C){return this.document.createTextNode(C)}createComment(C){return this.document.createComment(C)}}var Ot;(function(C){class e extends St{createElementNS(C,e){return this.document.createElementNS(C,e)}setAttribute(C,e,t,H=null){H?C.setAttributeNS(H,e,t):C.setAttribute(e,t)}}C.TreeConstruction=e
+let o=r?r.nextSibling:V.firstChild
+return new ut(V,o,i)}(this.uselessElement,C,e,t)}createTextNode(C){return this.document.createTextNode(C)}createComment(C){return this.document.createComment(C)}}var Ot;(function(C){class e extends St{createElementNS(C,e){return this.document.createElementNS(C,e)}setAttribute(C,e,t,H=null){H?C.setAttributeNS(H,e,t):C.setAttribute(e,t)}}C.TreeConstruction=e
 let t=e
 t=vt(wt,t),t=Zt(wt,t,yt),C.DOMTreeConstruction=t})(Ot||(Ot={}))
 let xt=class extends St{constructor(C){super(C),this.document=C,this.namespace=null}setAttribute(C,e,t){C.setAttribute(e,t)}removeAttribute(C,e){C.removeAttribute(e)}insertAfter(C,e,t){this.insertBefore(C,e,t.nextSibling)}}
@@ -631,15 +2055,15 @@ return new eH(e,null,null,null)}init({self:C}){return this.slots[0]=C,this}getSe
 return e===Be?null:e}getEvalScope(){return this.evalScope}getPartialMap(){return this.partialMap}bind(C,e){this.set(C,e)}bindSelf(C){this.set(0,C)}bindSymbol(C,e){this.set(C,e)}bindBlock(C,e){this.set(C,e)}bindEvalScope(C){this.evalScope=C}bindPartialMap(C){this.partialMap=C}bindCallerScope(C){this.callerScope=C}getCallerScope(){return this.callerScope}child(){return new eH(this.slots.slice(),this.callerScope,this.evalScope,this.partialMap)}get(C){if(C>=this.slots.length)throw new RangeError(`BUG: cannot get $${C} from scope; length=${this.slots.length}`)
 return this.slots[C]}set(C,e){if(C>=this.slots.length)throw new RangeError(`BUG: cannot get $${C} from scope; length=${this.slots.length}`)
 this.slots[C]=e}}class tH{constructor(){this.scheduledInstallManagers=[],this.scheduledInstallModifiers=[],this.scheduledUpdateModifierManagers=[],this.scheduledUpdateModifiers=[],this.createdComponents=[],this.createdManagers=[],this.updatedComponents=[],this.updatedManagers=[],this.destructors=[]}didCreate(C,e){this.createdComponents.push(C),this.createdManagers.push(e)}didUpdate(C,e){this.updatedComponents.push(C),this.updatedManagers.push(e)}scheduleInstallModifier(C,e){this.scheduledInstallManagers.push(e),this.scheduledInstallModifiers.push(C)}scheduleUpdateModifier(C,e){this.scheduledUpdateModifierManagers.push(e),this.scheduledUpdateModifiers.push(C)}didDestroy(C){this.destructors.push(C)}commit(){let C=this.createdComponents,e=this.createdManagers
-for(let o=0;o<C.length;o++){let t=C[o]
-e[o].didCreate(t)}let t=this.updatedComponents,H=this.updatedManagers
-for(let o=0;o<t.length;o++){let C=t[o]
-H[o].didUpdate(C)}let i=this.destructors
-for(let o=0;o<i.length;o++)i[o].destroy()
+for(let L=0;L<C.length;L++){let t=C[L]
+e[L].didCreate(t)}let t=this.updatedComponents,H=this.updatedManagers
+for(let L=0;L<t.length;L++){let C=t[L]
+H[L].didUpdate(C)}let i=this.destructors
+for(let L=0;L<i.length;L++)i[L].destroy()
 let V=this.scheduledInstallManagers,n=this.scheduledInstallModifiers
-for(let o=0;o<V.length;o++){let C=V[o],e=n[o]
-C.install(e)}let r=this.scheduledUpdateModifierManagers,L=this.scheduledUpdateModifiers
-for(let o=0;o<r.length;o++){let C=r[o],e=L[o]
+for(let L=0;L<V.length;L++){let C=V[L],e=n[L]
+C.install(e)}let r=this.scheduledUpdateModifierManagers,o=this.scheduledUpdateModifiers
+for(let L=0;L<r.length;L++){let C=r[L],e=o[L]
 C.update(e)}}}class HH{constructor({appendOperations:C,updateOperations:e}){this._transaction=null,this.appendOperations=C,this.updateOperations=e}toConditionalReference(C){return new Pe(C)}getAppendOperations(){return this.appendOperations}getDOM(){return this.updateOperations}begin(){this._transaction=new tH}get transaction(){return this._transaction}didCreate(C,e){this.transaction.didCreate(C,e)}didUpdate(C,e){this.transaction.didUpdate(C,e)}scheduleInstallModifier(C,e){this.transaction.scheduleInstallModifier(C,e)}scheduleUpdateModifier(C,e){this.transaction.scheduleUpdateModifier(C,e)}didDestroy(C){this.transaction.didDestroy(C)}commit(){let C=this.transaction
 this._transaction=null,C.commit()}attributeFor(C,e,t,H=null){return Ut(C,e,H)}}class iH{constructor(C,e,t,H,i=-1,V=-1){this.stack=C,this.heap=e,this.program=t,this.externs=H,this.pc=i,this.ra=V,this.currentOpSize=0}pushFrame(){this.stack.pushSmi(this.ra),this.stack.pushSmi(this.stack.fp),this.stack.fp=this.stack.sp-1}popFrame(){this.stack.sp=this.stack.fp-1,this.ra=this.stack.getSmi(0),this.stack.fp=this.stack.getSmi(1)}pushSmallFrame(){this.stack.pushSmi(this.ra)}popSmallFrame(){this.ra=this.stack.popSmi()}goto(C){let e=this.pc+C-this.currentOpSize
 this.pc=e}call(C){this.ra=this.pc,this.pc=this.heap.getaddr(C)}returnTo(C){let e=this.pc+C-this.currentOpSize
@@ -656,11 +2080,11 @@ case 52:return this.goto(C.op1)
 case 24:return this.return()
 case 25:return this.returnTo(C.op1)}}evaluateSyscall(C,e){ke.evaluate(e,C,C.type)}}class VH{constructor(C){this.node=C}firstNode(){return this.node}}class nH{constructor(C){this.node=C}lastNode(){return this.node}}class rH{constructor(C,e,t){this.constructing=null,this.operations=null,this.cursorStack=new fe,this.blockStack=new fe,this.pushElement(e,t),this.env=C,this.dom=C.getAppendOperations(),this.updateOperations=C.getDOM()}static forInitialRender(C,e){let t=new this(C,e.element,e.nextSibling)
 return t.pushSimpleBlock(),t}static resume(C,e,t){let H=new this(C,e.parentElement(),t)
-return H.pushSimpleBlock(),H.pushBlockTracker(e),H}get element(){return this.cursorStack.current.element}get nextSibling(){return this.cursorStack.current.nextSibling}expectConstructing(C){return this.constructing}block(){return this.blockStack.current}popElement(){this.cursorStack.pop(),this.cursorStack.current}pushSimpleBlock(){return this.pushBlockTracker(new LH(this.element))}pushUpdatableBlock(){return this.pushBlockTracker(new sH(this.element))}pushBlockList(C){return this.pushBlockTracker(new aH(this.element,C))}pushBlockTracker(C,e=!1){let t=this.blockStack.current
+return H.pushSimpleBlock(),H.pushBlockTracker(e),H}get element(){return this.cursorStack.current.element}get nextSibling(){return this.cursorStack.current.nextSibling}expectConstructing(C){return this.constructing}block(){return this.blockStack.current}popElement(){this.cursorStack.pop(),this.cursorStack.current}pushSimpleBlock(){return this.pushBlockTracker(new oH(this.element))}pushUpdatableBlock(){return this.pushBlockTracker(new sH(this.element))}pushBlockList(C){return this.pushBlockTracker(new aH(this.element,C))}pushBlockTracker(C,e=!1){let t=this.blockStack.current
 return null!==t&&(t.newDestroyable(C),e||t.didAppendBounds(C)),this.__openBlock(),this.blockStack.push(C),C}popBlock(){return this.block().finalize(this),this.__closeBlock(),this.blockStack.pop()}__openBlock(){}__closeBlock(){}openElement(C){let e=this.__openElement(C)
 return this.constructing=e,e}__openElement(C){return this.dom.createElement(C,this.element)}flushElement(){let C=this.element,e=this.constructing
 this.__flushElement(C,e),this.constructing=null,this.operations=null,this.pushElement(e,null),this.didOpenElement(e)}__flushElement(C,e){this.dom.insertBefore(C,e,this.nextSibling)}closeElement(){this.willCloseElement(),this.popElement()}pushRemoteElement(C,e,t=null){this.__pushRemoteElement(C,e,t)}__pushRemoteElement(C,e,t){this.pushElement(C,t)
-let H=new oH(C)
+let H=new LH(C)
 this.pushBlockTracker(H,!0)}popRemoteElement(){this.popBlock(),this.popElement()}pushElement(C,e){this.cursorStack.push(new ct(C,e))}didAddDestroyable(C){this.block().newDestroyable(C)}didAppendBounds(C){return this.block().didAppendBounds(C),C}didAppendNode(C){return this.block().didAppendNode(C),C}didOpenElement(C){return this.block().openElement(C),C}willCloseElement(){this.block().closeElement()}appendText(C){return this.didAppendNode(this.__appendText(C))}__appendText(C){let e=this.dom,t=this.element,H=this.nextSibling,i=e.createTextNode(C)
 return e.insertBefore(t,i,H),i}__appendNode(C){return this.dom.insertBefore(this.element,C,this.nextSibling),C}__appendFragment(C){let e=C.firstChild
 if(e){let t=function(C,e,t){return new ut(C,e,t)}(this.element,e,C.lastChild)
@@ -670,8 +2094,8 @@ return this.didAppendNode(e),e}appendDynamicFragment(C){let e=this.__appendFragm
 this.didAppendBounds(e)}appendDynamicNode(C){let e=this.__appendNode(C),t=pt(this.element,e)
 this.didAppendBounds(t)}trustedContent(C){return this.__appendHTML(C)}untrustedContent(C){return this.__appendText(C)}appendComment(C){return this.didAppendNode(this.__appendComment(C))}__appendComment(C){let e=this.dom,t=this.element,H=this.nextSibling,i=e.createComment(C)
 return e.insertBefore(t,i,H),i}__setAttribute(C,e,t){this.dom.setAttribute(this.constructing,C,e,t)}__setProperty(C,e){this.constructing[C]=e}setStaticAttribute(C,e,t){this.__setAttribute(C,e,t)}setDynamicAttribute(C,e,t,H){let i=this.constructing,V=this.env.attributeFor(i,C,t,H)
-return V.set(this,e,this.env),V}}class LH{constructor(C){this.parent=C,this.first=null,this.last=null,this.destroyables=null,this.nesting=0}destroy(){let C=this.destroyables
-if(C&&C.length)for(let e=0;e<C.length;e++)C[e].destroy()}parentElement(){return this.parent}firstNode(){return this.first&&this.first.firstNode()}lastNode(){return this.last&&this.last.lastNode()}openElement(C){this.didAppendNode(C),this.nesting++}closeElement(){this.nesting--}didAppendNode(C){0===this.nesting&&(this.first||(this.first=new VH(C)),this.last=new nH(C))}didAppendBounds(C){0===this.nesting&&(this.first||(this.first=C),this.last=C)}newDestroyable(C){this.destroyables=this.destroyables||[],this.destroyables.push(C)}finalize(C){this.first||C.appendComment("")}}class oH extends LH{destroy(){super.destroy(),ft(this)}}class sH extends LH{reset(C){let e=this.destroyables
+return V.set(this,e,this.env),V}}class oH{constructor(C){this.parent=C,this.first=null,this.last=null,this.destroyables=null,this.nesting=0}destroy(){let C=this.destroyables
+if(C&&C.length)for(let e=0;e<C.length;e++)C[e].destroy()}parentElement(){return this.parent}firstNode(){return this.first&&this.first.firstNode()}lastNode(){return this.last&&this.last.lastNode()}openElement(C){this.didAppendNode(C),this.nesting++}closeElement(){this.nesting--}didAppendNode(C){0===this.nesting&&(this.first||(this.first=new VH(C)),this.last=new nH(C))}didAppendBounds(C){0===this.nesting&&(this.first||(this.first=C),this.last=C)}newDestroyable(C){this.destroyables=this.destroyables||[],this.destroyables.push(C)}finalize(C){this.first||C.appendComment("")}}class LH extends oH{destroy(){super.destroy(),ft(this)}}class sH extends oH{reset(C){let e=this.destroyables
 if(e&&e.length)for(let H=0;H<e.length;H++)C.didDestroy(e[H])
 let t=ft(this)
 return this.first=null,this.last=null,this.destroyables=null,this.nesting=0,t}}class aH{constructor(C,e){this.parent=C,this.boundList=e,this.parent=C,this.boundList=e}destroy(){this.boundList.forEachNode(C=>C.destroy())}parentElement(){return this.parent}firstNode(){let C=this.boundList.head()
@@ -710,11 +2134,11 @@ default:throw le()}}class pH{constructor(C,e,{alwaysRevalidate:t=!1}){this.frame
 for(this.try(C,e);!t.isEmpty();){let C=this.frame.nextStatement()
 null!==C?C.evaluate(this):this.frameStack.pop()}}get frame(){return this.frameStack.current}goto(C){this.frame.goto(C)}try(C,e){this.frameStack.push(new vH(C,e))}throw(){this.frame.handleException(),this.frameStack.pop()}}class mH extends Se{constructor(C,e,t,H,i){super(),this.start=C,this.state=e,this.runtime=t,this.type="block",this.next=null,this.prev=null,this.children=i,this.bounds=H}parentElement(){return this.bounds.parentElement()}firstNode(){return this.bounds.firstNode()}lastNode(){return this.bounds.lastNode()}evaluate(C){C.try(this.children,null)}destroy(){this.bounds.destroy()}didDestroy(){this.runtime.env.didDestroy(this.bounds)}}class fH extends mH{constructor(C,e,t,H,i){super(C,e,t,H,i),this.type="try",this.tag=this._tag=y.create(s)}didInitializeChildren(){this._tag.inner.update(p(this.children))}evaluate(C){C.try(this.children,this)}handleException(){let C=this.state,e=this.bounds,t=this.children,H=this.start,i=this.prev,V=this.next,n=this.runtime
 t.clear()
-let r=rH.resume(n.env,e,e.reset(n.env)),L=EH.resume(C,n,r),o=new ge
-L.execute(H,e=>{e.stack=uH.restore(C.stack),e.updatingOpcodeStack.push(o),e.updateWith(this),e.updatingOpcodeStack.push(t)}),this.prev=i,this.next=V}}class gH{constructor(C,e){this.opcode=C,this.marker=e,this.didInsert=!1,this.didDelete=!1,this.map=C.map,this.updating=C.children}insert(C,e,t,H){let i=this.map,V=this.opcode,n=this.updating,r=null,L=null
-r=H?(L=i[H]).bounds.firstNode():this.marker
-let o=V.vmForInsertion(r),s=null,a=V.start
-o.execute(a,H=>{i[C]=s=H.iterate(t,e),H.updatingOpcodeStack.push(new ge),H.updateWith(s),H.updatingOpcodeStack.push(s.children)}),n.insertBefore(s,L),this.didInsert=!0}retain(C,e,t){}move(C,e,t,H){let i=this.map,V=this.updating,n=i[C],r=i[H]||null
+let r=rH.resume(n.env,e,e.reset(n.env)),o=EH.resume(C,n,r),L=new ge
+o.execute(H,e=>{e.stack=uH.restore(C.stack),e.updatingOpcodeStack.push(L),e.updateWith(this),e.updatingOpcodeStack.push(t)}),this.prev=i,this.next=V}}class gH{constructor(C,e){this.opcode=C,this.marker=e,this.didInsert=!1,this.didDelete=!1,this.map=C.map,this.updating=C.children}insert(C,e,t,H){let i=this.map,V=this.opcode,n=this.updating,r=null,o=null
+r=H?(o=i[H]).bounds.firstNode():this.marker
+let L=V.vmForInsertion(r),s=null,a=V.start
+L.execute(a,H=>{i[C]=s=H.iterate(t,e),H.updatingOpcodeStack.push(new ge),H.updateWith(s),H.updatingOpcodeStack.push(s.children)}),n.insertBefore(s,o),this.didInsert=!0}retain(C,e,t){}move(C,e,t,H){let i=this.map,V=this.updating,n=i[C],r=i[H]||null
 mt(n,H?r.firstNode():this.marker),V.remove(n),V.insertBefore(n,r)}delete(C){let e=this.map,t=e[C]
 t.didDestroy(),ft(t),this.updating.remove(t),delete e[C],this.didDelete=!0}done(){this.opcode.didInitializeChildren(this.didInsert||this.didDelete)}}class ZH extends mH{constructor(C,e,t,H,V,n){super(C,e,t,H,V),this.type="list-block",this.map=me(),this.lastIterated=i,this.artifacts=n
 let r=this._tag=y.create(s)
@@ -729,10 +2153,10 @@ new pH(e,t,{alwaysRevalidate:C}).execute(H,this)}parentElement(){return this.bou
 return this.named.empty(C,e),this.positional.empty(C,e),this.blocks.empty(C,e),this}setup(C,e,t,H,i){this.stack=C
 let V=this.named,n=e.length,r=C.sp-n+1
 V.setup(C,r,n,e,i)
-let L=r-H
-this.positional.setup(C,L,H)
-let o=this.blocks,s=t.length,a=L-3*s
-o.setup(C,a,s,t)}get tag(){return h([this.positional,this.named])}get base(){return this.blocks.base}get length(){return this.positional.length+this.named.length+3*this.blocks.length}at(C){return this.positional.at(C)}realloc(C){let e=this.stack
+let o=r-H
+this.positional.setup(C,o,H)
+let L=this.blocks,s=t.length,a=o-3*s
+L.setup(C,a,s,t)}get tag(){return h([this.positional,this.named])}get base(){return this.blocks.base}get length(){return this.positional.length+this.named.length+3*this.blocks.length}at(C){return this.positional.at(C)}realloc(C){let e=this.stack
 if(C>0&&null!==e){let t=this.positional,H=this.named,i=t.base+C
 for(let C=t.length+H.length-1;C>=0;C--)e.copy(C+t.base,C+i)
 t.base+=C,H.base+=C,e.sp+=C}}capture(){let C=0===this.positional.length?BH:this.positional.capture(),e=0===this.named.length?TH:this.named.capture()
@@ -768,8 +2192,8 @@ if(-1===H.indexOf(C))return null
 let V=t.get(3*i,e),n=t.get(3*i+1,e),r=t.get(3*i+2,e)
 return null===r?null:[r,n,V]}capture(){return new AH(this.names,this.values)}}class AH{constructor(C,e){this.names=C,this.values=e,this.length=C.length}has(C){return-1!==this.names.indexOf(C)}get(C){let e=this.names.indexOf(C)
 return-1===e?null:[this.values[3*e+2],this.values[3*e+1],this.values[3*e]]}}const TH=new OH(s,ve,ve),BH=new wH(s,ve)
-class EH{constructor(C,e,t,H){this.runtime=C,this.elementStack=H,this.dynamicScopeStack=new fe,this.scopeStack=new fe,this.updatingOpcodeStack=new fe,this.cacheGroups=new fe,this.listBlockStack=new fe,this.s0=null,this.s1=null,this.t0=null,this.t1=null,this.v0=null,this.heap=this.program.heap,this.constants=this.program.constants,this.elementStack=H,this.scopeStack.push(e),this.dynamicScopeStack.push(t),this.args=new bH,this.inner=new iH(uH.empty(),this.heap,C.program,{debugBefore:C=>ke.debugBefore(this,C,C.type),debugAfter:(C,e)=>{ke.debugAfter(this,C,C.type,e)}})}get stack(){return this.inner.stack}set stack(C){this.inner.stack=C}set currentOpSize(C){this.inner.currentOpSize=C}get currentOpSize(){return this.inner.currentOpSize}get pc(){return this.inner.pc}set pc(C){this.inner.pc=C}get ra(){return this.inner.ra}set ra(C){this.inner.ra=C}get fp(){return this.stack.fp}set fp(C){this.stack.fp=C}get sp(){return this.stack.sp}set sp(C){this.stack.sp=C}fetch(C){this.stack.push(this[Oe[C]])}load(C){this[Oe[C]]=this.stack.pop()}fetchValue(C){return this[Oe[C]]}loadValue(C,e){this[Oe[C]]=e}pushFrame(){this.inner.pushFrame()}popFrame(){this.inner.popFrame()}goto(C){this.inner.goto(C)}call(C){this.inner.call(C)}returnTo(C){this.inner.returnTo(C)}return(){this.inner.return()}static initial(C,e,t,H,i,V){let n=C.heap.scopesizeof(V),r=eH.root(t,n),L=new EH({program:C,env:e},r,H,i)
-return L.pc=L.heap.getaddr(V),L.updatingOpcodeStack.push(new ge),L}static empty(C,e,t){let H={get:()=>Be,set:()=>Be,child:()=>H},i=new EH({program:C,env:e},eH.root(Be,0),H,t)
+class EH{constructor(C,e,t,H){this.runtime=C,this.elementStack=H,this.dynamicScopeStack=new fe,this.scopeStack=new fe,this.updatingOpcodeStack=new fe,this.cacheGroups=new fe,this.listBlockStack=new fe,this.s0=null,this.s1=null,this.t0=null,this.t1=null,this.v0=null,this.heap=this.program.heap,this.constants=this.program.constants,this.elementStack=H,this.scopeStack.push(e),this.dynamicScopeStack.push(t),this.args=new bH,this.inner=new iH(uH.empty(),this.heap,C.program,{debugBefore:C=>ke.debugBefore(this,C,C.type),debugAfter:(C,e)=>{ke.debugAfter(this,C,C.type,e)}})}get stack(){return this.inner.stack}set stack(C){this.inner.stack=C}set currentOpSize(C){this.inner.currentOpSize=C}get currentOpSize(){return this.inner.currentOpSize}get pc(){return this.inner.pc}set pc(C){this.inner.pc=C}get ra(){return this.inner.ra}set ra(C){this.inner.ra=C}get fp(){return this.stack.fp}set fp(C){this.stack.fp=C}get sp(){return this.stack.sp}set sp(C){this.stack.sp=C}fetch(C){this.stack.push(this[Oe[C]])}load(C){this[Oe[C]]=this.stack.pop()}fetchValue(C){return this[Oe[C]]}loadValue(C,e){this[Oe[C]]=e}pushFrame(){this.inner.pushFrame()}popFrame(){this.inner.popFrame()}goto(C){this.inner.goto(C)}call(C){this.inner.call(C)}returnTo(C){this.inner.returnTo(C)}return(){this.inner.return()}static initial(C,e,t,H,i,V){let n=C.heap.scopesizeof(V),r=eH.root(t,n),o=new EH({program:C,env:e},r,H,i)
+return o.pc=o.heap.getaddr(V),o.updatingOpcodeStack.push(new ge),o}static empty(C,e,t){let H={get:()=>Be,set:()=>Be,child:()=>H},i=new EH({program:C,env:e},eH.root(Be,0),H,t)
 return i.updatingOpcodeStack.push(new ge),i}static resume({scope:C,dynamicScope:e},t,H){return new EH(t,C,e,H)}get program(){return this.runtime.program}get env(){return this.runtime.env}capture(C){return{dynamicScope:this.dynamicScope(),scope:this.scope(),stack:this.stack.capture(C)}}beginCacheGroup(){this.cacheGroups.push(this.updating().tail())}commitCacheGroup(){let C=new Ct("END"),e=this.updating(),t=this.cacheGroups.pop(),H=t?e.nextNode(t):e.head(),i=e.tail(),V=p(new Ze(H,i)),n=new Xe(V,C)
 e.insertBefore(n,H),e.append(new Qe(n)),e.append(C)}enter(C){let e=new ge,t=this.capture(C),H=this.elements().pushUpdatableBlock(),i=new fH(this.heap.gethandle(this.pc),t,this.runtime,H,e)
 this.didEnter(i)}iterate(C,e){let t=this.stack
@@ -802,11 +2226,11 @@ case"@primitive":t=(C=>String(C))
 break
 default:t=(C=>C[e])}return new FH(C,t)}getOwner(){return ae(this)}setOwner(C,e){Me(C,e)}}const _H="object"==typeof document?document:null
 class zH{constructor(C){this._roots=[],this._rootsIndex=0,this._initializers=[],this._initialized=!1,this._rendering=!1,this._rendered=!1,this._scheduled=!1,this._notifiers=[],this.rootName=C.rootName,this.resolver=C.resolver,de(C.loader,"Must provide a Loader for preparing templates and other metadata required for a Glimmer Application."),de(C.renderer,"Must provide a Renderer to render the templates produced by the Loader."),de(C.builder,"Must provide a Builder that is responsible to building DOM."),this.document=C.document||_H,this.loader=C.loader,this.renderer=C.renderer,this.builder=C.builder}renderComponent(C,e,t=null){let H=this._roots,i=this._self
-H.push({id:this._rootsIndex++,component:C,parent:e,nextSibling:t}),i&&(i.update({roots:H}),this.scheduleRerender())}async boot(){this.initialize(),this.env=this.lookup(`environment:/${this.rootName}/main/main`),await this._render()}scheduleRerender(){!this._scheduled&&this._rendered&&(this._rendering=!0,this._scheduled=!0,setTimeout(async()=>{this._scheduled=!1,await this._rerender(),this._rendering=!1},0))}initialize(){this.initRegistry(),this.initContainer()}registerInitializer(C){this._initializers.push(C)}initRegistry(){let C=this._registry=new oe,e=new ye(this._registry,this.resolver)
+H.push({id:this._rootsIndex++,component:C,parent:e,nextSibling:t}),i&&(i.update({roots:H}),this.scheduleRerender())}async boot(){this.initialize(),this.env=this.lookup(`environment:/${this.rootName}/main/main`),await this._render()}scheduleRerender(){!this._scheduled&&this._rendered&&(this._rendering=!0,this._scheduled=!0,setTimeout(async()=>{this._scheduled=!1,await this._rerender(),this._rendering=!1},0))}initialize(){this.initRegistry(),this.initContainer()}registerInitializer(C){this._initializers.push(C)}initRegistry(){let C=this._registry=new Le,e=new ye(this._registry,this.resolver)
 C.register(`environment:/${this.rootName}/main/main`,IH),C.registerOption("helper","instantiate",!1),C.registerOption("template","instantiate",!1),C.register(`document:/${this.rootName}/main/main`,this.document),C.registerOption("document","instantiate",!1),C.registerInjection("environment","document",`document:/${this.rootName}/main/main`),C.registerInjection("component-manager","env",`environment:/${this.rootName}/main/main`)
 let t=this._initializers
 for(let H=0;H<t.length;H++)t[H].initialize(e)
-this._initialized=!0}initContainer(){this._container=new Le(this._registry,this.resolver),this._container.defaultInjections=(C=>{let e={}
+this._initialized=!0}initContainer(){this._container=new oe(this._registry,this.resolver),this._container.defaultInjections=(C=>{let e={}
 return Me(e,this),e})}async _render(){let C=this.env,e=this._self=new te({roots:this._roots}),t=new be,H=this.builder.getBuilder(C),i=await this.loader.getTemplateIterator(this,C,H,t,e)
 try{C.begin(),await this.renderer.render(i),C.commit(),this._didRender()}catch(V){this._didError(V)}}async _rerender(){let C=this.env
 try{C.begin(),await this.renderer.rerender(),C.commit(),this._didRender()}catch(e){this._didError(e)}}_didRender(){this._rendered=!0
@@ -859,25 +2283,25 @@ if(null===n)throw new Error(`Compile Error ${H} is not a modifier: Helpers may n
 e.modifier(n,i,V)}),C.add(qH.StaticAttr,(C,e)=>{let t=C[1],H=C[2],i=C[3]
 e.staticAttr(t,i,H)}),C.add(qH.DynamicAttr,(C,e)=>{QH(C,!1,e)}),C.add(qH.TrustingAttr,(C,e)=>{QH(C,!0,e)}),C.add(qH.OpenElement,(C,e)=>{e.openPrimitiveElement(C[1])}),C.add(qH.OpenSplattedElement,(C,e)=>{e.setComponentAttrs(!0),e.putComponentOperations(),e.openPrimitiveElement(C[1])}),C.add(qH.Component,(C,e)=>{let t=C[1],H=C[2],i=C[3],V=C[4],n=e.referrer
 var r=e.compiler.resolveLayoutForTag(t,n)
-let L=r.handle,o=r.capabilities,s=r.compilable
-if(null===L||null===o)throw new Error(`Compile Error: Cannot find component ${t}`)
+let o=r.handle,L=r.capabilities,s=r.compilable
+if(null===o||null===L)throw new Error(`Compile Error: Cannot find component ${t}`)
 {let C=[[qH.ClientSideStatement,$H.SetComponentAttrs,!0],...H,[qH.ClientSideStatement,$H.SetComponentAttrs,!1]],t=e.inlineBlock({statements:C,parameters:ve}),n=e.template(V)
-s?(e.pushComponentDefinition(L),e.invokeStaticComponent(o,s,t,null,i,!1,n&&n)):(e.pushComponentDefinition(L),e.invokeComponent(o,t,null,i,!1,n&&n))}}),C.add(qH.Partial,(C,e)=>{let t=C[1],H=C[2],i=e.referrer
+s?(e.pushComponentDefinition(o),e.invokeStaticComponent(L,s,t,null,i,!1,n&&n)):(e.pushComponentDefinition(o),e.invokeComponent(L,t,null,i,!1,n&&n))}}),C.add(qH.Partial,(C,e)=>{let t=C[1],H=C[2],i=e.referrer
 e.replayableIf({args:()=>(e.expr(t),e.dup(),2),ifTrue(){e.invokePartial(i,e.evalSymbols(),H),e.popScope(),e.popFrame()}})}),C.add(qH.Yield,(C,e)=>{let t=C[1],H=C[2]
 e.yield(t,H)}),C.add(qH.AttrSplat,(C,e)=>{let t=C[1]
 e.yield(t,[]),e.setComponentAttrs(!1)}),C.add(qH.Debugger,(C,e)=>{let t=C[1]
 e.debugger(e.evalSymbols(),t)}),C.add(qH.ClientSideStatement,(C,t)=>{e.compile(C,t)}),C.add(qH.Append,(C,e)=>{let t=C[1],H=C[2]
-!0!==(e.compileInline(C)||t)&&e.guardedAppend(t,H)}),C.add(qH.Block,(C,e)=>{let t=C[1],H=C[2],i=C[3],V=C[4],n=C[5],r=e.template(V),L=e.template(n),o=r&&r,s=L&&L
-e.compileBlock(t,H,i,o,s)})
+!0!==(e.compileInline(C)||t)&&e.guardedAppend(t,H)}),C.add(qH.Block,(C,e)=>{let t=C[1],H=C[2],i=C[3],V=C[4],n=C[5],r=e.template(V),o=e.template(n),L=r&&r,s=o&&o
+e.compileBlock(t,H,i,L,s)})
 const e=new JH(1)
 return e.add($H.OpenComponentElement,(C,e)=>{e.putComponentOperations(),e.openPrimitiveElement(C[2])}),e.add($H.DidCreateElement,(C,e)=>{e.didCreateElement(Oe.s0)}),e.add($H.SetComponentAttrs,(C,e)=>{e.setComponentAttrs(C[2])}),e.add($H.Debugger,()=>{}),e.add($H.DidRenderLayout,(C,e)=>{e.didRenderLayout(Oe.s0)}),C}()
 for(let i=0;i<C.length;i++)H.compile(C[i],e)
 return e.commit()}class ri{constructor(C,e,t){this.main=C,this.trustingGuardedAppend=e,this.cautiousGuardedAppend=t}static compile(C){let e=this.std(C,C=>C.main()),t=this.std(C,C=>C.stdAppend(!0)),H=this.std(C,C=>C.stdAppend(!1))
-return new ri(e,t,H)}static std(C,e){return li.build(C,e)}getAppend(C){return C?this.trustingGuardedAppend:this.cautiousGuardedAppend}}class Li{constructor(C,e,t){this.macros=C,this.program=e,this.resolver=t,this.initialize()}initialize(){this.stdLib=ri.compile(this)}get constants(){return this.program.constants}compileInline(C,e){return this.macros.inlines.compile(C,e)}compileBlock(C,e,t,H,i,V){this.macros.blocks.compile(C,e,t,H,i,V)}add(C,e){return ni(C,this.builderFor(e))}commit(C,e){let t=this.program.heap,H=t.malloc()
+return new ri(e,t,H)}static std(C,e){return li.build(C,e)}getAppend(C){return C?this.trustingGuardedAppend:this.cautiousGuardedAppend}}class oi{constructor(C,e,t){this.macros=C,this.program=e,this.resolver=t,this.initialize()}initialize(){this.stdLib=ri.compile(this)}get constants(){return this.program.constants}compileInline(C,e){return this.macros.inlines.compile(C,e)}compileBlock(C,e,t,H,i,V){this.macros.blocks.compile(C,e,t,H,i,V)}add(C,e){return ni(C,this.builderFor(e))}commit(C,e){let t=this.program.heap,H=t.malloc()
 for(let i=0;i<e.length;i++){let C=e[i]
 "function"==typeof C?t.pushPlaceholder(C):t.push(C)}return t.finishMalloc(H,C),H}resolveLayoutForTag(C,e){let t=this.resolver.lookupComponentDefinition(C,e)
 return null===t?{handle:null,capabilities:null,compilable:null}:this.resolveLayoutForHandle(t)}resolveLayoutForHandle(C){let e=this.resolver,t=e.getCapabilities(C),H=null
-return t.dynamicLayout||(H=e.getLayout(C)),{handle:C,capabilities:t,compilable:H}}resolveModifier(C,e){return this.resolver.lookupModifier(C,e)}resolveHelper(C,e){return this.resolver.lookupHelper(C,e)}}class oi{constructor(C,e){this.compiler=C,this.layout=e,this.compiled=null
+return t.dynamicLayout||(H=e.getLayout(C)),{handle:C,capabilities:t,compilable:H}}resolveModifier(C,e){return this.resolver.lookupModifier(C,e)}resolveHelper(C,e){return this.resolver.lookupHelper(C,e)}}class Li{constructor(C,e){this.compiler=C,this.layout=e,this.compiled=null
 let t=e.block
 this.symbolTable={hasEval:t.hasEval,symbols:t.symbols.concat([KH])}}compile(){if(null!==this.compiled)return this.compiled
 let C=this.compiler,e=this.layout,t=C.builderFor(e)
@@ -885,8 +2309,8 @@ t.startLabels(),t.fetch(Oe.s1),t.getComponentTagName(Oe.s0),t.primitiveReference
 let H=t.commit()
 return this.compiled=H}}class si{constructor(C){this.builder=C}static(C,e){let t=e[0],H=e[1],i=e[2],V=e[3],n=this.builder
 if(null!==C){var r=n.compiler.resolveLayoutForHandle(C)
-let e=r.capabilities,L=r.compilable
-L?(n.pushComponentDefinition(C),n.invokeStaticComponent(e,L,null,t,H,!1,i,V)):(n.pushComponentDefinition(C),n.invokeComponent(e,null,t,H,!1,i,V))}}}class ai{constructor(C){this.buffer=C,this.typePos=0,this.size=0}encode(C,e){if(C>255)throw new Error(`Opcode type over 8-bits. Got ${C}.`)
+let e=r.capabilities,o=r.compilable
+o?(n.pushComponentDefinition(C),n.invokeStaticComponent(e,o,null,t,H,!1,i,V)):(n.pushComponentDefinition(C),n.invokeComponent(e,null,t,H,!1,i,V))}}}class ai{constructor(C){this.buffer=C,this.typePos=0,this.size=0}encode(C,e){if(C>255)throw new Error(`Opcode type over 8-bits. Got ${C}.`)
 this.buffer.push(C|e|arguments.length-2<<8),this.typePos=this.buffer.length-1
 for(let t=2;t<arguments.length;t++){let C=arguments[t]
 if("number"==typeof C&&C>65535)throw new Error(`Operand over 16-bits. Got ${C}.`)
@@ -924,15 +2348,15 @@ for(let H=0;H<t.length;H++)e.getProperty(t[H])}),C.add(qH.Undefined,(C,e)=>e.pus
 this.push(76,t,e)}pushYieldableBlock(C){this.pushSymbolTable(C&&C.symbolTable),this.pushBlockScope(),this.pushBlock(C)}curryComponent(C,e,t,H){let i=this.containingLayout.referrer
 this.pushFrame(),this.compileArgs(e,t,null,H),this.push(80),this.expr(C),this.push(71,this.constants.serializable(i)),this.popFrame(),this.fetch(Oe.v0)}pushSymbolTable(C){if(C){let e=this.constants.serializable(C)
 this.push(48,e)}else this.primitive(null)}invokeComponent(C,e,t,H,i,V,n=null,r){this.fetch(Oe.s0),this.dup(Oe.sp,1),this.load(Oe.s0),this.pushFrame()
-let L=!!(V||n||e),o=!0===C||C.prepareArgs||!(!H||0===H[0].length),s={main:V,else:n,attrs:e}
-this.compileArgs(t,H,s,i),this.prepareArgs(Oe.s0),this.invokePreparedComponent(null!==V,L,o,()=>{r?(this.pushSymbolTable(r.symbolTable),this.pushLayout(r),this.resolveLayout()):this.getComponentLayout(Oe.s0),this.populateLayout(Oe.s0)}),this.load(Oe.s0)}invokeStaticComponent(C,e,t,H,i,V,n,r=null){let L=e.symbolTable
-if(L.hasEval||C.prepareArgs)return void this.invokeComponent(C,t,H,i,V,n,r,e)
+let o=!!(V||n||e),L=!0===C||C.prepareArgs||!(!H||0===H[0].length),s={main:V,else:n,attrs:e}
+this.compileArgs(t,H,s,i),this.prepareArgs(Oe.s0),this.invokePreparedComponent(null!==V,o,L,()=>{r?(this.pushSymbolTable(r.symbolTable),this.pushLayout(r),this.resolveLayout()):this.getComponentLayout(Oe.s0),this.populateLayout(Oe.s0)}),this.load(Oe.s0)}invokeStaticComponent(C,e,t,H,i,V,n,r=null){let o=e.symbolTable
+if(o.hasEval||C.prepareArgs)return void this.invokeComponent(C,t,H,i,V,n,r,e)
 this.fetch(Oe.s0),this.dup(Oe.sp,1),this.load(Oe.s0)
-let o=L.symbols
+let L=o.symbols
 C.createArgs&&(this.pushFrame(),this.compileArgs(null,i,null,V)),this.beginComponentTransaction(),C.dynamicScope&&this.pushDynamicScope(),C.createInstance&&this.createComponent(Oe.s0,null!==n),C.createArgs&&this.popFrame(),this.pushFrame(),this.registerComponentDestructor(Oe.s0)
 let s=[]
 this.getComponentSelf(Oe.s0),s.push({symbol:0,isBlock:!1})
-for(let M=0;M<o.length;M++){let C=o[M]
+for(let M=0;M<L.length;M++){let C=L[M]
 switch(C.charAt(0)){case"&":let e=null
 if("&default"===C)e=n
 else if("&inverse"===C)e=r
@@ -940,9 +2364,9 @@ else{if(C!==KH)throw le()
 e=t}e?(this.pushYieldableBlock(e),s.push({symbol:M+1,isBlock:!0})):(this.pushYieldableBlock(null),s.push({symbol:M+1,isBlock:!0}))
 break
 case"@":if(!i)break
-let H=i[0],L=i[1],o=C
-V&&(o=C.slice(1))
-let a=H.indexOf(o);-1!==a&&(this.expr(L[a]),s.push({symbol:M+1,isBlock:!1}))}}this.pushRootScope(o.length+1,!!(n||r||t))
+let H=i[0],o=i[1],L=C
+V&&(L=C.slice(1))
+let a=H.indexOf(L);-1!==a&&(this.expr(o[a]),s.push({symbol:M+1,isBlock:!1}))}}this.pushRootScope(L.length+1,!!(n||r||t))
 for(let M=s.length-1;M>=0;M--){var a=s[M]
 let C=a.symbol
 a.isBlock?this.setBlock(C):this.setVariable(C)}this.invokeStatic(e),C.createInstance&&this.didRenderLayout(Oe.s0),this.popFrame(),this.popScope(),C.dynamicScope&&this.popDynamicScope(),this.commitComponentTransaction(),this.load(Oe.s0)}dynamicComponent(C,e,t,H,i,V=null){this.replayable({args:()=>(this.expr(C),this.dup(),2),body:()=>{this.jumpUnless("ELSE"),this.resolveDynamicComponent(this.containingLayout.referrer),this.pushDynamicComponentInstance(),this.invokeComponent(!0,null,e,t,H,i,V),this.label("ELSE")}})}yield(C,e){this.compileArgs(e,null,null,!1),this.getBlock(C),this.resolveBlock(),this.invokeYield(),this.popScope(),this.popFrame()}guardedAppend(C,e){this.pushFrame(),this.expr(C),this.pushMachine(50,this.stdLib.getAppend(e)),this.popFrame()}invokeStaticBlock(C,e=0){let t=C.symbolTable.parameters,H=t.length,i=Math.min(e,H)
@@ -1018,11 +2442,11 @@ let e=Oi(this.heap,0,C).buffer
 return{handle:this.handle,table:this.table,buffer:e}}}class wi{constructor(C=new mi,e=new ki){this.constants=C,this.heap=e,this._opcode=new Zi(this.heap)}opcode(C){return this._opcode.offset=C,this._opcode}}class Si extends wi{}function Oi(C,e,t){if(void 0!==C.slice)return C.slice(e,t)
 let H=new Uint16Array(t)
 for(;e<t;e++)H[e]=C[e]
-return H}class xi extends Li{constructor(C,e,t){let H=new gi(e)
+return H}class xi extends oi{constructor(C,e,t){let H=new gi(e)
 super(t,new Si(H),C)}builderFor(C){return new ci(this,C)}}let Ai=0
 class Ti{constructor(C,e){this.compiler=C,this.parsedLayout=e,this.layout=null,this.partial=null,this.wrappedLayout=null
 let t=e.block
-this.symbols=t.symbols,this.hasEval=t.hasEval,this.referrer=e.referrer,this.id=e.id||`client-${Ai++}`}asLayout(){return this.layout?this.layout:this.layout=new ii(this.compiler,Object.assign({},this.parsedLayout,{asPartial:!1}))}asPartial(){return this.partial?this.partial:this.layout=new ii(this.compiler,Object.assign({},this.parsedLayout,{asPartial:!0}))}asWrappedLayout(){return this.wrappedLayout?this.wrappedLayout:this.wrappedLayout=new oi(this.compiler,Object.assign({},this.parsedLayout,{asPartial:!1}))}}class Bi{constructor(C){this.owner=C,this.handleLookup=[],this.cache={component:new WH,template:new WH,compiledTemplate:new WH,helper:new WH,manager:new WH,modifier:new WH}}lookup(C,e,t){return this.cache[C].hasName(e)?this.cache[C].getHandle(e):null}register(C,e,t){let H=this.cache[C],i=this.handleLookup.length
+this.symbols=t.symbols,this.hasEval=t.hasEval,this.referrer=e.referrer,this.id=e.id||`client-${Ai++}`}asLayout(){return this.layout?this.layout:this.layout=new ii(this.compiler,Object.assign({},this.parsedLayout,{asPartial:!1}))}asPartial(){return this.partial?this.partial:this.layout=new ii(this.compiler,Object.assign({},this.parsedLayout,{asPartial:!0}))}asWrappedLayout(){return this.wrappedLayout?this.wrappedLayout:this.wrappedLayout=new Li(this.compiler,Object.assign({},this.parsedLayout,{asPartial:!1}))}}class Bi{constructor(C){this.owner=C,this.handleLookup=[],this.cache={component:new WH,template:new WH,compiledTemplate:new WH,helper:new WH,manager:new WH,modifier:new WH}}lookup(C,e,t){return this.cache[C].hasName(e)?this.cache[C].getHandle(e):null}register(C,e,t){let H=this.cache[C],i=this.handleLookup.length
 return this.handleLookup.push(H),this.cache[C].register(i,e,t),i}lookupModifier(C,e){let t=this.lookup("modifier",C)
 if(null===t)throw new Error(`Modifier for ${C} not found.`)
 return t}compileTemplate(C,e){if(!this.cache.compiledTemplate.hasName(C)){let t=this.resolve(e),H=JSON.parse(t.block),i=new ii(this.compiler,{block:H,referrer:t.meta,asPartial:!1}),V={handle:i.compile(),symbolTable:i.symbolTable}
@@ -1056,13 +2480,13 @@ throw new Error(`You tried to create an action with the {{action}} helper, but t
 e.shift(),e.push(...C),i.apply(t&&t.value(),e)})}function Ni(C){return C[0]?C[1]:C[2]}class Pi{constructor(C){this.resolver=C}getComponentDefinition(C){let e=this.resolver.resolve(C)
 return de(!!e,`Couldn't find a template for ${C}`),e}getCapabilities(C){let e=this.getComponentDefinition(C),t=e.manager,H=e.state
 return t.getCapabilities(H)}getLayout(C){let e=this.getComponentDefinition(C),t=e.manager.getLayout(e,this.resolver)
-return{compile:()=>t.handle,symbolTable:t.symbolTable}}lookupHelper(C,e){return this.resolver.lookupHelper(C,e)}lookupModifier(C,e){return this.resolver.lookupModifier(C,e)}lookupComponentDefinition(C,e){return this.resolver.lookupComponentHandle(C,e)}lookupPartial(C,e){return this.resolver.lookupPartial(C,e)}}class Ri{constructor(C){this.resolver=C}async getTemplateIterator(C,e,t,H,i){let V=new Bi(C),n=new Pi(V),r=new Ci,L=new xi(n,V,r),o=L.program
-V.compiler=L,V.registerTemplate("main",Ei),V.registerInternalHelper("action",Di),V.registerHelper("if",Ni)
+return{compile:()=>t.handle,symbolTable:t.symbolTable}}lookupHelper(C,e){return this.resolver.lookupHelper(C,e)}lookupModifier(C,e){return this.resolver.lookupModifier(C,e)}lookupComponentDefinition(C,e){return this.resolver.lookupComponentHandle(C,e)}lookupPartial(C,e){return this.resolver.lookupPartial(C,e)}}class Ri{constructor(C){this.resolver=C}async getTemplateIterator(C,e,t,H,i){let V=new Bi(C),n=new Pi(V),r=new Ci,o=new xi(n,V,r),L=o.program
+V.compiler=o,V.registerTemplate("main",Ei),V.registerInternalHelper("action",Di),V.registerHelper("if",Ni)
 let s=function({id:C,meta:e,block:t}){let H,i=C||`client-${Ai++}`
 return{id:i,meta:e,create:(C,V)=>{let n=V?ue({},V,e):e
-return H||(H=JSON.parse(t)),new Ti(C,{id:i,block:H,referrer:n})}}}(Ei).create(L)
+return H||(H=JSON.parse(t)),new Ti(C,{id:i,block:H,referrer:n})}}}(Ei).create(o)
 return Promise.resolve(function(C,e,t,H,i,V){let n=EH.initial(C,e,t,H,i,V)
-return new DH(n)}(o,e,i,H,t,s.asLayout().compile()))}}class Fi{constructor({element:C,nextSibling:e=null}){this.cursor={element:C,nextSibling:e}}getBuilder(C){return function(C,e){return rH.forInitialRender(C,e)}(C,this.cursor)}}class Ii{render(C){let e
+return new DH(n)}(L,e,i,H,t,s.asLayout().compile()))}}class Fi{constructor({element:C,nextSibling:e=null}){this.cursor={element:C,nextSibling:e}}getBuilder(C){return function(C,e){return rH.forInitialRender(C,e)}(C,this.cursor)}}class Ii{render(C){let e
 do{e=C.next()}while(!e.done)
 this.result=e.value}rerender(){if(!this.result)throw new Error("Cannot re-render before initial render has completed")
 this.result.rerender()}}function _i(C){return void 0!==C.rootName&&void 0!==C.collection&&void 0!==C.name&&void 0!==C.type}function zi(C){let e=C.type,t=function(C){let e=[]
@@ -1148,21 +2572,21 @@ return e},get size(){return this.content.length>>1}},rV.from=function(C){if(C in
 var e=[]
 if(C)for(var t in C)e.push(t,C[t])
 return new rV(e)}
-var LV=rV,oV=nV(function(C,e){Object.defineProperty(e,"__esModule",{value:!0})
-var t,H=(t=LV)&&"object"==typeof t&&"default"in t?t.default:t
+var oV=rV,LV=nV(function(C,e){Object.defineProperty(e,"__esModule",{value:!0})
+var t,H=(t=oV)&&"object"==typeof t&&"default"in t?t.default:t
 var i=function(C,e){if(this.content=C,this.size=e||0,null==e)for(var t=0;t<C.length;t++)this.size+=C[t].nodeSize},V={firstChild:{},lastChild:{},childCount:{}}
 i.prototype.nodesBetween=function(C,e,t,H,i){void 0===H&&(H=0)
-for(var V=0,n=0;n<e;V++){var r=this.content[V],L=n+r.nodeSize
-if(L>C&&!1!==t(r,H+n,i,V)&&r.content.size){var o=n+1
-r.nodesBetween(Math.max(0,C-o),Math.min(r.content.size,e-o),t,H+o)}n=L}},i.prototype.descendants=function(C){this.nodesBetween(0,this.size,C)},i.prototype.textBetween=function(C,e,t,H){var i="",V=!0
+for(var V=0,n=0;n<e;V++){var r=this.content[V],o=n+r.nodeSize
+if(o>C&&!1!==t(r,H+n,i,V)&&r.content.size){var L=n+1
+r.nodesBetween(Math.max(0,C-L),Math.min(r.content.size,e-L),t,H+L)}n=o}},i.prototype.descendants=function(C){this.nodesBetween(0,this.size,C)},i.prototype.textBetween=function(C,e,t,H){var i="",V=!0
 return this.nodesBetween(C,e,function(n,r){n.isText?(i+=n.text.slice(Math.max(C,r)-r,e-r),V=!t):n.isLeaf&&H?(i+=H,V=!t):!V&&n.isBlock&&(i+=t,V=!0)},0),i},i.prototype.append=function(C){if(!C.size)return this
 if(!this.size)return C
 var e=this.lastChild,t=C.firstChild,H=this.content.slice(),V=0
 for(e.isText&&e.sameMarkup(t)&&(H[H.length-1]=e.withText(e.text+t.text),V=1);V<C.content.length;V++)H.push(C.content[V])
 return new i(H,this.size+C.size)},i.prototype.cut=function(C,e){if(null==e&&(e=this.size),0==C&&e==this.size)return this
 var t=[],H=0
-if(e>C)for(var V=0,n=0;n<e;V++){var r=this.content[V],L=n+r.nodeSize
-L>C&&((n<C||L>e)&&(r=r.isText?r.cut(Math.max(0,C-n),Math.min(r.text.length,e-n)):r.cut(Math.max(0,C-n-1),Math.min(r.content.size,e-n-1))),t.push(r),H+=r.nodeSize),n=L}return new i(t,H)},i.prototype.cutByIndex=function(C,e){return C==e?i.empty:0==C&&e==this.content.length?this:new i(this.content.slice(C,e))},i.prototype.replaceChild=function(C,e){var t=this.content[C]
+if(e>C)for(var V=0,n=0;n<e;V++){var r=this.content[V],o=n+r.nodeSize
+o>C&&((n<C||o>e)&&(r=r.isText?r.cut(Math.max(0,C-n),Math.min(r.text.length,e-n)):r.cut(Math.max(0,C-n-1),Math.min(r.content.size,e-n-1))),t.push(r),H+=r.nodeSize),n=o}return new i(t,H)},i.prototype.cutByIndex=function(C,e){return C==e?i.empty:0==C&&e==this.content.length?this:new i(this.content.slice(C,e))},i.prototype.replaceChild=function(C,e){var t=this.content[C]
 if(t==e)return this
 var H=this.content.slice(),V=this.size+e.nodeSize-t.nodeSize
 return H[C]=e,new i(H,V)},i.prototype.addToStart=function(C){return new i([C].concat(this.content),this.size+C.nodeSize)},i.prototype.addToEnd=function(C){return new i(this.content.concat(C),this.size+C.nodeSize)},i.prototype.eq=function(C){if(this.content.length!=C.content.length)return!1
@@ -1174,13 +2598,13 @@ C(H,t,e),t+=H.nodeSize}},i.prototype.findDiffStart=function(C,e){return void 0==
 var V=e.child(i),n=t.child(i)
 if(V!=n){if(!V.sameMarkup(n))return H
 if(V.isText&&V.text!=n.text){for(var r=0;V.text[r]==n.text[r];r++)H++
-return H}if(V.content.size||n.content.size){var L=C(V.content,n.content,H+1)
-if(null!=L)return L}H+=V.nodeSize}else H+=V.nodeSize}}(this,C,e)},i.prototype.findDiffEnd=function(C,e,t){return void 0===e&&(e=this.size),void 0===t&&(t=C.size),function C(e,t,H,i){for(var V=e.childCount,n=t.childCount;;){if(0==V||0==n)return V==n?null:{a:H,b:i}
-var r=e.child(--V),L=t.child(--n),o=r.nodeSize
-if(r!=L){if(!r.sameMarkup(L))return{a:H,b:i}
-if(r.isText&&r.text!=L.text){for(var s=0,a=Math.min(r.text.length,L.text.length);s<a&&r.text[r.text.length-s-1]==L.text[L.text.length-s-1];)s++,H--,i--
-return{a:H,b:i}}if(r.content.size||L.content.size){var M=C(r.content,L.content,H-1,i-1)
-if(M)return M}H-=o,i-=o}else H-=o,i-=o}}(this,C,e,t)},i.prototype.findIndex=function(C,e){if(void 0===e&&(e=-1),0==C)return r(0,C)
+return H}if(V.content.size||n.content.size){var o=C(V.content,n.content,H+1)
+if(null!=o)return o}H+=V.nodeSize}else H+=V.nodeSize}}(this,C,e)},i.prototype.findDiffEnd=function(C,e,t){return void 0===e&&(e=this.size),void 0===t&&(t=C.size),function C(e,t,H,i){for(var V=e.childCount,n=t.childCount;;){if(0==V||0==n)return V==n?null:{a:H,b:i}
+var r=e.child(--V),o=t.child(--n),L=r.nodeSize
+if(r!=o){if(!r.sameMarkup(o))return{a:H,b:i}
+if(r.isText&&r.text!=o.text){for(var s=0,a=Math.min(r.text.length,o.text.length);s<a&&r.text[r.text.length-s-1]==o.text[o.text.length-s-1];)s++,H--,i--
+return{a:H,b:i}}if(r.content.size||o.content.size){var M=C(r.content,o.content,H-1,i-1)
+if(M)return M}H-=L,i-=L}else H-=L,i-=L}}(this,C,e,t)},i.prototype.findIndex=function(C,e){if(void 0===e&&(e=-1),0==C)return r(0,C)
 if(C==this.size)return r(this.content.length,C)
 if(C>this.size||C<0)throw new RangeError("Position "+C+" outside of fragment ("+this+")")
 for(var t=0,H=0;;t++){var i=H+this.child(t).nodeSize
@@ -1191,47 +2615,47 @@ return new i(e.map(C.nodeFromJSON))},i.fromArray=function(C){if(!C.length)return
 for(var e,t=0,H=0;H<C.length;H++){var V=C[H]
 t+=V.nodeSize,H&&V.isText&&C[H-1].sameMarkup(V)?(e||(e=C.slice(0,H)),e[e.length-1]=V.withText(e[e.length-1].text+V.text)):e&&e.push(V)}return new i(e||C,t)},i.from=function(C){return C?C instanceof i?C:Array.isArray(C)?this.fromArray(C):new i([C],C.nodeSize):i.empty},Object.defineProperties(i.prototype,V)
 var n={index:0,offset:0}
-function r(C,e){return n.index=C,n.offset=e,n}function L(C,e){if(C===e)return!0
+function r(C,e){return n.index=C,n.offset=e,n}function o(C,e){if(C===e)return!0
 if(!C||"object"!=typeof C||!e||"object"!=typeof e)return!1
 var t=Array.isArray(C)
 if(Array.isArray(e)!=t)return!1
 if(t){if(C.length!=e.length)return!1
-for(var H=0;H<C.length;H++)if(!L(C[H],e[H]))return!1}else{for(var i in C)if(!(i in e&&L(C[i],e[i])))return!1
+for(var H=0;H<C.length;H++)if(!o(C[H],e[H]))return!1}else{for(var i in C)if(!(i in e&&o(C[i],e[i])))return!1
 for(var V in e)if(!(V in C))return!1}return!0}i.empty=new i([],0)
-var o=function(C,e){this.type=C,this.attrs=e}
+var L=function(C,e){this.type=C,this.attrs=e}
 function s(C){var e=Error.call(this,C)
-return e.__proto__=s.prototype,e}o.prototype.addToSet=function(C){for(var e,t=!1,H=0;H<C.length;H++){var i=C[H]
+return e.__proto__=s.prototype,e}L.prototype.addToSet=function(C){for(var e,t=!1,H=0;H<C.length;H++){var i=C[H]
 if(this.eq(i))return C
 if(this.type.excludes(i.type))e||(e=C.slice(0,H))
 else{if(i.type.excludes(this.type))return C
-!t&&i.type.rank>this.type.rank&&(e||(e=C.slice(0,H)),e.push(this),t=!0),e&&e.push(i)}}return e||(e=C.slice()),t||e.push(this),e},o.prototype.removeFromSet=function(C){for(var e=0;e<C.length;e++)if(this.eq(C[e]))return C.slice(0,e).concat(C.slice(e+1))
-return C},o.prototype.isInSet=function(C){for(var e=0;e<C.length;e++)if(this.eq(C[e]))return!0
-return!1},o.prototype.eq=function(C){return this==C||this.type==C.type&&L(this.attrs,C.attrs)},o.prototype.toJSON=function(){var C={type:this.type.name}
+!t&&i.type.rank>this.type.rank&&(e||(e=C.slice(0,H)),e.push(this),t=!0),e&&e.push(i)}}return e||(e=C.slice()),t||e.push(this),e},L.prototype.removeFromSet=function(C){for(var e=0;e<C.length;e++)if(this.eq(C[e]))return C.slice(0,e).concat(C.slice(e+1))
+return C},L.prototype.isInSet=function(C){for(var e=0;e<C.length;e++)if(this.eq(C[e]))return!0
+return!1},L.prototype.eq=function(C){return this==C||this.type==C.type&&o(this.attrs,C.attrs)},L.prototype.toJSON=function(){var C={type:this.type.name}
 for(var e in this.attrs){C.attrs=this.attrs
-break}return C},o.fromJSON=function(C,e){if(!e)throw new RangeError("Invalid input for Mark.fromJSON")
+break}return C},L.fromJSON=function(C,e){if(!e)throw new RangeError("Invalid input for Mark.fromJSON")
 var t=C.marks[e.type]
 if(!t)throw new RangeError("There is no mark type "+e.type+" in this schema")
-return t.create(e.attrs)},o.sameSet=function(C,e){if(C==e)return!0
+return t.create(e.attrs)},L.sameSet=function(C,e){if(C==e)return!0
 if(C.length!=e.length)return!1
 for(var t=0;t<C.length;t++)if(!C[t].eq(e[t]))return!1
-return!0},o.setFrom=function(C){if(!C||0==C.length)return o.none
-if(C instanceof o)return[C]
+return!0},L.setFrom=function(C){if(!C||0==C.length)return L.none
+if(C instanceof L)return[C]
 var e=C.slice()
-return e.sort(function(C,e){return C.type.rank-e.type.rank}),e},o.none=[],s.prototype=Object.create(Error.prototype),s.prototype.constructor=s,s.prototype.name="ReplaceError"
+return e.sort(function(C,e){return C.type.rank-e.type.rank}),e},L.none=[],s.prototype=Object.create(Error.prototype),s.prototype.constructor=s,s.prototype.name="ReplaceError"
 var a=function(C,e,t){this.content=C,this.openStart=e,this.openEnd=t},M={size:{}}
 function l(C,e,t){if(t.openStart>C.depth)throw new s("Inserted content deeper than insertion position")
 if(C.depth-t.openStart!=e.depth-t.openEnd)throw new s("Inconsistent open depths")
 return function C(e,t,H,V){var n=e.index(V),r=e.node(V)
-if(n==t.index(V)&&V<e.depth-H.openStart){var L=C(e,t,H,V+1)
-return r.copy(r.content.replaceChild(n,L))}if(H.content.size){if(H.openStart||H.openEnd||e.depth!=V||t.depth!=V){var o=function(C,e){for(var t=e.depth-C.openStart,H=e.node(t).copy(C.content),V=t-1;V>=0;V--)H=e.node(V).copy(i.from(H))
-return{start:H.resolveNoCache(C.openStart+t),end:H.resolveNoCache(H.content.size-C.openEnd-t)}}(H,e),s=o.start,a=o.end
+if(n==t.index(V)&&V<e.depth-H.openStart){var o=C(e,t,H,V+1)
+return r.copy(r.content.replaceChild(n,o))}if(H.content.size){if(H.openStart||H.openEnd||e.depth!=V||t.depth!=V){var L=function(C,e){for(var t=e.depth-C.openStart,H=e.node(t).copy(C.content),V=t-1;V>=0;V--)H=e.node(V).copy(i.from(H))
+return{start:H.resolveNoCache(C.openStart+t),end:H.resolveNoCache(H.content.size-C.openEnd-t)}}(H,e),s=L.start,a=L.end
 return p(r,function C(e,t,H,V,n){var r=e.depth>n&&c(e,t,n+1)
-var L=V.depth>n&&c(H,V,n+1)
-var o=[]
-h(null,e,n,o)
-r&&L&&t.index(n)==H.index(n)?(d(r,L),u(p(r,C(e,t,H,V,n+1)),o)):(r&&u(p(r,m(e,t,n+1)),o),h(t,H,n,o),L&&u(p(L,m(H,V,n+1)),o))
-h(V,null,n,o)
-return new i(o)}(e,s,a,t,V))}var M=e.parent,l=M.content
+var o=V.depth>n&&c(H,V,n+1)
+var L=[]
+h(null,e,n,L)
+r&&o&&t.index(n)==H.index(n)?(d(r,o),u(p(r,C(e,t,H,V,n+1)),L)):(r&&u(p(r,m(e,t,n+1)),L),h(t,H,n,L),o&&u(p(o,m(H,V,n+1)),L))
+h(V,null,n,L)
+return new i(L)}(e,s,a,t,V))}var M=e.parent,l=M.content
 return p(M,l.cut(0,e.parentOffset).append(H.content).append(l.cut(t.parentOffset)))}return p(r,m(e,t,V))}(C,e,t,0)}function d(C,e){if(!e.type.compatibleContent(C.type))throw new s("Cannot join "+e.type.name+" onto "+C.type.name)}function c(C,e,t){var H=C.node(t)
 return d(H,e.node(t)),H}function u(C,e){var t=e.length-1
 t>=0&&C.isText&&C.sameMarkup(e[t])?e[t]=C.withText(e[t].text+C.text):e.push(C)}function h(C,e,t,H){var i=(e||C).node(t),V=0,n=e?e.index(t):i.childCount
@@ -1242,19 +2666,19 @@ return C.copy(e)}function m(C,e,t){var H=[];(h(null,C,t,H),C.depth>t)&&u(p(c(C,e
 return h(e,null,t,H),new i(H)}M.size.get=function(){return this.content.size-this.openStart-this.openEnd},a.prototype.insertAt=function(C,e){var t=function C(e,t,H,i){var V=e.findIndex(t)
 var n=V.index
 var r=V.offset
-var L=e.maybeChild(n)
-if(r==t||L.isText)return i&&!i.canReplace(n,n,H)?null:e.cut(0,t).append(H).append(e.cut(t))
-var o=C(L.content,t-r-1,H)
-return o&&e.replaceChild(n,L.copy(o))}(this.content,C+this.openStart,e,null)
+var o=e.maybeChild(n)
+if(r==t||o.isText)return i&&!i.canReplace(n,n,H)?null:e.cut(0,t).append(H).append(e.cut(t))
+var L=C(o.content,t-r-1,H)
+return L&&e.replaceChild(n,o.copy(L))}(this.content,C+this.openStart,e,null)
 return t&&new a(t,this.openStart,this.openEnd)},a.prototype.removeBetween=function(C,e){return new a(function C(e,t,H){var i=e.findIndex(t)
 var V=i.index
 var n=i.offset
 var r=e.maybeChild(V)
-var L=e.findIndex(H)
-var o=L.index
-var s=L.offset
-if(n==t||r.isText){if(s!=H&&!e.child(o).isText)throw new RangeError("Removing non-flat range")
-return e.cut(0,t).append(e.cut(H))}if(V!=o)throw new RangeError("Removing non-flat range")
+var o=e.findIndex(H)
+var L=o.index
+var s=o.offset
+if(n==t||r.isText){if(s!=H&&!e.child(L).isText)throw new RangeError("Removing non-flat range")
+return e.cut(0,t).append(e.cut(H))}if(V!=L)throw new RangeError("Removing non-flat range")
 return e.replaceChild(V,r.copy(C(r.content,t-n-1,H-n-1)))}(this.content,C+this.openStart,e+this.openStart),this.openStart,this.openEnd)},a.prototype.eq=function(C){return this.content.eq(C.content)&&this.openStart==C.openStart&&this.openEnd==C.openEnd},a.prototype.toString=function(){return this.content+"("+this.openStart+","+this.openEnd+")"},a.prototype.toJSON=function(){if(!this.content.size)return null
 var C={content:this.content.toJSON()}
 return this.openStart>0&&(C.openStart=this.openStart),this.openEnd>0&&(C.openEnd=this.openEnd),C},a.fromJSON=function(C,e){if(!e)return a.empty
@@ -1272,7 +2696,7 @@ if(e==C.childCount)return null
 var t=this.pos-this.path[this.path.length-1],H=C.child(e)
 return t?C.child(e).cut(t):H},g.nodeBefore.get=function(){var C=this.index(this.depth),e=this.pos-this.path[this.path.length-1]
 return e?this.parent.child(C).cut(0,e):0==C?null:this.parent.child(C-1)},f.prototype.marks=function(){var C=this.parent,e=this.index()
-if(0==C.content.size)return o.none
+if(0==C.content.size)return L.none
 if(this.textOffset)return C.child(e).marks
 var t=C.maybeChild(e-1),H=C.maybeChild(e)
 if(!t){var i=t
@@ -1284,16 +2708,16 @@ return t},f.prototype.sharedDepth=function(C){for(var e=this.depth;e>0;e--)if(th
 return 0},f.prototype.blockRange=function(C,e){if(void 0===C&&(C=this),C.pos<this.pos)return C.blockRange(this)
 for(var t=this.depth-(this.parent.inlineContent||this.pos==C.pos?1:0);t>=0;t--)if(C.pos<=this.end(t)&&(!e||e(this.node(t))))return new b(this,C,t)},f.prototype.sameParent=function(C){return this.pos-this.parentOffset==C.pos-C.parentOffset},f.prototype.max=function(C){return C.pos>this.pos?C:this},f.prototype.min=function(C){return C.pos<this.pos?C:this},f.prototype.toString=function(){for(var C="",e=1;e<=this.depth;e++)C+=(C?"/":"")+this.node(e).type.name+"_"+this.index(e-1)
 return C+":"+this.parentOffset},f.resolve=function(C,e){if(!(e>=0&&e<=C.content.size))throw new RangeError("Position "+e+" out of range")
-for(var t=[],H=0,i=e,V=C;;){var n=V.content.findIndex(i),r=n.index,L=n.offset,o=i-L
-if(t.push(V,r,H+L),!o)break
+for(var t=[],H=0,i=e,V=C;;){var n=V.content.findIndex(i),r=n.index,o=n.offset,L=i-o
+if(t.push(V,r,H+o),!L)break
 if((V=V.child(r)).isText)break
-i=o-1,H+=L+1}return new f(e,t,i)},f.resolveCached=function(C,e){for(var t=0;t<Z.length;t++){var H=Z[t]
+i=L-1,H+=o+1}return new f(e,t,i)},f.resolveCached=function(C,e){for(var t=0;t<Z.length;t++){var H=Z[t]
 if(H.pos==e&&H.doc==C)return H}var i=Z[v]=f.resolve(C,e)
 return v=(v+1)%y,i},Object.defineProperties(f.prototype,g)
 var Z=[],v=0,y=12,b=function(C,e,t){this.$from=C,this.$to=e,this.depth=t},k={start:{},end:{},parent:{},startIndex:{},endIndex:{}}
 k.start.get=function(){return this.$from.before(this.depth+1)},k.end.get=function(){return this.$to.after(this.depth+1)},k.parent.get=function(){return this.$from.node(this.depth)},k.startIndex.get=function(){return this.$from.index(this.depth)},k.endIndex.get=function(){return this.$to.indexAfter(this.depth)},Object.defineProperties(b.prototype,k)
-var w=Object.create(null),S=function(C,e,t,H){this.type=C,this.attrs=e,this.content=t||i.empty,this.marks=H||o.none},O={nodeSize:{},childCount:{},textContent:{},firstChild:{},lastChild:{},isBlock:{},isTextblock:{},inlineContent:{},isInline:{},isText:{},isLeaf:{},isAtom:{}}
-O.nodeSize.get=function(){return this.isLeaf?1:2+this.content.size},O.childCount.get=function(){return this.content.childCount},S.prototype.child=function(C){return this.content.child(C)},S.prototype.maybeChild=function(C){return this.content.maybeChild(C)},S.prototype.forEach=function(C){this.content.forEach(C)},S.prototype.nodesBetween=function(C,e,t,H){void 0===H&&(H=0),this.content.nodesBetween(C,e,t,H,this)},S.prototype.descendants=function(C){this.nodesBetween(0,this.content.size,C)},O.textContent.get=function(){return this.textBetween(0,this.content.size,"")},S.prototype.textBetween=function(C,e,t,H){return this.content.textBetween(C,e,t,H)},O.firstChild.get=function(){return this.content.firstChild},O.lastChild.get=function(){return this.content.lastChild},S.prototype.eq=function(C){return this==C||this.sameMarkup(C)&&this.content.eq(C.content)},S.prototype.sameMarkup=function(C){return this.hasMarkup(C.type,C.attrs,C.marks)},S.prototype.hasMarkup=function(C,e,t){return this.type==C&&L(this.attrs,e||C.defaultAttrs||w)&&o.sameSet(this.marks,t||o.none)},S.prototype.copy=function(C){return void 0===C&&(C=null),C==this.content?this:new this.constructor(this.type,this.attrs,C,this.marks)},S.prototype.mark=function(C){return C==this.marks?this:new this.constructor(this.type,this.attrs,this.content,C)},S.prototype.cut=function(C,e){return 0==C&&e==this.content.size?this:this.copy(this.content.cut(C,e))},S.prototype.slice=function(C,e,t){if(void 0===e&&(e=this.content.size),void 0===t&&(t=!1),C==e)return a.empty
+var w=Object.create(null),S=function(C,e,t,H){this.type=C,this.attrs=e,this.content=t||i.empty,this.marks=H||L.none},O={nodeSize:{},childCount:{},textContent:{},firstChild:{},lastChild:{},isBlock:{},isTextblock:{},inlineContent:{},isInline:{},isText:{},isLeaf:{},isAtom:{}}
+O.nodeSize.get=function(){return this.isLeaf?1:2+this.content.size},O.childCount.get=function(){return this.content.childCount},S.prototype.child=function(C){return this.content.child(C)},S.prototype.maybeChild=function(C){return this.content.maybeChild(C)},S.prototype.forEach=function(C){this.content.forEach(C)},S.prototype.nodesBetween=function(C,e,t,H){void 0===H&&(H=0),this.content.nodesBetween(C,e,t,H,this)},S.prototype.descendants=function(C){this.nodesBetween(0,this.content.size,C)},O.textContent.get=function(){return this.textBetween(0,this.content.size,"")},S.prototype.textBetween=function(C,e,t,H){return this.content.textBetween(C,e,t,H)},O.firstChild.get=function(){return this.content.firstChild},O.lastChild.get=function(){return this.content.lastChild},S.prototype.eq=function(C){return this==C||this.sameMarkup(C)&&this.content.eq(C.content)},S.prototype.sameMarkup=function(C){return this.hasMarkup(C.type,C.attrs,C.marks)},S.prototype.hasMarkup=function(C,e,t){return this.type==C&&o(this.attrs,e||C.defaultAttrs||w)&&L.sameSet(this.marks,t||L.none)},S.prototype.copy=function(C){return void 0===C&&(C=null),C==this.content?this:new this.constructor(this.type,this.attrs,C,this.marks)},S.prototype.mark=function(C){return C==this.marks?this:new this.constructor(this.type,this.attrs,this.content,C)},S.prototype.cut=function(C,e){return 0==C&&e==this.content.size?this:this.copy(this.content.cut(C,e))},S.prototype.slice=function(C,e,t){if(void 0===e&&(e=this.content.size),void 0===t&&(t=!1),C==e)return a.empty
 var H=this.resolve(C),i=this.resolve(e),V=t?0:H.sharedDepth(e),n=H.start(V),r=H.node(V).content.cut(H.pos-n,i.pos-n)
 return new a(r,H.depth-V,i.depth-V)},S.prototype.replace=function(C,e,t){return l(this.resolve(C),this.resolve(e),t)},S.prototype.nodeAt=function(C){for(var e=this;;){var t=e.content.findIndex(C),H=t.index,i=t.offset
 if(!(e=e.maybeChild(H)))return null
@@ -1312,7 +2736,7 @@ if(!e)throw new Error("Called contentMatchAt on a node with invalid content")
 return e},S.prototype.canReplace=function(C,e,t,H,V){void 0===t&&(t=i.empty),void 0===H&&(H=0),void 0===V&&(V=t.childCount)
 var n=this.contentMatchAt(C).matchFragment(t,H,V),r=n&&n.matchFragment(this.content,e)
 if(!r||!r.validEnd)return!1
-for(var L=H;L<V;L++)if(!this.type.allowsMarks(t.child(L).marks))return!1
+for(var o=H;o<V;o++)if(!this.type.allowsMarks(t.child(o).marks))return!1
 return!0},S.prototype.canReplaceWith=function(C,e,t,H){if(H&&!this.type.allowsMarks(H))return!1
 var i=this.contentMatchAt(C).matchType(t),V=i&&i.matchFragment(this.content,e)
 return!!V&&V.validEnd},S.prototype.canAppend=function(C){return C.content.size?this.canReplace(this.childCount,this.childCount,C.content):this.type.compatibleContent(C.type)},S.prototype.defaultContentType=function(C){return this.contentMatchAt(C).defaultType},S.prototype.check=function(){if(!this.type.validContent(this.content))throw new RangeError("Invalid content for node "+this.type.name+": "+this.content.toString().slice(0,50))
@@ -1346,17 +2770,17 @@ V.next.push(i[n],e[r.join(",")]||t(r))}return V}(z(C,0))}(function(C){var e=[[]]
 return i(function C(e,V){if("choice"==e.type)return e.exprs.reduce(function(e,t){return e.concat(C(t,V))},[])
 if("seq"==e.type)for(var n=0;;n++){var r=C(e.exprs[n],V)
 if(n==e.exprs.length-1)return r
-i(r,V=t())}else{if("star"==e.type){var L=t()
-return H(V,L),i(C(e.expr,L),L),[H(L)]}if("plus"==e.type){var o=t()
-return i(C(e.expr,V),o),i(C(e.expr,o),o),[H(o)]}if("opt"==e.type)return[H(V)].concat(C(e.expr,V))
+i(r,V=t())}else{if("star"==e.type){var o=t()
+return H(V,o),i(C(e.expr,o),o),[H(o)]}if("plus"==e.type){var L=t()
+return i(C(e.expr,V),L),i(C(e.expr,L),L),[H(L)]}if("opt"==e.type)return[H(V)].concat(C(e.expr,V))
 if("range"==e.type){for(var s=V,a=0;a<e.min;a++){var M=t()
 i(C(e.expr,s),M),s=M}if(-1==e.max)i(C(e.expr,s),s)
 else for(var l=e.min;l<e.max;l++){var d=t()
 H(s,d),i(C(e.expr,s),d),s=d}return[H(s)]}if("name"==e.type)return[H(V,null,e.value)]}}(C,0),t()),e
 function t(){return e.push([])-1}function H(C,t,H){var i={term:H,to:t}
 return e[C].push(i),i}function i(C,e){C.forEach(function(C){return C.to=e})}}(H))
-return function(C,e){for(var t=0,H=[C];t<H.length;t++){for(var i=H[t],V=!i.validEnd,n=[],r=0;r<i.next.length;r+=2){var L=i.next[r],o=i.next[r+1]
-n.push(L.name),!V||L.isText||L.hasRequiredAttrs()||(V=!1),-1==H.indexOf(o)&&H.push(o)}V&&e.err("Only non-generatable nodes ("+n.join(", ")+") in a required position")}}(i,t),i},T.prototype.matchType=function(C){for(var e=0;e<this.next.length;e+=2)if(this.next[e]==C)return this.next[e+1]
+return function(C,e){for(var t=0,H=[C];t<H.length;t++){for(var i=H[t],V=!i.validEnd,n=[],r=0;r<i.next.length;r+=2){var o=i.next[r],L=i.next[r+1]
+n.push(o.name),!V||o.isText||o.hasRequiredAttrs()||(V=!1),-1==H.indexOf(L)&&H.push(L)}V&&e.err("Only non-generatable nodes ("+n.join(", ")+") in a required position")}}(i,t),i},T.prototype.matchType=function(C){for(var e=0;e<this.next.length;e+=2)if(this.next[e]==C)return this.next[e+1]
 return null},T.prototype.matchFragment=function(C,e,t){void 0===e&&(e=0),void 0===t&&(t=C.childCount)
 for(var H=this,i=e;H&&i<t;i++)H=H.matchType(C.child(i).type)
 return H},B.inlineContent.get=function(){var C=this.next[0]
@@ -1364,17 +2788,17 @@ return!!C&&C.isInline},B.defaultType.get=function(){for(var C=0;C<this.next.leng
 if(!e.isText&&!e.hasRequiredAttrs())return e}},T.prototype.compatible=function(C){for(var e=0;e<this.next.length;e+=2)for(var t=0;t<C.next.length;t+=2)if(this.next[e]==C.next[t])return!0
 return!1},T.prototype.fillBefore=function(C,e,t){void 0===e&&(e=!1),void 0===t&&(t=0)
 var H=[this]
-return function V(n,r){var L=n.matchFragment(C,t)
-if(L&&(!e||L.validEnd))return i.from(r.map(function(C){return C.createAndFill()}))
-for(var o=0;o<n.next.length;o+=2){var s=n.next[o],a=n.next[o+1]
+return function V(n,r){var o=n.matchFragment(C,t)
+if(o&&(!e||o.validEnd))return i.from(r.map(function(C){return C.createAndFill()}))
+for(var L=0;L<n.next.length;L+=2){var s=n.next[L],a=n.next[L+1]
 if(!s.isText&&!s.hasRequiredAttrs()&&-1==H.indexOf(a)){H.push(a)
 var M=V(a,r.concat(s))
 if(M)return M}}}(this,[])},T.prototype.findWrapping=function(C){for(var e=0;e<this.wrapCache.length;e+=2)if(this.wrapCache[e]==C)return this.wrapCache[e+1]
 var t=this.computeWrapping(C)
 return this.wrapCache.push(C,t),t},T.prototype.computeWrapping=function(C){for(var e=Object.create(null),t=[{match:this,type:null,via:null}];t.length;){var H=t.shift(),i=H.match
 if(i.matchType(C)){for(var V=[],n=H;n.type;n=n.via)V.push(n.type)
-return V.reverse()}for(var r=0;r<i.next.length;r+=2){var L=i.next[r]
-L.isLeaf||L.hasRequiredAttrs()||L.name in e||H.type&&!i.next[r+1].validEnd||(t.push({match:L.contentMatch,type:L,via:H}),e[L.name]=!0)}}},B.edgeCount.get=function(){return this.next.length>>1},T.prototype.edge=function(C){var e=C<<1
+return V.reverse()}for(var r=0;r<i.next.length;r+=2){var o=i.next[r]
+o.isLeaf||o.hasRequiredAttrs()||o.name in e||H.type&&!i.next[r+1].validEnd||(t.push({match:o.contentMatch,type:o,via:H}),e[o.name]=!0)}}},B.edgeCount.get=function(){return this.next.length>>1},T.prototype.edge=function(C){var e=C<<1
 if(e>this.next.length)throw new RangeError("There's no "+C+"th edge in this content match")
 return{type:this.next[e],next:this.next[e+1]}},T.prototype.toString=function(){var C=[]
 return function e(t){C.push(t)
@@ -1403,8 +2827,8 @@ return C.eat(",")&&(H="}"!=C.next?F(C):-1),C.eat("}")||C.err("Unclosed braced ra
 return function e(H){var i=C[H]
 if(1==i.length&&!i[0].term)return e(i[0].to)
 t.push(H)
-for(var V=0;V<i.length;V++){var n=i[V],r=n.term,L=n.to
-r||-1!=t.indexOf(L)||e(L)}}(e),t.sort(_)}function W(C){var e=Object.create(null)
+for(var V=0;V<i.length;V++){var n=i[V],r=n.term,o=n.to
+r||-1!=t.indexOf(o)||e(o)}}(e),t.sort(_)}function W(C){var e=Object.create(null)
 for(var t in C){var H=C[t]
 if(!H.hasDefault)return null
 e[t]=H.default}return e}function j(C,e){var t=Object.create(null)
@@ -1417,11 +2841,11 @@ return e}D.next.get=function(){return this.tokens[this.pos]},E.prototype.eat=fun
 var G=function(C,e,t){this.name=C,this.schema=e,this.spec=t,this.groups=t.group?t.group.split(" "):[],this.attrs=U(t.attrs),this.defaultAttrs=W(this.attrs),this.contentMatch=null,this.markSet=null,this.inlineContent=null,this.isBlock=!(t.inline||"text"==C),this.isText="text"==C},$={isInline:{},isTextblock:{},isLeaf:{},isAtom:{}}
 $.isInline.get=function(){return!this.isBlock},$.isTextblock.get=function(){return this.isBlock&&this.inlineContent},$.isLeaf.get=function(){return this.contentMatch==T.empty},$.isAtom.get=function(){return this.isLeaf||this.spec.atom},G.prototype.hasRequiredAttrs=function(C){for(var e in this.attrs)if(this.attrs[e].isRequired&&(!C||!(e in C)))return!0
 return!1},G.prototype.compatibleContent=function(C){return this==C||this.contentMatch.compatible(C.contentMatch)},G.prototype.computeAttrs=function(C){return!C&&this.defaultAttrs?this.defaultAttrs:j(this.attrs,C)},G.prototype.create=function(C,e,t){if(this.isText)throw new Error("NodeType.create can't construct text nodes")
-return new S(this,this.computeAttrs(C),i.from(e),o.setFrom(t))},G.prototype.createChecked=function(C,e,t){if(e=i.from(e),!this.validContent(e))throw new RangeError("Invalid content for node "+this.name)
-return new S(this,this.computeAttrs(C),e,o.setFrom(t))},G.prototype.createAndFill=function(C,e,t){if(C=this.computeAttrs(C),(e=i.from(e)).size){var H=this.contentMatch.fillBefore(e)
+return new S(this,this.computeAttrs(C),i.from(e),L.setFrom(t))},G.prototype.createChecked=function(C,e,t){if(e=i.from(e),!this.validContent(e))throw new RangeError("Invalid content for node "+this.name)
+return new S(this,this.computeAttrs(C),e,L.setFrom(t))},G.prototype.createAndFill=function(C,e,t){if(C=this.computeAttrs(C),(e=i.from(e)).size){var H=this.contentMatch.fillBefore(e)
 if(!H)return null
 e=H.append(e)}var V=this.contentMatch.matchFragment(e).fillBefore(i.empty,!0)
-return V?new S(this,C,e.append(V),o.setFrom(t)):null},G.prototype.validContent=function(C){var e=this.contentMatch.matchFragment(C)
+return V?new S(this,C,e.append(V),L.setFrom(t)):null},G.prototype.validContent=function(C){var e=this.contentMatch.matchFragment(C)
 if(!e||!e.validEnd)return!1
 for(var t=0;t<C.childCount;t++)if(!this.allowsMarks(C.child(t).marks))return!1
 return!0},G.prototype.allowsMarkType=function(C){return null==this.markSet||this.markSet.indexOf(C)>-1},G.prototype.allowsMarks=function(C){if(null==this.markSet)return!0
@@ -1429,7 +2853,7 @@ for(var e=0;e<C.length;e++)if(!this.allowsMarkType(C[e].type))return!1
 return!0},G.prototype.allowedMarks=function(C){var e
 if(null==this.markSet)return C
 for(var t=0;t<C.length;t++)this.allowsMarkType(C[t].type)?e&&e.push(C[t]):e||(e=C.slice(0,t))
-return e?e.length?e:o.empty:C},G.compile=function(C,e){var t=Object.create(null)
+return e?e.length?e:L.empty:C},G.compile=function(C,e){var t=Object.create(null)
 C.forEach(function(C,H){return t[C]=new G(C,e,H)})
 var H=e.spec.topNode||"doc"
 if(!t[H])throw new RangeError("Schema is missing its top node type ('"+H+"')")
@@ -1440,8 +2864,8 @@ var q=function(C){this.hasDefault=Object.prototype.hasOwnProperty.call(C,"defaul
 K.isRequired.get=function(){return!this.hasDefault},Object.defineProperties(q.prototype,K)
 var J=function(C,e,t,H){this.name=C,this.schema=t,this.spec=H,this.attrs=U(H.attrs),this.rank=e,this.excluded=null
 var i=W(this.attrs)
-this.instance=i&&new o(this,i)}
-J.prototype.create=function(C){return!C&&this.instance?this.instance:new o(this,j(this.attrs,C))},J.compile=function(C,e){var t=Object.create(null),H=0
+this.instance=i&&new L(this,i)}
+J.prototype.create=function(C){return!C&&this.instance?this.instance:new L(this,j(this.attrs,C))},J.compile=function(C,e){var t=Object.create(null),H=0
 return C.forEach(function(C,i){return t[C]=new J(C,H++,e,i)}),t},J.prototype.removeFromSet=function(C){for(var e=0;e<C.length;e++)if(C[e].type==this)return C.slice(0,e).concat(C.slice(e+1))
 return C},J.prototype.isInSet=function(C){for(var e=0;e<C.length;e++)if(C[e].type==this)return C[e]},J.prototype.excludes=function(C){return this.excluded.indexOf(C)>-1}
 var Y=function(C){for(var e in this.spec={},C)this.spec[e]=C[e]
@@ -1449,14 +2873,14 @@ this.spec.nodes=H.from(C.nodes),this.spec.marks=H.from(C.marks),this.nodes=G.com
 var t=Object.create(null)
 for(var i in this.nodes){if(i in this.marks)throw new RangeError(i+" can not be both a node and a mark")
 var V=this.nodes[i],n=V.spec.content||"",r=V.spec.marks
-V.contentMatch=t[n]||(t[n]=T.parse(n,this.nodes)),V.inlineContent=V.contentMatch.inlineContent,V.markSet="_"==r?null:r?X(this,r.split(" ")):""!=r&&V.inlineContent?null:[]}for(var L in this.marks){var o=this.marks[L],s=o.spec.excludes
-o.excluded=null==s?[o]:""==s?[]:X(this,s.split(" "))}this.nodeFromJSON=this.nodeFromJSON.bind(this),this.markFromJSON=this.markFromJSON.bind(this),this.topNodeType=this.nodes[this.spec.topNode||"doc"],this.cached=Object.create(null),this.cached.wrappings=Object.create(null)}
+V.contentMatch=t[n]||(t[n]=T.parse(n,this.nodes)),V.inlineContent=V.contentMatch.inlineContent,V.markSet="_"==r?null:r?X(this,r.split(" ")):""!=r&&V.inlineContent?null:[]}for(var o in this.marks){var L=this.marks[o],s=L.spec.excludes
+L.excluded=null==s?[L]:""==s?[]:X(this,s.split(" "))}this.nodeFromJSON=this.nodeFromJSON.bind(this),this.markFromJSON=this.markFromJSON.bind(this),this.topNodeType=this.nodes[this.spec.topNode||"doc"],this.cached=Object.create(null),this.cached.wrappings=Object.create(null)}
 function X(C,e){for(var t=[],H=0;H<e.length;H++){var i=e[H],V=C.marks[i],n=V
 if(V)t.push(V)
-else for(var r in C.marks){var L=C.marks[r];("_"==i||L.spec.group&&L.spec.group.split(" ").indexOf(i)>-1)&&t.push(n=L)}if(!n)throw new SyntaxError("Unknown mark type: '"+e[H]+"'")}return t}Y.prototype.node=function(C,e,t,H){if("string"==typeof C)C=this.nodeType(C)
+else for(var r in C.marks){var o=C.marks[r];("_"==i||o.spec.group&&o.spec.group.split(" ").indexOf(i)>-1)&&t.push(n=o)}if(!n)throw new SyntaxError("Unknown mark type: '"+e[H]+"'")}return t}Y.prototype.node=function(C,e,t,H){if("string"==typeof C)C=this.nodeType(C)
 else{if(!(C instanceof G))throw new RangeError("Invalid node type: "+C)
 if(C.schema!=this)throw new RangeError("Node type from different schema used ("+C.name+")")}return C.createChecked(e,t,H)},Y.prototype.text=function(C,e){var t=this.nodes.text
-return new x(t,t.defaultAttrs,C,o.setFrom(e))},Y.prototype.mark=function(C,e){return"string"==typeof C&&(C=this.marks[C]),C.create(e)},Y.prototype.nodeFromJSON=function(C){return S.fromJSON(this,C)},Y.prototype.markFromJSON=function(C){return o.fromJSON(this,C)},Y.prototype.nodeType=function(C){var e=this.nodes[C]
+return new x(t,t.defaultAttrs,C,L.setFrom(e))},Y.prototype.mark=function(C,e){return"string"==typeof C&&(C=this.marks[C]),C.create(e)},Y.prototype.nodeFromJSON=function(C){return S.fromJSON(this,C)},Y.prototype.markFromJSON=function(C){return L.fromJSON(this,C)},Y.prototype.nodeType=function(C){var e=this.nodes[C]
 if(!e)throw new RangeError("Unknown node type: "+C)
 return e}
 var Q=function(C,e){var t=this
@@ -1466,7 +2890,7 @@ var t=new rC(this,e,!1)
 return t.addAll(C,null,e.from,e.to),t.finish()},Q.prototype.parseSlice=function(C,e){void 0===e&&(e={})
 var t=new rC(this,e,!0)
 return t.addAll(C,null,e.from,e.to),a.maxOpen(t.finish())},Q.prototype.matchTag=function(C,e){for(var t=0;t<this.tags.length;t++){var H=this.tags[t]
-if(oC(C,H.tag)&&(void 0===H.namespace||C.namespaceURI==H.namespace)&&(!H.context||e.matchesContext(H.context))){if(H.getAttrs){var i=H.getAttrs(C)
+if(LC(C,H.tag)&&(void 0===H.namespace||C.namespaceURI==H.namespace)&&(!H.context||e.matchesContext(H.context))){if(H.getAttrs){var i=H.getAttrs(C)
 if(!1===i)continue
 H.attrs=i}return H}}},Q.prototype.matchStyle=function(C,e,t){for(var H=0;H<this.styles.length;H++){var i=this.styles[H]
 if(!(0!=i.style.indexOf(C)||i.context&&!t.matchesContext(i.context)||i.style.length>C.length&&(61!=i.style.charCodeAt(C.length)||i.style.slice(C.length+1)!=e))){if(i.getAttrs){var V=i.getAttrs(e)
@@ -1480,7 +2904,7 @@ var V
 for(var n in C.nodes)V=void 0,(V=C.nodes[n].spec.parseDOM)&&V.forEach(function(C){t(C=sC(C)),C.node=n})
 return e},Q.fromSchema=function(C){return C.cached.domParser||(C.cached.domParser=new Q(C,Q.schemaRules(C)))}
 var CC={address:!0,article:!0,aside:!0,blockquote:!0,canvas:!0,dd:!0,div:!0,dl:!0,fieldset:!0,figcaption:!0,figure:!0,footer:!0,form:!0,h1:!0,h2:!0,h3:!0,h4:!0,h5:!0,h6:!0,header:!0,hgroup:!0,hr:!0,li:!0,noscript:!0,ol:!0,output:!0,p:!0,pre:!0,section:!0,table:!0,tfoot:!0,ul:!0},eC={head:!0,noscript:!0,object:!0,script:!0,style:!0,title:!0},tC={ol:!0,ul:!0},HC=1,iC=2
-function VC(C){return(C?HC:0)|("full"===C?iC:0)}var nC=function(C,e,t,H,i,V){this.type=C,this.attrs=e,this.solid=H,this.match=i||(4&V?null:C.contentMatch),this.options=V,this.content=[],this.marks=t,this.activeMarks=o.none}
+function VC(C){return(C?HC:0)|("full"===C?iC:0)}var nC=function(C,e,t,H,i,V){this.type=C,this.attrs=e,this.solid=H,this.match=i||(4&V?null:C.contentMatch),this.options=V,this.content=[],this.marks=t,this.activeMarks=L.none}
 nC.prototype.findWrapping=function(C){if(!this.match){if(!this.type)return[]
 var e=this.type.contentMatch.fillBefore(i.from(C))
 if(!e){var t,H=this.type.contentMatch
@@ -1489,10 +2913,10 @@ t&&t.isText&&(e=/\s+$/.exec(t.text))&&(t.text.length==e[0].length?this.content.p
 return!C&&this.match&&(H=H.append(this.match.fillBefore(i.empty,!0))),this.type?this.type.create(this.attrs,H,this.marks):H}
 var rC=function(C,e,t){this.parser=C,this.options=e,this.isOpen=t,this.pendingMarks=[]
 var H,i=e.topNode,V=VC(e.preserveWhitespace)|(t?4:0)
-H=i?new nC(i.type,i.attrs,o.none,!0,e.topMatch||i.type.contentMatch,V):new nC(t?null:C.schema.topNodeType,null,o.none,!0,null,V),this.nodes=[H],this.open=0,this.find=e.findPositions,this.needsBlock=!1},LC={top:{},currentPos:{}}
-function oC(C,e){return(C.matches||C.msMatchesSelector||C.webkitMatchesSelector||C.mozMatchesSelector).call(C,e)}function sC(C){var e={}
+H=i?new nC(i.type,i.attrs,L.none,!0,e.topMatch||i.type.contentMatch,V):new nC(t?null:C.schema.topNodeType,null,L.none,!0,null,V),this.nodes=[H],this.open=0,this.find=e.findPositions,this.needsBlock=!1},oC={top:{},currentPos:{}}
+function LC(C,e){return(C.matches||C.msMatchesSelector||C.webkitMatchesSelector||C.mozMatchesSelector).call(C,e)}function sC(C){var e={}
 for(var t in C)e[t]=C[t]
-return e}LC.top.get=function(){return this.nodes[this.open]},rC.prototype.addDOM=function(C){if(3==C.nodeType)this.addTextNode(C)
+return e}oC.top.get=function(){return this.nodes[this.open]},rC.prototype.addDOM=function(C){if(3==C.nodeType)this.addTextNode(C)
 else if(1==C.nodeType){var e=C.getAttribute("style"),t=e?this.readStyles(function(C){var e,t=/\s*([\w-]+)\s*:\s*([^;]+)/g,H=[]
 for(;e=t.exec(C);)H.push(e[1],e[2].trim())
 return H}(e)):null
@@ -1506,7 +2930,7 @@ var t=this.options.ruleFromNode&&this.options.ruleFromNode(C)||this.parser.match
 if(t?t.ignore:eC.hasOwnProperty(e))this.findInside(C)
 else if(!t||t.skip){t&&t.skip.nodeType&&(C=t.skip)
 var H,i=this.top,V=this.needsBlock
-CC.hasOwnProperty(e)&&(H=!0,i.type||(this.needsBlock=!0)),this.addAll(C),H&&this.sync(i),this.needsBlock=V}else this.addElementByRule(C,t)},rC.prototype.readStyles=function(C){for(var e=o.none,t=0;t<C.length;t+=2){var H=this.parser.matchStyle(C[t],C[t+1],this)
+CC.hasOwnProperty(e)&&(H=!0,i.type||(this.needsBlock=!0)),this.addAll(C),H&&this.sync(i),this.needsBlock=V}else this.addElementByRule(C,t)},rC.prototype.readStyles=function(C){for(var e=L.none,t=0;t<C.length;t+=2){var H=this.parser.matchStyle(C[t],C[t+1],this)
 if(H){if(H.ignore)return null
 e=this.parser.schema.marks[H.mark].create(H.attrs).addToSet(e)}}return e},rC.prototype.addElementByRule=function(C,e){var t,H,i,V=this
 e.node?(H=this.parser.schema.nodes[e.node]).isLeaf?this.insertNode(H.create(e.attrs)):t=this.enter(H,e.attrs,e.preserveWhitespace):(i=this.parser.schema.marks[e.mark].create(e.attrs),this.addPendingMark(i))
@@ -1536,20 +2960,20 @@ if(e>this.open){for(;e>this.open;e--)this.nodes[e-1].content.push(this.nodes[e].
 this.nodes.length=this.open+1}},rC.prototype.finish=function(){return this.open=0,this.closeExtra(this.isOpen),this.nodes[0].finish(this.isOpen||this.options.topOpen)},rC.prototype.sync=function(C){for(var e=this.open;e>=0;e--)if(this.nodes[e]==C)return void(this.open=e)},rC.prototype.addPendingMark=function(C){this.pendingMarks.push(C)},rC.prototype.removePendingMark=function(C){var e=this.pendingMarks.lastIndexOf(C)
 if(e>-1)this.pendingMarks.splice(e,1)
 else{var t=this.top
-t.activeMarks=C.removeFromSet(t.activeMarks)}},LC.currentPos.get=function(){this.closeExtra()
+t.activeMarks=C.removeFromSet(t.activeMarks)}},oC.currentPos.get=function(){this.closeExtra()
 for(var C=0,e=this.open;e>=0;e--){for(var t=this.nodes[e].content,H=t.length-1;H>=0;H--)C+=t[H].nodeSize
 e&&C++}return C},rC.prototype.findAtPoint=function(C,e){if(this.find)for(var t=0;t<this.find.length;t++)this.find[t].node==C&&this.find[t].offset==e&&(this.find[t].pos=this.currentPos)},rC.prototype.findInside=function(C){if(this.find)for(var e=0;e<this.find.length;e++)null==this.find[e].pos&&1==C.nodeType&&C.contains(this.find[e].node)&&(this.find[e].pos=this.currentPos)},rC.prototype.findAround=function(C,e,t){if(C!=e&&this.find)for(var H=0;H<this.find.length;H++){if(null==this.find[H].pos&&1==C.nodeType&&C.contains(this.find[H].node))e.compareDocumentPosition(this.find[H].node)&(t?2:4)&&(this.find[H].pos=this.currentPos)}},rC.prototype.findInText=function(C){if(this.find)for(var e=0;e<this.find.length;e++)this.find[e].node==C&&(this.find[e].pos=this.currentPos-(C.nodeValue.length-this.find[e].offset))},rC.prototype.matchesContext=function(C){var e=this
 if(C.indexOf("|")>-1)return C.split(/\s*\|\s*/).some(this.matchesContext,this)
 var t=C.split("/"),H=this.options.context,i=!(this.isOpen||H&&H.parent.type!=this.nodes[0].type),V=-(H?H.depth+1:0)+(i?0:1)
-return function C(n,r){for(;n>=0;n--){var L=t[n]
-if(""==L){if(n==t.length-1||0==n)continue
+return function C(n,r){for(;n>=0;n--){var o=t[n]
+if(""==o){if(n==t.length-1||0==n)continue
 for(;r>=V;r--)if(C(n-1,r))return!0
-return!1}var o=r>0||0==r&&i?e.nodes[r].type:H&&r>=V?H.node(r-V).type:null
-if(!o||o.name!=L&&-1==o.groups.indexOf(L))return!1
+return!1}var L=r>0||0==r&&i?e.nodes[r].type:H&&r>=V?H.node(r-V).type:null
+if(!L||L.name!=o&&-1==L.groups.indexOf(o))return!1
 r--}return!0}(t.length-1,this.open)},rC.prototype.textblockFromContext=function(){var C=this.options.context
 if(C)for(var e=C.depth;e>=0;e--){var t=C.node(e).contentMatchAt(C.indexAfter(e)).defaultType
 if(t&&t.isTextblock&&t.defaultAttrs)return t}for(var H in this.parser.schema.nodes){var i=this.parser.schema.nodes[H]
-if(i.isTextblock&&i.defaultAttrs)return i}},Object.defineProperties(rC.prototype,LC)
+if(i.isTextblock&&i.defaultAttrs)return i}},Object.defineProperties(rC.prototype,oC)
 var aC=function(C,e){this.nodes=C||{},this.marks=e||{}}
 function MC(C){var e={}
 for(var t in C){var H=C[t].spec.toDOM
@@ -1560,8 +2984,8 @@ return C.forEach(function(C){if(V||C.marks.length){V||(V=[])
 for(var t=0,n=0;t<V.length&&n<C.marks.length;){var r=C.marks[n]
 if(H.marks[r.type.name]){if(!r.eq(V[t])||!1===r.type.spec.spanning)break
 t+=2,n++}else n++}for(;t<V.length;)i=V.pop(),V.pop()
-for(;n<C.marks.length;){var L=C.marks[n++],o=H.serializeMark(L,C.isInline,e)
-o&&(V.push(L,i),i.appendChild(o.dom),i=o.contentDOM||o.dom)}}i.appendChild(H.serializeNode(C,e))}),t},aC.prototype.serializeNode=function(C,e){void 0===e&&(e={})
+for(;n<C.marks.length;){var o=C.marks[n++],L=H.serializeMark(o,C.isInline,e)
+L&&(V.push(o,i),i.appendChild(L.dom),i=L.contentDOM||L.dom)}}i.appendChild(H.serializeNode(C,e))}),t},aC.prototype.serializeNode=function(C,e){void 0===e&&(e={})
 var t=aC.renderSpec(lC(e),this.nodes[C.type.name](C)),H=t.dom,i=t.contentDOM
 if(i){if(C.isLeaf)throw new RangeError("Content hole not allowed in a leaf node spec")
 e.onContent?e.onContent(C,i,e):this.serializeFragment(C.content,e,i)}return H},aC.prototype.serializeNodeAndMarks=function(C,e){void 0===e&&(e={})
@@ -1572,49 +2996,49 @@ return H&&aC.renderSpec(lC(t),H(C,e))},aC.renderSpec=function(C,e){if("string"==
 if(null!=e.nodeType)return{dom:e}
 var t=C.createElement(e[0]),H=null,i=e[1],V=1
 if(i&&"object"==typeof i&&null==i.nodeType&&!Array.isArray(i))for(var n in V=2,i)null!=i[n]&&t.setAttribute(n,i[n])
-for(var r=V;r<e.length;r++){var L=e[r]
-if(0===L){if(r<e.length-1||r>V)throw new RangeError("Content hole must be the only child of its parent node")
-return{dom:t,contentDOM:t}}var o=aC.renderSpec(C,L),s=o.dom,a=o.contentDOM
+for(var r=V;r<e.length;r++){var o=e[r]
+if(0===o){if(r<e.length-1||r>V)throw new RangeError("Content hole must be the only child of its parent node")
+return{dom:t,contentDOM:t}}var L=aC.renderSpec(C,o),s=L.dom,a=L.contentDOM
 if(t.appendChild(s),a){if(H)throw new RangeError("Multiple content holes")
 H=a}}return{dom:t,contentDOM:H}},aC.fromSchema=function(C){return C.cached.domSerializer||(C.cached.domSerializer=new aC(this.nodesFromSchema(C),this.marksFromSchema(C)))},aC.nodesFromSchema=function(C){var e=MC(C.nodes)
-return e.text||(e.text=function(C){return C.text}),e},aC.marksFromSchema=function(C){return MC(C.marks)},e.Node=S,e.ResolvedPos=f,e.NodeRange=b,e.Fragment=i,e.Slice=a,e.ReplaceError=s,e.Mark=o,e.Schema=Y,e.NodeType=G,e.MarkType=J,e.ContentMatch=T,e.DOMParser=Q,e.DOMSerializer=aC})
-VV(oV)
-oV.Node,oV.ResolvedPos,oV.NodeRange,oV.Fragment,oV.Slice,oV.ReplaceError,oV.Mark
-var sV=oV.Schema,aV=(oV.NodeType,oV.MarkType,oV.ContentMatch,oV.DOMParser,oV.DOMSerializer,nV(function(C,e){Object.defineProperty(e,"__esModule",{value:!0})
+return e.text||(e.text=function(C){return C.text}),e},aC.marksFromSchema=function(C){return MC(C.marks)},e.Node=S,e.ResolvedPos=f,e.NodeRange=b,e.Fragment=i,e.Slice=a,e.ReplaceError=s,e.Mark=L,e.Schema=Y,e.NodeType=G,e.MarkType=J,e.ContentMatch=T,e.DOMParser=Q,e.DOMSerializer=aC})
+VV(LV)
+LV.Node,LV.ResolvedPos,LV.NodeRange,LV.Fragment,LV.Slice,LV.ReplaceError,LV.Mark
+var sV=LV.Schema,aV=(LV.NodeType,LV.MarkType,LV.ContentMatch,LV.DOMParser,LV.DOMSerializer,nV(function(C,e){Object.defineProperty(e,"__esModule",{value:!0})
 var t=65535,H=Math.pow(2,16)
 function i(C){return C&t}var V=function(C,e,t){void 0===e&&(e=!1),void 0===t&&(t=null),this.pos=C,this.deleted=e,this.recover=t},n=function(C,e){void 0===e&&(e=!1),this.ranges=C,this.inverted=e}
 n.prototype.recover=function(C){var e=0,V=i(C)
 if(!this.inverted)for(var n=0;n<V;n++)e+=this.ranges[3*n+2]-this.ranges[3*n+1]
-return this.ranges[3*V]+e+function(C){return(C-(C&t))/H}(C)},n.prototype.mapResult=function(C,e){return void 0===e&&(e=1),this._map(C,e,!1)},n.prototype.map=function(C,e){return void 0===e&&(e=1),this._map(C,e,!0)},n.prototype._map=function(C,e,t){for(var i=0,n=this.inverted?2:1,r=this.inverted?1:2,L=0;L<this.ranges.length;L+=3){var o=this.ranges[L]-(this.inverted?i:0)
-if(o>C)break
-var s=this.ranges[L+n],a=this.ranges[L+r],M=o+s
-if(C<=M){var l=o+i+((s?C==o?-1:C==M?1:e:e)<0?0:a)
-if(t)return l
-var d=L/3+(C-o)*H
-return new V(l,e<0?C!=o:C!=M,d)}i+=a-s}return t?C+i:new V(C+i)},n.prototype.touches=function(C,e){for(var t=0,H=i(e),V=this.inverted?2:1,n=this.inverted?1:2,r=0;r<this.ranges.length;r+=3){var L=this.ranges[r]-(this.inverted?t:0)
+return this.ranges[3*V]+e+function(C){return(C-(C&t))/H}(C)},n.prototype.mapResult=function(C,e){return void 0===e&&(e=1),this._map(C,e,!1)},n.prototype.map=function(C,e){return void 0===e&&(e=1),this._map(C,e,!0)},n.prototype._map=function(C,e,t){for(var i=0,n=this.inverted?2:1,r=this.inverted?1:2,o=0;o<this.ranges.length;o+=3){var L=this.ranges[o]-(this.inverted?i:0)
 if(L>C)break
-var o=this.ranges[r+V]
-if(C<=L+o&&r==3*H)return!0
-t+=this.ranges[r+n]-o}return!1},n.prototype.forEach=function(C){for(var e=this.inverted?2:1,t=this.inverted?1:2,H=0,i=0;H<this.ranges.length;H+=3){var V=this.ranges[H],n=V-(this.inverted?i:0),r=V+(this.inverted?0:i),L=this.ranges[H+e],o=this.ranges[H+t]
-C(n,n+L,r,r+o),i+=o-L}},n.prototype.invert=function(){return new n(this.ranges,!this.inverted)},n.prototype.toString=function(){return(this.inverted?"-":"")+JSON.stringify(this.ranges)},n.offset=function(C){return 0==C?n.empty:new n(C<0?[0,-C,0]:[0,0,C])},n.empty=new n([])
+var s=this.ranges[o+n],a=this.ranges[o+r],M=L+s
+if(C<=M){var l=L+i+((s?C==L?-1:C==M?1:e:e)<0?0:a)
+if(t)return l
+var d=o/3+(C-L)*H
+return new V(l,e<0?C!=L:C!=M,d)}i+=a-s}return t?C+i:new V(C+i)},n.prototype.touches=function(C,e){for(var t=0,H=i(e),V=this.inverted?2:1,n=this.inverted?1:2,r=0;r<this.ranges.length;r+=3){var o=this.ranges[r]-(this.inverted?t:0)
+if(o>C)break
+var L=this.ranges[r+V]
+if(C<=o+L&&r==3*H)return!0
+t+=this.ranges[r+n]-L}return!1},n.prototype.forEach=function(C){for(var e=this.inverted?2:1,t=this.inverted?1:2,H=0,i=0;H<this.ranges.length;H+=3){var V=this.ranges[H],n=V-(this.inverted?i:0),r=V+(this.inverted?0:i),o=this.ranges[H+e],L=this.ranges[H+t]
+C(n,n+o,r,r+L),i+=L-o}},n.prototype.invert=function(){return new n(this.ranges,!this.inverted)},n.prototype.toString=function(){return(this.inverted?"-":"")+JSON.stringify(this.ranges)},n.offset=function(C){return 0==C?n.empty:new n(C<0?[0,-C,0]:[0,0,C])},n.empty=new n([])
 var r=function(C,e,t,H){this.maps=C||[],this.from=t||0,this.to=null==H?this.maps.length:H,this.mirror=e}
-function L(C){var e=Error.call(this,C)
-return e.__proto__=L.prototype,e}r.prototype.slice=function(C,e){return void 0===C&&(C=0),void 0===e&&(e=this.maps.length),new r(this.maps,this.mirror,C,e)},r.prototype.copy=function(){return new r(this.maps.slice(),this.mirror&&this.mirror.slice(),this.from,this.to)},r.prototype.appendMap=function(C,e){this.to=this.maps.push(C),null!=e&&this.setMirror(this.maps.length-1,e)},r.prototype.appendMapping=function(C){for(var e=0,t=this.maps.length;e<C.maps.length;e++){var H=C.getMirror(e)
+function o(C){var e=Error.call(this,C)
+return e.__proto__=o.prototype,e}r.prototype.slice=function(C,e){return void 0===C&&(C=0),void 0===e&&(e=this.maps.length),new r(this.maps,this.mirror,C,e)},r.prototype.copy=function(){return new r(this.maps.slice(),this.mirror&&this.mirror.slice(),this.from,this.to)},r.prototype.appendMap=function(C,e){this.to=this.maps.push(C),null!=e&&this.setMirror(this.maps.length-1,e)},r.prototype.appendMapping=function(C){for(var e=0,t=this.maps.length;e<C.maps.length;e++){var H=C.getMirror(e)
 this.appendMap(C.maps[e],null!=H&&H<e?t+H:null)}},r.prototype.getMirror=function(C){if(this.mirror)for(var e=0;e<this.mirror.length;e++)if(this.mirror[e]==C)return this.mirror[e+(e%2?-1:1)]},r.prototype.setMirror=function(C,e){this.mirror||(this.mirror=[]),this.mirror.push(C,e)},r.prototype.appendMappingInverted=function(C){for(var e=C.maps.length-1,t=this.maps.length+C.maps.length;e>=0;e--){var H=C.getMirror(e)
 this.appendMap(C.maps[e].invert(),null!=H&&H>e?t-H-1:null)}},r.prototype.invert=function(){var C=new r
 return C.appendMappingInverted(this),C},r.prototype.map=function(C,e){if(void 0===e&&(e=1),this.mirror)return this._map(C,e,!0)
 for(var t=this.from;t<this.to;t++)C=this.maps[t].map(C,e)
-return C},r.prototype.mapResult=function(C,e){return void 0===e&&(e=1),this._map(C,e,!1)},r.prototype._map=function(C,e,t){for(var H=!1,i=null,n=this.from;n<this.to;n++){var r=this.maps[n],L=i&&i[n]
-if(null!=L&&r.touches(C,L))C=r.recover(L)
-else{var o=r.mapResult(C,e)
-if(null!=o.recover){var s=this.getMirror(n)
-if(null!=s&&s>n&&s<this.to){if(o.deleted){n=s,C=this.maps[s].recover(o.recover)
-continue}(i||(i=Object.create(null)))[s]=o.recover}}o.deleted&&(H=!0),C=o.pos}}return t?C:new V(C,H)},L.prototype=Object.create(Error.prototype),L.prototype.constructor=L,L.prototype.name="TransformError"
-var o=function(C){this.doc=C,this.steps=[],this.docs=[],this.mapping=new r},s={before:{},docChanged:{}}
-function a(){throw new Error("Override me")}s.before.get=function(){return this.docs.length?this.docs[0]:this.doc},o.prototype.step=function(C){var e=this.maybeStep(C)
-if(e.failed)throw new L(e.failed)
-return this},o.prototype.maybeStep=function(C){var e=C.apply(this.doc)
-return e.failed||this.addStep(C,e.doc),e},s.docChanged.get=function(){return this.steps.length>0},o.prototype.addStep=function(C,e){this.docs.push(this.doc),this.steps.push(C),this.mapping.appendMap(C.getMap()),this.doc=e},Object.defineProperties(o.prototype,s)
+return C},r.prototype.mapResult=function(C,e){return void 0===e&&(e=1),this._map(C,e,!1)},r.prototype._map=function(C,e,t){for(var H=!1,i=null,n=this.from;n<this.to;n++){var r=this.maps[n],o=i&&i[n]
+if(null!=o&&r.touches(C,o))C=r.recover(o)
+else{var L=r.mapResult(C,e)
+if(null!=L.recover){var s=this.getMirror(n)
+if(null!=s&&s>n&&s<this.to){if(L.deleted){n=s,C=this.maps[s].recover(L.recover)
+continue}(i||(i=Object.create(null)))[s]=L.recover}}L.deleted&&(H=!0),C=L.pos}}return t?C:new V(C,H)},o.prototype=Object.create(Error.prototype),o.prototype.constructor=o,o.prototype.name="TransformError"
+var L=function(C){this.doc=C,this.steps=[],this.docs=[],this.mapping=new r},s={before:{},docChanged:{}}
+function a(){throw new Error("Override me")}s.before.get=function(){return this.docs.length?this.docs[0]:this.doc},L.prototype.step=function(C){var e=this.maybeStep(C)
+if(e.failed)throw new o(e.failed)
+return this},L.prototype.maybeStep=function(C){var e=C.apply(this.doc)
+return e.failed||this.addStep(C,e.doc),e},s.docChanged.get=function(){return this.steps.length>0},L.prototype.addStep=function(C,e){this.docs.push(this.doc),this.steps.push(C),this.mapping.appendMap(C.getMap()),this.doc=e},Object.defineProperties(L.prototype,s)
 var M=Object.create(null),l=function(){}
 l.prototype.apply=function(C){return a()},l.prototype.getMap=function(){return n.empty},l.prototype.invert=function(C){return a()},l.prototype.map=function(C){return a()},l.prototype.merge=function(C){return null},l.prototype.toJSON=function(){return a()},l.fromJSON=function(C,e){if(!e||!e.stepType)throw new RangeError("Invalid input for Step.fromJSON")
 var t=M[e.stepType]
@@ -1622,16 +3046,16 @@ if(!t)throw new RangeError("No step type "+e.stepType+" defined")
 return t.fromJSON(C,e)},l.jsonID=function(C,e){if(C in M)throw new RangeError("Duplicate use of step JSON ID "+C)
 return M[C]=e,e.prototype.jsonID=C,e}
 var d=function(C,e){this.doc=C,this.failed=e}
-d.ok=function(C){return new d(C,null)},d.fail=function(C){return new d(null,C)},d.fromReplace=function(C,e,t,H){try{return d.ok(C.replace(e,t,H))}catch(i){if(i instanceof oV.ReplaceError)return d.fail(i.message)
+d.ok=function(C){return new d(C,null)},d.fail=function(C){return new d(null,C)},d.fromReplace=function(C,e,t,H){try{return d.ok(C.replace(e,t,H))}catch(i){if(i instanceof LV.ReplaceError)return d.fail(i.message)
 throw i}}
 var c=function(C){function e(e,t,H,i){C.call(this),this.from=e,this.to=t,this.slice=H,this.structure=!!i}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.apply=function(C){return this.structure&&h(C,this.from,this.to)?d.fail("Structure replace would overwrite content"):d.fromReplace(C,this.from,this.to,this.slice)},e.prototype.getMap=function(){return new n([this.from,this.to-this.from,this.slice.size])},e.prototype.invert=function(C){return new e(this.from,this.from+this.slice.size,C.slice(this.from,this.to))},e.prototype.map=function(C){var t=C.mapResult(this.from,1),H=C.mapResult(this.to,-1)
 return t.deleted&&H.deleted?null:new e(t.pos,Math.max(t.pos,H.pos),this.slice)},e.prototype.merge=function(C){if(!(C instanceof e)||C.structure!=this.structure)return null
 if(this.from+this.slice.size!=C.from||this.slice.openEnd||C.slice.openStart){if(C.to!=this.from||this.slice.openStart||C.slice.openEnd)return null
-var t=this.slice.size+C.slice.size==0?oV.Slice.empty:new oV.Slice(C.slice.content.append(this.slice.content),C.slice.openStart,this.slice.openEnd)
-return new e(C.from,this.to,t,this.structure)}var H=this.slice.size+C.slice.size==0?oV.Slice.empty:new oV.Slice(this.slice.content.append(C.slice.content),this.slice.openStart,C.slice.openEnd)
+var t=this.slice.size+C.slice.size==0?LV.Slice.empty:new LV.Slice(C.slice.content.append(this.slice.content),C.slice.openStart,this.slice.openEnd)
+return new e(C.from,this.to,t,this.structure)}var H=this.slice.size+C.slice.size==0?LV.Slice.empty:new LV.Slice(this.slice.content.append(C.slice.content),this.slice.openStart,C.slice.openEnd)
 return new e(this.from,this.to+(C.to-C.from),H,this.structure)},e.prototype.toJSON=function(){var C={stepType:"replace",from:this.from,to:this.to}
 return this.slice.size&&(C.slice=this.slice.toJSON()),this.structure&&(C.structure=!0),C},e.fromJSON=function(C,t){if("number"!=typeof t.from||"number"!=typeof t.to)throw new RangeError("Invalid input for ReplaceStep.fromJSON")
-return new e(t.from,t.to,oV.Slice.fromJSON(C,t.slice),!!t.structure)},e}(l)
+return new e(t.from,t.to,LV.Slice.fromJSON(C,t.slice),!!t.structure)},e}(l)
 l.jsonID("replace",c)
 var u=function(C){function e(e,t,H,i,V,n,r){C.call(this),this.from=e,this.to=t,this.gapFrom=H,this.gapTo=i,this.slice=V,this.insert=n,this.structure=!!r}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.apply=function(C){if(this.structure&&(h(C,this.from,this.gapFrom)||h(C,this.gapTo,this.to)))return d.fail("Structure gap-replace would overwrite content")
 var e=C.slice(this.gapFrom,this.gapTo)
@@ -1641,7 +3065,7 @@ return t?d.fromReplace(C,this.from,this.to,t):d.fail("Content does not fit in ga
 return new e(this.from,this.from+this.slice.size+t,this.from+this.insert,this.from+this.insert+t,C.slice(this.from,this.to).removeBetween(this.gapFrom-this.from,this.gapTo-this.from),this.gapFrom-this.from,this.structure)},e.prototype.map=function(C){var t=C.mapResult(this.from,1),H=C.mapResult(this.to,-1),i=C.map(this.gapFrom,-1),V=C.map(this.gapTo,1)
 return t.deleted&&H.deleted||i<t.pos||V>H.pos?null:new e(t.pos,H.pos,i,V,this.slice,this.insert,this.structure)},e.prototype.toJSON=function(){var C={stepType:"replaceAround",from:this.from,to:this.to,gapFrom:this.gapFrom,gapTo:this.gapTo,insert:this.insert}
 return this.slice.size&&(C.slice=this.slice.toJSON()),this.structure&&(C.structure=!0),C},e.fromJSON=function(C,t){if("number"!=typeof t.from||"number"!=typeof t.to||"number"!=typeof t.gapFrom||"number"!=typeof t.gapTo||"number"!=typeof t.insert)throw new RangeError("Invalid input for ReplaceAroundStep.fromJSON")
-return new e(t.from,t.to,t.gapFrom,t.gapTo,oV.Slice.fromJSON(C,t.slice),t.insert,!!t.structure)},e}(l)
+return new e(t.from,t.to,t.gapFrom,t.gapTo,LV.Slice.fromJSON(C,t.slice),t.insert,!!t.structure)},e}(l)
 function h(C,e,t){for(var H=C.resolve(e),i=t-e,V=H.depth;i>0&&V>0&&H.indexAfter(V)==H.node(V).childCount;)V--,i--
 if(i>0)for(var n=H.node(V).maybeChild(H.indexAfter(V));i>0;){if(!n||n.isLeaf)return!0
 n=n.firstChild,i--}return!1}function p(C,e,t){return(0==e||C.canReplace(e,C.childCount))&&(t==C.childCount||C.canReplace(0,t))}function m(C){return{type:C,attrs:null}}function f(C,e){return C&&e&&!C.isLeaf&&C.canAppend(e)}function g(C,e,t){var H=C.resolve(e)
@@ -1651,46 +3075,46 @@ if(H.node(i).canReplaceWith(V,V,t))return H.before(i+1)
 if(V>0)return null}if(H.parentOffset==H.parent.content.size)for(var n=H.depth-1;n>=0;n--){var r=H.indexAfter(n)
 if(H.node(n).canReplaceWith(r,r,t))return H.after(n+1)
 if(r<H.node(n).childCount)return null}}function Z(C,e,t){for(var H=[],i=0;i<C.childCount;i++){var V=C.child(i)
-V.content.size&&(V=V.copy(Z(V.content,e,V))),V.isInline&&(V=e(V,t,i)),H.push(V)}return oV.Fragment.fromArray(H)}l.jsonID("replaceAround",u),o.prototype.lift=function(C,e){for(var t=C.$from,H=C.$to,i=C.depth,V=t.before(i+1),n=H.after(i+1),r=V,L=n,o=oV.Fragment.empty,s=0,a=i,M=!1;a>e;a--)M||t.index(a)>0?(M=!0,o=oV.Fragment.from(t.node(a).copy(o)),s++):r--
-for(var l=oV.Fragment.empty,d=0,c=i,h=!1;c>e;c--)h||H.after(c+1)<H.end(c)?(h=!0,l=oV.Fragment.from(H.node(c).copy(l)),d++):L++
-return this.step(new u(r,L,V,n,new oV.Slice(o.append(l),s,d),o.size-s,!0))},o.prototype.wrap=function(C,e){for(var t=oV.Fragment.empty,H=e.length-1;H>=0;H--)t=oV.Fragment.from(e[H].type.create(e[H].attrs,t))
+V.content.size&&(V=V.copy(Z(V.content,e,V))),V.isInline&&(V=e(V,t,i)),H.push(V)}return LV.Fragment.fromArray(H)}l.jsonID("replaceAround",u),L.prototype.lift=function(C,e){for(var t=C.$from,H=C.$to,i=C.depth,V=t.before(i+1),n=H.after(i+1),r=V,o=n,L=LV.Fragment.empty,s=0,a=i,M=!1;a>e;a--)M||t.index(a)>0?(M=!0,L=LV.Fragment.from(t.node(a).copy(L)),s++):r--
+for(var l=LV.Fragment.empty,d=0,c=i,h=!1;c>e;c--)h||H.after(c+1)<H.end(c)?(h=!0,l=LV.Fragment.from(H.node(c).copy(l)),d++):o++
+return this.step(new u(r,o,V,n,new LV.Slice(L.append(l),s,d),L.size-s,!0))},L.prototype.wrap=function(C,e){for(var t=LV.Fragment.empty,H=e.length-1;H>=0;H--)t=LV.Fragment.from(e[H].type.create(e[H].attrs,t))
 var i=C.start,V=C.end
-return this.step(new u(i,V,i,V,new oV.Slice(t,0,0),e.length,!0))},o.prototype.setBlockType=function(C,e,t,H){var i=this
+return this.step(new u(i,V,i,V,new LV.Slice(t,0,0),e.length,!0))},L.prototype.setBlockType=function(C,e,t,H){var i=this
 if(void 0===e&&(e=C),!t.isTextblock)throw new RangeError("Type given to setBlockType should be a textblock")
 var V=this.steps.length
 return this.doc.nodesBetween(C,e,function(C,e){if(C.isTextblock&&!C.hasMarkup(t,H)&&function(C,e,t){var H=C.resolve(e),i=H.index()
 return H.parent.canReplaceWith(i,i+1,t)}(i.doc,i.mapping.slice(V).map(e),t)){i.clearIncompatible(i.mapping.slice(V).map(e,1),t)
-var n=i.mapping.slice(V),r=n.map(e,1),L=n.map(e+C.nodeSize,1)
-return i.step(new u(r,L,r+1,L-1,new oV.Slice(oV.Fragment.from(t.create(H,null,C.marks)),0,0),1,!0)),!1}}),this},o.prototype.setNodeMarkup=function(C,e,t,H){var i=this.doc.nodeAt(C)
+var n=i.mapping.slice(V),r=n.map(e,1),o=n.map(e+C.nodeSize,1)
+return i.step(new u(r,o,r+1,o-1,new LV.Slice(LV.Fragment.from(t.create(H,null,C.marks)),0,0),1,!0)),!1}}),this},L.prototype.setNodeMarkup=function(C,e,t,H){var i=this.doc.nodeAt(C)
 if(!i)throw new RangeError("No node at given position")
 e||(e=i.type)
 var V=e.create(t,null,H||i.marks)
 if(i.isLeaf)return this.replaceWith(C,C+i.nodeSize,V)
 if(!e.validContent(i.content))throw new RangeError("Invalid content for node type "+e.name)
-return this.step(new u(C,C+i.nodeSize,C+1,C+i.nodeSize-1,new oV.Slice(oV.Fragment.from(V),0,0),1,!0))},o.prototype.split=function(C,e,t){void 0===e&&(e=1)
-for(var H=this.doc.resolve(C),i=oV.Fragment.empty,V=oV.Fragment.empty,n=H.depth,r=H.depth-e,L=e-1;n>r;n--,L--){i=oV.Fragment.from(H.node(n).copy(i))
-var o=t&&t[L]
-V=oV.Fragment.from(o?o.type.create(o.attrs,V):H.node(n).copy(V))}return this.step(new c(C,C,new oV.Slice(i.append(V),e,e,!0)))},o.prototype.join=function(C,e){void 0===e&&(e=1)
-var t=new c(C-e,C+e,oV.Slice.empty,!0)
+return this.step(new u(C,C+i.nodeSize,C+1,C+i.nodeSize-1,new LV.Slice(LV.Fragment.from(V),0,0),1,!0))},L.prototype.split=function(C,e,t){void 0===e&&(e=1)
+for(var H=this.doc.resolve(C),i=LV.Fragment.empty,V=LV.Fragment.empty,n=H.depth,r=H.depth-e,o=e-1;n>r;n--,o--){i=LV.Fragment.from(H.node(n).copy(i))
+var L=t&&t[o]
+V=LV.Fragment.from(L?L.type.create(L.attrs,V):H.node(n).copy(V))}return this.step(new c(C,C,new LV.Slice(i.append(V),e,e,!0)))},L.prototype.join=function(C,e){void 0===e&&(e=1)
+var t=new c(C-e,C+e,LV.Slice.empty,!0)
 return this.step(t)}
-var v=function(C){function e(e,t,H){C.call(this),this.from=e,this.to=t,this.mark=H}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.apply=function(C){var e=this,t=C.slice(this.from,this.to),H=C.resolve(this.from),i=H.node(H.sharedDepth(this.to)),V=new oV.Slice(Z(t.content,function(C,t){return t.type.allowsMarkType(e.mark.type)?C.mark(e.mark.addToSet(C.marks)):C},i),t.openStart,t.openEnd)
+var v=function(C){function e(e,t,H){C.call(this),this.from=e,this.to=t,this.mark=H}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.apply=function(C){var e=this,t=C.slice(this.from,this.to),H=C.resolve(this.from),i=H.node(H.sharedDepth(this.to)),V=new LV.Slice(Z(t.content,function(C,t){return t.type.allowsMarkType(e.mark.type)?C.mark(e.mark.addToSet(C.marks)):C},i),t.openStart,t.openEnd)
 return d.fromReplace(C,this.from,this.to,V)},e.prototype.invert=function(){return new y(this.from,this.to,this.mark)},e.prototype.map=function(C){var t=C.mapResult(this.from,1),H=C.mapResult(this.to,-1)
 return t.deleted&&H.deleted||t.pos>=H.pos?null:new e(t.pos,H.pos,this.mark)},e.prototype.merge=function(C){if(C instanceof e&&C.mark.eq(this.mark)&&this.from<=C.to&&this.to>=C.from)return new e(Math.min(this.from,C.from),Math.max(this.to,C.to),this.mark)},e.prototype.toJSON=function(){return{stepType:"addMark",mark:this.mark.toJSON(),from:this.from,to:this.to}},e.fromJSON=function(C,t){if("number"!=typeof t.from||"number"!=typeof t.to)throw new RangeError("Invalid input for AddMarkStep.fromJSON")
 return new e(t.from,t.to,C.markFromJSON(t.mark))},e}(l)
 l.jsonID("addMark",v)
-var y=function(C){function e(e,t,H){C.call(this),this.from=e,this.to=t,this.mark=H}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.apply=function(C){var e=this,t=C.slice(this.from,this.to),H=new oV.Slice(Z(t.content,function(C){return C.mark(e.mark.removeFromSet(C.marks))}),t.openStart,t.openEnd)
+var y=function(C){function e(e,t,H){C.call(this),this.from=e,this.to=t,this.mark=H}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.apply=function(C){var e=this,t=C.slice(this.from,this.to),H=new LV.Slice(Z(t.content,function(C){return C.mark(e.mark.removeFromSet(C.marks))}),t.openStart,t.openEnd)
 return d.fromReplace(C,this.from,this.to,H)},e.prototype.invert=function(){return new v(this.from,this.to,this.mark)},e.prototype.map=function(C){var t=C.mapResult(this.from,1),H=C.mapResult(this.to,-1)
 return t.deleted&&H.deleted||t.pos>=H.pos?null:new e(t.pos,H.pos,this.mark)},e.prototype.merge=function(C){if(C instanceof e&&C.mark.eq(this.mark)&&this.from<=C.to&&this.to>=C.from)return new e(Math.min(this.from,C.from),Math.max(this.to,C.to),this.mark)},e.prototype.toJSON=function(){return{stepType:"removeMark",mark:this.mark.toJSON(),from:this.from,to:this.to}},e.fromJSON=function(C,t){if("number"!=typeof t.from||"number"!=typeof t.to)throw new RangeError("Invalid input for RemoveMarkStep.fromJSON")
 return new e(t.from,t.to,C.markFromJSON(t.mark))},e}(l)
-function b(C,e,t,H){if(void 0===t&&(t=e),void 0===H&&(H=oV.Slice.empty),e==t&&!H.size)return null
+function b(C,e,t,H){if(void 0===t&&(t=e),void 0===H&&(H=LV.Slice.empty),e==t&&!H.size)return null
 var i=C.resolve(e),V=C.resolve(t)
 if(S(i,V,H))return new c(e,t,H)
-var n=function(C,e){var t=function C(e,t,H,i){var V=oV.Fragment.empty,n=0,r=H[t]
-if(e.depth>t){var L=C(e,t+1,H,i||r)
-n=L.openEnd+1,V=oV.Fragment.from(e.node(t+1).copy(L.content))}r&&(V=V.append(r.content),n=r.openEnd)
-i&&(V=V.append(e.node(t).contentMatchAt(e.indexAfter(t)).fillBefore(oV.Fragment.empty,!0)),n=0)
+var n=function(C,e){var t=function C(e,t,H,i){var V=LV.Fragment.empty,n=0,r=H[t]
+if(e.depth>t){var o=C(e,t+1,H,i||r)
+n=o.openEnd+1,V=LV.Fragment.from(e.node(t+1).copy(o.content))}r&&(V=V.append(r.content),n=r.openEnd)
+i&&(V=V.append(e.node(t).contentMatchAt(e.indexAfter(t)).fillBefore(LV.Fragment.empty,!0)),n=0)
 return{content:V,openEnd:n}}(C,0,e,!1),H=t.content,i=t.openEnd
-return new oV.Slice(H,C.depth,i||0)}(i,function(C,e){for(var t=new O(C),H=1;e.size&&H<=3;H++)e=t.placeSlice(e.content,e.openStart,e.openEnd,H)
+return new LV.Slice(H,C.depth,i||0)}(i,function(C,e){for(var t=new O(C),H=1;e.size&&H<=3;H++)e=t.placeSlice(e.content,e.openStart,e.openEnd,H)
 for(;t.open.length;)t.closeNode()
 return t.placed}(i,H)),r=w(i,V,n)
 if(!r)return null
@@ -1700,51 +3124,51 @@ return C.lastChild}(t.content,t.openEnd):C.node(C.depth-(t.openStart-t.openEnd))
 if(!i.isTextblock)return!1
 for(var V=e.index();V<e.parent.childCount;V++)if(!i.type.allowsMarks(e.parent.child(V).marks))return!1
 t.openEnd?H=i.contentMatchAt(i.childCount):(H=i.contentMatchAt(i.childCount),t.size&&(H=H.matchFragment(t.content,t.openStart?1:0)))
-return(H=H.matchFragment(e.parent.content,e.index()))&&H.validEnd}(i,V,n)){for(var L=V.depth,o=V.after(L);L>1&&o==V.end(--L);)++o
-var s=w(i,C.resolve(o),n)
-if(s)return new u(e,o,t,V.end(),s,n.size)}return r.size||e!=t?new c(e,t,r):null}function k(C,e,t,H,i,V,n){var r,L=C.childCount,o=L-(n>0?1:0),s=V<0?e:t.node(i)
-r=V<0?s.contentMatchAt(o):1==L&&n>0?s.contentMatchAt(V?t.index(i):t.indexAfter(i)):s.contentMatchAt(t.indexAfter(i)).matchFragment(C,L>0&&V?1:0,o)
+return(H=H.matchFragment(e.parent.content,e.index()))&&H.validEnd}(i,V,n)){for(var o=V.depth,L=V.after(o);o>1&&L==V.end(--o);)++L
+var s=w(i,C.resolve(L),n)
+if(s)return new u(e,L,t,V.end(),s,n.size)}return r.size||e!=t?new c(e,t,r):null}function k(C,e,t,H,i,V,n){var r,o=C.childCount,L=o-(n>0?1:0),s=V<0?e:t.node(i)
+r=V<0?s.contentMatchAt(L):1==o&&n>0?s.contentMatchAt(V?t.index(i):t.indexAfter(i)):s.contentMatchAt(t.indexAfter(i)).matchFragment(C,o>0&&V?1:0,L)
 var a=H.node(i)
 if(n>0&&i<H.depth){var M=a.content.cutByIndex(H.indexAfter(i)).addToStart(C.lastChild),l=r.fillBefore(M,!0)
-if(l&&l.size&&V>0&&1==L&&(l=null),l){var d=k(C.lastChild.content,C.lastChild,t,H,i+1,1==L?V-1:-1,n-1)
+if(l&&l.size&&V>0&&1==o&&(l=null),l){var d=k(C.lastChild.content,C.lastChild,t,H,i+1,1==o?V-1:-1,n-1)
 if(d){var c=C.lastChild.copy(d)
-return l.size?C.cutByIndex(0,L-1).append(l).addToEnd(c):C.replaceChild(L-1,c)}}}n>0&&(r=r.matchType((1==L&&V>0?t.node(i+1):C.lastChild).type))
+return l.size?C.cutByIndex(0,o-1).append(l).addToEnd(c):C.replaceChild(o-1,c)}}}n>0&&(r=r.matchType((1==o&&V>0?t.node(i+1):C.lastChild).type))
 var u=H.index(i)
 if(u==a.childCount&&!a.type.compatibleContent(e.type))return null
 for(var h=r.fillBefore(a.content,!0,u),p=u;h&&p<a.content.childCount;p++)s.type.allowsMarks(a.content.child(p).marks)||(h=null)
 if(!h)return null
-if(n>0){var m=function C(e,t,H,i,V){var n,r=e.content,L=r.childCount
-n=V>=0?H.node(i).contentMatchAt(H.indexAfter(i)).matchFragment(r,V>0?1:0,L):e.contentMatchAt(L)
-if(t>0){var o=C(r.lastChild,t-1,H,i+1,1==L?V-1:-1)
-r=r.replaceChild(L-1,o)}return e.copy(r.append(n.fillBefore(oV.Fragment.empty,!0)))}(C.lastChild,n-1,t,i+1,1==L?V-1:-1)
-C=C.replaceChild(L-1,m)}return C=C.append(h),H.depth>i&&(C=C.addToEnd(function C(e,t){var H=e.node(t)
+if(n>0){var m=function C(e,t,H,i,V){var n,r=e.content,o=r.childCount
+n=V>=0?H.node(i).contentMatchAt(H.indexAfter(i)).matchFragment(r,V>0?1:0,o):e.contentMatchAt(o)
+if(t>0){var L=C(r.lastChild,t-1,H,i+1,1==o?V-1:-1)
+r=r.replaceChild(o-1,L)}return e.copy(r.append(n.fillBefore(LV.Fragment.empty,!0)))}(C.lastChild,n-1,t,i+1,1==o?V-1:-1)
+C=C.replaceChild(o-1,m)}return C=C.append(h),H.depth>i&&(C=C.addToEnd(function C(e,t){var H=e.node(t)
 var i=H.contentMatchAt(0).fillBefore(H.content,!0,e.index(t))
 e.depth>t&&(i=i.addToEnd(C(e,t+1)))
 return H.copy(i)}(H,i+1))),C}function w(C,e,t){var H=k(t.content,C.node(0),C,e,0,t.openStart,t.openEnd)
 return H?function(C,e,t){for(;e>0&&t>0&&1==C.childCount;)C=C.firstChild.content,e--,t--
-return new oV.Slice(C,e,t)}(H,t.openStart,e.depth):null}function S(C,e,t){return!t.openStart&&!t.openEnd&&C.start()==e.start()&&C.parent.canReplace(C.index(),e.index(),t.content)}l.jsonID("removeMark",y),o.prototype.addMark=function(C,e,t){var H=this,i=[],V=[],n=null,r=null
-return this.doc.nodesBetween(C,e,function(H,L,o){if(H.isInline){var s=H.marks
-if(!t.isInSet(s)&&o.type.allowsMarkType(t.type)){for(var a=Math.max(L,C),M=Math.min(L+H.nodeSize,e),l=t.addToSet(s),d=0;d<s.length;d++)s[d].isInSet(l)||(n&&n.to==a&&n.mark.eq(s[d])?n.to=M:i.push(n=new y(a,M,s[d])))
-r&&r.to==a?r.to=M:V.push(r=new v(a,M,t))}}}),i.forEach(function(C){return H.step(C)}),V.forEach(function(C){return H.step(C)}),this},o.prototype.removeMark=function(C,e,t){var H=this
+return new LV.Slice(C,e,t)}(H,t.openStart,e.depth):null}function S(C,e,t){return!t.openStart&&!t.openEnd&&C.start()==e.start()&&C.parent.canReplace(C.index(),e.index(),t.content)}l.jsonID("removeMark",y),L.prototype.addMark=function(C,e,t){var H=this,i=[],V=[],n=null,r=null
+return this.doc.nodesBetween(C,e,function(H,o,L){if(H.isInline){var s=H.marks
+if(!t.isInSet(s)&&L.type.allowsMarkType(t.type)){for(var a=Math.max(o,C),M=Math.min(o+H.nodeSize,e),l=t.addToSet(s),d=0;d<s.length;d++)s[d].isInSet(l)||(n&&n.to==a&&n.mark.eq(s[d])?n.to=M:i.push(n=new y(a,M,s[d])))
+r&&r.to==a?r.to=M:V.push(r=new v(a,M,t))}}}),i.forEach(function(C){return H.step(C)}),V.forEach(function(C){return H.step(C)}),this},L.prototype.removeMark=function(C,e,t){var H=this
 void 0===t&&(t=null)
 var i=[],V=0
 return this.doc.nodesBetween(C,e,function(H,n){if(H.isInline){V++
 var r=null
-if(t instanceof oV.MarkType){var L=t.isInSet(H.marks)
-L&&(r=[L])}else t?t.isInSet(H.marks)&&(r=[t]):r=H.marks
-if(r&&r.length)for(var o=Math.min(n+H.nodeSize,e),s=0;s<r.length;s++){for(var a=r[s],M=void 0,l=0;l<i.length;l++){var d=i[l]
-d.step==V-1&&a.eq(i[l].style)&&(M=d)}M?(M.to=o,M.step=V):i.push({style:a,from:Math.max(n,C),to:o,step:V})}}}),i.forEach(function(C){return H.step(new y(C.from,C.to,C.style))}),this},o.prototype.clearIncompatible=function(C,e,t){void 0===t&&(t=e.contentMatch)
-for(var H=this.doc.nodeAt(C),i=[],V=C+1,n=0;n<H.childCount;n++){var r=H.child(n),L=V+r.nodeSize,o=t.matchType(r.type,r.attrs)
-if(o){t=o
-for(var s=0;s<r.marks.length;s++)e.allowsMarkType(r.marks[s].type)||this.step(new y(V,L,r.marks[s]))}else i.push(new c(V,L,oV.Slice.empty))
-V=L}if(!t.validEnd){var a=t.fillBefore(oV.Fragment.empty,!0)
-this.replace(V,V,new oV.Slice(a,0,0))}for(var M=i.length-1;M>=0;M--)this.step(i[M])
-return this},o.prototype.replace=function(C,e,t){void 0===e&&(e=C),void 0===t&&(t=oV.Slice.empty)
+if(t instanceof LV.MarkType){var o=t.isInSet(H.marks)
+o&&(r=[o])}else t?t.isInSet(H.marks)&&(r=[t]):r=H.marks
+if(r&&r.length)for(var L=Math.min(n+H.nodeSize,e),s=0;s<r.length;s++){for(var a=r[s],M=void 0,l=0;l<i.length;l++){var d=i[l]
+d.step==V-1&&a.eq(i[l].style)&&(M=d)}M?(M.to=L,M.step=V):i.push({style:a,from:Math.max(n,C),to:L,step:V})}}}),i.forEach(function(C){return H.step(new y(C.from,C.to,C.style))}),this},L.prototype.clearIncompatible=function(C,e,t){void 0===t&&(t=e.contentMatch)
+for(var H=this.doc.nodeAt(C),i=[],V=C+1,n=0;n<H.childCount;n++){var r=H.child(n),o=V+r.nodeSize,L=t.matchType(r.type,r.attrs)
+if(L){t=L
+for(var s=0;s<r.marks.length;s++)e.allowsMarkType(r.marks[s].type)||this.step(new y(V,o,r.marks[s]))}else i.push(new c(V,o,LV.Slice.empty))
+V=o}if(!t.validEnd){var a=t.fillBefore(LV.Fragment.empty,!0)
+this.replace(V,V,new LV.Slice(a,0,0))}for(var M=i.length-1;M>=0;M--)this.step(i[M])
+return this},L.prototype.replace=function(C,e,t){void 0===e&&(e=C),void 0===t&&(t=LV.Slice.empty)
 var H=b(this.doc,C,e,t)
-return H&&this.step(H),this},o.prototype.replaceWith=function(C,e,t){return this.replace(C,e,new oV.Slice(oV.Fragment.from(t),0,0))},o.prototype.delete=function(C,e){return this.replace(C,e,oV.Slice.empty)},o.prototype.insert=function(C,e){return this.replaceWith(C,C,e)}
+return H&&this.step(H),this},L.prototype.replaceWith=function(C,e,t){return this.replace(C,e,new LV.Slice(LV.Fragment.from(t),0,0))},L.prototype.delete=function(C,e){return this.replace(C,e,LV.Slice.empty)},L.prototype.insert=function(C,e){return this.replaceWith(C,C,e)}
 var O=function(C){this.open=[]
 for(var e=0;e<=C.depth;e++){var t=C.node(e),H=t.contentMatchAt(C.indexAfter(e))
-this.open.push({parent:t,match:H,content:oV.Fragment.empty,wrapper:!1,openEnd:0,depth:e})}this.placed=[]}
+this.open.push({parent:t,match:H,content:LV.Fragment.empty,wrapper:!1,openEnd:0,depth:e})}this.placed=[]}
 function x(C,e,t){var H=C.content
 if(e>1){var i=x(C.firstChild,e-1,1==C.childCount?t-1:0)
 H=C.content.replaceChild(0,i)}var V=C.type.contentMatch.fillBefore(H,0==t)
@@ -1753,41 +3177,41 @@ C=C.replaceChild(0,V.copy(A(V.content,e+1,t,H,V)))}return e>H&&(C=i.contentMatch
 if(i<C.pos-(C.depth-H)||e.end(H)>e.pos+(e.depth-H)||C.node(H).type.spec.isolating||e.node(H).type.spec.isolating)break
 i==e.start(H)&&t.push(H)}return t}O.prototype.placeSlice=function(C,e,t,H,i){if(e>0){var V=C.firstChild,n=this.placeSlice(V.content,Math.max(0,e-1),t&&1==C.childCount?t-1:0,H,V)
 n.content!=V.content&&(n.content.size?(C=C.replaceChild(0,V.copy(n.content)),e=n.openStart+1):(1==C.childCount&&(t=0),C=C.cutByIndex(1),e=0))}var r=this.placeContent(C,e,t,H,i)
-if(H>2&&r.size&&0==e){for(var L=0;L<r.content.childCount;L++){var o=r.content.child(L)
-this.placeContent(o.content,0,t&&L==r.content.childCount.length-1?t-1:0,H,o)}r=oV.Fragment.empty}return r},O.prototype.placeContent=function(C,e,t,H,i){for(var V=0;V<C.childCount;V++){for(var n=C.child(V),r=!1,L=V==C.childCount-1,o=this.open.length-1;o>=0;o--){var s=this.open[o],a=void 0
-if(H>1&&(a=s.match.findWrapping(n.type))&&(!i||!a.length||a[a.length-1]!=i.type)){for(;this.open.length-1>o;)this.closeNode()
-for(var M=0;M<a.length;M++)s.match=s.match.matchType(a[M]),o++,s={parent:a[M].create(),match:a[M].contentMatch,content:oV.Fragment.empty,wrapper:!0,openEnd:0,depth:o+M},this.open.push(s)}var l=s.match.matchType(n.type)
-if(!l){var d=s.match.fillBefore(oV.Fragment.from(n))
+if(H>2&&r.size&&0==e){for(var o=0;o<r.content.childCount;o++){var L=r.content.child(o)
+this.placeContent(L.content,0,t&&o==r.content.childCount.length-1?t-1:0,H,L)}r=LV.Fragment.empty}return r},O.prototype.placeContent=function(C,e,t,H,i){for(var V=0;V<C.childCount;V++){for(var n=C.child(V),r=!1,o=V==C.childCount-1,L=this.open.length-1;L>=0;L--){var s=this.open[L],a=void 0
+if(H>1&&(a=s.match.findWrapping(n.type))&&(!i||!a.length||a[a.length-1]!=i.type)){for(;this.open.length-1>L;)this.closeNode()
+for(var M=0;M<a.length;M++)s.match=s.match.matchType(a[M]),L++,s={parent:a[M].create(),match:a[M].contentMatch,content:LV.Fragment.empty,wrapper:!0,openEnd:0,depth:L+M},this.open.push(s)}var l=s.match.matchType(n.type)
+if(!l){var d=s.match.fillBefore(LV.Fragment.from(n))
 if(!d){if(i&&s.match.matchType(i.type))break
 continue}for(var c=0;c<d.childCount;c++){var u=d.child(c)
-this.addNode(s,u,0),l=s.match.matchFragment(u)}}for(;this.open.length-1>o;)this.closeNode()
-n=n.mark(s.parent.type.allowedMarks(n.marks)),e&&(n=x(n,e,L?t:0),e=0),this.addNode(s,n,L?t:0),s.match=l,L&&(t=0),r=!0
-break}if(!r)break}return this.open.length>1&&(V>0&&V==C.childCount||i&&this.open[this.open.length-1].parent.type==i.type)&&this.closeNode(),new oV.Slice(C.cutByIndex(V),e,t)},O.prototype.addNode=function(C,e,t){var H,i
+this.addNode(s,u,0),l=s.match.matchFragment(u)}}for(;this.open.length-1>L;)this.closeNode()
+n=n.mark(s.parent.type.allowedMarks(n.marks)),e&&(n=x(n,e,o?t:0),e=0),this.addNode(s,n,o?t:0),s.match=l,o&&(t=0),r=!0
+break}if(!r)break}return this.open.length>1&&(V>0&&V==C.childCount||i&&this.open[this.open.length-1].parent.type==i.type)&&this.closeNode(),new LV.Slice(C.cutByIndex(V),e,t)},O.prototype.addNode=function(C,e,t){var H,i
 C.content=(H=C.content,i=C.openEnd,i?H.replaceChild(H.childCount-1,function C(e,t){var H=e.content
 if(t>1){var i=C(e.lastChild,t-1)
-H=e.content.replaceChild(e.childCount-1,i)}var V=e.contentMatchAt(e.childCount).fillBefore(oV.Fragment.empty,!0)
+H=e.content.replaceChild(e.childCount-1,i)}var V=e.contentMatchAt(e.childCount).fillBefore(LV.Fragment.empty,!0)
 return e.copy(H.append(V))}(H.lastChild,i)):H).addToEnd(e),C.openEnd=t},O.prototype.closeNode=function(){var C=this.open.pop()
-0==C.content.size||(C.wrapper?this.addNode(this.open[this.open.length-1],C.parent.copy(C.content),C.openEnd+1):this.placed[C.depth]={depth:C.depth,content:C.content,openEnd:C.openEnd})},o.prototype.replaceRange=function(C,e,t){if(!t.size)return this.deleteRange(C,e)
+0==C.content.size||(C.wrapper?this.addNode(this.open[this.open.length-1],C.parent.copy(C.content),C.openEnd+1):this.placed[C.depth]={depth:C.depth,content:C.content,openEnd:C.openEnd})},L.prototype.replaceRange=function(C,e,t){if(!t.size)return this.deleteRange(C,e)
 var H=this.doc.resolve(C),i=this.doc.resolve(e)
 if(S(H,i,t))return this.step(new c(C,e,t))
 var V=T(H,this.doc.resolve(e))
 0==V[V.length-1]&&V.pop()
 var n=-(H.depth+1)
 V.unshift(n)
-for(var r=H.depth,L=H.pos-1;r>0;r--,L--){var o=H.node(r).type.spec
-if(o.defining||o.isolating)break
-V.indexOf(r)>-1?n=r:H.before(r)==L&&V.splice(1,0,-r)}for(var s=V.indexOf(n),a=[],M=t.openStart,l=t.content,d=0;;d++){var u=l.firstChild
+for(var r=H.depth,o=H.pos-1;r>0;r--,o--){var L=H.node(r).type.spec
+if(L.defining||L.isolating)break
+V.indexOf(r)>-1?n=r:H.before(r)==o&&V.splice(1,0,-r)}for(var s=V.indexOf(n),a=[],M=t.openStart,l=t.content,d=0;;d++){var u=l.firstChild
 if(a.push(u),d==t.openStart)break
 l=u.content}M>0&&a[M-1].type.spec.defining&&H.node(s).type!=a[M-1].type?M-=1:M>=2&&a[M-1].isTextblock&&a[M-2].type.spec.defining&&H.node(s).type!=a[M-2].type&&(M-=2)
 for(var h=t.openStart;h>=0;h--){var p=(h+M+1)%(t.openStart+1),m=a[p]
 if(m)for(var f=0;f<V.length;f++){var g=V[(f+s)%V.length],Z=!0
 g<0&&(Z=!1,g=-g)
 var v=H.node(g-1),y=H.index(g-1)
-if(v.canReplaceWith(y,y,m.type,m.marks))return this.replace(H.before(g),Z?i.after(g):e,new oV.Slice(A(t.content,0,t.openStart,p),p,t.openEnd))}}return this.replace(C,e,t)},o.prototype.replaceRangeWith=function(C,e,t){if(!t.isInline&&C==e&&this.doc.resolve(C).parent.content.size){var H=g(this.doc,C,t.type)
-null!=H&&(C=e=H)}return this.replaceRange(C,e,new oV.Slice(oV.Fragment.from(t),0,0))},o.prototype.deleteRange=function(C,e){for(var t=this.doc.resolve(C),H=this.doc.resolve(e),i=T(t,H),V=0;V<i.length;V++){var n=i[V],r=V==i.length-1
+if(v.canReplaceWith(y,y,m.type,m.marks))return this.replace(H.before(g),Z?i.after(g):e,new LV.Slice(A(t.content,0,t.openStart,p),p,t.openEnd))}}return this.replace(C,e,t)},L.prototype.replaceRangeWith=function(C,e,t){if(!t.isInline&&C==e&&this.doc.resolve(C).parent.content.size){var H=g(this.doc,C,t.type)
+null!=H&&(C=e=H)}return this.replaceRange(C,e,new LV.Slice(LV.Fragment.from(t),0,0))},L.prototype.deleteRange=function(C,e){for(var t=this.doc.resolve(C),H=this.doc.resolve(e),i=T(t,H),V=0;V<i.length;V++){var n=i[V],r=V==i.length-1
 if(r&&0==n||t.node(n).type.contentMatch.validEnd)return this.delete(t.start(n),H.end(n))
-if(n>0&&(r||t.node(n-1).canReplace(t.index(n-1),H.indexAfter(n-1))))return this.delete(t.before(n),H.after(n))}for(var L=1;L<=t.depth;L++)if(C-t.start(L)==t.depth-L&&e>t.end(L))return this.delete(t.before(L),e)
-return this.delete(C,e)},e.Transform=o,e.TransformError=L,e.Step=l,e.StepResult=d,e.joinPoint=function(C,e,t){void 0===t&&(t=-1)
+if(n>0&&(r||t.node(n-1).canReplace(t.index(n-1),H.indexAfter(n-1))))return this.delete(t.before(n),H.after(n))}for(var o=1;o<=t.depth;o++)if(C-t.start(o)==t.depth-o&&e>t.end(o))return this.delete(t.before(o),e)
+return this.delete(C,e)},e.Transform=L,e.TransformError=o,e.Step=l,e.StepResult=d,e.joinPoint=function(C,e,t){void 0===t&&(t=-1)
 for(var H=C.resolve(e),i=H.depth;;i--){var V=void 0,n=void 0
 if(i==H.depth?(V=H.nodeBefore,n=H.nodeAfter):t>0?(V=H.node(i+1),n=H.node(i).maybeChild(H.index(i)+1)):(V=H.node(i).maybeChild(H.index(i)-1),n=H.node(i+1)),V&&!V.isTextblock&&f(V,n))return e
 if(0==i)break
@@ -1795,15 +3219,15 @@ e=t<0?H.before(i):H.after(i)}},e.canJoin=function(C,e){var t=C.resolve(e),H=t.in
 return f(t.nodeBefore,t.nodeAfter)&&t.parent.canReplace(H,H+1)},e.canSplit=function(C,e,t,H){void 0===t&&(t=1)
 var i=C.resolve(e),V=i.depth-t,n=H&&H[H.length-1]||i.parent
 if(V<0||i.parent.type.spec.isolating||!i.parent.canReplace(i.index(),i.parent.childCount)||!n.type.validContent(i.parent.content.cutByIndex(i.index(),i.parent.childCount)))return!1
-for(var r=i.depth-1,L=t-2;r>V;r--,L--){var o=i.node(r),s=i.index(r)
-if(o.type.spec.isolating)return!1
-var a=o.content.cutByIndex(s,o.childCount),M=H&&H[L]||o
-if(M!=o&&(a=a.replaceChild(0,M.type.create(M.attrs))),!o.canReplace(s+1,o.childCount)||!M.type.validContent(a))return!1}var l=i.indexAfter(V),d=H&&H[0]
+for(var r=i.depth-1,o=t-2;r>V;r--,o--){var L=i.node(r),s=i.index(r)
+if(L.type.spec.isolating)return!1
+var a=L.content.cutByIndex(s,L.childCount),M=H&&H[o]||L
+if(M!=L&&(a=a.replaceChild(0,M.type.create(M.attrs))),!L.canReplace(s+1,L.childCount)||!M.type.validContent(a))return!1}var l=i.indexAfter(V),d=H&&H[0]
 return i.node(V).canReplaceWith(l,l,d?d.type:i.node(V+1).type)},e.insertPoint=g,e.dropPoint=function(C,e,t){var H=C.resolve(e)
 if(!t.content.size)return e
 for(var i=t.content,V=0;V<t.openStart;V++)i=i.firstChild.content
-for(var n=1;n<=(0==t.openStart&&t.size?2:1);n++)for(var r=H.depth;r>=0;r--){var L=r==H.depth?0:H.pos<=(H.start(r+1)+H.end(r+1))/2?-1:1,o=H.index(r)+(L>0?1:0)
-if(1==n?H.node(r).canReplace(o,o,i):H.node(r).contentMatchAt(o).findWrapping(i.firstChild.type))return 0==L?H.pos:L<0?H.before(r+1):H.after(r+1)}return null},e.liftTarget=function(C){for(var e=C.parent.content.cutByIndex(C.startIndex,C.endIndex),t=C.depth;;--t){var H=C.$from.node(t),i=C.$from.index(t),V=C.$to.indexAfter(t)
+for(var n=1;n<=(0==t.openStart&&t.size?2:1);n++)for(var r=H.depth;r>=0;r--){var o=r==H.depth?0:H.pos<=(H.start(r+1)+H.end(r+1))/2?-1:1,L=H.index(r)+(o>0?1:0)
+if(1==n?H.node(r).canReplace(L,L,i):H.node(r).contentMatchAt(L).findWrapping(i.firstChild.type))return 0==o?H.pos:o<0?H.before(r+1):H.after(r+1)}return null},e.liftTarget=function(C){for(var e=C.parent.content.cutByIndex(C.startIndex,C.endIndex),t=C.depth;;--t){var H=C.$from.node(t),i=C.$from.index(t),V=C.$to.indexAfter(t)
 if(t<C.depth&&H.canReplace(i,V,e))return t
 if(0==t||H.type.spec.isolating||!p(H,i,V))break}},e.findWrapping=function(C,e,t,H){void 0===H&&(H=C)
 var i=function(C,e){var t=C.parent,H=C.startIndex,i=C.endIndex,V=t.contentMatchAt(H).findWrapping(e)
@@ -1811,7 +3235,7 @@ if(!V)return null
 var n=V.length?V[0]:e
 return t.canReplaceWith(H,i,n)?V:null}(C,e),V=i&&function(C,e){var t=C.parent,H=C.startIndex,i=C.endIndex,V=t.child(H),n=e.contentMatch.findWrapping(V.type)
 if(!n)return null
-for(var r=(n.length?n[n.length-1]:e).contentMatch,L=H;r&&L<i;L++)r=r.matchType(t.child(L).type)
+for(var r=(n.length?n[n.length-1]:e).contentMatch,o=H;r&&o<i;o++)r=r.matchType(t.child(o).type)
 return r&&r.validEnd?n:null}(H,e)
 return V?i.map(m).concat({type:e,attrs:t}).concat(V.map(m)):null},e.StepMap=n,e.MapResult=V,e.Mapping=r,e.AddMarkStep=v,e.RemoveMarkStep=y,e.ReplaceStep=c,e.ReplaceAroundStep=u,e.replaceStep=b}))
 VV(aV)
@@ -1819,11 +3243,11 @@ aV.Transform,aV.TransformError
 var MV=aV.Step,lV=aV.StepResult,dV=(aV.joinPoint,aV.canJoin,aV.canSplit,aV.insertPoint,aV.dropPoint,aV.liftTarget,aV.findWrapping,aV.StepMap,aV.MapResult,aV.Mapping,aV.AddMarkStep,aV.RemoveMarkStep,aV.ReplaceStep,aV.ReplaceAroundStep,aV.replaceStep,nV(function(C,e){Object.defineProperty(e,"__esModule",{value:!0})
 var t=Object.create(null),H=function(C,e,t){this.ranges=t||[new V(C.min(e),C.max(e))],this.$anchor=C,this.$head=e},i={anchor:{},head:{},from:{},to:{},$from:{},$to:{},empty:{}}
 i.anchor.get=function(){return this.$anchor.pos},i.head.get=function(){return this.$head.pos},i.from.get=function(){return this.$from.pos},i.to.get=function(){return this.$to.pos},i.$from.get=function(){return this.ranges[0].$from},i.$to.get=function(){return this.ranges[0].$to},i.empty.get=function(){for(var C=this.ranges,e=0;e<C.length;e++)if(C[e].$from.pos!=C[e].$to.pos)return!1
-return!0},H.prototype.content=function(){return this.$from.node(0).slice(this.from,this.to,!0)},H.prototype.replace=function(C,e){void 0===e&&(e=oV.Slice.empty)
+return!0},H.prototype.content=function(){return this.$from.node(0).slice(this.from,this.to,!0)},H.prototype.replace=function(C,e){void 0===e&&(e=LV.Slice.empty)
 for(var t=e.content.lastChild,H=null,i=0;i<e.openEnd;i++)H=t,t=t.lastChild
-for(var V=C.steps.length,n=this.ranges,r=0;r<n.length;r++){var L=n[r],o=L.$from,s=L.$to,a=C.mapping.slice(V)
-C.replaceRange(a.map(o.pos),a.map(s.pos),r?oV.Slice.empty:e),0==r&&l(C,V,(t?t.isInline:H&&H.isTextblock)?-1:1)}},H.prototype.replaceWith=function(C,e){for(var t=C.steps.length,H=this.ranges,i=0;i<H.length;i++){var V=H[i],n=V.$from,r=V.$to,L=C.mapping.slice(t),o=L.map(n.pos),s=L.map(r.pos)
-i?C.deleteRange(o,s):(C.replaceRangeWith(o,s,e),l(C,t,e.isInline?-1:1))}},H.findFrom=function(C,e,t){var H=C.parent.inlineContent?new n(C):M(C.node(0),C.parent,C.pos,C.index(),e,t)
+for(var V=C.steps.length,n=this.ranges,r=0;r<n.length;r++){var o=n[r],L=o.$from,s=o.$to,a=C.mapping.slice(V)
+C.replaceRange(a.map(L.pos),a.map(s.pos),r?LV.Slice.empty:e),0==r&&l(C,V,(t?t.isInline:H&&H.isTextblock)?-1:1)}},H.prototype.replaceWith=function(C,e){for(var t=C.steps.length,H=this.ranges,i=0;i<H.length;i++){var V=H[i],n=V.$from,r=V.$to,o=C.mapping.slice(t),L=o.map(n.pos),s=o.map(r.pos)
+i?C.deleteRange(L,s):(C.replaceRangeWith(L,s,e),l(C,t,e.isInline?-1:1))}},H.findFrom=function(C,e,t){var H=C.parent.inlineContent?new n(C):M(C.node(0),C.parent,C.pos,C.index(),e,t)
 if(H)return H
 for(var i=C.depth-1;i>=0;i--){var V=e<0?M(C.node(0),C.node(i),C.before(i+1),C.index(i),e,t):M(C.node(0),C.node(i),C.after(i+1),C.index(i)+1,e,t)
 if(V)return V}},H.near=function(C,e){return void 0===e&&(e=1),this.findFrom(C,e)||this.findFrom(C,-e)||new s(C.node(0))},H.atStart=function(C){return M(C,C,0,0,1)||new s(C)},H.atEnd=function(C){return M(C,C,C.content.size,C.childCount,-1)||new s(C)},H.fromJSON=function(C,e){if(!e||!e.type)throw new RangeError("Invalid input for Selection.fromJSON")
@@ -1836,7 +3260,7 @@ var t={$cursor:{}}
 return t.$cursor.get=function(){return this.$anchor.pos==this.$head.pos?this.$head:null},e.prototype.map=function(t,H){var i=t.resolve(H.map(this.head))
 if(!i.parent.inlineContent)return C.near(i)
 var V=t.resolve(H.map(this.anchor))
-return new e(V.parent.inlineContent?V:i,i)},e.prototype.replace=function(e,t){if(void 0===t&&(t=oV.Slice.empty),C.prototype.replace.call(this,e,t),t==oV.Slice.empty){var H=this.$from.marksAcross(this.$to)
+return new e(V.parent.inlineContent?V:i,i)},e.prototype.replace=function(e,t){if(void 0===t&&(t=LV.Slice.empty),C.prototype.replace.call(this,e,t),t==LV.Slice.empty){var H=this.$from.marksAcross(this.$to)
 H&&e.ensureMarks(H)}},e.prototype.eq=function(C){return C instanceof e&&C.anchor==this.anchor&&C.head==this.head},e.prototype.getBookmark=function(){return new r(this.anchor,this.head)},e.prototype.toJSON=function(){return{type:"text",anchor:this.anchor,head:this.head}},e.fromJSON=function(C,t){if("number"!=typeof t.anchor||"number"!=typeof t.head)throw new RangeError("Invalid input for TextSelection.fromJSON")
 return new e(C.resolve(t.anchor),C.resolve(t.head))},e.create=function(C,e,t){void 0===t&&(t=e)
 var H=C.resolve(e)
@@ -1847,27 +3271,27 @@ H=n.$head}return t.parent.inlineContent||(0==V?t=H:(t=(C.findFrom(t,-i,!0)||C.fi
 H.jsonID("text",n)
 var r=function(C,e){this.anchor=C,this.head=e}
 r.prototype.map=function(C){return new r(C.map(this.anchor),C.map(this.head))},r.prototype.resolve=function(C){return n.between(C.resolve(this.anchor),C.resolve(this.head))}
-var L=function(C){function e(e){var t=e.nodeAfter,H=e.node(0).resolve(e.pos+t.nodeSize)
+var o=function(C){function e(e){var t=e.nodeAfter,H=e.node(0).resolve(e.pos+t.nodeSize)
 C.call(this,e,H),this.node=t}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.map=function(t,H){var i=H.mapResult(this.anchor),V=i.deleted,n=i.pos,r=t.resolve(n)
-return V?C.near(r):new e(r)},e.prototype.content=function(){return new oV.Slice(oV.Fragment.from(this.node),0,0)},e.prototype.eq=function(C){return C instanceof e&&C.anchor==this.anchor},e.prototype.toJSON=function(){return{type:"node",anchor:this.anchor}},e.prototype.getBookmark=function(){return new o(this.anchor)},e.fromJSON=function(C,t){if("number"!=typeof t.anchor)throw new RangeError("Invalid input for NodeSelection.fromJSON")
+return V?C.near(r):new e(r)},e.prototype.content=function(){return new LV.Slice(LV.Fragment.from(this.node),0,0)},e.prototype.eq=function(C){return C instanceof e&&C.anchor==this.anchor},e.prototype.toJSON=function(){return{type:"node",anchor:this.anchor}},e.prototype.getBookmark=function(){return new L(this.anchor)},e.fromJSON=function(C,t){if("number"!=typeof t.anchor)throw new RangeError("Invalid input for NodeSelection.fromJSON")
 return new e(C.resolve(t.anchor))},e.create=function(C,e){return new this(C.resolve(e))},e.isSelectable=function(C){return!C.isText&&!1!==C.type.spec.selectable},e}(H)
-L.prototype.visible=!1,H.jsonID("node",L)
-var o=function(C){this.anchor=C}
-o.prototype.map=function(C){var e=C.mapResult(this.anchor),t=e.deleted,H=e.pos
-return t?new r(H,H):new o(H)},o.prototype.resolve=function(C){var e=C.resolve(this.anchor),t=e.nodeAfter
-return t&&L.isSelectable(t)?new L(e):H.near(e)}
+o.prototype.visible=!1,H.jsonID("node",o)
+var L=function(C){this.anchor=C}
+L.prototype.map=function(C){var e=C.mapResult(this.anchor),t=e.deleted,H=e.pos
+return t?new r(H,H):new L(H)},L.prototype.resolve=function(C){var e=C.resolve(this.anchor),t=e.nodeAfter
+return t&&o.isSelectable(t)?new o(e):H.near(e)}
 var s=function(C){function e(e){C.call(this,e.resolve(0),e.resolve(e.content.size))}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.toJSON=function(){return{type:"all"}},e.fromJSON=function(C){return new e(C)},e.prototype.map=function(C){return new e(C)},e.prototype.eq=function(C){return C instanceof e},e.prototype.getBookmark=function(){return a},e}(H)
 H.jsonID("all",s)
 var a={map:function(){return this},resolve:function(C){return new s(C)}}
 function M(C,e,t,H,i,V){if(e.inlineContent)return n.create(C,t)
-for(var r=H-(i>0?0:1);i>0?r<e.childCount:r>=0;r+=i){var o=e.child(r)
-if(o.isAtom){if(!V&&L.isSelectable(o))return L.create(C,t-(i<0?o.nodeSize:0))}else{var s=M(C,o,t+i,i<0?o.childCount:0,i,V)
-if(s)return s}t+=o.nodeSize*i}}function l(C,e,t){var i=C.steps.length-1
+for(var r=H-(i>0?0:1);i>0?r<e.childCount:r>=0;r+=i){var L=e.child(r)
+if(L.isAtom){if(!V&&o.isSelectable(L))return o.create(C,t-(i<0?L.nodeSize:0))}else{var s=M(C,L,t+i,i<0?L.childCount:0,i,V)
+if(s)return s}t+=L.nodeSize*i}}function l(C,e,t){var i=C.steps.length-1
 if(!(i<e)){var V,n=C.steps[i]
 if(n instanceof aV.ReplaceStep||n instanceof aV.ReplaceAroundStep)C.mapping.maps[i].forEach(function(C,e,t,H){null==V&&(V=H)}),C.setSelection(H.near(C.doc.resolve(V),t))}}var d=function(C){function e(e){C.call(this,e.doc),this.time=Date.now(),this.curSelection=e.selection,this.curSelectionFor=0,this.storedMarks=e.storedMarks,this.updated=0,this.meta=Object.create(null)}C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e
 var t={selection:{},selectionSet:{},storedMarksSet:{},isGeneric:{},scrolledIntoView:{}}
-return t.selection.get=function(){return this.curSelectionFor<this.steps.length&&(this.curSelection=this.curSelection.map(this.doc,this.mapping.slice(this.curSelectionFor)),this.curSelectionFor=this.steps.length),this.curSelection},e.prototype.setSelection=function(C){return this.curSelection=C,this.curSelectionFor=this.steps.length,this.updated=-3&(1|this.updated),this.storedMarks=null,this},t.selectionSet.get=function(){return(1&this.updated)>0},e.prototype.setStoredMarks=function(C){return this.storedMarks=C,this.updated|=2,this},e.prototype.ensureMarks=function(C){return oV.Mark.sameSet(this.storedMarks||this.selection.$from.marks(),C)||this.setStoredMarks(C),this},e.prototype.addStoredMark=function(C){return this.ensureMarks(C.addToSet(this.storedMarks||this.selection.$head.marks()))},e.prototype.removeStoredMark=function(C){return this.ensureMarks(C.removeFromSet(this.storedMarks||this.selection.$head.marks()))},t.storedMarksSet.get=function(){return(2&this.updated)>0},e.prototype.addStep=function(e,t){C.prototype.addStep.call(this,e,t),this.updated=-3&this.updated,this.storedMarks=null},e.prototype.setTime=function(C){return this.time=C,this},e.prototype.replaceSelection=function(C){return this.selection.replace(this,C),this},e.prototype.replaceSelectionWith=function(C,e){var t=this.selection
-return!1!==e&&(C=C.mark(this.storedMarks||(t.empty?t.$from.marks():t.$from.marksAcross(t.$to)||oV.Mark.none))),t.replaceWith(this,C),this},e.prototype.deleteSelection=function(){return this.selection.replace(this),this},e.prototype.insertText=function(C,e,t){void 0===t&&(t=e)
+return t.selection.get=function(){return this.curSelectionFor<this.steps.length&&(this.curSelection=this.curSelection.map(this.doc,this.mapping.slice(this.curSelectionFor)),this.curSelectionFor=this.steps.length),this.curSelection},e.prototype.setSelection=function(C){return this.curSelection=C,this.curSelectionFor=this.steps.length,this.updated=-3&(1|this.updated),this.storedMarks=null,this},t.selectionSet.get=function(){return(1&this.updated)>0},e.prototype.setStoredMarks=function(C){return this.storedMarks=C,this.updated|=2,this},e.prototype.ensureMarks=function(C){return LV.Mark.sameSet(this.storedMarks||this.selection.$from.marks(),C)||this.setStoredMarks(C),this},e.prototype.addStoredMark=function(C){return this.ensureMarks(C.addToSet(this.storedMarks||this.selection.$head.marks()))},e.prototype.removeStoredMark=function(C){return this.ensureMarks(C.removeFromSet(this.storedMarks||this.selection.$head.marks()))},t.storedMarksSet.get=function(){return(2&this.updated)>0},e.prototype.addStep=function(e,t){C.prototype.addStep.call(this,e,t),this.updated=-3&this.updated,this.storedMarks=null},e.prototype.setTime=function(C){return this.time=C,this},e.prototype.replaceSelection=function(C){return this.selection.replace(this,C),this},e.prototype.replaceSelectionWith=function(C,e){var t=this.selection
+return!1!==e&&(C=C.mark(this.storedMarks||(t.empty?t.$from.marks():t.$from.marksAcross(t.$to)||LV.Mark.none))),t.replaceWith(this,C),this},e.prototype.deleteSelection=function(){return this.selection.replace(this),this},e.prototype.insertText=function(C,e,t){void 0===t&&(t=e)
 var H=this.doc.type.schema
 if(null==e)return C?this.replaceSelectionWith(H.text(C),!0):this.deleteSelection()
 if(!C)return this.deleteRange(e,t)
@@ -1882,9 +3306,9 @@ f.schema.get=function(){return this.config.schema},f.plugins.get=function(){retu
 for(var t=0;t<this.config.plugins.length;t++)if(t!=e){var H=this.config.plugins[t]
 if(H.spec.filterTransaction&&!H.spec.filterTransaction.call(H,C,this))return!1}return!0},m.prototype.applyTransaction=function(C){if(!this.filterTransaction(C))return{state:this,transactions:[]}
 for(var e=[C],t=this.applyInner(C),H=null;;){for(var i=!1,V=0;V<this.config.plugins.length;V++){var n=this.config.plugins[V]
-if(n.spec.appendTransaction){var r=H?H[V].n:0,L=H?H[V].state:this,o=r<e.length&&n.spec.appendTransaction.call(n,r?e.slice(r):e,L,t)
-if(o&&t.filterTransaction(o,V)){if(o.setMeta("appendedTransaction",C),!H){H=[]
-for(var s=0;s<this.config.plugins.length;s++)H.push(s<V?{state:t,n:e.length}:{state:this,n:0})}e.push(o),t=t.applyInner(o),i=!0}H&&(H[V]={state:t,n:e.length})}}if(!i)return{state:t,transactions:e}}},m.prototype.applyInner=function(C){if(!C.before.eq(this.doc))throw new RangeError("Applying a mismatched transaction")
+if(n.spec.appendTransaction){var r=H?H[V].n:0,o=H?H[V].state:this,L=r<e.length&&n.spec.appendTransaction.call(n,r?e.slice(r):e,o,t)
+if(L&&t.filterTransaction(L,V)){if(L.setMeta("appendedTransaction",C),!H){H=[]
+for(var s=0;s<this.config.plugins.length;s++)H.push(s<V?{state:t,n:e.length}:{state:this,n:0})}e.push(L),t=t.applyInner(L),i=!0}H&&(H[V]={state:t,n:e.length})}}if(!i)return{state:t,transactions:e}}},m.prototype.applyInner=function(C){if(!C.before.eq(this.doc))throw new RangeError("Applying a mismatched transaction")
 for(var e=new m(this.config),t=this.config.fields,H=0;H<t.length;H++){var i=t[H]
 e[i.name]=i.apply(C,this[i.name],this,e)}for(var V=0;V<g.length;V++)g[V](this,C,e)
 return e},f.tr.get=function(){return new d(this)},m.create=function(C){for(var e=new p(C.schema||C.doc.type.schema,C.plugins),t=new m(e),H=0;H<e.fields.length;H++)t[e.fields[H].name]=e.fields[H].init(C,t)
@@ -1895,11 +3319,11 @@ var H=C[t],i=H.spec.state
 i&&i.toJSON&&(e[t]=i.toJSON.call(H,this[H.key]))}return e},m.fromJSON=function(C,e,t){if(!e)throw new RangeError("Invalid input for EditorState.fromJSON")
 if(!C.schema)throw new RangeError("Required config field 'schema' missing")
 var i=new p(C.schema,C.plugins),V=new m(i)
-return i.fields.forEach(function(i){if("doc"==i.name)V.doc=oV.Node.fromJSON(C.schema,e.doc)
+return i.fields.forEach(function(i){if("doc"==i.name)V.doc=LV.Node.fromJSON(C.schema,e.doc)
 else if("selection"==i.name)V.selection=H.fromJSON(V.doc,e.selection)
 else if("storedMarks"==i.name)e.storedMarks&&(V.storedMarks=e.storedMarks.map(C.schema.markFromJSON))
-else{if(t)for(var n in t){var r=t[n],L=r.spec.state
-if(r.key==i.name&&L&&L.fromJSON&&Object.prototype.hasOwnProperty.call(e,n))return void(V[i.name]=L.fromJSON.call(r,C,e[n],V))}V[i.name]=i.init(C,V)}}),V},m.addApplyListener=function(C){g.push(C)},m.removeApplyListener=function(C){var e=g.indexOf(C)
+else{if(t)for(var n in t){var r=t[n],o=r.spec.state
+if(r.key==i.name&&o&&o.fromJSON&&Object.prototype.hasOwnProperty.call(e,n))return void(V[i.name]=o.fromJSON.call(r,C,e[n],V))}V[i.name]=i.init(C,V)}}),V},m.addApplyListener=function(C){g.push(C)},m.removeApplyListener=function(C){var e=g.indexOf(C)
 e>-1&&g.splice(e,1)},Object.defineProperties(m.prototype,f)
 var g=[]
 var Z=function(C){this.props={},C.props&&function C(e,t,H){for(var i in e){var V=e[i]
@@ -1907,40 +3331,40 @@ V instanceof Function?V=V.bind(t):"handleDOMEvents"==i&&(V=C(V,t,{})),H[i]=V}ret
 Z.prototype.getState=function(C){return C[this.key]}
 var v=Object.create(null)
 function y(C){return C in v?C+"$"+ ++v[C]:(v[C]=0,C+"$")}var b=function(C){void 0===C&&(C="key"),this.key=y(C)}
-b.prototype.get=function(C){return C.config.pluginsByKey[this.key]},b.prototype.getState=function(C){return C[this.key]},e.Selection=H,e.SelectionRange=V,e.TextSelection=n,e.NodeSelection=L,e.AllSelection=s,e.Transaction=d,e.EditorState=m,e.Plugin=Z,e.PluginKey=b}))
+b.prototype.get=function(C){return C.config.pluginsByKey[this.key]},b.prototype.getState=function(C){return C[this.key]},e.Selection=H,e.SelectionRange=V,e.TextSelection=n,e.NodeSelection=o,e.AllSelection=s,e.Transaction=d,e.EditorState=m,e.Plugin=Z,e.PluginKey=b}))
 VV(dV)
 dV.Selection,dV.SelectionRange,dV.TextSelection,dV.NodeSelection,dV.AllSelection,dV.Transaction
 var cV=dV.EditorState,uV=(dV.Plugin,dV.PluginKey,nV(function(C,e){function t(C,e){return!C.selection.empty&&(e&&e(C.tr.deleteSelection().scrollIntoView()),!0)}function H(C,e,t){var H=C.selection.$cursor
 if(!H||(t?!t.endOfTextblock("backward",C):H.parentOffset>0))return!1
 var V=n(H)
-if(!V){var r=H.blockRange(),L=r&&aV.liftTarget(r)
-return null!=L&&(e&&e(C.tr.lift(r,L).scrollIntoView()),!0)}var o=V.nodeBefore
-if(!o.type.spec.isolating&&u(C,V,e))return!0
-if(0==H.parent.content.size&&(i(o,"end")||dV.NodeSelection.isSelectable(o))){if(e){var s=C.tr.deleteRange(H.before(),H.after())
-s.setSelection(i(o,"end")?dV.Selection.findFrom(s.doc.resolve(s.mapping.map(V.pos,-1)),-1):dV.NodeSelection.create(s.doc,V.pos-o.nodeSize)),e(s.scrollIntoView())}return!0}return!(!o.isAtom||V.depth!=H.depth-1)&&(e&&e(C.tr.delete(V.pos-o.nodeSize,V.pos).scrollIntoView()),!0)}function i(C,e){for(;C;C="start"==e?C.firstChild:C.lastChild)if(C.isTextblock)return!0
+if(!V){var r=H.blockRange(),o=r&&aV.liftTarget(r)
+return null!=o&&(e&&e(C.tr.lift(r,o).scrollIntoView()),!0)}var L=V.nodeBefore
+if(!L.type.spec.isolating&&u(C,V,e))return!0
+if(0==H.parent.content.size&&(i(L,"end")||dV.NodeSelection.isSelectable(L))){if(e){var s=C.tr.deleteRange(H.before(),H.after())
+s.setSelection(i(L,"end")?dV.Selection.findFrom(s.doc.resolve(s.mapping.map(V.pos,-1)),-1):dV.NodeSelection.create(s.doc,V.pos-L.nodeSize)),e(s.scrollIntoView())}return!0}return!(!L.isAtom||V.depth!=H.depth-1)&&(e&&e(C.tr.delete(V.pos-L.nodeSize,V.pos).scrollIntoView()),!0)}function i(C,e){for(;C;C="start"==e?C.firstChild:C.lastChild)if(C.isTextblock)return!0
 return!1}function V(C,e,t){var H=C.selection.$cursor
 if(!H||(t?!t.endOfTextblock("backward",C):H.parentOffset>0))return!1
 var i=n(H),V=i&&i.nodeBefore
 return!(!V||!dV.NodeSelection.isSelectable(V))&&(e&&e(C.tr.setSelection(dV.NodeSelection.create(C.doc,i.pos-V.nodeSize)).scrollIntoView()),!0)}function n(C){if(!C.parent.type.spec.isolating)for(var e=C.depth-1;e>=0;e--){if(C.index(e)>0)return C.doc.resolve(C.before(e+1))
 if(C.node(e).type.spec.isolating)break}return null}function r(C,e,t){var H=C.selection.$cursor
 if(!H||(t?!t.endOfTextblock("forward",C):H.parentOffset<H.parent.content.size))return!1
-var V=o(H)
+var V=L(H)
 if(!V)return!1
 var n=V.nodeAfter
 if(u(C,V,e))return!0
 if(0==H.parent.content.size&&(i(n,"start")||dV.NodeSelection.isSelectable(n))){if(e){var r=C.tr.deleteRange(H.before(),H.after())
-r.setSelection(i(n,"start")?dV.Selection.findFrom(r.doc.resolve(r.mapping.map(V.pos)),1):dV.NodeSelection.create(r.doc,r.mapping.map(V.pos))),e(r.scrollIntoView())}return!0}return!(!n.isAtom||V.depth!=H.depth-1)&&(e&&e(C.tr.delete(V.pos,V.pos+n.nodeSize).scrollIntoView()),!0)}function L(C,e,t){var H=C.selection.$cursor
+r.setSelection(i(n,"start")?dV.Selection.findFrom(r.doc.resolve(r.mapping.map(V.pos)),1):dV.NodeSelection.create(r.doc,r.mapping.map(V.pos))),e(r.scrollIntoView())}return!0}return!(!n.isAtom||V.depth!=H.depth-1)&&(e&&e(C.tr.delete(V.pos,V.pos+n.nodeSize).scrollIntoView()),!0)}function o(C,e,t){var H=C.selection.$cursor
 if(!H||(t?!t.endOfTextblock("forward",C):H.parentOffset<H.parent.content.size))return!1
-var i=o(H),V=i&&i.nodeAfter
-return!(!V||!dV.NodeSelection.isSelectable(V))&&(e&&e(C.tr.setSelection(dV.NodeSelection.create(C.doc,i.pos)).scrollIntoView()),!0)}function o(C){if(!C.parent.type.spec.isolating)for(var e=C.depth-1;e>=0;e--){var t=C.node(e)
+var i=L(H),V=i&&i.nodeAfter
+return!(!V||!dV.NodeSelection.isSelectable(V))&&(e&&e(C.tr.setSelection(dV.NodeSelection.create(C.doc,i.pos)).scrollIntoView()),!0)}function L(C){if(!C.parent.type.spec.isolating)for(var e=C.depth-1;e>=0;e--){var t=C.node(e)
 if(C.index(e)+1<t.childCount)return C.doc.resolve(C.after(e+1))
 if(t.type.spec.isolating)break}return null}function s(C,e){var t=C.selection,H=t.$head,i=t.$anchor
 return!(!H.parent.type.spec.code||!H.sameParent(i))&&(e&&e(C.tr.insertText("\n").scrollIntoView()),!0)}function a(C,e){var t=C.selection,H=t.$head,i=t.$anchor
 if(!H.parent.type.spec.code||!H.sameParent(i))return!1
 var V=H.node(-1),n=H.indexAfter(-1),r=V.contentMatchAt(n).defaultType
 if(!V.canReplaceWith(n,n,r))return!1
-if(e){var L=H.after(),o=C.tr.replaceWith(L,L,r.createAndFill())
-o.setSelection(dV.Selection.near(o.doc.resolve(L),1)),e(o.scrollIntoView())}return!0}function M(C,e){var t=C.selection,H=t.$from,i=t.$to
+if(e){var o=H.after(),L=C.tr.replaceWith(o,o,r.createAndFill())
+L.setSelection(dV.Selection.near(L.doc.resolve(o),1)),e(L.scrollIntoView())}return!0}function M(C,e){var t=C.selection,H=t.$from,i=t.$to
 if(H.parent.inlineContent||i.parent.inlineContent)return!1
 var V=H.parent.contentMatchAt(i.indexAfter()).defaultType
 if(!V||!V.isTextblock)return!1
@@ -1954,22 +3378,22 @@ if(C.selection instanceof dV.NodeSelection&&C.selection.node.isBlock)return!(!H.
 if(!H.parent.isBlock)return!1
 if(e){var V=i.parentOffset==i.parent.content.size,n=C.tr
 C.selection instanceof dV.TextSelection&&n.deleteSelection()
-var r=0==H.depth?null:H.node(-1).contentMatchAt(H.indexAfter(-1)).defaultType,L=V&&r?[{type:r}]:null,o=aV.canSplit(n.doc,H.pos,1,L)
-L||o||!aV.canSplit(n.doc,n.mapping.map(H.pos),1,r&&[{type:r}])||(L=[{type:r}],o=!0),o&&(n.split(n.mapping.map(H.pos),1,L),V||H.parentOffset||H.parent.type==r||!H.node(-1).canReplace(H.index(-1),H.indexAfter(-1),oV.Fragment.from(r.create(),H.parent))||n.setNodeMarkup(n.mapping.map(H.before()),r)),e(n.scrollIntoView())}return!0}function c(C,e){return e&&e(C.tr.setSelection(new dV.AllSelection(C.doc))),!0}function u(C,e,t){var H,i,V=e.nodeBefore,n=e.nodeAfter
+var r=0==H.depth?null:H.node(-1).contentMatchAt(H.indexAfter(-1)).defaultType,o=V&&r?[{type:r}]:null,L=aV.canSplit(n.doc,H.pos,1,o)
+o||L||!aV.canSplit(n.doc,n.mapping.map(H.pos),1,r&&[{type:r}])||(o=[{type:r}],L=!0),L&&(n.split(n.mapping.map(H.pos),1,o),V||H.parentOffset||H.parent.type==r||!H.node(-1).canReplace(H.index(-1),H.indexAfter(-1),LV.Fragment.from(r.create(),H.parent))||n.setNodeMarkup(n.mapping.map(H.before()),r)),e(n.scrollIntoView())}return!0}function c(C,e){return e&&e(C.tr.setSelection(new dV.AllSelection(C.doc))),!0}function u(C,e,t){var H,i,V=e.nodeBefore,n=e.nodeAfter
 if(V.type.spec.isolating||n.type.spec.isolating)return!1
 if(function(C,e,t){var H=e.nodeBefore,i=e.nodeAfter,V=e.index()
 return!(!(H&&i&&H.type.compatibleContent(i.type))||(!H.content.size&&e.parent.canReplace(V-1,V)?(t&&t(C.tr.delete(e.pos-H.nodeSize,e.pos).scrollIntoView()),0):!e.parent.canReplace(V,V+1)||!i.isTextblock&&!aV.canJoin(C.doc,e.pos)||(t&&t(C.tr.clearIncompatible(e.pos,H.type,H.contentMatchAt(H.childCount)).join(e.pos).scrollIntoView()),0)))}(C,e,t))return!0
-if(e.parent.canReplace(e.index(),e.index()+1)&&(H=(i=V.contentMatchAt(V.childCount)).findWrapping(n.type))&&i.matchType(H[0]||n.type).validEnd){if(t){for(var r=e.pos+n.nodeSize,L=oV.Fragment.empty,o=H.length-1;o>=0;o--)L=oV.Fragment.from(H[o].create(null,L))
-L=oV.Fragment.from(V.copy(L))
-var s=C.tr.step(new aV.ReplaceAroundStep(e.pos-1,r,e.pos,r,new oV.Slice(L,1,0),H.length,!0)),a=r+2*H.length
+if(e.parent.canReplace(e.index(),e.index()+1)&&(H=(i=V.contentMatchAt(V.childCount)).findWrapping(n.type))&&i.matchType(H[0]||n.type).validEnd){if(t){for(var r=e.pos+n.nodeSize,o=LV.Fragment.empty,L=H.length-1;L>=0;L--)o=LV.Fragment.from(H[L].create(null,o))
+o=LV.Fragment.from(V.copy(o))
+var s=C.tr.step(new aV.ReplaceAroundStep(e.pos-1,r,e.pos,r,new LV.Slice(o,1,0),H.length,!0)),a=r+2*H.length
 aV.canJoin(s.doc,a)&&s.join(a),t(s.scrollIntoView())}return!0}var M=dV.Selection.findFrom(e,1),l=M&&M.$from.blockRange(M.$to),d=l&&aV.liftTarget(l)
 return null!=d&&d>=e.depth&&(t&&t(C.tr.lift(l,d).scrollIntoView()),!0)}function h(){for(var C=[],e=arguments.length;e--;)C[e]=arguments[e]
 return function(e,t,H){for(var i=0;i<C.length;i++)if(C[i](e,t,H))return!0
 return!1}}Object.defineProperty(e,"__esModule",{value:!0})
-var p=h(t,H,V),m=h(t,r,L),f={Enter:h(s,M,l,d),"Mod-Enter":a,Backspace:p,"Mod-Backspace":p,Delete:m,"Mod-Delete":m,"Mod-a":c},g={"Ctrl-h":f.Backspace,"Alt-Backspace":f["Mod-Backspace"],"Ctrl-d":f.Delete,"Ctrl-Alt-Backspace":f["Mod-Delete"],"Alt-Delete":f["Mod-Delete"],"Alt-d":f["Mod-Delete"]}
+var p=h(t,H,V),m=h(t,r,o),f={Enter:h(s,M,l,d),"Mod-Enter":a,Backspace:p,"Mod-Backspace":p,Delete:m,"Mod-Delete":m,"Mod-a":c},g={"Ctrl-h":f.Backspace,"Alt-Backspace":f["Mod-Backspace"],"Ctrl-d":f.Delete,"Ctrl-Alt-Backspace":f["Mod-Delete"],"Alt-Delete":f["Mod-Delete"],"Alt-d":f["Mod-Delete"]}
 for(var Z in f)g[Z]=f[Z]
 var v=("undefined"!=typeof navigator?/Mac/.test(navigator.platform):"undefined"!=typeof os&&"darwin"==os.platform())?g:f
-e.deleteSelection=t,e.joinBackward=H,e.selectNodeBackward=V,e.joinForward=r,e.selectNodeForward=L,e.joinUp=function(C,e){var t,H=C.selection,i=H instanceof dV.NodeSelection
+e.deleteSelection=t,e.joinBackward=H,e.selectNodeBackward=V,e.joinForward=r,e.selectNodeForward=o,e.joinUp=function(C,e){var t,H=C.selection,i=H instanceof dV.NodeSelection
 if(i){if(H.node.isTextblock||!aV.canJoin(C.doc,H.from))return!1
 t=H.from}else if(null==(t=aV.joinPoint(C.doc,H.from,-1)))return!1
 if(e){var V=C.tr.join(t)
@@ -1979,8 +3403,8 @@ t=H.to}else if(null==(t=aV.joinPoint(C.doc,H.to,1)))return!1
 return e&&e(C.tr.join(t).scrollIntoView()),!0},e.lift=function(C,e){var t=C.selection,H=t.$from,i=t.$to,V=H.blockRange(i),n=V&&aV.liftTarget(V)
 return null!=n&&(e&&e(C.tr.lift(V,n).scrollIntoView()),!0)},e.newlineInCode=s,e.exitCode=a,e.createParagraphNear=M,e.liftEmptyBlock=l,e.splitBlock=d,e.splitBlockKeepMarks=function(C,e){return d(C,e&&function(t){var H=C.storedMarks||C.selection.$to.parentOffset&&C.selection.$from.marks()
 H&&t.ensureMarks(H),e(t)})},e.selectParentNode=function(C,e){var t,H=C.selection,i=H.$from,V=H.to,n=i.sharedDepth(V)
-return 0!=n&&(t=i.before(n),e&&e(C.tr.setSelection(dV.NodeSelection.create(C.doc,t))),!0)},e.selectAll=c,e.wrapIn=function(C,e){return function(t,H){var i=t.selection,V=i.$from,n=i.$to,r=V.blockRange(n),L=r&&aV.findWrapping(r,C,e)
-return!!L&&(H&&H(t.tr.wrap(r,L).scrollIntoView()),!0)}},e.setBlockType=function(C,e){return function(t,H){var i=t.selection,V=i.from,n=i.to,r=!1
+return 0!=n&&(t=i.before(n),e&&e(C.tr.setSelection(dV.NodeSelection.create(C.doc,t))),!0)},e.selectAll=c,e.wrapIn=function(C,e){return function(t,H){var i=t.selection,V=i.$from,n=i.$to,r=V.blockRange(n),o=r&&aV.findWrapping(r,C,e)
+return!!o&&(H&&H(t.tr.wrap(r,o).scrollIntoView()),!0)}},e.setBlockType=function(C,e){return function(t,H){var i=t.selection,V=i.from,n=i.to,r=!1
 return t.doc.nodesBetween(V,n,function(H,i){if(r)return!1
 if(H.isTextblock&&!H.hasMarkup(C,e))if(H.type==C)r=!0
 else{var V=t.doc.resolve(i),n=V.index()
@@ -1990,12 +3414,12 @@ if(C.nodesBetween(V.pos,n.pos,function(C){if(r)return!1
 r=C.inlineContent&&C.type.allowsMarkType(t)}),r)return{v:!0}},i=0;i<e.length;i++){var V=H(i)
 if(V)return V.v}return!1}(t.doc,r,C))return!1
 if(H)if(n)C.isInSet(t.storedMarks||n.marks())?H(t.tr.removeStoredMark(C)):H(t.tr.addStoredMark(C.create(e)))
-else{for(var L=!1,o=t.tr,s=0;!L&&s<r.length;s++){var a=r[s],M=a.$from,l=a.$to
-L=t.doc.rangeHasMark(M.pos,l.pos,C)}for(var d=0;d<r.length;d++){var c=r[d],u=c.$from,h=c.$to
-L?o.removeMark(u.pos,h.pos,C):o.addMark(u.pos,h.pos,C.create(e))}H(o.scrollIntoView())}return!0}},e.autoJoin=function(C,e){if(Array.isArray(e)){var t=e
+else{for(var o=!1,L=t.tr,s=0;!o&&s<r.length;s++){var a=r[s],M=a.$from,l=a.$to
+o=t.doc.rangeHasMark(M.pos,l.pos,C)}for(var d=0;d<r.length;d++){var c=r[d],u=c.$from,h=c.$to
+o?L.removeMark(u.pos,h.pos,C):L.addMark(u.pos,h.pos,C.create(e))}H(L.scrollIntoView())}return!0}},e.autoJoin=function(C,e){if(Array.isArray(e)){var t=e
 e=function(C){return t.indexOf(C.type.name)>-1}}return function(t,H){return C(t,H&&function(C,e){return function(t){if(!t.isGeneric)return C(t)
 for(var H=[],i=0;i<t.mapping.maps.length;i++){for(var V=t.mapping.maps[i],n=0;n<H.length;n++)H[n]=V.map(H[n])
-V.forEach(function(C,e,t,i){return H.push(t,i)})}for(var r=[],L=0;L<H.length;L+=2)for(var o=H[L],s=H[L+1],a=t.doc.resolve(o),M=a.sharedDepth(s),l=a.node(M),d=a.indexAfter(M),c=a.after(M+1);c<=s;++d){var u=l.maybeChild(d)
+V.forEach(function(C,e,t,i){return H.push(t,i)})}for(var r=[],o=0;o<H.length;o+=2)for(var L=H[o],s=H[o+1],a=t.doc.resolve(L),M=a.sharedDepth(s),l=a.node(M),d=a.indexAfter(M),c=a.after(M+1);c<=s;++d){var u=l.maybeChild(d)
 if(!u)break
 if(d&&-1==r.indexOf(c)){var h=l.child(d-1)
 h.type==u.type&&e(h,u)&&r.push(c)}c+=u.nodeSize}r.sort(function(C,e){return C-e})
@@ -2023,43 +3447,43 @@ i.prototype.popEvent=function(C,e){var t=this
 if(0==this.eventCount)return null
 for(var H,n,r=this.items.length;;r--){if(t.items.get(r-1).selection){--r
 break}}e&&(H=this.remapping(r,this.items.length),n=H.maps.length)
-var L,o,s=C.tr,a=[],M=[]
+var o,L,s=C.tr,a=[],M=[]
 return this.items.forEach(function(C,e){if(!C.step)return H||(H=t.remapping(r,e+1),n=H.maps.length),n--,void M.push(C)
 if(H){M.push(new V(C.map))
 var l,d=C.step.map(H.slice(n))
 d&&s.maybeStep(d).doc&&(l=s.mapping.maps[s.mapping.maps.length-1],a.push(new V(l,null,null,a.length+M.length))),n--,l&&H.appendMap(l,n)}else s.maybeStep(C.step)
-return C.selection?(L=H?C.selection.map(H.slice(n)):C.selection,o=new i(t.items.slice(0,r).append(M.reverse().concat(a)),t.eventCount-1),!1):void 0},this.items.length,0),{remaining:o,transform:s,selection:L}},i.prototype.addTransform=function(C,e,t,H){for(var n=[],L=this.eventCount,o=this.items,s=!H&&o.length?o.get(o.length-1):null,a=0;a<C.steps.length;a++){var M,l=C.steps[a].invert(C.docs[a]),d=new V(C.mapping.maps[a],l,e);(M=s&&s.merge(d))&&(d=M,a?n.pop():o=o.slice(0,o.length-1)),n.push(d),e&&(L++,e=null),H||(s=d)}var c,u,h,p=L-t.depth
-return p>r&&(u=p,(c=o).forEach(function(C,e){if(C.selection&&0==u--)return h=e,!1}),o=c.slice(h),L-=p),new i(o.append(n),L)},i.prototype.remapping=function(C,e){var t=new aV.Mapping
+return C.selection?(o=H?C.selection.map(H.slice(n)):C.selection,L=new i(t.items.slice(0,r).append(M.reverse().concat(a)),t.eventCount-1),!1):void 0},this.items.length,0),{remaining:L,transform:s,selection:o}},i.prototype.addTransform=function(C,e,t,H){for(var n=[],o=this.eventCount,L=this.items,s=!H&&L.length?L.get(L.length-1):null,a=0;a<C.steps.length;a++){var M,l=C.steps[a].invert(C.docs[a]),d=new V(C.mapping.maps[a],l,e);(M=s&&s.merge(d))&&(d=M,a?n.pop():L=L.slice(0,L.length-1)),n.push(d),e&&(o++,e=null),H||(s=d)}var c,u,h,p=o-t.depth
+return p>r&&(u=p,(c=L).forEach(function(C,e){if(C.selection&&0==u--)return h=e,!1}),L=c.slice(h),o-=p),new i(L.append(n),o)},i.prototype.remapping=function(C,e){var t=new aV.Mapping
 return this.items.forEach(function(e,H){var i=null!=e.mirrorOffset&&H-e.mirrorOffset>=C?i=t.maps.length-e.mirrorOffset:null
 t.appendMap(e.map,i)},C,e),t},i.prototype.addMaps=function(C){return 0==this.eventCount?this:new i(this.items.append(C.map(function(C){return new V(C)})),this.eventCount)},i.prototype.rebased=function(C,e){if(!this.eventCount)return this
-var t=[],H=Math.max(0,this.items.length-e),n=C.mapping,r=C.steps.length,L=this.eventCount
-this.items.forEach(function(C){C.selection&&L--},H)
-var o=e
-this.items.forEach(function(e){var H=n.getMirror(--o)
+var t=[],H=Math.max(0,this.items.length-e),n=C.mapping,r=C.steps.length,o=this.eventCount
+this.items.forEach(function(C){C.selection&&o--},H)
+var L=e
+this.items.forEach(function(e){var H=n.getMirror(--L)
 if(null!=H){r=Math.min(r,H)
 var i=n.maps[H]
-if(e.step){var s=C.steps[H].invert(C.docs[H]),a=e.selection&&e.selection.map(n.slice(o+1,H))
-a&&L++,t.push(new V(i,s,a))}else t.push(new V(i))}},H)
+if(e.step){var s=C.steps[H].invert(C.docs[H]),a=e.selection&&e.selection.map(n.slice(L+1,H))
+a&&o++,t.push(new V(i,s,a))}else t.push(new V(i))}},H)
 for(var s=[],a=e;a<r;a++)s.push(new V(n.maps[a]))
-var M=this.items.slice(0,H).append(s).append(t),l=new i(M,L)
+var M=this.items.slice(0,H).append(s).append(t),l=new i(M,o)
 return l.emptyItemCount()>500&&(l=l.compress(this.items.length-t.length)),l},i.prototype.emptyItemCount=function(){var C=0
 return this.items.forEach(function(e){e.step||C++}),C},i.prototype.compress=function(C){void 0===C&&(C=this.items.length)
 var e=this.remapping(0,C),t=e.maps.length,n=[],r=0
 return this.items.forEach(function(H,i){if(i>=C)n.push(H),H.selection&&r++
-else if(H.step){var L=H.step.map(e.slice(t)),o=L&&L.getMap()
-if(t--,o&&e.appendMap(o,t),L){var s=H.selection&&H.selection.map(e.slice(t))
+else if(H.step){var o=H.step.map(e.slice(t)),L=o&&o.getMap()
+if(t--,L&&e.appendMap(L,t),o){var s=H.selection&&H.selection.map(e.slice(t))
 s&&r++
-var a,M=new V(o.invert(),L,s),l=n.length-1;(a=n.length&&n[l].merge(M))?n[l]=a:n.push(M)}}else H.map&&t--},this.items.length,0),new i(H.from(n.reverse()),r)},i.empty=new i(H.empty,0)
+var a,M=new V(L.invert(),o,s),l=n.length-1;(a=n.length&&n[l].merge(M))?n[l]=a:n.push(M)}}else H.map&&t--},this.items.length,0),new i(H.from(n.reverse()),r)},i.empty=new i(H.empty,0)
 var V=function(C,e,t,H){this.map=C,this.step=e,this.selection=t,this.mirrorOffset=H}
 V.prototype.merge=function(C){if(this.step&&C.step&&!C.selection){var e=C.step.merge(this.step)
 if(e)return new V(e.getMap().invert(),e,this.selection)}}
 var n=function(C,e,t,H){this.done=C,this.undone=e,this.prevRanges=t,this.prevTime=H},r=20
-function L(C){var e=[]
-return C.forEach(function(C,t,H,i){return e.push(H,i)}),e}function o(C,e){if(!C)return null
+function o(C){var e=[]
+return C.forEach(function(C,t,H,i){return e.push(H,i)}),e}function L(C,e){if(!C)return null
 for(var t=[],H=0;H<C.length;H+=2){var i=e.map(C[H],1),V=e.map(C[H+1],-1)
 i<=V&&t.push(i,V)}return t}function s(C,e,t,H){var i=l(e),V=d.get(e).spec.config,r=(H?C.undone:C.done).popEvent(e,i)
-if(r){var L=r.selection.resolve(r.transform.doc),o=(H?C.done:C.undone).addTransform(r.transform,e.selection.getBookmark(),V,i),s=new n(H?o:r.remaining,H?r.remaining:o,null,0)
-t(r.transform.setSelection(L).setMeta(d,{redo:H,historyState:s}).scrollIntoView())}}var a=!1,M=null
+if(r){var o=r.selection.resolve(r.transform.doc),L=(H?C.done:C.undone).addTransform(r.transform,e.selection.getBookmark(),V,i),s=new n(H?L:r.remaining,H?r.remaining:L,null,0)
+t(r.transform.setSelection(o).setMeta(d,{redo:H,historyState:s}).scrollIntoView())}}var a=!1,M=null
 function l(C){var e=C.plugins
 if(M!=e){a=!1,M=e
 for(var t=0;t<e.length;t++)if(e[t].spec.historyPreserveItems){a=!0
@@ -2069,12 +3493,12 @@ if(r)return r.historyState
 t.getMeta(c)&&(C=new n(C.done,C.undone,null,0))
 var s=t.getMeta("appendedTransaction")
 if(0==t.steps.length)return C
-if(s&&s.getMeta(d))return s.getMeta(d).redo?new n(C.done.addTransform(t,null,H,l(e)),C.undone,L(t.mapping.maps[t.steps.length-1]),C.prevTime):new n(C.done,C.undone.addTransform(t,null,H,l(e)),null,C.prevTime)
-if(!1===t.getMeta("addToHistory")||s&&!1===s.getMeta("addToHistory"))return(V=t.getMeta("rebased"))?new n(C.done.rebased(t,V),C.undone.rebased(t,V),o(C.prevRanges,t.mapping),C.prevTime):new n(C.done.addMaps(t.mapping.maps),C.undone.addMaps(t.mapping.maps),o(C.prevRanges,t.mapping),C.prevTime)
+if(s&&s.getMeta(d))return s.getMeta(d).redo?new n(C.done.addTransform(t,null,H,l(e)),C.undone,o(t.mapping.maps[t.steps.length-1]),C.prevTime):new n(C.done,C.undone.addTransform(t,null,H,l(e)),null,C.prevTime)
+if(!1===t.getMeta("addToHistory")||s&&!1===s.getMeta("addToHistory"))return(V=t.getMeta("rebased"))?new n(C.done.rebased(t,V),C.undone.rebased(t,V),L(C.prevRanges,t.mapping),C.prevTime):new n(C.done.addMaps(t.mapping.maps),C.undone.addMaps(t.mapping.maps),L(C.prevRanges,t.mapping),C.prevTime)
 var a=C.prevTime<(t.time||0)-H.newGroupDelay||!s&&!function(C,e){if(!e)return!1
 if(!C.docChanged)return!0
 var t=!1
-return C.mapping.maps[0].forEach(function(C,H){for(var i=0;i<e.length;i+=2)C<=e[i+1]&&H>=e[i]&&(t=!0)}),t}(t,C.prevRanges),M=s?o(C.prevRanges,t.mapping):L(t.mapping.maps[t.steps.length-1])
+return C.mapping.maps[0].forEach(function(C,H){for(var i=0;i<e.length;i+=2)C<=e[i+1]&&H>=e[i]&&(t=!0)}),t}(t,C.prevRanges),M=s?L(C.prevRanges,t.mapping):o(t.mapping.maps[t.steps.length-1])
 return new n(C.done.addTransform(t,a?e.selection.getBookmark():null,H,l(e)),i.empty,M,t.time)}(t,H,e,C)}},config:C})},e.undo=function(C,e){var t=d.getState(C)
 return!(!t||0==t.done.eventCount||(e&&s(t,C,e,!1),0))},e.redo=function(C,e){var t=d.getState(C)
 return!(!t||0==t.undone.eventCount||(e&&s(t,C,e,!0),0))},e.undoDepth=function(C){var e=d.getState(C)
@@ -2093,19 +3517,19 @@ var FV=nV(function(C,e){Object.defineProperty(e,"__esModule",{value:!0})
 var t,H=(t=RV)&&"object"==typeof t&&"default"in t?t.default:t,i="undefined"!=typeof navigator&&/Mac/.test(navigator.platform)
 function V(C){var e,t,H,V,n=C.split(/-(?!$)/),r=n[n.length-1]
 "Space"==r&&(r=" ")
-for(var L=0;L<n.length-1;L++){var o=n[L]
-if(/^(cmd|meta|m)$/i.test(o))V=!0
-else if(/^a(lt)?$/i.test(o))e=!0
-else if(/^(c|ctrl|control)$/i.test(o))t=!0
-else if(/^s(hift)?$/i.test(o))H=!0
-else{if(!/^mod$/i.test(o))throw new Error("Unrecognized modifier name: "+o)
+for(var o=0;o<n.length-1;o++){var L=n[o]
+if(/^(cmd|meta|m)$/i.test(L))V=!0
+else if(/^a(lt)?$/i.test(L))e=!0
+else if(/^(c|ctrl|control)$/i.test(L))t=!0
+else if(/^s(hift)?$/i.test(L))H=!0
+else{if(!/^mod$/i.test(L))throw new Error("Unrecognized modifier name: "+L)
 i?V=!0:t=!0}}return e&&(r="Alt-"+r),t&&(r="Ctrl-"+r),V&&(r="Meta-"+r),H&&(r="Shift-"+r),r}function n(C,e,t){return e.altKey&&(C="Alt-"+C),e.ctrlKey&&(C="Ctrl-"+C),e.metaKey&&(C="Meta-"+C),!1!==t&&e.shiftKey&&(C="Shift-"+C),C}function r(C){var e=function(C){var e=Object.create(null)
 for(var t in C)e[V(t)]=C[t]
 return e}(C)
-return function(C,t){var i,V=H(t),r=1==V.length&&" "!=V,L=e[n(V,t,!r)]
-if(L&&L(C.state,C.dispatch,C))return!0
-if(r&&(t.shiftKey||t.altKey||t.metaKey)&&(i=H.base[t.keyCode])&&i!=V){var o=e[n(i,t,!0)]
-if(o&&o(C.state,C.dispatch,C))return!0}return!1}}e.keymap=function(C){return new dV.Plugin({props:{handleKeyDown:r(C)}})},e.keydownHandler=r})
+return function(C,t){var i,V=H(t),r=1==V.length&&" "!=V,o=e[n(V,t,!r)]
+if(o&&o(C.state,C.dispatch,C))return!0
+if(r&&(t.shiftKey||t.altKey||t.metaKey)&&(i=H.base[t.keyCode])&&i!=V){var L=e[n(i,t,!0)]
+if(L&&L(C.state,C.dispatch,C))return!0}return!1}}e.keymap=function(C){return new dV.Plugin({props:{handleKeyDown:r(C)}})},e.keydownHandler=r})
 VV(FV)
 var IV=FV.keymap,_V=(FV.keydownHandler,nV(function(C,e){Object.defineProperty(e,"__esModule",{value:!0})
 var t={}
@@ -2114,52 +3538,52 @@ t.mac=/Mac/.test(navigator.platform)
 var n=t.ie=!!(i||V||H)
 t.ie_version=i?document.documentMode||6:V?+V[1]:H?+H[1]:null,t.gecko=!n&&/gecko\/(\d+)/i.test(navigator.userAgent),t.gecko_version=t.gecko&&+(/Firefox\/(\d+)/.exec(navigator.userAgent)||[0,0])[1]
 var r=!n&&/Chrome\/(\d+)/.exec(navigator.userAgent)
-t.chrome=!!r,t.chrome_version=r&&+r[1],t.ios=!n&&/AppleWebKit/.test(navigator.userAgent)&&/Mobile\/\w+/.test(navigator.userAgent),t.android=/Android \d/.test(navigator.userAgent),t.webkit=!n&&"WebkitAppearance"in document.documentElement.style,t.safari=/Apple Computer/.test(navigator.vendor),t.webkit_version=t.webkit&&+(/\bAppleWebKit\/(\d+)/.exec(navigator.userAgent)||[0,0])[1]}var L=function(C){for(var e=0;;e++)if(!(C=C.previousSibling))return e},o=function(C){var e=C.parentNode
+t.chrome=!!r,t.chrome_version=r&&+r[1],t.ios=!n&&/AppleWebKit/.test(navigator.userAgent)&&/Mobile\/\w+/.test(navigator.userAgent),t.android=/Android \d/.test(navigator.userAgent),t.webkit=!n&&"WebkitAppearance"in document.documentElement.style,t.safari=/Apple Computer/.test(navigator.vendor),t.webkit_version=t.webkit&&+(/\bAppleWebKit\/(\d+)/.exec(navigator.userAgent)||[0,0])[1]}var o=function(C){for(var e=0;;e++)if(!(C=C.previousSibling))return e},L=function(C){var e=C.parentNode
 return e&&11==e.nodeType?e.host:e},s=function(C,e,t){var H=document.createRange()
 return H.setEnd(C,null==t?C.nodeValue.length:t),H.setStart(C,e||0),H},a=function(C,e,t,H){return t&&(l(C,e,t,H,-1)||l(C,e,t,H,1))},M=/^(img|br|input|textarea|hr)$/i
 function l(C,e,t,H,i){for(;;){if(C==t&&e==H)return!0
 if(e==(i<0?0:d(C))||3==C.nodeType&&"\ufeff"==C.nodeValue){var V=C.parentNode
 if(1!=V.nodeType||(n=void 0,(n=C.pmViewDesc)&&n.node&&n.node.isBlock)||M.test(C.nodeName)||"false"==C.contentEditable)return!1
-e=L(C)+(i<0?0:1),C=V}else{if(1!=C.nodeType)return!1
+e=o(C)+(i<0?0:1),C=V}else{if(1!=C.nodeType)return!1
 C=C.childNodes[e+(i<0?-1:0)],e=i<0?d(C):0}}var n}function d(C){return 3==C.nodeType?C.nodeValue.length:C.childNodes.length}var c=function(C){var e=C.isCollapsed
 return e&&t.chrome&&C.rangeCount&&!C.getRangeAt(0).collapsed&&(e=!1),e}
-function u(C){return{left:0,right:C.innerWidth,top:0,bottom:C.innerHeight}}function h(C,e){return"number"==typeof C?C:C[e]}function p(C,e,t){for(var H=C.someProp("scrollThreshold")||0,i=C.someProp("scrollMargin")||5,V=C.dom.ownerDocument,n=V.defaultView,r=t||C.dom;r;r=o(r))if(1==r.nodeType){var L=r==V.body||1!=r.nodeType,s=L?u(n):r.getBoundingClientRect(),a=0,M=0
-if(e.top<s.top+h(H,"top")?M=-(s.top-e.top+h(i,"top")):e.bottom>s.bottom-h(H,"bottom")&&(M=e.bottom-s.bottom+h(i,"bottom")),e.left<s.left+h(H,"left")?a=-(s.left-e.left+h(i,"left")):e.right>s.right-h(H,"right")&&(a=e.right-s.right+h(i,"right")),(a||M)&&(L?n.scrollBy(a,M):(M&&(r.scrollTop+=M),a&&(r.scrollLeft+=a))),L)break}}function m(C,e){for(var t,H,i=2e8,V=0,n=e.top,r=e.top,L=C.firstChild,o=0;L;L=L.nextSibling,o++){var a=void 0
-if(1==L.nodeType)a=L.getClientRects()
-else{if(3!=L.nodeType)continue
-a=s(L).getClientRects()}for(var M=0;M<a.length;M++){var l=a[M]
+function u(C){return{left:0,right:C.innerWidth,top:0,bottom:C.innerHeight}}function h(C,e){return"number"==typeof C?C:C[e]}function p(C,e,t){for(var H=C.someProp("scrollThreshold")||0,i=C.someProp("scrollMargin")||5,V=C.dom.ownerDocument,n=V.defaultView,r=t||C.dom;r;r=L(r))if(1==r.nodeType){var o=r==V.body||1!=r.nodeType,s=o?u(n):r.getBoundingClientRect(),a=0,M=0
+if(e.top<s.top+h(H,"top")?M=-(s.top-e.top+h(i,"top")):e.bottom>s.bottom-h(H,"bottom")&&(M=e.bottom-s.bottom+h(i,"bottom")),e.left<s.left+h(H,"left")?a=-(s.left-e.left+h(i,"left")):e.right>s.right-h(H,"right")&&(a=e.right-s.right+h(i,"right")),(a||M)&&(o?n.scrollBy(a,M):(M&&(r.scrollTop+=M),a&&(r.scrollLeft+=a))),o)break}}function m(C,e){for(var t,H,i=2e8,V=0,n=e.top,r=e.top,o=C.firstChild,L=0;o;o=o.nextSibling,L++){var a=void 0
+if(1==o.nodeType)a=o.getClientRects()
+else{if(3!=o.nodeType)continue
+a=s(o).getClientRects()}for(var M=0;M<a.length;M++){var l=a[M]
 if(l.top<=n&&l.bottom>=r){n=Math.max(l.bottom,n),r=Math.min(l.top,r)
 var d=l.left>e.left?l.left-e.left:l.right<e.left?e.left-l.right:0
-if(d<i){t=L,i=d,H=d&&3==t.nodeType?{left:l.right<e.left?l.right:l.left,top:e.top}:e,1==L.nodeType&&d&&(V=o+(e.left>=(l.left+l.right)/2?1:0))
-continue}}!t&&(e.left>=l.right&&e.top>=l.top||e.left>=l.left&&e.top>=l.bottom)&&(V=o+1)}}return t&&3==t.nodeType?function(C,e){for(var t=C.nodeValue.length,H=document.createRange(),i=0;i<t;i++){H.setEnd(C,i+1),H.setStart(C,i)
+if(d<i){t=o,i=d,H=d&&3==t.nodeType?{left:l.right<e.left?l.right:l.left,top:e.top}:e,1==o.nodeType&&d&&(V=L+(e.left>=(l.left+l.right)/2?1:0))
+continue}}!t&&(e.left>=l.right&&e.top>=l.top||e.left>=l.left&&e.top>=l.bottom)&&(V=L+1)}}return t&&3==t.nodeType?function(C,e){for(var t=C.nodeValue.length,H=document.createRange(),i=0;i<t;i++){H.setEnd(C,i+1),H.setStart(C,i)
 var V=Z(H,1)
 if(V.top!=V.bottom&&f(e,V))return{node:C,offset:i+(e.left>=(V.left+V.right)/2?1:0)}}return{node:C,offset:0}}(t,H):!t||i&&1==t.nodeType?{node:C,offset:V}:m(t,H)}function f(C,e){return C.left>=e.left-1&&C.left<=e.right+1&&C.top>=e.top-1&&C.top<=e.bottom+1}function g(C,e){var t,H,i=C.root
 if(i.caretPositionFromPoint){var V,n=i.caretPositionFromPoint(e.left,e.top)
-if(n)t=(V=n).offsetNode,H=V.offset}if(!t&&i.caretRangeFromPoint){var r,L=i.caretRangeFromPoint(e.left,e.top)
-if(L)t=(r=L).startContainer,H=r.startOffset}var o,s=i.elementFromPoint(e.left,e.top+1)
+if(n)t=(V=n).offsetNode,H=V.offset}if(!t&&i.caretRangeFromPoint){var r,o=i.caretRangeFromPoint(e.left,e.top)
+if(o)t=(r=o).startContainer,H=r.startOffset}var L,s=i.elementFromPoint(e.left,e.top+1)
 if(!s||!C.dom.contains(1!=s.nodeType?s.parentNode:s)){var a=C.dom.getBoundingClientRect()
 if(!f(e,a))return null
 if(!(s=function C(e,t,H){var i=e.childNodes.length
 if(i&&H.top<H.bottom)for(var V=Math.max(0,Math.floor(i*(t.top-H.top)/(H.bottom-H.top))-2),n=V;;){var r=e.childNodes[n]
-if(1==r.nodeType)for(var L=r.getClientRects(),o=0;o<L.length;o++){var s=L[o]
+if(1==r.nodeType)for(var o=r.getClientRects(),L=0;L<o.length;L++){var s=o[L]
 if(f(t,s))return C(r,t,s)}if((n=(n+1)%i)==V)break}return e}(C.dom,e,a)))return null}s=function(C,e){var t=C.parentNode
-return t&&/^li$/i.test(t.nodeName)&&e.left<C.getBoundingClientRect().left?t:C}(s,e),t&&(t==C.dom&&H==t.childNodes.length-1&&1==t.lastChild.nodeType&&e.top>t.lastChild.getBoundingClientRect().bottom?o=C.state.doc.content.size:0!=H&&1==t.nodeType&&"BR"==t.childNodes[H-1].nodeName||(o=function(C,e,t,H){for(var i=-1,V=e;V!=C.dom;){var n=C.docView.nearestDesc(V,!0)
+return t&&/^li$/i.test(t.nodeName)&&e.left<C.getBoundingClientRect().left?t:C}(s,e),t&&(t==C.dom&&H==t.childNodes.length-1&&1==t.lastChild.nodeType&&e.top>t.lastChild.getBoundingClientRect().bottom?L=C.state.doc.content.size:0!=H&&1==t.nodeType&&"BR"==t.childNodes[H-1].nodeName||(L=function(C,e,t,H){for(var i=-1,V=e;V!=C.dom;){var n=C.docView.nearestDesc(V,!0)
 if(!n)return null
 if(n.node.isBlock&&n.parent){var r=n.dom.getBoundingClientRect()
 if(r.left>H.left||r.top>H.top)i=n.posBefore
 else{if(!(r.right<H.left||r.bottom<H.top))break
-i=n.posAfter}}V=n.dom.parentNode}return i>-1?i:C.docView.posFromDOM(e,t)}(C,t,H,e))),null==o&&(o=function(C,e,t){var H=m(e,t),i=H.node,V=H.offset,n=-1
+i=n.posAfter}}V=n.dom.parentNode}return i>-1?i:C.docView.posFromDOM(e,t)}(C,t,H,e))),null==L&&(L=function(C,e,t){var H=m(e,t),i=H.node,V=H.offset,n=-1
 if(1==i.nodeType&&!i.firstChild){var r=i.getBoundingClientRect()
 n=r.left!=r.right&&t.left>(r.left+r.right)/2?1:-1}return C.docView.posFromDOM(i,V,n)}(C,s,e))
 var M=C.docView.nearestDesc(s,!0)
-return{pos:o,inside:M?M.posAtStart-M.border:-1}}function Z(C,e){var t=C.getClientRects()
+return{pos:L,inside:M?M.posAtStart-M.border:-1}}function Z(C,e){var t=C.getClientRects()
 return t.length?t[e<0?0:t.length-1]:C.getBoundingClientRect()}function v(C,e){var H=C.docView.domFromPos(e),i=H.node,V=H.offset
 if(3==i.nodeType&&(t.chrome||t.gecko)){var n=Z(s(i,V,V),0)
 if(t.gecko&&V&&/\s/.test(i.nodeValue[V-1])&&V<i.nodeValue.length){var r=Z(s(i,V-1,V-1),-1)
-if(Math.abs(r.left-n.left)<1&&r.top==n.top){var L=Z(s(i,V,V+1),-1)
-return y(L,L.left<r.left)}}return n}for(var o=-1;o<2;o+=2)if(o<0&&V){var a=void 0,M=3==i.nodeType?s(i,V-1,V):3==(a=i.childNodes[V-1]).nodeType?s(a):1==a.nodeType&&"BR"!=a.nodeName?a:null
+if(Math.abs(r.left-n.left)<1&&r.top==n.top){var o=Z(s(i,V,V+1),-1)
+return y(o,o.left<r.left)}}return n}for(var L=-1;L<2;L+=2)if(L<0&&V){var a=void 0,M=3==i.nodeType?s(i,V-1,V):3==(a=i.childNodes[V-1]).nodeType?s(a):1==a.nodeType&&"BR"!=a.nodeName?a:null
 if(M){var l=Z(M,1)
-if(l.top<l.bottom)return y(l,!1)}}else if(o>0&&V<d(i)){var c=void 0,u=3==i.nodeType?s(i,V,V+1):3==(c=i.childNodes[V]).nodeType?s(c):1==c.nodeType?c:null
+if(l.top<l.bottom)return y(l,!1)}}else if(L>0&&V<d(i)){var c=void 0,u=3==i.nodeType?s(i,V,V+1):3==(c=i.childNodes[V]).nodeType?s(c):1==c.nodeType?c:null
 if(u){var h=Z(u,-1)
 if(h.top<h.bottom)return y(h,!0)}}return y(Z(3==i.nodeType?s(i):i,0),!1)}function y(C,e){if(0==C.width)return C
 var t=e?C.left:C.right
@@ -2174,8 +3598,8 @@ if(H.node.isBlock){e=H.dom
 break}e=H.dom.parentNode}for(var V=v(C,i.pos),n=e.firstChild;n;n=n.nextSibling){var r=void 0
 if(1==n.nodeType)r=n.getClientRects()
 else{if(3!=n.nodeType)continue
-r=s(n,0,n.nodeValue.length).getClientRects()}for(var L=0;L<r.length;L++){var o=r[L]
-if(o.bottom>o.top&&("up"==t?o.bottom<V.top+1:o.top>V.bottom-1))return!1}}return!0})}(C,e,t):function(C,e,t){var H=e.selection.$head
+r=s(n,0,n.nodeValue.length).getClientRects()}for(var o=0;o<r.length;o++){var L=r[o]
+if(L.bottom>L.top&&("up"==t?L.bottom<V.top+1:L.top>V.bottom-1))return!1}}return!0})}(C,e,t):function(C,e,t){var H=e.selection.$head
 if(!H.parent.isTextblock)return!1
 var i=H.parentOffset,V=!i,n=i==H.parent.content.size,r=getSelection()
 return k.test(H.parent.textContent)&&r.modify?b(C,e,function(){var e=r.getRangeAt(0),i=r.focusNode,V=r.focusOffset
@@ -2196,9 +3620,9 @@ if(C==this.contentDOM)n=C.childNodes[e]
 else{for(;C.parentNode!=this.contentDOM;)C=C.parentNode
 n=C.nextSibling}for(;n&&(!(r=n.pmViewDesc)||r.parent!=this);)n=n.nextSibling
 return n?this.posBeforeChild(r):this.posAtEnd}if(this.contentDOM&&this.contentDOM!=this.dom&&this.dom.contains(this.contentDOM))H=2&C.compareDocumentPosition(this.contentDOM)
-else if(this.dom.firstChild){if(0==e)for(var L=C;;L=L.parentNode){if(L==this.dom){H=!1
-break}if(L.parentNode.firstChild!=L)break}if(null==H&&e==C.childNodes.length)for(var o=C;;o=o.parentNode){if(o==this.dom){H=!0
-break}if(o.parentNode.lastChild!=o)break}}return(null==H?t>0:H)?this.posAtEnd:this.posAtStart},A.prototype.nearestDesc=function(C,e){for(var t=!0,H=C;H;H=H.parentNode){var i=this.getDesc(H)
+else if(this.dom.firstChild){if(0==e)for(var o=C;;o=o.parentNode){if(o==this.dom){H=!1
+break}if(o.parentNode.firstChild!=o)break}if(null==H&&e==C.childNodes.length)for(var L=C;;L=L.parentNode){if(L==this.dom){H=!0
+break}if(L.parentNode.lastChild!=L)break}}return(null==H?t>0:H)?this.posAtEnd:this.posAtStart},A.prototype.nearestDesc=function(C,e){for(var t=!0,H=C;H;H=H.parentNode){var i=this.getDesc(H)
 if(i&&(!e||i.node)){if(!t||!i.nodeDOM||(1==i.nodeDOM.nodeType?i.nodeDOM.contains(C):i.nodeDOM==C))return i
 t=!1}}},A.prototype.getDesc=function(C){for(var e=C.pmViewDesc,t=e;t;t=t.parent)if(t==this)return e},A.prototype.posFromDOM=function(C,e,t){for(var H=C;;H=H.parentNode){var i=this.getDesc(H)
 if(i)return i.localPosFromDOM(C,e,t)}},A.prototype.descAt=function(C){for(var e=0,t=0;e<this.children.length;e++){var H=this.children[e],i=t+H.size
@@ -2210,23 +3634,23 @@ return{node:this.contentDOM,offset:t}}if(t==this.children.length)throw new Error
 var H=this.children[t],i=e+H.size
 if(C<i)return H.domFromPos(C-e-H.border)
 e=i}},A.prototype.parseRange=function(C,e,t){if(void 0===t&&(t=0),0==this.children.length)return{node:this.contentDOM,from:C,to:e,fromOffset:0,toOffset:this.contentDOM.childNodes.length}
-for(var H=-1,i=-1,V=0,n=0;;n++){var r=this.children[n],o=V+r.size
-if(-1==H&&C<=o){var s=V+r.border
-if(C>=s&&e<=o-r.border&&r.node&&r.contentDOM&&this.contentDOM.contains(r.contentDOM))return r.parseRange(C-s,e-s,t+s)
+for(var H=-1,i=-1,V=0,n=0;;n++){var r=this.children[n],L=V+r.size
+if(-1==H&&C<=L){var s=V+r.border
+if(C>=s&&e<=L-r.border&&r.node&&r.contentDOM&&this.contentDOM.contains(r.contentDOM))return r.parseRange(C-s,e-s,t+s)
 C=t+V
 for(var a=n;a>0;a--){var M=this.children[a-1]
-if(M.size&&M.dom.parentNode==this.contentDOM&&!M.emptyChildAt(1)){H=L(M.dom)+1
-break}C-=M.size}-1==H&&(H=0)}if(H>-1&&e<=o){e=t+o
+if(M.size&&M.dom.parentNode==this.contentDOM&&!M.emptyChildAt(1)){H=o(M.dom)+1
+break}C-=M.size}-1==H&&(H=0)}if(H>-1&&e<=L){e=t+L
 for(var l=n+1;l<this.children.length;l++){var d=this.children[l]
-if(d.size&&d.dom.parentNode==this.contentDOM&&!d.emptyChildAt(-1)){i=L(d.dom)
+if(d.size&&d.dom.parentNode==this.contentDOM&&!d.emptyChildAt(-1)){i=o(d.dom)
 break}e+=d.size}-1==i&&(i=this.contentDOM.childNodes.length)
-break}V=o}return{node:this.contentDOM,from:C,to:e,fromOffset:H,toOffset:i}},A.prototype.emptyChildAt=function(C){if(this.border||!this.contentDOM||!this.children.length)return!1
+break}V=L}return{node:this.contentDOM,from:C,to:e,fromOffset:H,toOffset:i}},A.prototype.emptyChildAt=function(C){if(this.border||!this.contentDOM||!this.children.length)return!1
 var e=this.children[C<0?0:this.children.length-1]
 return 0==e.size||e.emptyChildAt(C)},A.prototype.domAfterPos=function(C){var e=this.domFromPos(C),t=e.node,H=e.offset
 if(1!=t.nodeType||H==t.childNodes.length)throw new RangeError("No node after pos "+C)
-return t.childNodes[H]},A.prototype.setSelection=function(C,e,t,H){for(var i=Math.min(C,e),V=Math.max(C,e),n=0,r=0;n<this.children.length;n++){var L=this.children[n],o=r+L.size
-if(i>r&&V<o)return L.setSelection(C-r-L.border,e-r-L.border,t,H)
-r=o}var s=this.domFromPos(C),M=this.domFromPos(e),l=t.getSelection(),d=document.createRange()
+return t.childNodes[H]},A.prototype.setSelection=function(C,e,t,H){for(var i=Math.min(C,e),V=Math.max(C,e),n=0,r=0;n<this.children.length;n++){var o=this.children[n],L=r+o.size
+if(i>r&&V<L)return o.setSelection(C-r-o.border,e-r-o.border,t,H)
+r=L}var s=this.domFromPos(C),M=this.domFromPos(e),l=t.getSelection(),d=document.createRange()
 if(H||!a(s.node,s.offset,l.anchorNode,l.anchorOffset)||!a(M.node,M.offset,l.focusNode,l.focusOffset)){if(l.extend)d.setEnd(s.node,s.offset),d.collapse(!1)
 else{if(C>e){var c=s
 s=M,M=c}d.setEnd(M.node,M.offset),d.setStart(s.node,s.offset)}l.removeAllRanges(),l.addRange(d),l.extend&&l.extend(M.node,M.offset)}},A.prototype.ignoreMutation=function(C){return!this.contentDOM},T.contentLost.get=function(){return this.contentDOM&&this.contentDOM!=this.dom&&!this.dom.contains(this.contentDOM)},A.prototype.markDirty=function(C,e){for(var t=0,H=0;H<this.children.length;H++){var i=this.children[H],V=t+i.size
@@ -2243,31 +3667,31 @@ if(3==t.nodeType){var i=t.nodeValue.replace(/\ufeff/g,"")
 if(!i)continue
 H=document.createTextNode(i)}else{if("\ufeff"==t.textContent)continue
 H=t.cloneNode(!0)}e||(e=document.createDocumentFragment()),e.appendChild(H)}return e?{skip:e}:C.prototype.parseRule.call(this)},e.prototype.ignoreMutation=function(){return!1},e}(E),N=function(C){function e(e,t,H,i){C.call(this,e,[],H,i),this.mark=t}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.create=function(C,t,H,i){var V=i.nodeViews[t.type.name],n=V&&V(t,i,H)
-return n&&n.dom||(n=oV.DOMSerializer.renderSpec(document,t.type.spec.toDOM(t,H))),new e(C,t,n.dom,n.contentDOM||n.dom)},e.prototype.parseRule=function(){return{mark:this.mark.type.name,attrs:this.mark.attrs,contentElement:this.contentDOM}},e.prototype.matchesMark=function(C){return 3!=this.dirty&&this.mark.eq(C)},e.prototype.markDirty=function(e,t){if(C.prototype.markDirty.call(this,e,t),0!=this.dirty){for(var H=this.parent;!H.node;)H=H.parent
-H.dirty<this.dirty&&(H.dirty=this.dirty),this.dirty=0}},e}(A),P=function(C){function e(e,t,H,i,V,n,r,L,o){C.call(this,e,t.isLeaf?B:[],V,n),this.nodeDOM=r,this.node=t,this.outerDeco=H,this.innerDeco=i,n&&this.updateChildren(L,o)}C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e
+return n&&n.dom||(n=LV.DOMSerializer.renderSpec(document,t.type.spec.toDOM(t,H))),new e(C,t,n.dom,n.contentDOM||n.dom)},e.prototype.parseRule=function(){return{mark:this.mark.type.name,attrs:this.mark.attrs,contentElement:this.contentDOM}},e.prototype.matchesMark=function(C){return 3!=this.dirty&&this.mark.eq(C)},e.prototype.markDirty=function(e,t){if(C.prototype.markDirty.call(this,e,t),0!=this.dirty){for(var H=this.parent;!H.node;)H=H.parent
+H.dirty<this.dirty&&(H.dirty=this.dirty),this.dirty=0}},e}(A),P=function(C){function e(e,t,H,i,V,n,r,o,L){C.call(this,e,t.isLeaf?B:[],V,n),this.nodeDOM=r,this.node=t,this.outerDeco=H,this.innerDeco=i,n&&this.updateChildren(o,L)}C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e
 var H={size:{},border:{}}
-return e.create=function(C,t,H,i,V,n){var r,L=V.nodeViews[t.type.name],o=L&&L(t,V,function(){return r?r.parent?r.parent.posBeforeChild(r):void 0:n},H),s=o&&o.dom,a=o&&o.contentDOM
+return e.create=function(C,t,H,i,V,n){var r,o=V.nodeViews[t.type.name],L=o&&o(t,V,function(){return r?r.parent?r.parent.posBeforeChild(r):void 0:n},H),s=L&&L.dom,a=L&&L.contentDOM
 if(t.isText)if(s){if(3!=s.nodeType)throw new RangeError("Text must be rendered as a DOM text node")}else s=document.createTextNode(t.text)
 else if(!s){var M
-s=(M=oV.DOMSerializer.renderSpec(document,t.type.spec.toDOM(t))).dom,a=M.contentDOM}a||t.isText||"BR"==s.nodeName||(s.hasAttribute("contenteditable")||(s.contentEditable=!1),t.type.spec.draggable&&(s.draggable=!0))
+s=(M=LV.DOMSerializer.renderSpec(document,t.type.spec.toDOM(t))).dom,a=M.contentDOM}a||t.isText||"BR"==s.nodeName||(s.hasAttribute("contenteditable")||(s.contentEditable=!1),t.type.spec.draggable&&(s.draggable=!0))
 var l=s
-return s=$(s,H,t),o?r=new _(C,t,H,i,s,a,l,o,V,n+1):t.isText?new F(C,t,H,i,s,l,V):new e(C,t,H,i,s,a,l,V,n+1)},e.prototype.parseRule=function(){var C=this
+return s=$(s,H,t),L?r=new _(C,t,H,i,s,a,l,L,V,n+1):t.isText?new F(C,t,H,i,s,l,V):new e(C,t,H,i,s,a,l,V,n+1)},e.prototype.parseRule=function(){var C=this
 if(this.node.type.spec.reparseInView)return null
 var e={node:this.node.type.name,attrs:this.node.attrs}
-return this.node.type.spec.code&&(e.preserveWhitespace="full"),this.contentDOM&&!this.contentLost?e.contentElement=this.contentDOM:e.getContent=function(){return C.contentDOM?oV.Fragment.empty:C.node.content},e},e.prototype.matchesNode=function(C,e,t){return 0==this.dirty&&C.eq(this.node)&&q(e,this.outerDeco)&&t.eq(this.innerDeco)},H.size.get=function(){return this.node.nodeSize},H.border.get=function(){return this.node.isLeaf?0:1},e.prototype.updateChildren=function(C,e){var t=this,H=new J(this),i=this.node.inlineContent;(function(C,e,t,H){var i=e.locals(C),V=0
+return this.node.type.spec.code&&(e.preserveWhitespace="full"),this.contentDOM&&!this.contentLost?e.contentElement=this.contentDOM:e.getContent=function(){return C.contentDOM?LV.Fragment.empty:C.node.content},e},e.prototype.matchesNode=function(C,e,t){return 0==this.dirty&&C.eq(this.node)&&q(e,this.outerDeco)&&t.eq(this.innerDeco)},H.size.get=function(){return this.node.nodeSize},H.border.get=function(){return this.node.isLeaf?0:1},e.prototype.updateChildren=function(C,e){var t=this,H=new J(this),i=this.node.inlineContent;(function(C,e,t,H){var i=e.locals(C),V=0
 if(0==i.length){for(var n=0;n<C.childCount;n++){var r=C.child(n)
-H(r,i,e.forChild(V,r),n),V+=r.nodeSize}return}for(var L=0,o=[],s=null,a=0;;){if(L<i.length&&i[L].to==V){for(var M=i[L++],l=void 0;L<i.length&&i[L].to==V;)(l||(l=[M])).push(i[L++])
+H(r,i,e.forChild(V,r),n),V+=r.nodeSize}return}for(var o=0,L=[],s=null,a=0;;){if(o<i.length&&i[o].to==V){for(var M=i[o++],l=void 0;o<i.length&&i[o].to==V;)(l||(l=[M])).push(i[o++])
 if(l){l.sort(Y)
 for(var d=0;d<l.length;d++)t(l[d],a)}else t(M,a)}var c=void 0
 if(s)c=s,s=null
 else{if(!(a<C.childCount))break
-c=C.child(a++)}for(var u=0;u<o.length;u++)o[u].to<=V&&o.splice(u--,1)
-for(;L<i.length&&i[L].from==V;)o.push(i[L++])
+c=C.child(a++)}for(var u=0;u<L.length;u++)L[u].to<=V&&L.splice(u--,1)
+for(;o<i.length&&i[o].from==V;)L.push(i[o++])
 var h=V+c.nodeSize
 if(c.isText){var p=h
-L<i.length&&i[L].from<p&&(p=i[L].from)
-for(var m=0;m<o.length;m++)o[m].to<p&&(p=o[m].to)
-p<h&&(s=c.cut(p-V),c=c.cut(0,p-V),h=p)}H(c,o.length?o.slice():B,e.forChild(V,c),a-1),V=h}})(this.node,this.innerDeco,function(V,n){V.spec.marks?H.syncToMarks(V.spec.marks,i,C):V.type.side>=0&&H.syncToMarks(n==t.node.childCount?oV.Mark.none:t.node.child(n).marks,i,C),H.placeWidget(V,C,e)},function(t,V,n,r){H.syncToMarks(t.marks,i,C),H.findNodeMatch(t,V,n,r)||H.updateNextNode(t,V,n,C,r)||H.addNode(t,V,n,C,e),e+=t.nodeSize}),H.syncToMarks(B,i,C),this.node.isTextblock&&H.addTextblockHacks(),H.destroyRest(),(H.changed||2==this.dirty)&&this.renderChildren()},e.prototype.renderChildren=function(){(function C(e,t){var H=e.firstChild
+o<i.length&&i[o].from<p&&(p=i[o].from)
+for(var m=0;m<L.length;m++)L[m].to<p&&(p=L[m].to)
+p<h&&(s=c.cut(p-V),c=c.cut(0,p-V),h=p)}H(c,L.length?L.slice():B,e.forChild(V,c),a-1),V=h}})(this.node,this.innerDeco,function(V,n){V.spec.marks?H.syncToMarks(V.spec.marks,i,C):V.type.side>=0&&H.syncToMarks(n==t.node.childCount?LV.Mark.none:t.node.child(n).marks,i,C),H.placeWidget(V,C,e)},function(t,V,n,r){H.syncToMarks(t.marks,i,C),H.findNodeMatch(t,V,n,r)||H.updateNextNode(t,V,n,C,r)||H.addNode(t,V,n,C,e),e+=t.nodeSize}),H.syncToMarks(B,i,C),this.node.isTextblock&&H.addTextblockHacks(),H.destroyRest(),(H.changed||2==this.dirty)&&this.renderChildren()},e.prototype.renderChildren=function(){(function C(e,t){var H=e.firstChild
 for(var i=0;i<t.length;i++){var V=t[i],n=V.dom
 if(n.parentNode==e){for(;n!=H;)H=K(H)
 H=H.nextSibling}else e.insertBefore(n,H)
@@ -2277,21 +3701,21 @@ C.style.cssText=e+"; list-style: square !important",window.getComputedStyle(C).l
 this.dom=U(this.dom,this.nodeDOM,j(this.outerDeco,this.node,e),j(C,this.node,e)),this.dom!=t&&(t.pmViewDesc=null,this.dom.pmViewDesc=this),this.outerDeco=C}},e.prototype.selectNode=function(){this.nodeDOM.classList.add("ProseMirror-selectednode"),!this.contentDOM&&this.node.type.spec.draggable||(this.dom.draggable=!0)},e.prototype.deselectNode=function(){this.nodeDOM.classList.remove("ProseMirror-selectednode"),!this.contentDOM&&this.node.type.spec.draggable||(this.dom.draggable=!1)},Object.defineProperties(e.prototype,H),e}(A)
 function R(C,e,t,H,i){return $(H,e,C),new P(null,C,e,t,H,H,H,i,0)}var F=function(C){function e(e,t,H,i,V,n,r){C.call(this,e,t,H,i,V,null,n,r)}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.parseRule=function(){var C=this.nodeDOM.parentNode
 return C?{skip:C}:{ignore:!0}},e.prototype.update=function(C,e){return!(3==this.dirty||0!=this.dirty&&!this.inParent()||!C.sameMarkup(this.node))&&(this.updateOuterDeco(e),0==this.dirty&&C.text==this.node.text||C.text==this.nodeDOM.nodeValue||(this.nodeDOM.nodeValue=C.text),this.node=C,this.dirty=0,!0)},e.prototype.inParent=function(){for(var C=this.parent.contentDOM,e=this.nodeDOM;e;e=e.parentNode)if(e==C)return!0
-return!1},e.prototype.domFromPos=function(C){return{node:this.nodeDOM,offset:C}},e.prototype.localPosFromDOM=function(e,t,H){return e==this.nodeDOM?this.posAtStart+Math.min(t,this.node.text.length):C.prototype.localPosFromDOM.call(this,e,t,H)},e.prototype.ignoreMutation=function(C){return"characterData"!=C.type},e}(P),I=function(C){function e(){C.apply(this,arguments)}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.parseRule=function(){return{ignore:!0}},e.prototype.matchesHack=function(){return 0==this.dirty},e}(A),_=function(C){function e(e,t,H,i,V,n,r,L,o,s){C.call(this,e,t,H,i,V,n,r,o,s),this.spec=L}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.update=function(e,t,H,i){if(3==this.dirty)return!1
+return!1},e.prototype.domFromPos=function(C){return{node:this.nodeDOM,offset:C}},e.prototype.localPosFromDOM=function(e,t,H){return e==this.nodeDOM?this.posAtStart+Math.min(t,this.node.text.length):C.prototype.localPosFromDOM.call(this,e,t,H)},e.prototype.ignoreMutation=function(C){return"characterData"!=C.type},e}(P),I=function(C){function e(){C.apply(this,arguments)}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.parseRule=function(){return{ignore:!0}},e.prototype.matchesHack=function(){return 0==this.dirty},e}(A),_=function(C){function e(e,t,H,i,V,n,r,o,L,s){C.call(this,e,t,H,i,V,n,r,L,s),this.spec=o}return C&&(e.__proto__=C),e.prototype=Object.create(C&&C.prototype),e.prototype.constructor=e,e.prototype.update=function(e,t,H,i){if(3==this.dirty)return!1
 if(this.spec.update){var V=this.spec.update(e,t)
 return V&&this.updateInner(e,t,H,i),V}return!(!this.contentDOM&&!e.isLeaf)&&C.prototype.update.call(this,e,t,H,i)},e.prototype.selectNode=function(){this.spec.selectNode?this.spec.selectNode():C.prototype.selectNode.call(this)},e.prototype.deselectNode=function(){this.spec.deselectNode?this.spec.deselectNode():C.prototype.deselectNode.call(this)},e.prototype.setSelection=function(e,t,H,i){this.spec.setSelection?this.spec.setSelection(e,t,H):C.prototype.setSelection.call(this,e,t,H,i)},e.prototype.destroy=function(){this.spec.destroy&&this.spec.destroy(),C.prototype.destroy.call(this)},e.prototype.stopEvent=function(C){return!!this.spec.stopEvent&&this.spec.stopEvent(C)},e.prototype.ignoreMutation=function(e){return this.spec.ignoreMutation?this.spec.ignoreMutation(e):C.prototype.ignoreMutation.call(this,e)},e}(P)
 function z(C){C&&(this.nodeName=C)}z.prototype=Object.create(null)
 var W=[new z]
 function j(C,e,t){if(0==C.length)return W
 for(var H=t?W[0]:new z,i=[H],V=0;V<C.length;V++){var n=C[V].type.attrs,r=H
-if(n)for(var L in n.nodeName&&i.push(r=new z(n.nodeName)),n){var o=n[L]
-null!=o&&(t&&1==i.length&&i.push(r=H=new z(e.isInline?"span":"div")),"class"==L?r.class=(r.class?r.class+" ":"")+o:"style"==L?r.style=(r.style?r.style+";":"")+o:"nodeName"!=L&&(r[L]=o))}}return i}function U(C,e,t,H){if(t==W&&H==W)return e
+if(n)for(var o in n.nodeName&&i.push(r=new z(n.nodeName)),n){var L=n[o]
+null!=L&&(t&&1==i.length&&i.push(r=H=new z(e.isInline?"span":"div")),"class"==o?r.class=(r.class?r.class+" ":"")+L:"style"==o?r.style=(r.style?r.style+";":"")+L:"nodeName"!=o&&(r[o]=L))}}return i}function U(C,e,t,H){if(t==W&&H==W)return e
 for(var i=e,V=0;V<H.length;V++){var n=H[V],r=t[V]
-if(V){var L=void 0
-r&&r.nodeName==n.nodeName&&i!=C&&(L=e.parentNode)&&L.tagName.toLowerCase()==n.nodeName?i=L:((L=document.createElement(n.nodeName)).appendChild(i),i=L)}G(i,r||W[0],n)}return i}function G(C,e,t){for(var H in e)"class"==H||"style"==H||"nodeName"==H||H in t||C.removeAttribute(H)
+if(V){var o=void 0
+r&&r.nodeName==n.nodeName&&i!=C&&(o=e.parentNode)&&o.tagName.toLowerCase()==n.nodeName?i=o:((o=document.createElement(n.nodeName)).appendChild(i),i=o)}G(i,r||W[0],n)}return i}function G(C,e,t){for(var H in e)"class"==H||"style"==H||"nodeName"==H||H in t||C.removeAttribute(H)
 for(var i in t)"class"!=i&&"style"!=i&&"nodeName"!=i&&t[i]!=e[i]&&C.setAttribute(i,t[i])
 if(e.class!=t.class){for(var V=e.class?e.class.split(" "):B,n=t.class?t.class.split(" "):B,r=0;r<V.length;r++)-1==n.indexOf(V[r])&&C.classList.remove(V[r])
-for(var L=0;L<n.length;L++)-1==V.indexOf(n[L])&&C.classList.add(n[L])}if(e.style!=t.style){if(e.style)for(var o,s=/\s*([\w\-\xa1-\uffff]+)\s*:(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\(.*?\)|[^;])*/g;o=s.exec(e.style);)C.style[o[1].toLowerCase()]=""
+for(var o=0;o<n.length;o++)-1==V.indexOf(n[o])&&C.classList.add(n[o])}if(e.style!=t.style){if(e.style)for(var L,s=/\s*([\w\-\xa1-\uffff]+)\s*:(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\(.*?\)|[^;])*/g;L=s.exec(e.style);)C.style[L[1].toLowerCase()]=""
 t.style&&(C.style.cssText+=t.style)}}function $(C,e,t){return U(C,C,W,j(e,t,1!=C.nodeType))}function q(C,e){if(C.length!=e.length)return!1
 for(var t=0;t<C.length;t++)if(!C[t].type.eq(e[t].type))return!1
 return!0}function K(C){var e=C.nextSibling
@@ -2303,25 +3727,25 @@ return n&&dV.Selection.findFrom(n,e)}function Q(C,e){return C.dispatch(C.state.t
 if(H instanceof dV.TextSelection){if(!H.empty||t.indexOf("s")>-1)return!1
 if(C.endOfTextblock(e>0?"right":"left")){var i=X(C.state,e)
 return!!(i&&i instanceof dV.NodeSelection)&&Q(C,i)}var V,n=H.$head,r=n.textOffset?null:e<0?n.nodeBefore:n.nodeAfter
-if(r&&dV.NodeSelection.isSelectable(r)){var L=e<0?n.pos-r.nodeSize:n.pos
-if(r.isAtom||(V=C.docView.descAt(L))&&!V.contentDOM)return Q(C,new dV.NodeSelection(e<0?C.state.doc.resolve(n.pos-r.nodeSize):n))}return!1}if(H instanceof dV.NodeSelection&&H.node.isInline)return Q(C,new dV.TextSelection(e>0?H.$to:H.$from))
-var o=X(C.state,e)
-return!!o&&Q(C,o)}function eC(C){return 3==C.nodeType?C.nodeValue.length:C.childNodes.length}function tC(C){var e=C.pmViewDesc
+if(r&&dV.NodeSelection.isSelectable(r)){var o=e<0?n.pos-r.nodeSize:n.pos
+if(r.isAtom||(V=C.docView.descAt(o))&&!V.contentDOM)return Q(C,new dV.NodeSelection(e<0?C.state.doc.resolve(n.pos-r.nodeSize):n))}return!1}if(H instanceof dV.NodeSelection&&H.node.isInline)return Q(C,new dV.TextSelection(e>0?H.$to:H.$from))
+var L=X(C.state,e)
+return!!L&&Q(C,L)}function eC(C){return 3==C.nodeType?C.nodeValue.length:C.childNodes.length}function tC(C){var e=C.pmViewDesc
 return e&&0==e.size&&(C.nextSibling||"BR"!=C.nodeName)}function HC(C){var e=C.root.getSelection(),H=e.focusNode,i=e.focusOffset
 if(H){var V,n,r=!1
 for(t.gecko&&1==H.nodeType&&i<eC(H)&&tC(H.childNodes[i])&&(r=!0);;)if(i>0)if(1!=H.nodeType){if(3!=H.nodeType||"\ufeff"!=H.nodeValue.charAt(i-1))break
-t.ie&&t.ie_version<=11&&(r=!0),V=H,n=--i}else{var o=H.childNodes[i-1]
-if(tC(o))V=H,n=--i
-else{if(3!=o.nodeType)break
-i=(H=o).nodeValue.length}}else{if(VC(H))break
-for(var s=H.previousSibling;s&&tC(s);)V=H.parentNode,n=L(s),s=s.previousSibling
+t.ie&&t.ie_version<=11&&(r=!0),V=H,n=--i}else{var L=H.childNodes[i-1]
+if(tC(L))V=H,n=--i
+else{if(3!=L.nodeType)break
+i=(H=L).nodeValue.length}}else{if(VC(H))break
+for(var s=H.previousSibling;s&&tC(s);)V=H.parentNode,n=o(s),s=s.previousSibling
 if(s)i=eC(H=s)
 else{if((H=H.parentNode)==C.dom)break
 i=0}}r?nC(C,e,H,i):V&&nC(C,e,V,n)}}function iC(C){var e=C.root.getSelection(),t=e.focusNode,H=e.focusOffset
 if(t){for(var i,V,n=eC(t);;)if(H<n){if(1!=t.nodeType)break
 if(!tC(t.childNodes[H]))break
 i=t,V=++H}else{if(VC(t))break
-for(var r=t.nextSibling;r&&tC(r);)i=r.parentNode,V=L(r)+1,r=r.nextSibling
+for(var r=t.nextSibling;r&&tC(r);)i=r.parentNode,V=o(r)+1,r=r.nextSibling
 if(r)H=0,n=eC(t=r)
 else{if((t=t.parentNode)==C.dom)break
 H=n=0}}i&&nC(C,e,i,V)}}function VC(C){var e=C.pmViewDesc
@@ -2332,28 +3756,28 @@ if(H instanceof dV.TextSelection&&!H.empty||t.indexOf("s")>-1)return!1
 var i=H.$from,V=H.$to
 if(!i.parent.inlineContent||C.endOfTextblock(e<0?"up":"down")){var n=X(C.state,e)
 if(n&&n instanceof dV.NodeSelection)return Q(C,n)}if(!i.parent.inlineContent){var r=dV.Selection.findFrom(e<0?i:V,e)
-return!r||Q(C,r)}return!1}function LC(C,e){if(!(C.state.selection instanceof dV.TextSelection))return!0
+return!r||Q(C,r)}return!1}function oC(C,e){if(!(C.state.selection instanceof dV.TextSelection))return!0
 var t=C.state.selection,H=t.$head,i=t.$anchor,V=t.empty
 if(!H.sameParent(i))return!0
 if(!V)return!1
 if(C.endOfTextblock(e>0?"forward":"backward"))return!0
 var n=!H.textOffset&&(e<0?H.nodeBefore:H.nodeAfter)
 if(n&&!n.isText){var r=C.state.tr
-return e<0?r.delete(H.pos-n.nodeSize,H.pos):r.delete(H.pos,H.pos+n.nodeSize),C.dispatch(r),!0}return!1}function oC(C,e,t){C.domObserver.stop(),e.contentEditable=t,C.domObserver.start()}function sC(C,e){var H=e.keyCode,i=function(C){var e=""
+return e<0?r.delete(H.pos-n.nodeSize,H.pos):r.delete(H.pos,H.pos+n.nodeSize),C.dispatch(r),!0}return!1}function LC(C,e,t){C.domObserver.stop(),e.contentEditable=t,C.domObserver.start()}function sC(C,e){var H=e.keyCode,i=function(C){var e=""
 return C.ctrlKey&&(e+="c"),C.metaKey&&(e+="m"),C.altKey&&(e+="a"),C.shiftKey&&(e+="s"),e}(e)
-return 8==H||t.mac&&72==H&&"c"==i?LC(C,-1)||HC(C):46==H||t.mac&&68==H&&"c"==i?LC(C,1)||iC(C):13==H||27==H||(37==H?CC(C,-1,i)||HC(C):39==H?CC(C,1,i)||iC(C):38==H?rC(C,-1,i)||HC(C):40==H?function(C){if(t.chrome&&!(C.state.selection.$head.parentOffset>0)){var e=C.root.getSelection(),H=e.focusNode,i=e.focusOffset
+return 8==H||t.mac&&72==H&&"c"==i?oC(C,-1)||HC(C):46==H||t.mac&&68==H&&"c"==i?oC(C,1)||iC(C):13==H||27==H||(37==H?CC(C,-1,i)||HC(C):39==H?CC(C,1,i)||iC(C):38==H?rC(C,-1,i)||HC(C):40==H?function(C){if(t.chrome&&!(C.state.selection.$head.parentOffset>0)){var e=C.root.getSelection(),H=e.focusNode,i=e.focusOffset
 if(H&&1==H.nodeType&&0==i&&H.firstChild&&"false"==H.firstChild.contentEditable){var V=H.firstChild
-oC(C,V,!0),setTimeout(function(){return oC(C,V,!1)},20)}}}(C)||rC(C,1,i)||iC(C):i==(t.mac?"m":"c")&&(66==H||73==H||89==H||90==H))}J.prototype.destroyBetween=function(C,e){if(C!=e){for(var t=C;t<e;t++)this.top.children[t].destroy()
+LC(C,V,!0),setTimeout(function(){return LC(C,V,!1)},20)}}}(C)||rC(C,1,i)||iC(C):i==(t.mac?"m":"c")&&(66==H||73==H||89==H||90==H))}J.prototype.destroyBetween=function(C,e){if(C!=e){for(var t=C;t<e;t++)this.top.children[t].destroy()
 this.top.children.splice(C,e-C),this.changed=!0}},J.prototype.destroyRest=function(){this.destroyBetween(this.index,this.top.children.length)},J.prototype.syncToMarks=function(C,e,t){for(var H=0,i=this.stack.length>>1,V=Math.min(i,C.length);H<V&&(H==i-1?this.top:this.stack[H+1<<1]).matchesMark(C[H])&&!1!==C[H].type.spec.spanning;)H++
 for(;H<i;)this.destroyRest(),this.top.dirty=0,this.index=this.stack.pop(),this.top=this.stack.pop(),i--
 for(;i<C.length;){this.stack.push(this.top,this.index+1)
 for(var n=-1,r=this.index;r<Math.min(this.index+3,this.top.children.length);r++)if(this.top.children[r].matchesMark(C[i])){n=r
 break}if(n>-1)n>this.index&&(this.changed=!0,this.top.children.splice(this.index,n-this.index)),this.top=this.top.children[this.index]
-else{var L=N.create(this.top,C[i],e,t)
-this.top.children.splice(this.index,0,L),this.top=L,this.changed=!0}this.index=0,i++}},J.prototype.findNodeMatch=function(C,e,t,H){var i=-1,V=this.preMatched[H],n=this.top.children
+else{var o=N.create(this.top,C[i],e,t)
+this.top.children.splice(this.index,0,o),this.top=o,this.changed=!0}this.index=0,i++}},J.prototype.findNodeMatch=function(C,e,t,H){var i=-1,V=this.preMatched[H],n=this.top.children
 if(V&&V.matchesNode(C,e,t))i=n.indexOf(V)
-else for(var r=this.index,L=Math.min(n.length,r+5);r<L;r++){var o=n[r]
-if(o.matchesNode(C,e,t)&&this.preMatched.indexOf(o)<0){i=r
+else for(var r=this.index,o=Math.min(n.length,r+5);r<o;r++){var L=n[r]
+if(L.matchesNode(C,e,t)&&this.preMatched.indexOf(L)<0){i=r
 break}}return!(i<0)&&(this.destroyBetween(this.index,i),this.index++,!0)},J.prototype.updateNextNode=function(C,e,t,H,i){if(this.index==this.top.children.length)return!1
 var V=this.top.children[this.index]
 if(V instanceof P){var n=this.preMatched.indexOf(V)
@@ -2378,12 +3802,12 @@ this.view=C,this.lastAnchorNode=this.lastHeadNode=this.lastAnchorOffset=this.las
 lC.prototype.destroy=function(){this.view.dom.removeEventListener("focus",this.focusFunc),this.view.dom.removeEventListener("blur",this.blurFunc),this.poller.stop()},lC.prototype.poll=function(C){this.poller.poll(C)},lC.prototype.editableChanged=function(){this.view.editable?ZC(this.view)||this.poller.stop():this.poller.start()},lC.prototype.domChanged=function(){var C=this.view.root.getSelection()
 return C.anchorNode!=this.lastAnchorNode||C.anchorOffset!=this.lastAnchorOffset||C.focusNode!=this.lastHeadNode||C.focusOffset!=this.lastHeadOffset},lC.prototype.storeDOMState=function(C){var e=this.view.root.getSelection()
 this.lastAnchorNode=e.anchorNode,this.lastAnchorOffset=e.anchorOffset,this.lastHeadNode=e.focusNode,this.lastHeadOffset=e.focusOffset,this.lastSelection=C},lC.prototype.clearDOMState=function(){this.lastAnchorNode=this.lastSelection=null},lC.prototype.readFromDOM=function(C){if(!this.ignoreUpdates&&this.domChanged()&&ZC(this.view)){if(this.suppressUpdates)return uC(this.view)
-if(this.view.inDOMChange||this.view.domObserver.flush(),!this.view.inDOMChange){var e,t,H=this.view.root.getSelection(),i=this.view.state.doc,V=this.view.docView.nearestDesc(H.focusNode),n=V&&0==V.size,r=this.view.docView.posFromDOM(H.focusNode,H.focusOffset),L=i.resolve(r)
-if(c(H)){for(e=L;V&&!V.node;)V=V.parent
-if(V&&V.node.isAtom&&dV.NodeSelection.isSelectable(V.node)&&V.parent){var o=V.posBefore
-t=new dV.NodeSelection(r==o?L:i.resolve(o))}}else e=i.resolve(this.view.docView.posFromDOM(H.anchorNode,H.anchorOffset))
-if(!t){var s="pointer"==C||this.view.state.selection.head<L.pos&&!n?1:-1
-t=gC(this.view,e,L,s)}if(this.view.state.selection.eq(t))uC(this.view)
+if(this.view.inDOMChange||this.view.domObserver.flush(),!this.view.inDOMChange){var e,t,H=this.view.root.getSelection(),i=this.view.state.doc,V=this.view.docView.nearestDesc(H.focusNode),n=V&&0==V.size,r=this.view.docView.posFromDOM(H.focusNode,H.focusOffset),o=i.resolve(r)
+if(c(H)){for(e=o;V&&!V.node;)V=V.parent
+if(V&&V.node.isAtom&&dV.NodeSelection.isSelectable(V.node)&&V.parent){var L=V.posBefore
+t=new dV.NodeSelection(r==L?o:i.resolve(L))}}else e=i.resolve(this.view.docView.posFromDOM(H.anchorNode,H.anchorOffset))
+if(!t){var s="pointer"==C||this.view.state.selection.head<o.pos&&!n?1:-1
+t=gC(this.view,e,o,s)}if(this.view.state.selection.eq(t))uC(this.view)
 else{var a=this.view.state.tr.setSelection(t)
 "pointer"==C?a.setMeta("pointer",!0):"key"==C&&a.scrollIntoView(),this.view.dispatch(a)}}}}
 var dC=function(C){var e=this
@@ -2396,8 +3820,8 @@ t.gecko&&t.gecko_version<=55&&(C.selectionReader.ignoreUpdates=!0,C.dom.focus(),
 var V=C.selectionReader
 if(!V.lastSelection||!V.lastSelection.eq(i)||V.domChanged()){if(V.ignoreUpdates=!0,C.cursorWrapper)(function(C){var e=C.root.getSelection(),H=document.createRange(),i=C.cursorWrapper.dom
 H.setEnd(i,i.childNodes.length),H.collapse(!1),e.removeAllRanges(),e.addRange(H),!C.state.selection.visible&&t.ie&&t.ie_version<=11&&(i.disabled=!0,i.disabled=!1)})(C)
-else{var n,r,L=i.anchor,o=i.head
-!hC||i instanceof dV.TextSelection||(i.$from.parent.inlineContent||(n=pC(C,i.from)),i.empty||i.$from.parent.inlineContent||(r=pC(C,i.to))),C.docView.setSelection(L,o,C.root,H),hC&&(n&&(n.contentEditable="false"),r&&(r.contentEditable="false")),i.visible?C.dom.classList.remove("ProseMirror-hideselection"):L!=o&&(C.dom.classList.add("ProseMirror-hideselection"),"onselectionchange"in document&&function(C){var e=C.dom.ownerDocument
+else{var n,r,o=i.anchor,L=i.head
+!hC||i instanceof dV.TextSelection||(i.$from.parent.inlineContent||(n=pC(C,i.from)),i.empty||i.$from.parent.inlineContent||(r=pC(C,i.to))),C.docView.setSelection(o,L,C.root,H),hC&&(n&&(n.contentEditable="false"),r&&(r.contentEditable="false")),i.visible?C.dom.classList.remove("ProseMirror-hideselection"):o!=L&&(C.dom.classList.add("ProseMirror-hideselection"),"onselectionchange"in document&&function(C){var e=C.dom.ownerDocument
 e.removeEventListener("selectionchange",C.hideSelectionGuard)
 var t=C.root.getSelection(),H=t.anchorNode,i=t.anchorOffset
 e.addEventListener("selectionchange",C.hideSelectionGuard=function(){t.anchorNode==H&&t.anchorOffset==i||(e.removeEventListener("selectionchange",C.hideSelectionGuard),C.dom.classList.remove("ProseMirror-hideselection"))})}(C))}V.storeDOMState(i),V.ignoreUpdates=!1}}cC.prototype.doPoll=function(C){var e=this.reader.view
@@ -2421,92 +3845,92 @@ return t.initEvent("keydown",!0,!0),t.keyCode=C,t.key=t.code=e,t}function AC(C,e
 if(t)for(var V=C.node(H).maybeChild(C.indexAfter(H));V&&!V.isLeaf;)V=V.firstChild,i++
 return i}function BC(C,e){for(var t=[],H=e.content,i=e.openStart,V=e.openEnd;i>1&&V>1&&1==H.childCount&&1==H.firstChild.childCount;){i--,V--
 var n=H.firstChild
-t.push(n.type.name,n.type.hasRequiredAttrs()?n.attrs:null),H=n.content}var r=C.someProp("clipboardSerializer")||oV.DOMSerializer.fromSchema(C.state.schema),L=document.createElement("div")
-L.appendChild(r.serializeFragment(H))
-for(var o,s=L.firstChild;s&&1==s.nodeType&&(o=NC[s.nodeName.toLowerCase()]);){for(var a=o.length-1;a>=0;a--){for(var M=document.createElement(o[a]);L.firstChild;)M.appendChild(L.firstChild)
-L.appendChild(M)}s=L.firstChild}return s&&1==s.nodeType&&s.setAttribute("data-pm-slice",i+" "+V+" "+JSON.stringify(t)),{dom:L,text:C.someProp("clipboardTextSerializer",function(C){return C(e)})||e.content.textBetween(0,e.content.size,"\n\n")}}function EC(C,e,t,H,i){var V,n,r=i.parent.type.spec.code
+t.push(n.type.name,n.type.hasRequiredAttrs()?n.attrs:null),H=n.content}var r=C.someProp("clipboardSerializer")||LV.DOMSerializer.fromSchema(C.state.schema),o=document.createElement("div")
+o.appendChild(r.serializeFragment(H))
+for(var L,s=o.firstChild;s&&1==s.nodeType&&(L=NC[s.nodeName.toLowerCase()]);){for(var a=L.length-1;a>=0;a--){for(var M=document.createElement(L[a]);o.firstChild;)M.appendChild(o.firstChild)
+o.appendChild(M)}s=o.firstChild}return s&&1==s.nodeType&&s.setAttribute("data-pm-slice",i+" "+V+" "+JSON.stringify(t)),{dom:o,text:C.someProp("clipboardTextSerializer",function(C){return C(e)})||e.content.textBetween(0,e.content.size,"\n\n")}}function EC(C,e,t,H,i){var V,n,r=i.parent.type.spec.code
 if(!t&&!e)return null
-var L=e&&(H||r||!t)
-if(L){if(C.someProp("transformPastedText",function(C){e=C(e)}),r)return new oV.Slice(oV.Fragment.from(C.state.schema.text(e)),0,0)
-var o=C.someProp("clipboardTextParser",function(C){return C(e,i)})
-o?n=o:(V=document.createElement("div"),e.trim().split(/(?:\r\n?|\n)+/).forEach(function(C){V.appendChild(document.createElement("p")).textContent=C}))}else C.someProp("transformPastedHTML",function(C){return t=C(t)}),V=function(C){var e=/(\s*<meta [^>]*>)*/.exec(C)
+var o=e&&(H||r||!t)
+if(o){if(C.someProp("transformPastedText",function(C){e=C(e)}),r)return new LV.Slice(LV.Fragment.from(C.state.schema.text(e)),0,0)
+var L=C.someProp("clipboardTextParser",function(C){return C(e,i)})
+L?n=L:(V=document.createElement("div"),e.trim().split(/(?:\r\n?|\n)+/).forEach(function(C){V.appendChild(document.createElement("p")).textContent=C}))}else C.someProp("transformPastedHTML",function(C){return t=C(t)}),V=function(C){var e=/(\s*<meta [^>]*>)*/.exec(C)
 e&&(C=C.slice(e[0].length))
 var t,H=(PC||(PC=document.implementation.createHTMLDocument("title"))).createElement("div"),i=/(?:<meta [^>]*>)*<([a-z][^>\s]+)/i.exec(C),V=0;(t=i&&NC[i[1].toLowerCase()])&&(C=t.map(function(C){return"<"+C+">"}).join("")+C+t.map(function(C){return"</"+C+">"}).reverse().join(""),V=t.length)
 H.innerHTML=C
 for(var n=0;n<V;n++)H=H.firstChild
 return H}(t)
 var s=V&&V.querySelector("[data-pm-slice]"),a=s&&/^(\d+) (\d+) (.*)/.exec(s.getAttribute("data-pm-slice"))
-if(!n){var M=C.someProp("clipboardParser")||C.someProp("domParser")||oV.DOMParser.fromSchema(C.state.schema)
-n=M.parseSlice(V,{preserveWhitespace:!(!L&&!a),context:i})}return n=a?function(C,e){if(!C.size)return C
+if(!n){var M=C.someProp("clipboardParser")||C.someProp("domParser")||LV.DOMParser.fromSchema(C.state.schema)
+n=M.parseSlice(V,{preserveWhitespace:!(!o&&!a),context:i})}return n=a?function(C,e){if(!C.size)return C
 var t,H=C.content.firstChild.type.schema
-try{t=JSON.parse(e)}catch(o){return C}for(var i=C.content,V=C.openStart,n=C.openEnd,r=t.length-2;r>=0;r-=2){var L=H.nodes[t[r]]
-if(!L||L.hasRequiredAttrs())break
-i=oV.Fragment.from(L.create(t[r+1],i)),V++,n++}return new oV.Slice(i,V,n)}(new oV.Slice(n.content,Math.min(n.openStart,+a[1]),Math.min(n.openEnd,+a[2])),a[3]):oV.Slice.maxOpen(function(C,e){if(C.childCount<2)return C
+try{t=JSON.parse(e)}catch(L){return C}for(var i=C.content,V=C.openStart,n=C.openEnd,r=t.length-2;r>=0;r-=2){var o=H.nodes[t[r]]
+if(!o||o.hasRequiredAttrs())break
+i=LV.Fragment.from(o.create(t[r+1],i)),V++,n++}return new LV.Slice(i,V,n)}(new LV.Slice(n.content,Math.min(n.openStart,+a[1]),Math.min(n.openEnd,+a[2])),a[3]):LV.Slice.maxOpen(function(C,e){if(C.childCount<2)return C
 for(var t=function(t){var H=e.node(t),i=H.contentMatchAt(e.index(t)),V=void 0,n=[]
 if(C.forEach(function(C){if(n){var e,t=i.findWrapping(C.type)
 if(!t)return n=null
 if(e=n.length&&V.length&&function C(e,t,H,i,V){if(V<e.length&&V<t.length&&e[V]==t[V]){var n=C(e,t,H,i.lastChild,V+1)
 if(n)return i.copy(i.content.replaceChild(i.childCount-1,n))
 var r=i.contentMatchAt(i.childCount)
-if(r.matchType(V==e.length-1?H.type:e[V+1]))return i.copy(i.content.append(oV.Fragment.from(DC(H,e,V+1))))}}(t,V,C,n[n.length-1],0))n[n.length-1]=e
+if(r.matchType(V==e.length-1?H.type:e[V+1]))return i.copy(i.content.append(LV.Fragment.from(DC(H,e,V+1))))}}(t,V,C,n[n.length-1],0))n[n.length-1]=e
 else{n.length&&(n[n.length-1]=function C(e,t){if(0==t)return e
 var H=e.content.replaceChild(e.childCount-1,C(e.lastChild,t-1))
-var i=e.contentMatchAt(e.childCount).fillBefore(oV.Fragment.empty,!0)
+var i=e.contentMatchAt(e.childCount).fillBefore(LV.Fragment.empty,!0)
 return e.copy(H.append(i))}(n[n.length-1],V.length))
 var H=DC(C,t)
-n.push(H),i=i.matchType(H.type,H.attrs),V=t}}}),n)return{v:oV.Fragment.from(n)}},H=e.depth;H>=0;H--){var i=t(H)
+n.push(H),i=i.matchType(H.type,H.attrs),V=t}}}),n)return{v:LV.Fragment.from(n)}},H=e.depth;H>=0;H--){var i=t(H)
 if(i)return i.v}return C}(n.content,i),!1),C.someProp("transformPasted",function(C){n=C(n)}),n}function DC(C,e,t){void 0===t&&(t=0)
-for(var H=e.length-1;H>=t;H--)C=e[H].create(null,oV.Fragment.from(C))
+for(var H=e.length-1;H>=t;H--)C=e[H].create(null,LV.Fragment.from(C))
 return C}kC.prototype.addRange=function(C,e){null==this.from?(this.from=C,this.to=e):(this.from=Math.min(C,this.from),this.to=Math.max(e,this.to))},kC.prototype.changedRange=function(){if(null==this.from)return function(C){var e=C.$anchor.min(C.$head),t=C.$anchor.max(C.$head)
 if(e.sameParent(t)&&e.parent.inlineContent&&e.parentOffset&&t.parentOffset<t.parent.content.size){var H=Math.max(0,e.parentOffset),i=e.parent.content.size,V=Math.min(i,t.parentOffset)
 if(H>0&&(H=e.parent.childBefore(H).offset),V<i){var n=e.parent.childAfter(V)
 V=n.offset+n.node.nodeSize}var r=e.start()
-return{from:r+H,to:r+V}}for(var L=0;;L++){var o=OC(e,L+1),s=SC(t,L+1)
-if(o||s||e.index(L)!=t.index(L)||t.node(L).isTextblock){var a=e.before(L+1),M=t.after(L+1)
-return o&&e.index(L)>0&&(a-=e.node(L).child(e.index(L)-1).nodeSize),s&&t.index(L)+1<t.node(L).childCount&&(M+=t.node(L).child(t.index(L)+1).nodeSize),{from:a,to:M}}}}(this.state.selection)
+return{from:r+H,to:r+V}}for(var o=0;;o++){var L=OC(e,o+1),s=SC(t,o+1)
+if(L||s||e.index(o)!=t.index(o)||t.node(o).isTextblock){var a=e.before(o+1),M=t.after(o+1)
+return L&&e.index(o)>0&&(a-=e.node(o).child(e.index(o)-1).nodeSize),s&&t.index(o)+1<t.node(o).childCount&&(M+=t.node(o).child(t.index(o)+1).nodeSize),{from:a,to:M}}}}(this.state.selection)
 var C=this.state.doc.resolve(Math.min(this.from,this.state.selection.from)),e=this.state.doc.resolve(this.to),t=C.sharedDepth(this.to)
 return{from:C.before(t+1),to:e.after(t+1)}},kC.prototype.markDirty=function(C){null==this.from?this.view.docView.markDirty((C=C||this.changedRange()).from,C.to):this.view.docView.markDirty(this.from,this.to)},kC.prototype.stateUpdated=function(C){return this.trackMappings.getMapping(C,this.mapping)?(this.trackMappings.destroy(),this.trackMappings=new MC(C),this.mappingTo=C,!0):(this.markDirty(),this.destroy(),!1)},kC.prototype.finish=function(C){if(clearTimeout(this.timeout),!this.composing||C){this.view.domObserver.flush()
 var e=this.changedRange()
 this.markDirty(e),this.destroy()
-var H=this.state.selection,i=this.typeOver&&H instanceof dV.TextSelection&&!H.empty&&H.$head.sameParent(H.$anchor);(function(C,e,H,i,V){var n,r,L=function(C,e,H){var i=C.docView.parseRange(H.from,H.to),V=i.node,n=i.fromOffset,r=i.toOffset,L=i.from,o=i.to,s=C.root.getSelection(),a=null,M=s.anchorNode
+var H=this.state.selection,i=this.typeOver&&H instanceof dV.TextSelection&&!H.empty&&H.$head.sameParent(H.$anchor);(function(C,e,H,i,V){var n,r,o=function(C,e,H){var i=C.docView.parseRange(H.from,H.to),V=i.node,n=i.fromOffset,r=i.toOffset,o=i.from,L=i.to,s=C.root.getSelection(),a=null,M=s.anchorNode
 M&&C.dom.contains(1==M.nodeType?M:M.parentNode)&&(a=[{node:M,offset:s.anchorOffset}],c(s)||a.push({node:s.focusNode,offset:s.focusOffset}))
 if(t.chrome&&8===C.lastKeyCode)for(var l=r;l>n;l--){var d=V.childNodes[l-1],u=d.pmViewDesc
 if("BR"==d.nodeType&&!u){r=l
-break}if(!u||u.size)break}var h=e.doc,p=C.someProp("domParser")||oV.DOMParser.fromSchema(C.state.schema),m=h.resolve(L),f=null,g=p.parse(V,{topNode:m.parent,topMatch:m.parent.contentMatchAt(m.index()),topOpen:!0,from:n,to:r,preserveWhitespace:!m.parent.type.spec.code||"full",editableContent:!0,findPositions:a,ruleFromNode:wC(p,m),context:m})
+break}if(!u||u.size)break}var h=e.doc,p=C.someProp("domParser")||LV.DOMParser.fromSchema(C.state.schema),m=h.resolve(o),f=null,g=p.parse(V,{topNode:m.parent,topMatch:m.parent.contentMatchAt(m.index()),topOpen:!0,from:n,to:r,preserveWhitespace:!m.parent.type.spec.code||"full",editableContent:!0,findPositions:a,ruleFromNode:wC(p,m),context:m})
 if(a&&null!=a[0].pos){var Z=a[0].pos,v=a[1]&&a[1].pos
-null==v&&(v=Z),f={anchor:Z+L,head:v+L}}return{doc:g,sel:f,from:L,to:o}}(C,H,i),o=H.doc,s=o.slice(L.from,L.to)
+null==v&&(v=Z),f={anchor:Z+o,head:v+o}}return{doc:g,sel:f,from:o,to:L}}(C,H,i),L=H.doc,s=L.slice(o.from,o.to)
 8===C.lastKeyCode&&Date.now()-100<C.lastKeyCodeTime?(n=H.selection.to,r="end"):(n=H.selection.from,r="start")
 C.lastKeyCode=null
 var a=function(C,e,t,H,i){var V=C.findDiffStart(e,t)
 if(null==V)return null
-var n=C.findDiffEnd(e,t+C.size,t+e.size),r=n.a,L=n.b
-if("end"==i){var o=Math.max(0,V-Math.min(r,L))
-H-=r+o-V}if(r<V&&C.size<e.size){var s=H<=V&&H>=r?V-H:0
-L=(V-=s)+(L-r),r=V}else if(L<V){var a=H<=V&&H>=L?V-H:0
-r=(V-=a)+(r-L),L=V}return{start:V,endA:r,endB:L}}(s.content,L.doc.content,L.from,n,r)
+var n=C.findDiffEnd(e,t+C.size,t+e.size),r=n.a,o=n.b
+if("end"==i){var L=Math.max(0,V-Math.min(r,o))
+H-=r+L-V}if(r<V&&C.size<e.size){var s=H<=V&&H>=r?V-H:0
+o=(V-=s)+(o-r),r=V}else if(o<V){var a=H<=V&&H>=o?V-H:0
+r=(V-=a)+(r-o),o=V}return{start:V,endA:r,endB:o}}(s.content,o.doc.content,o.from,n,r)
 if(!a){if(V){var M=C.state,l=M.selection
-C.dispatch(M.tr.replaceSelectionWith(M.schema.text(M.doc.textBetween(l.from,l.to)),!0).scrollIntoView())}else if(L.sel){var d=AC(C,C.state.doc,e,L.sel)
+C.dispatch(M.tr.replaceSelectionWith(M.schema.text(M.doc.textBetween(l.from,l.to)),!0).scrollIntoView())}else if(o.sel){var d=AC(C,C.state.doc,e,o.sel)
 d&&!d.eq(C.state.selection)&&C.dispatch(C.state.tr.setSelection(d))}return}H.selection.from<H.selection.to&&a.start==a.endB&&H.selection instanceof dV.TextSelection&&(a.start>H.selection.from&&a.start<=H.selection.from+2?a.start=H.selection.from:a.endA<H.selection.to&&a.endA>=H.selection.to-2&&(a.endB+=H.selection.to-a.endA,a.endA=H.selection.to))
-var u,h=L.doc.resolveNoCache(a.start-L.from),p=L.doc.resolveNoCache(a.endB-L.from)
-if(!h.sameParent(p)&&h.pos<L.doc.content.size&&(u=dV.Selection.findFrom(L.doc.resolve(h.pos+1),1,!0))&&u.head==p.pos&&C.someProp("handleKeyDown",function(e){return e(C,xC(13,"Enter"))}))return
+var u,h=o.doc.resolveNoCache(a.start-o.from),p=o.doc.resolveNoCache(a.endB-o.from)
+if(!h.sameParent(p)&&h.pos<o.doc.content.size&&(u=dV.Selection.findFrom(o.doc.resolve(h.pos+1),1,!0))&&u.head==p.pos&&C.someProp("handleKeyDown",function(e){return e(C,xC(13,"Enter"))}))return
 if(H.selection.anchor>a.start&&function(C,e,t,H,i){if(!H.parent.isTextblock||t-e<=i.pos-H.pos||TC(H,!0,!1)<i.pos)return!1
 var V=C.resolve(e)
 if(V.parentOffset<V.parent.content.size||!V.parent.isTextblock)return!1
 var n=C.resolve(TC(V,!0,!0))
 if(!n.parent.isTextblock||n.pos>t||TC(n,!0,!1)<t)return!1
-return H.parent.content.cut(H.parentOffset).eq(n.parent.content)}(o,a.start,a.endA,h,p)&&C.someProp("handleKeyDown",function(e){return e(C,xC(8,"Backspace"))}))return void(t.android&&t.chrome&&(C.selectionReader.suppressUpdates=!0,setTimeout(function(){return C.selectionReader.suppressUpdates=!1},50)))
+return H.parent.content.cut(H.parentOffset).eq(n.parent.content)}(L,a.start,a.endA,h,p)&&C.someProp("handleKeyDown",function(e){return e(C,xC(8,"Backspace"))}))return void(t.android&&t.chrome&&(C.selectionReader.suppressUpdates=!0,setTimeout(function(){return C.selectionReader.suppressUpdates=!1},50)))
 var m,f,g,Z,v=e.map(a.start),y=e.map(a.endA,-1)
-if(h.sameParent(p)&&h.parent.inlineContent)if(h.pos==p.pos)m=C.state.tr.delete(v,y),f=o.resolve(a.start).marksAcross(o.resolve(a.endA))
-else if(a.endA==a.endB&&(Z=o.resolve(a.start))&&(g=function(C,e){for(var t,H,i,V=C.firstChild.marks,n=e.firstChild.marks,r=V,L=n,o=0;o<n.length;o++)r=n[o].removeFromSet(r)
-for(var s=0;s<V.length;s++)L=V[s].removeFromSet(L)
-if(1==r.length&&0==L.length)H=r[0],t="add",i=function(C){return C.mark(H.addToSet(C.marks))}
-else{if(0!=r.length||1!=L.length)return null
-H=L[0],t="remove",i=function(C){return C.mark(H.removeFromSet(C.marks))}}for(var a=[],M=0;M<e.childCount;M++)a.push(i(e.child(M)))
-if(oV.Fragment.from(a).eq(C))return{mark:H,type:t}}(h.parent.content.cut(h.parentOffset,p.parentOffset),Z.parent.content.cut(Z.parentOffset,a.endA-Z.start()))))m=C.state.tr,"add"==g.type?m.addMark(v,y,g.mark):m.removeMark(v,y,g.mark)
+if(h.sameParent(p)&&h.parent.inlineContent)if(h.pos==p.pos)m=C.state.tr.delete(v,y),f=L.resolve(a.start).marksAcross(L.resolve(a.endA))
+else if(a.endA==a.endB&&(Z=L.resolve(a.start))&&(g=function(C,e){for(var t,H,i,V=C.firstChild.marks,n=e.firstChild.marks,r=V,o=n,L=0;L<n.length;L++)r=n[L].removeFromSet(r)
+for(var s=0;s<V.length;s++)o=V[s].removeFromSet(o)
+if(1==r.length&&0==o.length)H=r[0],t="add",i=function(C){return C.mark(H.addToSet(C.marks))}
+else{if(0!=r.length||1!=o.length)return null
+H=o[0],t="remove",i=function(C){return C.mark(H.removeFromSet(C.marks))}}for(var a=[],M=0;M<e.childCount;M++)a.push(i(e.child(M)))
+if(LV.Fragment.from(a).eq(C))return{mark:H,type:t}}(h.parent.content.cut(h.parentOffset,p.parentOffset),Z.parent.content.cut(Z.parentOffset,a.endA-Z.start()))))m=C.state.tr,"add"==g.type?m.addMark(v,y,g.mark):m.removeMark(v,y,g.mark)
 else if(h.parent.child(h.index()).isText&&h.index()==p.index()-(p.textOffset?0:1)){var b=h.parent.textBetween(h.parentOffset,p.parentOffset)
 if(C.someProp("handleTextInput",function(e){return e(C,v,y,b)}))return
-m=C.state.tr.insertText(b,v,y)}m||(m=C.state.tr.replace(v,y,L.doc.slice(a.start-L.from,a.endB-L.from)))
-if(L.sel){var k=AC(C,m.doc,e,L.sel)
+m=C.state.tr.insertText(b,v,y)}m||(m=C.state.tr.replace(v,y,o.doc.slice(a.start-o.from,a.endB-o.from)))
+if(o.sel){var k=AC(C,m.doc,e,o.sel)
 k&&m.setSelection(k)}f&&m.ensureMarks(f)
 C.dispatch(m.scrollIntoView())})(this.view,this.mapping,this.state,e,i),this.view.docView.dirty&&this.view.updateState(this.view.state)}},kC.prototype.destroy=function(){clearTimeout(this.timeout),this.trackMappings.destroy(),this.view.inDOMChange=null},kC.prototype.compositionEnd=function(C){var e=this
 this.composing&&(this.composing=!1,C&&(this.compositionEndedAt=C.timeStamp),this.timeout=setTimeout(function(){return e.finish()},50))},kC.prototype.ignoreKeyDownOnCompositionEnd=function(C){return!!(t.safari&&null!==this.compositionEndedAt&&Math.abs(C.timeStamp-this.compositionEndedAt)<500)&&(this.compositionEndedAt=null,!0)},kC.start=function(C,e){return C.inDOMChange?e&&(clearTimeout(C.inDOMChange.timeout),C.inDOMChange.composing=!0,C.inDOMChange.compositionEndedAt=null):C.inDOMChange=new kC(C,e),C.inDOMChange},kC.commitTimeout=20
@@ -2515,10 +3939,10 @@ var RC={childList:!0,characterData:!0,attributes:!0,subtree:!0,characterDataOldV
 this.view=C,this.observer=window.MutationObserver&&new window.MutationObserver(function(C){return e.registerMutations(C)}),FC&&(this.onCharData=function(C){return e.registerMutation({target:C.target,type:"characterData",oldValue:C.prevValue})})}
 IC.prototype.start=function(){this.observer&&this.observer.observe(this.view.dom,RC),FC&&this.view.dom.addEventListener("DOMCharacterDataModified",this.onCharData)},IC.prototype.stop=function(){this.observer&&(this.flush(),this.observer.disconnect()),FC&&this.view.dom.removeEventListener("DOMCharacterDataModified",this.onCharData)},IC.prototype.flush=function(){this.observer&&this.registerMutations(this.observer.takeRecords())},IC.prototype.registerMutations=function(C){for(var e=0;e<C.length;e++)this.registerMutation(C[e])},IC.prototype.registerMutation=function(C){if(this.view.editable){var e=this.view.docView.nearestDesc(C.target)
 if(("attributes"!=C.type||e!=this.view.docView&&"contenteditable"!=C.attributeName)&&e&&!e.ignoreMutation(C)){var t,H
-if("childList"==C.type){var i=C.previousSibling&&C.previousSibling.parentNode==C.target?L(C.previousSibling)+1:0
+if("childList"==C.type){var i=C.previousSibling&&C.previousSibling.parentNode==C.target?o(C.previousSibling)+1:0
 if(-1==i)return
 t=e.localPosFromDOM(C.target,i,-1)
-var V=C.nextSibling&&C.nextSibling.parentNode==C.target?L(C.nextSibling):C.target.childNodes.length
+var V=C.nextSibling&&C.nextSibling.parentNode==C.target?o(C.nextSibling):C.target.childNodes.length
 if(-1==V)return
 H=e.localPosFromDOM(C.target,V,1)}else"attributes"==C.type?(t=e.posAtStart-e.border,H=e.posAtEnd+e.border):(t=e.posAtStart,H=e.posAtEnd,C.target.nodeValue==C.oldValue&&(kC.start(this.view).typeOver=!0))
 kC.start(this.view).addRange(t,H)}}}
@@ -2532,8 +3956,8 @@ if(!(H instanceof dV.TextSelection&&H.$from.sameParent(H.$to))){var i=String.fro
 C.someProp("handleTextInput",function(e){return e(C,H.$from.pos,H.$to.pos,i)})||C.dispatch(C.state.tr.insertText(i).scrollIntoView()),e.preventDefault()}}}
 var GC={time:0,x:0,y:0,type:""}
 function $C(C,e,t,H,i){if(-1==H)return!1
-for(var V=C.state.doc.resolve(H),n=function(H){if(C.someProp(e,function(e){return H>V.depth?e(C,t,V.nodeAfter,V.before(H),i,!0):e(C,t,V.node(H),V.before(H),i,!1)}))return{v:!0}},r=V.depth+1;r>0;r--){var L=n(r)
-if(L)return L.v}return!1}function qC(C,e,t){C.focused||C.focus()
+for(var V=C.state.doc.resolve(H),n=function(H){if(C.someProp(e,function(e){return H>V.depth?e(C,t,V.nodeAfter,V.before(H),i,!0):e(C,t,V.node(H),V.before(H),i,!1)}))return{v:!0}},r=V.depth+1;r>0;r--){var o=n(r)
+if(o)return o.v}return!1}function qC(C,e,t){C.focused||C.focus()
 var H=C.state.tr.setSelection(e)
 "pointer"==t&&H.setMeta("pointer",!0),C.dispatch(H)}function KC(C,e,t,H,i){return $C(C,"handleClickOn",e,t,H)||C.someProp("handleClick",function(t){return t(C,e,H)})||(i?function(C,e){if(-1==e)return!1
 var t,H,i=C.state.selection
@@ -2556,9 +3980,9 @@ var V=C.posAtCoords(UC(e))
 V&&("singleClick"==i?C.mouseDown=new QC(C,V,e,t):("doubleClick"==i?function(C,e,t,H){return $C(C,"handleDoubleClickOn",e,t,H)||C.someProp("handleDoubleClick",function(t){return t(C,e,H)})}:JC)(C,V.pos,V.inside,e)?e.preventDefault():C.selectionReader.poll("pointer"))}
 var QC=function(C,e,H,i){var V,n,r=this
 if(this.view=C,this.pos=e,this.event=H,this.flushed=i,this.selectNode=H[XC],this.allowDefault=H.shiftKey,e.inside>-1)V=C.state.doc.nodeAt(e.inside),n=e.inside
-else{var L=C.state.doc.resolve(e.pos)
-V=L.parent,n=L.depth?L.before():0}this.mightDrag=null
-var o=i?null:H.target,s=o?C.docView.nearestDesc(o,!0):null
+else{var o=C.state.doc.resolve(e.pos)
+V=o.parent,n=o.depth?o.before():0}this.mightDrag=null
+var L=i?null:H.target,s=L?C.docView.nearestDesc(L,!0):null
 this.target=s?s.dom:null,(V.type.spec.draggable&&!1!==V.type.spec.selectable||C.state.selection instanceof dV.NodeSelection&&n==C.state.selection.from)&&(this.mightDrag={node:V,pos:n,addAttr:this.target&&!this.target.draggable,setUneditable:this.target&&t.gecko&&!this.target.hasAttribute("contentEditable")}),this.target&&this.mightDrag&&(this.mightDrag.addAttr||this.mightDrag.setUneditable)&&(this.view.domObserver.stop(),this.mightDrag.addAttr&&(this.target.draggable=!0),this.mightDrag.setUneditable&&setTimeout(function(){return r.target.setAttribute("contentEditable","false")},20),this.view.domObserver.start()),C.root.addEventListener("mouseup",this.up=this.up.bind(this)),C.root.addEventListener("mousemove",this.move=this.move.bind(this)),C.selectionReader.poll("pointer")}
 QC.prototype.done=function(){this.view.root.removeEventListener("mouseup",this.up),this.view.root.removeEventListener("mousemove",this.move),this.mightDrag&&this.target&&(this.view.domObserver.stop(),this.mightDrag.addAttr&&(this.target.draggable=!1),this.mightDrag.setUneditable&&this.target.removeAttribute("contentEditable"),this.view.domObserver.start()),this.view.mouseDown=null},QC.prototype.up=function(C){this.done(),this.view.dom.contains(3==C.target.nodeType?C.target.parentNode:C.target)&&(this.allowDefault?(t.ie&&bC(this.view.state)&&this.view.updateState(this.view.state),this.view.selectionReader.poll("pointer")):KC(this.view,this.pos.pos,this.pos.inside,C,this.selectNode)?C.preventDefault():!this.flushed&&(!t.chrome||this.view.state.selection instanceof dV.TextSelection||this.pos.pos!=this.view.state.selection.from&&this.pos.pos!=this.view.state.selection.to)?this.view.selectionReader.poll("pointer"):(qC(this.view,dV.Selection.near(this.view.state.doc.resolve(this.pos.pos)),"pointer"),C.preventDefault()))},QC.prototype.move=function(C){!this.allowDefault&&(Math.abs(this.event.x-C.clientX)>4||Math.abs(this.event.y-C.clientY)>4)&&(this.allowDefault=!0),this.view.selectionReader.poll("pointer")},_C.touchdown=function(C){YC(C),C.selectionReader.poll("pointer")},_C.contextmenu=function(C){return YC(C)},zC.compositionstart=zC.compositionupdate=function(C){kC.start(C,!0)},zC.compositionend=function(C,e){if(!C.inDOMChange){if(!e.data)return
 kC.start(C,!0)}C.inDOMChange.compositionEnd(e)},zC.input=function(C){var e=kC.start(C)
@@ -2582,8 +4006,8 @@ if(t&&t.done(),e.dataTransfer){var H=C.state.selection,i=H.empty?null:C.posAtCoo
 if(i&&i.pos>=H.from&&i.pos<=(H instanceof dV.NodeSelection?H.to-1:H.to));else if(t&&t.mightDrag)C.dispatch(C.state.tr.setSelection(dV.NodeSelection.create(C.state.doc,t.mightDrag.pos)))
 else if(e.target&&1==e.target.nodeType){var V=C.docView.nearestDesc(e.target,!0)
 if(!V||!V.node.type.spec.draggable||V==C.docView)return
-C.dispatch(C.state.tr.setSelection(dV.NodeSelection.create(C.state.doc,V.posBefore)))}var n=C.state.selection.content(),r=BC(C,n),L=r.dom,o=r.text
-e.dataTransfer.clearData(),e.dataTransfer.setData(Ce?"Text":"text/html",L.innerHTML),Ce||e.dataTransfer.setData("text/plain",o),C.dragging=new te(n,!e[He])}},_C.dragend=function(C){window.setTimeout(function(){return C.dragging=null},50)},zC.dragover=zC.dragenter=function(C,e){return e.preventDefault()},zC.drop=function(C,e){var t=C.dragging
+C.dispatch(C.state.tr.setSelection(dV.NodeSelection.create(C.state.doc,V.posBefore)))}var n=C.state.selection.content(),r=BC(C,n),o=r.dom,L=r.text
+e.dataTransfer.clearData(),e.dataTransfer.setData(Ce?"Text":"text/html",o.innerHTML),Ce||e.dataTransfer.setData("text/plain",L),C.dragging=new te(n,!e[He])}},_C.dragend=function(C){window.setTimeout(function(){return C.dragging=null},50)},zC.dragover=zC.dragenter=function(C,e){return e.preventDefault()},zC.drop=function(C,e){var t=C.dragging
 if(C.dragging=null,e.dataTransfer){var H=C.posAtCoords(UC(e))
 if(H){var i=C.state.doc.resolve(H.pos)
 if(i){var V=t&&t.slice||EC(C,e.dataTransfer.getData(Ce?"Text":"text/plain"),Ce?null:e.dataTransfer.getData("text/html"),!1,i)
@@ -2591,48 +4015,48 @@ if(V&&(e.preventDefault(),!C.someProp("handleDrop",function(H){return H(C,e,V,t&
 null==n&&(n=i.pos)
 var r=C.state.tr
 t&&t.move&&r.deleteSelection()
-var L=r.mapping.map(n),o=0==V.openStart&&0==V.openEnd&&1==V.content.childCount,s=r.doc
-if(o?r.replaceRangeWith(L,L,V.content.firstChild):r.replaceRange(L,L,V),!r.doc.eq(s)){var a=r.doc.resolve(L)
-o&&dV.NodeSelection.isSelectable(V.content.firstChild)&&a.nodeAfter&&a.nodeAfter.sameMarkup(V.content.firstChild)?r.setSelection(new dV.NodeSelection(a)):r.setSelection(gC(C,a,r.doc.resolve(r.mapping.map(n)))),C.focus(),C.dispatch(r.setMeta("uiEvent","drop"))}}}}}},_C.focus=function(C){C.focused||(C.dom.classList.add("ProseMirror-focused"),C.focused=!0)},_C.blur=function(C){C.focused&&(C.dom.classList.remove("ProseMirror-focused"),C.focused=!1)},zC)_C[ie]=zC[ie]
+var o=r.mapping.map(n),L=0==V.openStart&&0==V.openEnd&&1==V.content.childCount,s=r.doc
+if(L?r.replaceRangeWith(o,o,V.content.firstChild):r.replaceRange(o,o,V),!r.doc.eq(s)){var a=r.doc.resolve(o)
+L&&dV.NodeSelection.isSelectable(V.content.firstChild)&&a.nodeAfter&&a.nodeAfter.sameMarkup(V.content.firstChild)?r.setSelection(new dV.NodeSelection(a)):r.setSelection(gC(C,a,r.doc.resolve(r.mapping.map(n)))),C.focus(),C.dispatch(r.setMeta("uiEvent","drop"))}}}}}},_C.focus=function(C){C.focused||(C.dom.classList.add("ProseMirror-focused"),C.focused=!0)},_C.blur=function(C){C.focused&&(C.dom.classList.remove("ProseMirror-focused"),C.focused=!1)},zC)_C[ie]=zC[ie]
 function Ve(C,e){if(C==e)return!0
 for(var t in C)if(C[t]!==e[t])return!1
 for(var H in e)if(!(H in C))return!1
 return!0}var ne=function(C,e){this.spec=e||Me,this.side=this.spec.side||0,this.toDOM=C}
 ne.prototype.map=function(C,e,t,H){var i=C.mapResult(e.from+H,this.side<0?-1:1),V=i.pos
-return i.deleted?null:new oe(V-t,V-t,this)},ne.prototype.valid=function(){return!0},ne.prototype.eq=function(C){return this==C||C instanceof ne&&(this.spec.key&&this.spec.key==C.spec.key||this.toDOM==C.toDOM&&Ve(this.spec,C.spec))}
+return i.deleted?null:new Le(V-t,V-t,this)},ne.prototype.valid=function(){return!0},ne.prototype.eq=function(C){return this==C||C instanceof ne&&(this.spec.key&&this.spec.key==C.spec.key||this.toDOM==C.toDOM&&Ve(this.spec,C.spec))}
 var re=function(C,e){this.spec=e||Me,this.attrs=C}
 re.prototype.map=function(C,e,t,H){var i=C.map(e.from+H,this.spec.inclusiveStart?-1:1)-t,V=C.map(e.to+H,this.spec.inclusiveEnd?1:-1)-t
-return i>=V?null:new oe(i,V,this)},re.prototype.valid=function(C,e){return e.from<e.to},re.prototype.eq=function(C){return this==C||C instanceof re&&Ve(this.attrs,C.attrs)&&Ve(this.spec,C.spec)},re.is=function(C){return C.type instanceof re}
-var Le=function(C,e){this.spec=e||Me,this.attrs=C}
-Le.prototype.map=function(C,e,t,H){var i=C.mapResult(e.from+H,1)
+return i>=V?null:new Le(i,V,this)},re.prototype.valid=function(C,e){return e.from<e.to},re.prototype.eq=function(C){return this==C||C instanceof re&&Ve(this.attrs,C.attrs)&&Ve(this.spec,C.spec)},re.is=function(C){return C.type instanceof re}
+var oe=function(C,e){this.spec=e||Me,this.attrs=C}
+oe.prototype.map=function(C,e,t,H){var i=C.mapResult(e.from+H,1)
 if(i.deleted)return null
 var V=C.mapResult(e.to+H,-1)
-return V.deleted||V.pos<=i.pos?null:new oe(i.pos-t,V.pos-t,this)},Le.prototype.valid=function(C,e){var t=C.content.findIndex(e.from),H=t.index,i=t.offset
-return i==e.from&&i+C.child(H).nodeSize==e.to},Le.prototype.eq=function(C){return this==C||C instanceof Le&&Ve(this.attrs,C.attrs)&&Ve(this.spec,C.spec)}
-var oe=function(C,e,t){this.from=C,this.to=e,this.type=t},se={spec:{}}
-oe.prototype.copy=function(C,e){return new oe(C,e,this.type)},oe.prototype.eq=function(C){return this.type.eq(C.type)&&this.from==C.from&&this.to==C.to},oe.prototype.map=function(C,e,t){return this.type.map(C,this,e,t)},oe.widget=function(C,e,t){return new oe(C,C,new ne(e,t))},oe.inline=function(C,e,t,H){return new oe(C,e,new re(t,H))},oe.node=function(C,e,t,H){return new oe(C,e,new Le(t,H))},se.spec.get=function(){return this.type.spec},Object.defineProperties(oe.prototype,se)
+return V.deleted||V.pos<=i.pos?null:new Le(i.pos-t,V.pos-t,this)},oe.prototype.valid=function(C,e){var t=C.content.findIndex(e.from),H=t.index,i=t.offset
+return i==e.from&&i+C.child(H).nodeSize==e.to},oe.prototype.eq=function(C){return this==C||C instanceof oe&&Ve(this.attrs,C.attrs)&&Ve(this.spec,C.spec)}
+var Le=function(C,e,t){this.from=C,this.to=e,this.type=t},se={spec:{}}
+Le.prototype.copy=function(C,e){return new Le(C,e,this.type)},Le.prototype.eq=function(C){return this.type.eq(C.type)&&this.from==C.from&&this.to==C.to},Le.prototype.map=function(C,e,t){return this.type.map(C,this,e,t)},Le.widget=function(C,e,t){return new Le(C,C,new ne(e,t))},Le.inline=function(C,e,t,H){return new Le(C,e,new re(t,H))},Le.node=function(C,e,t,H){return new Le(C,e,new oe(t,H))},se.spec.get=function(){return this.type.spec},Object.defineProperties(Le.prototype,se)
 var ae=[],Me={},le=function(C,e){this.local=C&&C.length?C:ae,this.children=e&&e.length?e:ae}
 le.create=function(C,e){return e.length?me(e,C,0,Me):de},le.prototype.find=function(C,e,t){var H=[]
 return this.findInner(null==C?0:C,null==e?1e9:e,H,0,t),H},le.prototype.findInner=function(C,e,t,H,i){for(var V=0;V<this.local.length;V++){var n=this.local[V]
-n.from<=e&&n.to>=C&&(!i||i(n.spec))&&t.push(n.copy(n.from+H,n.to+H))}for(var r=0;r<this.children.length;r+=3)if(this.children[r]<e&&this.children[r+1]>C){var L=this.children[r]+1
-this.children[r+2].findInner(C-L,e-L,t,H+L,i)}},le.prototype.map=function(C,e,t){return this==de||0==C.maps.length?this:this.mapInner(C,e,0,0,t||Me)},le.prototype.mapInner=function(C,e,t,H,i){for(var V,n=0;n<this.local.length;n++){var r=this.local[n].map(C,t,H)
-r&&r.type.valid(e,r)?(V||(V=[])).push(r):i.onRemove&&i.onRemove(this.local[n].spec)}return this.children.length?function(C,e,t,H,i,V,n){for(var r=C.slice(),L=function(C,e,t,H){for(var n=0;n<r.length;n+=3){var L=r[n+1],o=void 0;-1==L||C>L+V||(e>=r[n]+V?r[n+1]=-1:(o=H-t-(e-C)+(V-i))&&(r[n]+=o,r[n+1]+=o))}},o=0;o<t.maps.length;o++)t.maps[o].forEach(L)
+n.from<=e&&n.to>=C&&(!i||i(n.spec))&&t.push(n.copy(n.from+H,n.to+H))}for(var r=0;r<this.children.length;r+=3)if(this.children[r]<e&&this.children[r+1]>C){var o=this.children[r]+1
+this.children[r+2].findInner(C-o,e-o,t,H+o,i)}},le.prototype.map=function(C,e,t){return this==de||0==C.maps.length?this:this.mapInner(C,e,0,0,t||Me)},le.prototype.mapInner=function(C,e,t,H,i){for(var V,n=0;n<this.local.length;n++){var r=this.local[n].map(C,t,H)
+r&&r.type.valid(e,r)?(V||(V=[])).push(r):i.onRemove&&i.onRemove(this.local[n].spec)}return this.children.length?function(C,e,t,H,i,V,n){for(var r=C.slice(),o=function(C,e,t,H){for(var n=0;n<r.length;n+=3){var o=r[n+1],L=void 0;-1==o||C>o+V||(e>=r[n]+V?r[n+1]=-1:(L=H-t-(e-C)+(V-i))&&(r[n]+=L,r[n+1]+=L))}},L=0;L<t.maps.length;L++)t.maps[L].forEach(o)
 for(var s=!1,a=0;a<r.length;a+=3)if(-1==r[a+1]){var M=t.map(r[a]+V),l=M-i
 if(l<0||l>=H.content.size){s=!0
 continue}var d=t.map(C[a+1]+V,-1),c=d-i,u=H.content.findIndex(l),h=u.index,p=u.offset,m=H.maybeChild(h)
 if(m&&p==l&&p+m.nodeSize==c){var f=r[a+2].mapInner(t,m,M+1,r[a]+V+1,n)
-f!=de?(r[a]=l,r[a+1]=c,r[a+2]=f):(r[a+1]=-2,s=!0)}else s=!0}if(s){var g=function(C,e,t,H,i,V,n){function r(C,e){for(var V=0;V<C.local.length;V++){var L=C.local[V].map(H,i,e)
-L?t.push(L):n.onRemove&&n.onRemove(C.local[V].spec)}for(var o=0;o<C.children.length;o+=3)r(C.children[o+2],C.children[o]+e+1)}for(var L=0;L<C.length;L+=3)-1==C[L+1]&&r(C[L+2],e[L]+V+1)
+f!=de?(r[a]=l,r[a+1]=c,r[a+2]=f):(r[a+1]=-2,s=!0)}else s=!0}if(s){var g=function(C,e,t,H,i,V,n){function r(C,e){for(var V=0;V<C.local.length;V++){var o=C.local[V].map(H,i,e)
+o?t.push(o):n.onRemove&&n.onRemove(C.local[V].spec)}for(var L=0;L<C.children.length;L+=3)r(C.children[L+2],C.children[L]+e+1)}for(var o=0;o<C.length;o+=3)-1==C[o+1]&&r(C[o+2],e[o]+V+1)
 return t}(r,C,e||[],t,i,V,n),Z=me(g,H,0,n)
 e=Z.local
 for(var v=0;v<r.length;v+=3)r[v+1]<0&&(r.splice(v,3),v-=3)
 for(var y=0,b=0;y<Z.children.length;y+=3){for(var k=Z.children[y];b<r.length&&r[b]<k;)b+=3
 r.splice(b,0,Z.children[y],Z.children[y+1],Z.children[y+2])}}return new le(e&&e.sort(fe),r)}(this.children,V,C,e,t,H,i):V?new le(V.sort(fe)):de},le.prototype.add=function(C,e){return e.length?this==de?le.create(C,e):this.addInner(C,e,0):this},le.prototype.addInner=function(C,e,t){var H,i=this,V=0
-C.forEach(function(C,n){var r,L=n+t
-if(r=he(e,C,L)){for(H||(H=i.children.slice());V<H.length&&H[V]<n;)V+=3
-H[V]==n?H[V+2]=H[V+2].addInner(C,r,L+1):H.splice(V,0,n,n+C.nodeSize,me(r,C,L+1,Me)),V+=3}})
+C.forEach(function(C,n){var r,o=n+t
+if(r=he(e,C,o)){for(H||(H=i.children.slice());V<H.length&&H[V]<n;)V+=3
+H[V]==n?H[V+2]=H[V+2].addInner(C,r,o+1):H.splice(V,0,n,n+C.nodeSize,me(r,C,o+1,Me)),V+=3}})
 var n=ue(V?pe(e):e,-t)
-return new le(n.length?this.local.concat(n).sort(fe):this.local,H||this.children)},le.prototype.remove=function(C){return 0==C.length||this==de?this:this.removeInner(C,0)},le.prototype.removeInner=function(C,e){for(var t=this.children,H=this.local,i=0;i<t.length;i+=3){for(var V=void 0,n=t[i]+e,r=t[i+1]+e,L=0,o=void 0;L<C.length;L++)(o=C[L])&&o.from>n&&o.to<r&&(C[L]=null,(V||(V=[])).push(o))
+return new le(n.length?this.local.concat(n).sort(fe):this.local,H||this.children)},le.prototype.remove=function(C){return 0==C.length||this==de?this:this.removeInner(C,0)},le.prototype.removeInner=function(C,e){for(var t=this.children,H=this.local,i=0;i<t.length;i+=3){for(var V=void 0,n=t[i]+e,r=t[i+1]+e,o=0,L=void 0;o<C.length;o++)(L=C[o])&&L.from>n&&L.to<r&&(C[o]=null,(V||(V=[])).push(L))
 if(V){t==this.children&&(t=this.children.slice())
 var s=t[i+2].removeInner(V,n+1)
 s!=de?t[i+2]=s:(t.splice(i,3),i-=3)}}if(H.length)for(var a=0,M=void 0;a<C.length;a++)if(M=C[a])for(var l=0;l<H.length;l++)H[l].type.eq(M.type)&&(H==this.local&&(H=this.local.slice()),H.splice(l--,1))
@@ -2640,9 +4064,9 @@ return t==this.children&&H==this.local?this:H.length||t.length?new le(H,t):de},l
 if(this==de)return this
 if(e.isLeaf)return le.empty
 for(var i=0;i<this.children.length;i+=3)if(this.children[i]>=C){this.children[i]==C&&(t=this.children[i+2])
-break}for(var V=C+1,n=V+e.content.size,r=0;r<this.local.length;r++){var L=this.local[r]
-if(L.from<n&&L.to>V&&L.type instanceof re){var o=Math.max(V,L.from)-V,s=Math.min(n,L.to)-V
-o<s&&(H||(H=[])).push(L.copy(o,s))}}if(H){var a=new le(H.sort(fe))
+break}for(var V=C+1,n=V+e.content.size,r=0;r<this.local.length;r++){var o=this.local[r]
+if(o.from<n&&o.to>V&&o.type instanceof re){var L=Math.max(V,o.from)-V,s=Math.min(n,o.to)-V
+L<s&&(H||(H=[])).push(o.copy(L,s))}}if(H){var a=new le(H.sort(fe))
 return t?new ce([a,t]):a}return t||de},le.prototype.eq=function(C){if(this==C)return!0
 if(!(C instanceof le)||this.local.length!=C.local.length||this.children.length!=C.children.length)return!1
 for(var e=0;e<this.local.length;e++)if(!this.local[e].eq(C.local[e]))return!1
@@ -2656,14 +4080,14 @@ le.empty=de,le.removeOverlap=ge
 var ce=function(C){this.members=C}
 function ue(C,e){if(!e||!C.length)return C
 for(var t=[],H=0;H<C.length;H++){var i=C[H]
-t.push(new oe(i.from+e,i.to+e,i.type))}return t}function he(C,e,t){if(e.isLeaf)return null
+t.push(new Le(i.from+e,i.to+e,i.type))}return t}function he(C,e,t){if(e.isLeaf)return null
 for(var H=t+e.nodeSize,i=null,V=0,n=void 0;V<C.length;V++)(n=C[V])&&n.from>t&&n.to<H&&((i||(i=[])).push(n),C[V]=null)
 return i}function pe(C){for(var e=[],t=0;t<C.length;t++)null!=C[t]&&e.push(C[t])
 return e}function me(C,e,t,H){var i=[],V=!1
 e.forEach(function(e,n){var r=he(C,e,n+t)
 if(r){V=!0
-var L=me(r,e,t+n+1,H)
-L!=de&&i.push(n,n+e.nodeSize,L)}})
+var o=me(r,e,t+n+1,H)
+o!=de&&i.push(n,n+e.nodeSize,o)}})
 for(var n=ue(V?pe(C):C,-t).sort(fe),r=0;r<n.length;r++)n[r].type.valid(e,n[r])||(H.onRemove&&H.onRemove(n[r].spec),n.splice(r--,1))
 return n.length||i.length?new le(n,i):de}function fe(C,e){return C.from-e.from||C.to-e.to}function ge(C){for(var e=C,t=0;t<e.length-1;t++){var H=e[t]
 if(H.from!=H.to)for(var i=t+1;i<e.length;i++){var V=e[i]
@@ -2689,11 +4113,11 @@ return!0}(C,e)||jC(C,e)||!C.editable&&e.type in zC||t(C,e)})}
 for(var t in _C)e(t)
 WC(C)}(this),this.selectionReader=new lC(this),this.pluginViews=[],this.updatePluginViews()},be={props:{},root:{}}
 function ke(C){var e=Object.create(null)
-return e.class="ProseMirror",e.contenteditable=String(C.editable),C.someProp("attributes",function(t){if("function"==typeof t&&(t=t(C.state)),t)for(var H in t)"class"==H?e.class+=" "+t[H]:e[H]||"contenteditable"==H||"nodeName"==H||(e[H]=String(t[H]))}),[oe.node(0,C.state.doc.content.size,e)]}function we(C){var e=bC(C.state)
+return e.class="ProseMirror",e.contenteditable=String(C.editable),C.someProp("attributes",function(t){if("function"==typeof t&&(t=t(C.state)),t)for(var H in t)"class"==H?e.class+=" "+t[H]:e[H]||"contenteditable"==H||"nodeName"==H||(e[H]=String(t[H]))}),[Le.node(0,C.state.doc.content.size,e)]}function we(C){var e=bC(C.state)
 if(!e||t.ie&&C.mouseDown)C.cursorWrapper=null
 else{var H,i=C.state.selection.visible,V=C.state.storedMarks||e.marks()
-C.cursorWrapper&&oV.Mark.sameSet(C.cursorWrapper.deco.spec.marks,V)&&"\ufeff"==C.cursorWrapper.dom.textContent&&C.cursorWrapper.deco.spec.visible==i?C.cursorWrapper.deco.pos!=e.pos&&(H=C.cursorWrapper.dom):H=function(C){var e=document.createElement("span")
-return e.textContent="\ufeff",C||(e.style.position="absolute",e.style.left="-100000px"),e}(i),H&&(C.cursorWrapper={dom:H,deco:oe.widget(e.pos,H,{isCursorWrapper:!0,marks:V,raw:!0,visible:i})})}}function Se(C){return!C.someProp("editable",function(e){return!1===e(C.state)})}function Oe(C){var e=C.getSelection(),t=e.focusOffset,H=e.focusNode
+C.cursorWrapper&&LV.Mark.sameSet(C.cursorWrapper.deco.spec.marks,V)&&"\ufeff"==C.cursorWrapper.dom.textContent&&C.cursorWrapper.deco.spec.visible==i?C.cursorWrapper.deco.pos!=e.pos&&(H=C.cursorWrapper.dom):H=function(C){var e=document.createElement("span")
+return e.textContent="\ufeff",C||(e.style.position="absolute",e.style.left="-100000px"),e}(i),H&&(C.cursorWrapper={dom:H,deco:Le.widget(e.pos,H,{isCursorWrapper:!0,marks:V,raw:!0,visible:i})})}}function Se(C){return!C.someProp("editable",function(e){return!1===e(C.state)})}function Oe(C){var e=C.getSelection(),t=e.focusOffset,H=e.focusNode
 return H&&3!=H.nodeType?[H,t,1==H.nodeType?H.childNodes[t-1]:null,1==H.nodeType?H.childNodes[t]:null]:null}function xe(C){var e={}
 return C.someProp("nodeViews",function(C){for(var t in C)Object.prototype.hasOwnProperty.call(e,t)||(e[t]=C[t])}),e}be.props.get=function(){if(this._props.state!=this.state){var C=this._props
 for(var e in this._props={},C)this._props[e]=C[e]
@@ -2707,20 +4131,20 @@ for(var H in e.state=this.state,C)e[H]=C[H]
 this.update(e)},ye.prototype.updateState=function(C){var e=this,H=this.state
 if(this.state=C,H.plugins!=C.plugins&&WC(this),this.domObserver.flush(),!this.inDOMChange||!this.inDOMChange.stateUpdated(C)){var i=this.editable
 this.editable=Se(this),we(this)
-var V,n,r,L=ve(this),s=ke(this),M=H.config!=C.config?"reset":C.scrollToSelection>H.scrollToSelection?"to selection":"preserve",l=this.redraw||!this.docView.matchesNode(C.doc,s,L),d=l||!C.selection.eq(H.selection)||this.selectionReader.domChanged(),c="preserve"==M&&d&&function(C){for(var e,t,H=C.dom.getBoundingClientRect(),i=Math.max(0,H.top),V=C.dom.ownerDocument,n=(H.left+H.right)/2,r=i+1;r<Math.min(innerHeight,H.bottom);r+=5){var L=C.root.elementFromPoint(n,r)
-if(L!=C.dom&&C.dom.contains(L)){var s=L.getBoundingClientRect()
-if(s.top>=i-20){e=L,t=s.top
-break}}}for(var a=[],M=C.dom;M&&(a.push({dom:M,top:M.scrollTop,left:M.scrollLeft}),M!=V.body);M=o(M));return{refDOM:e,refTop:t,stack:a}}(this)
+var V,n,r,o=ve(this),s=ke(this),M=H.config!=C.config?"reset":C.scrollToSelection>H.scrollToSelection?"to selection":"preserve",l=this.redraw||!this.docView.matchesNode(C.doc,s,o),d=l||!C.selection.eq(H.selection)||this.selectionReader.domChanged(),c="preserve"==M&&d&&function(C){for(var e,t,H=C.dom.getBoundingClientRect(),i=Math.max(0,H.top),V=C.dom.ownerDocument,n=(H.left+H.right)/2,r=i+1;r<Math.min(innerHeight,H.bottom);r+=5){var o=C.root.elementFromPoint(n,r)
+if(o!=C.dom&&C.dom.contains(o)){var s=o.getBoundingClientRect()
+if(s.top>=i-20){e=o,t=s.top
+break}}}for(var a=[],M=C.dom;M&&(a.push({dom:M,top:M.scrollTop,left:M.scrollLeft}),M!=V.body);M=L(M));return{refDOM:e,refTop:t,stack:a}}(this)
 if(d){this.domObserver.stop()
 var u=!1
 if(l){var h=t.chrome&&Oe(this.root)
-!this.redraw&&this.docView.update(C.doc,s,L,this)||(this.docView.destroy(),this.docView=R(C.doc,s,L,this.dom,this),this.redraw=!1),this.selectionReader.clearDOMState(),h&&(u=function(C,e){var t=Oe(e)
+!this.redraw&&this.docView.update(C.doc,s,o,this)||(this.docView.destroy(),this.docView=R(C.doc,s,o,this.dom,this),this.redraw=!1),this.selectionReader.clearDOMState(),h&&(u=function(C,e){var t=Oe(e)
 if(!t||3==t[0].nodeType)return!1
 for(var H=0;H<C.length;H++)if(t[H]!=C[H])return!0
 return!1}(h,this.root))}u||!(this.mouseDown&&this.selectionReader.domChanged()&&(V=this,n=V.docView.domFromPos(V.state.selection.anchor),r=V.root.getSelection(),a(n.node,n.offset,r.anchorNode,r.anchorOffset)))?uC(this,!1,u):mC(this,C.selection),this.domObserver.start()}if(i!=this.editable&&this.selectionReader.editableChanged(),this.updatePluginViews(H),"reset"==M)this.dom.scrollTop=0
 else if("to selection"==M){var m=this.root.getSelection().focusNode
-this.someProp("handleScrollToSelection",function(C){return C(e)})||(C.selection instanceof dV.NodeSelection?p(this,this.docView.domAfterPos(C.selection.from).getBoundingClientRect(),m):p(this,this.coordsAtPos(C.selection.head),m))}else c&&function(C){for(var e=C.refDOM,t=C.refTop,H=C.stack,i=e?e.getBoundingClientRect().top:0,V=0==i?0:i-t,n=0;n<H.length;n++){var r=H[n],L=r.dom,o=r.top,s=r.left
-L.scrollTop!=o+V&&(L.scrollTop=o+V),L.scrollLeft!=s&&(L.scrollLeft=s)}}(c)}},ye.prototype.destroyPluginViews=function(){for(var C;C=this.pluginViews.pop();)C.destroy&&C.destroy()},ye.prototype.updatePluginViews=function(C){var e=this.state.plugins
+this.someProp("handleScrollToSelection",function(C){return C(e)})||(C.selection instanceof dV.NodeSelection?p(this,this.docView.domAfterPos(C.selection.from).getBoundingClientRect(),m):p(this,this.coordsAtPos(C.selection.head),m))}else c&&function(C){for(var e=C.refDOM,t=C.refTop,H=C.stack,i=e?e.getBoundingClientRect().top:0,V=0==i?0:i-t,n=0;n<H.length;n++){var r=H[n],o=r.dom,L=r.top,s=r.left
+o.scrollTop!=L+V&&(o.scrollTop=L+V),o.scrollLeft!=s&&(o.scrollLeft=s)}}(c)}},ye.prototype.destroyPluginViews=function(){for(var C;C=this.pluginViews.pop();)C.destroy&&C.destroy()},ye.prototype.updatePluginViews=function(C){var e=this.state.plugins
 if(C&&C.plugins==e)for(var t=0;t<this.pluginViews.length;t++){var H=this.pluginViews[t]
 H.update&&H.update(this,C)}else{this.destroyPluginViews()
 for(var i=0;i<e.length;i++){var V=e[i]
@@ -2737,7 +4161,7 @@ return e?e.nodeDOM:null},ye.prototype.posAtDOM=function(C,e,t){void 0===t&&(t=-1
 var H=this.docView.posFromDOM(C,e,t)
 if(null==H)throw new RangeError("DOM position not inside the editor")
 return this.inDOMChange&&(H=this.inDOMChange.mapping.map(H)),H},ye.prototype.endOfTextblock=function(C,e){return x(this,e||this.state,C)},ye.prototype.destroy=function(){this.docView&&(function(C){for(var e in C.domObserver.stop(),C.inDOMChange&&C.inDOMChange.destroy(),C.eventHandlers)C.dom.removeEventListener(e,C.eventHandlers[e])}(this),this.destroyPluginViews(),this.selectionReader.destroy(),this.mounted?(this.docView.update(this.state.doc,[],ve(this),this),this.dom.textContent=""):this.dom.parentNode&&this.dom.parentNode.removeChild(this.dom),this.docView.destroy(),this.docView=null)},ye.prototype.dispatchEvent=function(C){return function(C,e){jC(C,e)||!_C[e.type]||!C.editable&&e.type in zC||_C[e.type](C,e)}(this,C)},ye.prototype.dispatch=function(C){var e=this._props.dispatchTransaction
-e?e.call(this,C):this.updateState(this.state.apply(C))},Object.defineProperties(ye.prototype,be),e.EditorView=ye,e.Decoration=oe,e.DecorationSet=le,e.__serializeForClipboard=BC,e.__parseFromClipboard=EC}))
+e?e.call(this,C):this.updateState(this.state.apply(C))},Object.defineProperties(ye.prototype,be),e.EditorView=ye,e.Decoration=Le,e.DecorationSet=le,e.__serializeForClipboard=BC,e.__parseFromClipboard=EC}))
 VV(_V)
 var zV=_V.EditorView
 _V.Decoration,_V.DecorationSet,_V.__serializeForClipboard,_V.__parseFromClipboard
@@ -2805,14 +4229,21 @@ H=V.inline?H.concat(this.serializeInlineTextElement(C,V,t)):H.concat(this.serial
 if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(C,e,t,H)
 else for(var r=C.length-1;r>=0;r--)(i=C[r])&&(n=(V<3?i(n):V>3?i(e,t,n):i(e,t))||n)
 return V>3&&n&&Object.defineProperty(e,t,n),n}
-class XV extends K{constructor(){super(...arguments),this.currentView="#tei-editor-main-text",this.loaded=!1,this.mainText=null,this.displayedMainText=null,this.globalAnnotationText=null,this.displayedGlobalAnnotationText=null,this.metadata=null,this.individualAnnotations=null}get mainTextEditorConfig(){return window.teiEditorConfig.schema.mainText}get mainTextSidebarConfig(){return window.teiEditorConfig.ui.mainText.sidebar}get globalAnnotationConfig(){return window.teiEditorConfig.schema.globalAnnotations}get globalAnnotationSidebarConfig(){return window.teiEditorConfig.ui.globalAnnotations.sidebar}get individualAnnotationsConfig(){return window.teiEditorConfig.schema.individualAnnotations}get individualAnnotationsSidebarConfig(){return window.teiEditorConfig.ui.individualAnnotations.sidebar}get metadataConfig(){return window.teiEditorConfig.ui.metadata}get individualAnnotationsDefault(){return window.teiEditorConfig.default.individualAnnotations}loadFile(C){C.preventDefault()
-let e=this,t=document.createElement("input")
-t.setAttribute("type","file"),t.setAttribute("class","hidden"),document.querySelector("body").appendChild(t),t.click(),t.addEventListener("change",function(C){let H=C.target.files
+class XV extends K{constructor(){super(...arguments),this.currentView="#tei-editor-main-text",this.loaded=!1,this.mainText=null,this.displayedMainText=null,this.globalAnnotationText=null,this.displayedGlobalAnnotationText=null,this.metadata=null,this.individualAnnotations=null}didInsertElement(){if(window.teiEditorConfig.actions&&window.teiEditorConfig.actions.initLoad){let C=this
+window.teiEditorConfig.actions.initLoad().then(function(e){let t=new KV(e,window.teiEditorConfig.parser)
+C.mainText=t.body,C.displayedMainText=t.body,C.metadata=t.metadata,C.globalAnnotationText=t.globalAnnotationText,C.displayedGlobalAnnotationText=t.globalAnnotationText,C.individualAnnotations=t.individualAnnotations,C.loaded=!0})}}get mainUIConfig(){return window.teiEditorConfig.ui.main}get mainTextEditorConfig(){return window.teiEditorConfig.schema.mainText}get mainTextSidebarConfig(){return window.teiEditorConfig.ui.mainText.sidebar}get globalAnnotationConfig(){return window.teiEditorConfig.schema.globalAnnotations}get globalAnnotationSidebarConfig(){return window.teiEditorConfig.ui.globalAnnotations.sidebar}get individualAnnotationsConfig(){return window.teiEditorConfig.schema.individualAnnotations}get individualAnnotationsSidebarConfig(){return window.teiEditorConfig.ui.individualAnnotations.sidebar}get metadataConfig(){return window.teiEditorConfig.ui.metadata}get individualAnnotationsDefault(){return window.teiEditorConfig.default.individualAnnotations}loadFile(C){C.preventDefault()
+let e=this
+if(window.teiEditorConfig.actions&&window.teiEditorConfig.actions.load)window.teiEditorConfig.actions.load().then(function(C){let t=new KV(C,window.teiEditorConfig.parser)
+e.mainText=t.body,e.displayedMainText=t.body,e.metadata=t.metadata,e.globalAnnotationText=t.globalAnnotationText,e.displayedGlobalAnnotationText=t.globalAnnotationText,e.individualAnnotations=t.individualAnnotations,e.loaded=!0})
+else{let C=document.createElement("input")
+C.setAttribute("type","file"),C.setAttribute("class","hidden"),document.querySelector("body").appendChild(C),C.click(),C.addEventListener("change",function(t){let H=t.target.files
 if(H.length>0){let C=new FileReader
 C.onload=(C=>{let t=new KV(C.target.result,window.teiEditorConfig.parser)
-e.mainText=t.body,e.displayedMainText=t.body,e.metadata=t.metadata,e.globalAnnotationText=t.globalAnnotationText,e.displayedGlobalAnnotationText=t.globalAnnotationText,e.individualAnnotations=t.individualAnnotations,e.loaded=!0}),C.readAsText(H[0])}t.remove()})}saveFile(C){C.preventDefault()
-let e=new JV(window.teiEditorConfig.serializer).serialize(this.metadata,this.mainText,this.globalAnnotationText,this.individualAnnotations),t=new Blob([e],{type:"text/xml;charset=utf-8"}),H=document.createElement("a")
-H.setAttribute("href",URL.createObjectURL(t)),H.setAttribute("download","download.tei"),document.body.appendChild(H),H.click(),document.body.removeChild(H)}setView(C,e){e.preventDefault(),document.querySelector(this.currentView).setAttribute("aria-hidden","true"),this.currentView=C,document.querySelector(this.currentView).setAttribute("aria-hidden","false")}updateMainText(C){this.mainText=C}updateGlobalAnnotationText(C){this.globalAnnotationText=C}updateMetadata(C){this.metadata=C}updateIndividualAnnotations(C){this.individualAnnotations=C}}YV([R],XV.prototype,"currentView",void 0),YV([R],XV.prototype,"loaded",void 0),YV([R],XV.prototype,"mainText",void 0),YV([R],XV.prototype,"displayedMainText",void 0),YV([R],XV.prototype,"globalAnnotationText",void 0),YV([R],XV.prototype,"displayedGlobalAnnotationText",void 0),YV([R],XV.prototype,"metadata",void 0),YV([R],XV.prototype,"individualAnnotations",void 0)
+e.mainText=t.body,e.displayedMainText=t.body,e.metadata=t.metadata,e.globalAnnotationText=t.globalAnnotationText,e.displayedGlobalAnnotationText=t.globalAnnotationText,e.individualAnnotations=t.individualAnnotations,e.loaded=!0}),C.readAsText(H[0])}C.remove()})}}saveFile(C){C.preventDefault()
+let e=new JV(window.teiEditorConfig.serializer).serialize(this.metadata,this.mainText,this.globalAnnotationText,this.individualAnnotations)
+if(window.teiEditorConfig.actions&&window.teiEditorConfig.actions.save)window.teiEditorConfig.actions.save(e)
+else{let C=new Blob([e],{type:"text/xml;charset=utf-8"}),t=document.createElement("a")
+t.setAttribute("href",URL.createObjectURL(C)),t.setAttribute("download","download.tei"),document.body.appendChild(t),t.click(),document.body.removeChild(t)}}setView(C,e){e.preventDefault(),document.querySelector(this.currentView).setAttribute("aria-hidden","true"),this.currentView=C,document.querySelector(this.currentView).setAttribute("aria-hidden","false")}updateMainText(C){this.mainText=C}updateGlobalAnnotationText(C){this.globalAnnotationText=C}updateMetadata(C){this.metadata=C}updateIndividualAnnotations(C){this.individualAnnotations=C}}YV([R],XV.prototype,"currentView",void 0),YV([R],XV.prototype,"loaded",void 0),YV([R],XV.prototype,"mainText",void 0),YV([R],XV.prototype,"displayedMainText",void 0),YV([R],XV.prototype,"globalAnnotationText",void 0),YV([R],XV.prototype,"displayedGlobalAnnotationText",void 0),YV([R],XV.prototype,"metadata",void 0),YV([R],XV.prototype,"individualAnnotations",void 0)
 var QV={"component:/tei-editor/components/AriaDropdownMenu":$i,"template:/tei-editor/components/AriaDropdownMenu":{id:"jlrELQXU",block:'{"symbols":["@title","&default"],"statements":[[6,"li"],[10,"role","presentation"],[10,"class","dropdown"],[11,"onmouseover",[26,"action",[[22,["mouseOver"]]],null],null],[11,"onmouseout",[26,"action",[[22,["mouseOut"]]],null],null],[8],[0,"\\n  "],[6,"a"],[10,"role","menuitem"],[10,"aria-haspopup","true"],[10,"tabindex","-1"],[11,"aria-expanded",[20,"expanded"],null],[11,"onclick",[26,"action",[[22,["click"]]],null],null],[11,"onkeydown",[26,"action",[[22,["keyDown"]]],null],null],[8],[1,[21,1,[]],false],[9],[0,"\\n  "],[6,"ul"],[10,"role","menu"],[10,"class","vertical"],[11,"onkeydown",[26,"action",[[22,["keyDown"]]],null],null],[8],[0,"\\n    "],[13,2],[0,"\\n  "],[9],[0,"\\n"],[9],[0,"\\n"]],"hasEval":false}',meta:{specifier:"template:/tei-editor/components/AriaDropdownMenu"}},"component:/tei-editor/components/AriaMenu":class extends K{keyDown(C){if(39===C.keyCode){let e=C.target.parentElement.nextElementSibling
 for(;e&&("separator"===e.getAttribute("role")||"true"===e.querySelector('*[role="menuitem"]').getAttribute("aria-disabled"));)e=e.nextElementSibling
 e&&e.querySelector('*[role="menuitem"]').focus()}else if(37===C.keyCode){let e=C.target.parentElement.previousElementSibling
@@ -2828,7 +4259,7 @@ eV([H,C]).splice(e,1),this.args.update(H)}moveMultiFieldRowUp(C,e,t){t.preventDe
 let H=Ki([this.args.metadata]),i=eV([H,C]),V=i[e]
 i.splice(e,1),i.splice(e-1,0,V),this.args.update(H)}moveMultiFieldRowDown(C,e,t){t.preventDefault()
 let H=Ki([this.args.metadata]),i=eV([H,C]),V=i[e]
-i.splice(e,1),i.splice(e+1,0,V),this.args.update(H)}},"template:/tei-editor/components/MetadataEditor":{id:"HB/ThmSt",block:'{"symbols":["section","entry","value","value_idx","part_entry","part_idx","@metadata","@config"],"statements":[[6,"dl"],[8],[0,"\\n"],[4,"each",[[21,8,[]]],[["key"],["@index"]],{"statements":[[0,"    "],[6,"dt"],[8],[1,[21,1,["title"]],false],[9],[0,"\\n    "],[6,"dd"],[8],[0,"\\n      "],[6,"ul"],[8],[0,"\\n"],[4,"each",[[21,1,["entries"]]],[["key"],["@index"]],{"statements":[[4,"if",[[26,"eq",[[21,2,["type"]],"single-text"],null]],null,{"statements":[[0,"            "],[6,"li"],[10,"class","tei-editor-metadata-single"],[8],[6,"label"],[8],[1,[21,2,["label"]],false],[6,"input"],[10,"type","text"],[11,"value",[26,"get",[[21,7,[]],[21,2,["value_key"]]],null],null],[11,"onchange",[26,"action",[[22,["setMetadataField"]],[21,2,["value_key"]]],null],null],[8],[9],[9],[9],[0,"\\n"]],"parameters":[]},null],[4,"if",[[26,"eq",[[21,2,["type"]],"multi-field"],null]],null,{"statements":[[0,"            "],[6,"li"],[10,"class","tei-editor-metadata-multiple"],[8],[0,"\\n"],[4,"each",[[26,"get",[[21,7,[]],[21,2,["value_key"]]],null]],[["key"],["@index"]],{"statements":[[0,"              "],[6,"div"],[8],[0,"\\n"],[4,"each",[[21,2,["entries"]]],[["key"],["@index"]],{"statements":[[0,"                  "],[6,"div"],[8],[6,"label"],[8],[1,[21,5,["label"]],false],[6,"input"],[10,"type","text"],[11,"value",[26,"get",[[21,3,[]],[21,5,["value_key"]]],null],null],[11,"onchange",[26,"action",[[22,["setMetadataField"]],[26,"join",[".",[21,2,["value_key"]],[21,4,[]],[21,5,["value_key"]]],null]],null],null],[8],[9],[9],[9],[0,"\\n"]],"parameters":[5,6]},null],[0,"                "],[6,"nav"],[8],[0,"\\n                  "],[5,"AriaMenu",[],[[],[]],{"statements":[[0,"\\n                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@action"],["0","Delete this row",[26,"action",[[22,["removeMultiFieldRow"]],[21,2,["value_key"]],[21,4,[]]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],["Delete"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@disabled","@action"],["-1","Move this row up one",[26,"array-first",[[26,"get",[[21,7,[]],[21,2,["value_key"]]],null],[21,4,[]]],null],[26,"action",[[22,["moveMultiFieldRowUp"]],[21,2,["value_key"]],[21,4,[]]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],["ArrowUp"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@disabled","@action"],["-1","Move this row one down",[26,"array-last",[[26,"get",[[21,7,[]],[21,2,["value_key"]]],null],[21,4,[]]],null],[26,"action",[[22,["moveMultiFieldRowDown"]],[21,2,["value_key"]],[21,4,[]]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],["ArrowDown"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n                  "]],"parameters":[]}],[0,"\\n                "],[9],[0,"\\n              "],[9],[0,"\\n"]],"parameters":[3,4]},null],[0,"              "],[5,"AriaMenu",[],[[],[]],{"statements":[[0,"\\n                "],[5,"AriaMenuAction",[],[["@tabindex","@label","@action"],["0","Add a new row",[26,"action",[[22,["addMultiFieldRow"]],[21,2,["value_key"]],[21,2,["entries"]]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],["Plus"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n              "]],"parameters":[]}],[0,"\\n            "],[9],[0,"\\n"]],"parameters":[]},null]],"parameters":[2]},null],[0,"      "],[9],[0,"\\n    "],[9],[0,"\\n"]],"parameters":[1]},null],[9],[0,"\\n"]],"hasEval":false}',meta:{specifier:"template:/tei-editor/components/MetadataEditor"}},"component:/tei-editor/components/ProsemirrorEditor":GV,"component:/tei-editor/components/ProsemirrorEditor/set-doc-attr":WV,"template:/tei-editor/components/ProsemirrorEditor":{id:"YPC3SuuR",block:'{"symbols":["section","entry","index","value","value","@annotations","@sidebar"],"statements":[[6,"div"],[8],[0,"\\n  "],[6,"div"],[10,"class","tei-editor-prosemirror-editor"],[8],[0,"\\n    "],[6,"div"],[11,"id",[20,"prosemirrorId"],null],[8],[9],[0,"\\n  "],[9],[0,"\\n"],[9],[0,"\\n"],[6,"div"],[8],[0,"\\n  "],[6,"div"],[10,"class","tei-editor-prosemirror-sidebar"],[8],[0,"\\n    "],[6,"dl"],[8],[0,"\\n"],[4,"each",[[21,7,[]]],[["key"],["@index"]],{"statements":[[4,"if",[[26,"status-display-entry",[[22,["status"]],[21,1,["test"]]],null]],null,{"statements":[[0,"          "],[6,"dt"],[8],[1,[21,1,["title"]],false],[9],[0,"\\n          "],[6,"dd"],[8],[0,"\\n            "],[5,"AriaMenu",[],[["@label"],["Main"]],{"statements":[[0,"\\n"],[4,"each",[[21,1,["entries"]]],[["key"],["@index"]],{"statements":[[4,"if",[[26,"eq",[[21,2,["type"]],"select"],null]],null,{"statements":[[0,"                  "],[6,"li"],[10,"class","input"],[8],[0,"\\n                    "],[6,"select"],[10,"role","menuitem"],[11,"tabindex",[26,"aria-menu-item-tabindex",[[21,3,[]]],null],null],[11,"onchange",[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],"ev.target.value"],null],null],[8],[0,"\\n"],[4,"each",[[21,2,["values"]]],[["key"],["@index"]],{"statements":[[0,"                        "],[6,"option"],[11,"value",[21,5,["key"]],null],[11,"selected",[26,"eq",[[26,"get",[[22,["status"]],[21,2,["value_key"]]],null],[21,5,["key"]]],null],null],[8],[1,[21,5,["value"]],false],[9],[0,"\\n"]],"parameters":[5]},null],[0,"                    "],[9],[0,"\\n                  "],[9],[0,"\\n"]],"parameters":[]},null],[4,"if",[[26,"eq",[[21,2,["type"]],"select-annotation"],null]],null,{"statements":[[0,"                  "],[6,"li"],[10,"class","input"],[8],[0,"\\n                    "],[6,"select"],[10,"role","menuitem"],[11,"tabindex",[26,"aria-menu-item-tabindex",[[21,3,[]]],null],null],[11,"onchange",[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],"ev.target.value"],null],null],[8],[0,"\\n                      "],[6,"option"],[10,"value",""],[8],[0,"--- Please select ---"],[9],[0,"\\n"],[4,"each",[[21,6,[]]],[["key"],["@index"]],{"statements":[[0,"                        "],[6,"option"],[11,"value",[21,4,["attrs","id"]],null],[11,"selected",[26,"eq",[[26,"get",[[22,["status"]],[21,2,["value_key"]]],null],[21,4,["attrs","id"]]],null],null],[8],[1,[21,4,["attrs","id"]],false],[9],[0,"\\n"]],"parameters":[4]},null],[0,"                    "],[9],[0,"\\n                  "],[9],[0,"\\n"]],"parameters":[]},null],[4,"if",[[26,"eq",[[21,2,["type"]],"button"],null]],null,{"statements":[[4,"if",[[26,"eq",[[21,2,["value"]],"toggle"],null]],null,{"statements":[[0,"                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@action","@current"],[[26,"aria-menu-item-tabindex",[[21,3,[]]],null],[21,2,["label"]],[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],[21,2,["value"]]],null],[26,"boolean-str",[[26,"get",[[22,["status"]],[21,2,["value_key"]]],null]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],[[21,2,["icon"]]]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n"]],"parameters":[]},{"statements":[[0,"                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@action","@current"],[[26,"aria-menu-item-tabindex",[[21,3,[]]],null],[21,2,["label"]],[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],[21,2,["value"]]],null],[26,"boolean-str",[[26,"eq",[[26,"get",[[22,["status"]],[21,2,["value_key"]]],null],[21,2,["value"]]],null]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],[[21,2,["icon"]]]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n"]],"parameters":[]}]],"parameters":[]},null],[4,"if",[[26,"eq",[[21,2,["type"]],"text"],null]],null,{"statements":[[0,"                  "],[6,"input"],[10,"type","text"],[11,"value",[26,"get",[[22,["status"]],[21,2,["value_key"]]],null],null],[11,"onchange",[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],"ev.target.value"],null],null],[8],[9],[0,"\\n"]],"parameters":[]},null]],"parameters":[2,3]},null],[0,"            "]],"parameters":[]}],[0,"\\n          "],[9],[0,"\\n"]],"parameters":[]},null]],"parameters":[1]},null],[0,"    "],[9],[0,"\\n  "],[9],[0,"\\n"],[9],[0,"\\n"]],"hasEval":false}',meta:{specifier:"template:/tei-editor/components/ProsemirrorEditor"}},"component:/tei-editor/components/TeiEditor":XV,"component:/tei-editor/components/TeiEditor/tei":null,"template:/tei-editor/components/TeiEditor":{id:"SDrFQPne",block:'{"symbols":[],"statements":[[6,"div"],[10,"class","tei-editor"],[8],[0,"\\n  "],[6,"div"],[8],[0,"\\n    "],[5,"AriaMenu",[],[["@class"],["tei-editor-menubar"]],{"statements":[[0,"\\n      "],[5,"AriaMenuAction",[],[["@tabindex","@label"],["0","Undo"]],{"statements":[[5,"MdiIcon",[],[["@name"],["Undo"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n      "],[5,"AriaMenuAction",[],[["@label"],["Redo"]],{"statements":[[5,"MdiIcon",[],[["@name"],["Redo"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n      "],[5,"AriaDropdownMenu",[],[["@title"],["File"]],{"statements":[[0,"\\n        "],[5,"AriaMenuAction",[],[["@action"],[[26,"action",[[22,["loadFile"]]],null]]],{"statements":[[0,"Load"]],"parameters":[]}],[0,"\\n        "],[5,"AriaMenuAction",[],[["@action"],[[26,"action",[[22,["saveFile"]]],null]]],{"statements":[[0,"Save"]],"parameters":[]}],[0,"\\n      "]],"parameters":[]}],[0,"\\n      "],[5,"AriaMenuAction",[],[["@current","@hidden","@action"],[[26,"boolean-str",[[26,"eq",[[22,["currentView"]],"#tei-editor-main-text"],null]],null],[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],[26,"action",[[22,["setView"]],"#tei-editor-main-text"],null]]],{"statements":[[0,"Text"]],"parameters":[]}],[0,"\\n      "],[5,"AriaMenuAction",[],[["@current","@hidden","@action"],[[26,"boolean-str",[[26,"eq",[[22,["currentView"]],"#tei-editor-global-annotations"],null]],null],[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],[26,"action",[[22,["setView"]],"#tei-editor-global-annotations"],null]]],{"statements":[[0,"Global Annotations"]],"parameters":[]}],[0,"\\n      "],[5,"AriaMenuAction",[],[["@current","@hidden","@action"],[[26,"boolean-str",[[26,"eq",[[22,["currentView"]],"#tei-editor-individual-annotations"],null]],null],[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],[26,"action",[[22,["setView"]],"#tei-editor-individual-annotations"],null]]],{"statements":[[0,"Individual Annotations"]],"parameters":[]}],[0,"\\n      "],[5,"AriaMenuAction",[],[["@current","@hidden","@action"],[[26,"boolean-str",[[26,"eq",[[22,["currentView"]],"#tei-editor-metadata"],null]],null],[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],[26,"action",[[22,["setView"]],"#tei-editor-metadata"],null]]],{"statements":[[0,"Metadata"]],"parameters":[]}],[0,"\\n    "]],"parameters":[]}],[0,"\\n  "],[9],[0,"\\n  "],[6,"div"],[11,"aria-hidden",[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],null],[8],[0,"\\n    "],[6,"div"],[10,"id","tei-editor-main-text"],[10,"aria-hidden","false"],[8],[0,"\\n      "],[5,"ProsemirrorEditor",[],[["@schema","@sidebar","@text","@annotations","@update"],[[20,"mainTextEditorConfig"],[20,"mainTextSidebarConfig"],[20,"displayedMainText"],[20,"individualAnnotations"],[26,"action",[[22,["updateMainText"]]],null]]],{"statements":[],"parameters":[]}],[0,"\\n    "],[9],[0,"\\n    "],[6,"div"],[10,"id","tei-editor-global-annotations"],[10,"aria-hidden","true"],[8],[0,"\\n      "],[5,"ProsemirrorEditor",[],[["@schema","@sidebar","@text","@update"],[[20,"globalAnnotationConfig"],[20,"globalAnnotationSidebarConfig"],[20,"displayedGlobalAnnotationText"],[26,"action",[[22,["updateGlobalAnnotationText"]]],null]]],{"statements":[],"parameters":[]}],[0,"\\n    "],[9],[0,"\\n    "],[6,"div"],[10,"id","tei-editor-individual-annotations"],[10,"aria-hidden","true"],[8],[0,"\\n      "],[5,"IndividualAnnotationEditor",[],[["@schema","@sidebar","@annotations","@default","@update"],[[20,"individualAnnotationsConfig"],[20,"individualAnnotationsSidebarConfig"],[20,"individualAnnotations"],[20,"individualAnnotationsDefault"],[26,"action",[[22,["updateIndividualAnnotations"]]],null]]],{"statements":[],"parameters":[]}],[0,"\\n    "],[9],[0,"\\n    "],[6,"div"],[10,"id","tei-editor-metadata"],[10,"aria-hidden","true"],[8],[0,"\\n      "],[5,"MetadataEditor",[],[["@config","@metadata","@update"],[[20,"metadataConfig"],[20,"metadata"],[26,"action",[[22,["updateMetadata"]]],null]]],{"statements":[],"parameters":[]}],[0,"\\n    "],[9],[0,"\\n  "],[9],[0,"\\n"],[9],[0,"\\n"]],"hasEval":false}',meta:{specifier:"template:/tei-editor/components/TeiEditor"}},"helper:/tei-editor/components/aria-menu-item-tabindex":function(C){return 0===C[0]?0:-1},"helper:/tei-editor/components/array-first":function(C){return C[0].length>0&&0===C[1]},"helper:/tei-editor/components/array-last":function(C){return C[1]===C[0].length-1},"helper:/tei-editor/components/boolean-str":function(C){return C[0]?"true":"false"},"helper:/tei-editor/components/deepclone":Ki,"helper:/tei-editor/components/eq":function(C){return C[0]===C[1]},"helper:/tei-editor/components/get":eV,"helper:/tei-editor/components/join":function(C){return C.slice(1).join(C[0])},"helper:/tei-editor/components/not":function(C){return!C[0]},"helper:/tei-editor/components/set":tV,"helper:/tei-editor/components/status-display-entry":function(C){let e=C[0],t=C[1]
+i.splice(e,1),i.splice(e+1,0,V),this.args.update(H)}},"template:/tei-editor/components/MetadataEditor":{id:"HB/ThmSt",block:'{"symbols":["section","entry","value","value_idx","part_entry","part_idx","@metadata","@config"],"statements":[[6,"dl"],[8],[0,"\\n"],[4,"each",[[21,8,[]]],[["key"],["@index"]],{"statements":[[0,"    "],[6,"dt"],[8],[1,[21,1,["title"]],false],[9],[0,"\\n    "],[6,"dd"],[8],[0,"\\n      "],[6,"ul"],[8],[0,"\\n"],[4,"each",[[21,1,["entries"]]],[["key"],["@index"]],{"statements":[[4,"if",[[26,"eq",[[21,2,["type"]],"single-text"],null]],null,{"statements":[[0,"            "],[6,"li"],[10,"class","tei-editor-metadata-single"],[8],[6,"label"],[8],[1,[21,2,["label"]],false],[6,"input"],[10,"type","text"],[11,"value",[26,"get",[[21,7,[]],[21,2,["value_key"]]],null],null],[11,"onchange",[26,"action",[[22,["setMetadataField"]],[21,2,["value_key"]]],null],null],[8],[9],[9],[9],[0,"\\n"]],"parameters":[]},null],[4,"if",[[26,"eq",[[21,2,["type"]],"multi-field"],null]],null,{"statements":[[0,"            "],[6,"li"],[10,"class","tei-editor-metadata-multiple"],[8],[0,"\\n"],[4,"each",[[26,"get",[[21,7,[]],[21,2,["value_key"]]],null]],[["key"],["@index"]],{"statements":[[0,"              "],[6,"div"],[8],[0,"\\n"],[4,"each",[[21,2,["entries"]]],[["key"],["@index"]],{"statements":[[0,"                  "],[6,"div"],[8],[6,"label"],[8],[1,[21,5,["label"]],false],[6,"input"],[10,"type","text"],[11,"value",[26,"get",[[21,3,[]],[21,5,["value_key"]]],null],null],[11,"onchange",[26,"action",[[22,["setMetadataField"]],[26,"join",[".",[21,2,["value_key"]],[21,4,[]],[21,5,["value_key"]]],null]],null],null],[8],[9],[9],[9],[0,"\\n"]],"parameters":[5,6]},null],[0,"                "],[6,"nav"],[8],[0,"\\n                  "],[5,"AriaMenu",[],[[],[]],{"statements":[[0,"\\n                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@action"],["0","Delete this row",[26,"action",[[22,["removeMultiFieldRow"]],[21,2,["value_key"]],[21,4,[]]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],["Delete"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@disabled","@action"],["-1","Move this row up one",[26,"array-first",[[26,"get",[[21,7,[]],[21,2,["value_key"]]],null],[21,4,[]]],null],[26,"action",[[22,["moveMultiFieldRowUp"]],[21,2,["value_key"]],[21,4,[]]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],["ArrowUp"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@disabled","@action"],["-1","Move this row one down",[26,"array-last",[[26,"get",[[21,7,[]],[21,2,["value_key"]]],null],[21,4,[]]],null],[26,"action",[[22,["moveMultiFieldRowDown"]],[21,2,["value_key"]],[21,4,[]]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],["ArrowDown"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n                  "]],"parameters":[]}],[0,"\\n                "],[9],[0,"\\n              "],[9],[0,"\\n"]],"parameters":[3,4]},null],[0,"              "],[5,"AriaMenu",[],[[],[]],{"statements":[[0,"\\n                "],[5,"AriaMenuAction",[],[["@tabindex","@label","@action"],["0","Add a new row",[26,"action",[[22,["addMultiFieldRow"]],[21,2,["value_key"]],[21,2,["entries"]]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],["Plus"]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n              "]],"parameters":[]}],[0,"\\n            "],[9],[0,"\\n"]],"parameters":[]},null]],"parameters":[2]},null],[0,"      "],[9],[0,"\\n    "],[9],[0,"\\n"]],"parameters":[1]},null],[9],[0,"\\n"]],"hasEval":false}',meta:{specifier:"template:/tei-editor/components/MetadataEditor"}},"component:/tei-editor/components/ProsemirrorEditor":GV,"component:/tei-editor/components/ProsemirrorEditor/set-doc-attr":WV,"template:/tei-editor/components/ProsemirrorEditor":{id:"YPC3SuuR",block:'{"symbols":["section","entry","index","value","value","@annotations","@sidebar"],"statements":[[6,"div"],[8],[0,"\\n  "],[6,"div"],[10,"class","tei-editor-prosemirror-editor"],[8],[0,"\\n    "],[6,"div"],[11,"id",[20,"prosemirrorId"],null],[8],[9],[0,"\\n  "],[9],[0,"\\n"],[9],[0,"\\n"],[6,"div"],[8],[0,"\\n  "],[6,"div"],[10,"class","tei-editor-prosemirror-sidebar"],[8],[0,"\\n    "],[6,"dl"],[8],[0,"\\n"],[4,"each",[[21,7,[]]],[["key"],["@index"]],{"statements":[[4,"if",[[26,"status-display-entry",[[22,["status"]],[21,1,["test"]]],null]],null,{"statements":[[0,"          "],[6,"dt"],[8],[1,[21,1,["title"]],false],[9],[0,"\\n          "],[6,"dd"],[8],[0,"\\n            "],[5,"AriaMenu",[],[["@label"],["Main"]],{"statements":[[0,"\\n"],[4,"each",[[21,1,["entries"]]],[["key"],["@index"]],{"statements":[[4,"if",[[26,"eq",[[21,2,["type"]],"select"],null]],null,{"statements":[[0,"                  "],[6,"li"],[10,"class","input"],[8],[0,"\\n                    "],[6,"select"],[10,"role","menuitem"],[11,"tabindex",[26,"aria-menu-item-tabindex",[[21,3,[]]],null],null],[11,"onchange",[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],"ev.target.value"],null],null],[8],[0,"\\n"],[4,"each",[[21,2,["values"]]],[["key"],["@index"]],{"statements":[[0,"                        "],[6,"option"],[11,"value",[21,5,["key"]],null],[11,"selected",[26,"eq",[[26,"get",[[22,["status"]],[21,2,["value_key"]]],null],[21,5,["key"]]],null],null],[8],[1,[21,5,["value"]],false],[9],[0,"\\n"]],"parameters":[5]},null],[0,"                    "],[9],[0,"\\n                  "],[9],[0,"\\n"]],"parameters":[]},null],[4,"if",[[26,"eq",[[21,2,["type"]],"select-annotation"],null]],null,{"statements":[[0,"                  "],[6,"li"],[10,"class","input"],[8],[0,"\\n                    "],[6,"select"],[10,"role","menuitem"],[11,"tabindex",[26,"aria-menu-item-tabindex",[[21,3,[]]],null],null],[11,"onchange",[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],"ev.target.value"],null],null],[8],[0,"\\n                      "],[6,"option"],[10,"value",""],[8],[0,"--- Please select ---"],[9],[0,"\\n"],[4,"each",[[21,6,[]]],[["key"],["@index"]],{"statements":[[0,"                        "],[6,"option"],[11,"value",[21,4,["attrs","id"]],null],[11,"selected",[26,"eq",[[26,"get",[[22,["status"]],[21,2,["value_key"]]],null],[21,4,["attrs","id"]]],null],null],[8],[1,[21,4,["attrs","id"]],false],[9],[0,"\\n"]],"parameters":[4]},null],[0,"                    "],[9],[0,"\\n                  "],[9],[0,"\\n"]],"parameters":[]},null],[4,"if",[[26,"eq",[[21,2,["type"]],"button"],null]],null,{"statements":[[4,"if",[[26,"eq",[[21,2,["value"]],"toggle"],null]],null,{"statements":[[0,"                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@action","@current"],[[26,"aria-menu-item-tabindex",[[21,3,[]]],null],[21,2,["label"]],[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],[21,2,["value"]]],null],[26,"boolean-str",[[26,"get",[[22,["status"]],[21,2,["value_key"]]],null]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],[[21,2,["icon"]]]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n"]],"parameters":[]},{"statements":[[0,"                    "],[5,"AriaMenuAction",[],[["@tabindex","@label","@action","@current"],[[26,"aria-menu-item-tabindex",[[21,3,[]]],null],[21,2,["label"]],[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],[21,2,["value"]]],null],[26,"boolean-str",[[26,"eq",[[26,"get",[[22,["status"]],[21,2,["value_key"]]],null],[21,2,["value"]]],null]],null]]],{"statements":[[5,"MdiIcon",[],[["@name"],[[21,2,["icon"]]]],{"statements":[],"parameters":[]}]],"parameters":[]}],[0,"\\n"]],"parameters":[]}]],"parameters":[]},null],[4,"if",[[26,"eq",[[21,2,["type"]],"text"],null]],null,{"statements":[[0,"                  "],[6,"input"],[10,"type","text"],[11,"value",[26,"get",[[22,["status"]],[21,2,["value_key"]]],null],null],[11,"onchange",[26,"action",[[22,["menuAction"]],[21,2,["action"]],[21,2,["attribute"]],"ev.target.value"],null],null],[8],[9],[0,"\\n"]],"parameters":[]},null]],"parameters":[2,3]},null],[0,"            "]],"parameters":[]}],[0,"\\n          "],[9],[0,"\\n"]],"parameters":[]},null]],"parameters":[1]},null],[0,"    "],[9],[0,"\\n  "],[9],[0,"\\n"],[9],[0,"\\n"]],"hasEval":false}',meta:{specifier:"template:/tei-editor/components/ProsemirrorEditor"}},"component:/tei-editor/components/TeiEditor":XV,"component:/tei-editor/components/TeiEditor/tei":null,"template:/tei-editor/components/TeiEditor":{id:"gHwZQuVS",block:'{"symbols":[],"statements":[[6,"div"],[10,"class","tei-editor"],[8],[0,"\\n  "],[6,"div"],[8],[0,"\\n    "],[5,"AriaMenu",[],[["@class"],["tei-editor-menubar"]],{"statements":[[0,"\\n      "],[5,"AriaDropdownMenu",[],[["@title"],["File"]],{"statements":[[0,"\\n"],[4,"if",[[26,"get",[[22,["mainUIConfig"]],"menu.file.load"],null]],null,{"statements":[[0,"          "],[5,"AriaMenuAction",[],[["@action"],[[26,"action",[[22,["loadFile"]]],null]]],{"statements":[[0,"Load"]],"parameters":[]}],[0,"\\n"]],"parameters":[]},null],[0,"        "],[5,"AriaMenuAction",[],[["@action"],[[26,"action",[[22,["saveFile"]]],null]]],{"statements":[[0,"Save"]],"parameters":[]}],[0,"\\n      "]],"parameters":[]}],[0,"\\n      "],[5,"AriaMenuAction",[],[["@current","@hidden","@action"],[[26,"boolean-str",[[26,"eq",[[22,["currentView"]],"#tei-editor-main-text"],null]],null],[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],[26,"action",[[22,["setView"]],"#tei-editor-main-text"],null]]],{"statements":[[0,"Text"]],"parameters":[]}],[0,"\\n      "],[5,"AriaMenuAction",[],[["@current","@hidden","@action"],[[26,"boolean-str",[[26,"eq",[[22,["currentView"]],"#tei-editor-global-annotations"],null]],null],[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],[26,"action",[[22,["setView"]],"#tei-editor-global-annotations"],null]]],{"statements":[[0,"Global Annotations"]],"parameters":[]}],[0,"\\n      "],[5,"AriaMenuAction",[],[["@current","@hidden","@action"],[[26,"boolean-str",[[26,"eq",[[22,["currentView"]],"#tei-editor-individual-annotations"],null]],null],[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],[26,"action",[[22,["setView"]],"#tei-editor-individual-annotations"],null]]],{"statements":[[0,"Individual Annotations"]],"parameters":[]}],[0,"\\n      "],[5,"AriaMenuAction",[],[["@current","@hidden","@action"],[[26,"boolean-str",[[26,"eq",[[22,["currentView"]],"#tei-editor-metadata"],null]],null],[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],[26,"action",[[22,["setView"]],"#tei-editor-metadata"],null]]],{"statements":[[0,"Metadata"]],"parameters":[]}],[0,"\\n    "]],"parameters":[]}],[0,"\\n  "],[9],[0,"\\n  "],[6,"div"],[11,"aria-hidden",[26,"boolean-str",[[26,"not",[[22,["loaded"]]],null]],null],null],[8],[0,"\\n    "],[6,"div"],[10,"id","tei-editor-main-text"],[10,"aria-hidden","false"],[8],[0,"\\n      "],[5,"ProsemirrorEditor",[],[["@schema","@sidebar","@text","@annotations","@update"],[[20,"mainTextEditorConfig"],[20,"mainTextSidebarConfig"],[20,"displayedMainText"],[20,"individualAnnotations"],[26,"action",[[22,["updateMainText"]]],null]]],{"statements":[],"parameters":[]}],[0,"\\n    "],[9],[0,"\\n    "],[6,"div"],[10,"id","tei-editor-global-annotations"],[10,"aria-hidden","true"],[8],[0,"\\n      "],[5,"ProsemirrorEditor",[],[["@schema","@sidebar","@text","@update"],[[20,"globalAnnotationConfig"],[20,"globalAnnotationSidebarConfig"],[20,"displayedGlobalAnnotationText"],[26,"action",[[22,["updateGlobalAnnotationText"]]],null]]],{"statements":[],"parameters":[]}],[0,"\\n    "],[9],[0,"\\n    "],[6,"div"],[10,"id","tei-editor-individual-annotations"],[10,"aria-hidden","true"],[8],[0,"\\n      "],[5,"IndividualAnnotationEditor",[],[["@schema","@sidebar","@annotations","@default","@update"],[[20,"individualAnnotationsConfig"],[20,"individualAnnotationsSidebarConfig"],[20,"individualAnnotations"],[20,"individualAnnotationsDefault"],[26,"action",[[22,["updateIndividualAnnotations"]]],null]]],{"statements":[],"parameters":[]}],[0,"\\n    "],[9],[0,"\\n    "],[6,"div"],[10,"id","tei-editor-metadata"],[10,"aria-hidden","true"],[8],[0,"\\n      "],[5,"MetadataEditor",[],[["@config","@metadata","@update"],[[20,"metadataConfig"],[20,"metadata"],[26,"action",[[22,["updateMetadata"]]],null]]],{"statements":[],"parameters":[]}],[0,"\\n    "],[9],[0,"\\n  "],[9],[0,"\\n"],[9],[0,"\\n"]],"hasEval":false}',meta:{specifier:"template:/tei-editor/components/TeiEditor"}},"helper:/tei-editor/components/aria-menu-item-tabindex":function(C){return 0===C[0]?0:-1},"helper:/tei-editor/components/array-first":function(C){return C[0].length>0&&0===C[1]},"helper:/tei-editor/components/array-last":function(C){return C[1]===C[0].length-1},"helper:/tei-editor/components/boolean-str":function(C){return C[0]?"true":"false"},"helper:/tei-editor/components/deepclone":Ki,"helper:/tei-editor/components/eq":function(C){return C[0]===C[1]},"helper:/tei-editor/components/get":eV,"helper:/tei-editor/components/join":function(C){return C.slice(1).join(C[0])},"helper:/tei-editor/components/not":function(C){return!C[0]},"helper:/tei-editor/components/set":tV,"helper:/tei-editor/components/status-display-entry":function(C){let e=C[0],t=C[1]
 if(e&&t){if("string"==typeof t)return eV([e,t])
 if(t.key&&t.value)return eV([e,t.key])===t.value}else if(e&&!t)return!0
 return!1}},Cn={app:{name:"tei-editor",rootName:"tei-editor"},types:{application:{definitiveCollection:"main"},component:{definitiveCollection:"components"},"component-test":{unresolvable:!0},helper:{definitiveCollection:"components"},"helper-test":{unresolvable:!0},renderer:{definitiveCollection:"main"},template:{definitiveCollection:"components"}},collections:{main:{types:["application","renderer"]},components:{group:"ui",types:["component","component-test","template","helper","helper-test"],defaultType:"component",privateCollections:["utils"]},styles:{group:"ui",unresolvable:!0},utils:{unresolvable:!0}}}

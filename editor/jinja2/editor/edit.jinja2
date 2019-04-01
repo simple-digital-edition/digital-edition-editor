@@ -16,7 +16,7 @@
             <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="Repositories">{{ icons.icon('server-network') }}</a></li>
             <li role="presentation"><a href="{{ url('editor:repository', kwargs={'rid': repository.id}) }}" role="menuitem">{{ repository.title }}</a></li>
             <li role="presentation"><a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}" role="menuitem" aria-label="Files for the {{ repository.title }} repository" >{{ icons.icon('file-multiple') }}</a></li>
-            <li role="presentation"><a href="{{ url('editor:repository', kwargs={'rid': repository.id}) }}" role="menuitem" aria-current="true">{{ filename }}</a></li>
+            <li role="presentation"><a href="{{ url('editor:edit', kwargs={'rid': repository.id, 'fid': fid}) }}" role="menuitem" aria-current="true">{{ filename }}</a></li>
           </ul>
         </nav>
         <nav class="top-bar-right">
@@ -31,6 +31,42 @@
       </header>
     </div>
     <main class="cell auto">
+      <script>
+      window.teiEditorConfig = window.teiEditorConfig || {};
+      window.teiEditorConfig.actions = {
+          initLoad: function() {
+              document.querySelector('#loading').classList.add('is-visible');
+              promise = new Promise(function(resolve, reject) {
+                  window.fetch('{{ url('editor:raw_tei', kwargs={'rid': repository.id, 'fid': fid}) }}').then(function(response) {
+                      response.text().then(function(data) {
+                          resolve(data);
+                          document.querySelector('#loading').classList.remove('is-visible');
+                      }).catch(function() {
+                          document.querySelector('#loading').classList.remove('is-visible');
+                      });
+                  }).catch(function() {
+                      document.querySelector('#loading').classList.remove('is-visible');
+                  });
+              });
+              return promise;
+          },
+          save: function(data) {
+              document.querySelector('#loading').classList.add('is-visible');
+              window.fetch('{{ url('editor:raw_tei', kwargs={'rid': repository.id, 'fid': fid}) }}', {
+                  method: 'PATCH',
+                  body: data,
+                  headers: {
+                      'X-CSRFToken': '{{ csrf_token }}',
+                      'X-Commit-Message': prompt('Change Description')
+                  }
+              }).then(function() {
+                  document.querySelector('#loading').classList.remove('is-visible');
+              }).catch(function() {
+                  document.querySelector('#loading').classList.remove('is-visible');
+              });
+          }
+      }
+      </script>
       <script src="{{ static('editor/js/tei-editor.js') }}"></script>
       <tei-editor></tei-editor>
     </main>

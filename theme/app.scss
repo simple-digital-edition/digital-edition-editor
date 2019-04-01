@@ -54,3 +54,111 @@ header.top-bar {
         border-radius: 10px;
     }
 }
+
+.tei-editor-prosemirror-sidebar {
+    background: $light-gray;
+    padding: $global-padding;
+}
+.tei-editor-prosemirror-editor {
+    padding: $global-padding;
+
+    .page-break {
+        font-size: 80%;
+        font-style: italic;
+
+        &::before {
+            content: '['
+        }
+        &::after {
+            content: ']'
+        }
+    }
+    .letter-sparse {
+        letter-spacing: 1.5pt;
+    }
+    .font-weight-bold {
+        font-weight: 700;
+    }
+    .font-style-italic {
+        font-style: italic;
+    }
+    .font-size-large {
+        font-size: 15pt;
+    }
+    .font-size-medium {
+        font-size: 13pt;
+    }
+    .font-size-small {
+        font-size: 10pt;
+    }
+    .font-size-very-small {
+        font-size: 8pt;
+    }
+    .foreign-language {
+        font-weight: 300;
+    }
+    .indent-big {
+        margin-left: 3rem;
+    }
+    .quote {
+        font-style: italic;
+    }
+    h1 {
+        font-size: 15pt;
+        font-weight: bold;
+        text-align: center;
+        margin: 0;
+    }
+    * + h1 {
+        padding-top: 3rem;
+    }
+    h1 + h1 {
+        padding-top: 0;
+    }
+    h2 {
+        font-size: 13pt;
+        font-weight: bold;
+        text-align: center;
+    }
+    * + h2 {
+        padding-top: 2rem;
+    }
+    h1 + h2 {
+        padding-top: 0;
+    }
+    h3 {
+        font-size: 12pt;
+        font-weight: bold;
+        text-align: center;
+    }
+    * + h3 {
+        padding-top: 1.5rem;
+    }
+    h2 + h3 {
+        padding-top: 0;
+    }
+    .content-heading {
+        font-size: 13pt;
+    }
+    h1 + .content-heading {
+        margin-top: 1.5rem;
+    }
+    p {
+        font-size: 11pt;
+        margin-bottom: 0;
+        margin-top: 1rem;
+
+        &.no-indent {
+            margin-top: 0;
+        }
+    }
+    h1 + p, h2 + p {
+        margin-top: 3rem !important;
+    }
+    a {
+        cursor: help;
+        color: inherit;
+        text-decoration: underline dotted;
+    }
+
+}
