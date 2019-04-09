@@ -10,7 +10,7 @@ from git import Repo
 from ..models import Repository
 
 
-@permission_required('editor.repository.can_read')
+@permission_required('editor.view_repository')
 def index(request):
     ctx = {
         'repositories': Repository.objects.all()
@@ -18,7 +18,7 @@ def index(request):
     return render(request, 'editor/index.jinja2', ctx)
 
 
-@permission_required('editor.repository.can_read')
+@permission_required('editor.view_repository')
 def repository(request, rid):
     repository = Repository.objects.get(pk=rid)
     base_path = os.path.join(repository.local_path, str(request.user.username))
@@ -53,7 +53,7 @@ def repository(request, rid):
                                                         'master_changes': master_changes})
 
 
-@permission_required('editor.repository.can_read')
+@permission_required('editor.change_repository')
 def pull_request(request, rid):
     if request.method == 'POST':
         repository = Repository.objects.get(pk=rid)
@@ -68,7 +68,7 @@ def pull_request(request, rid):
             return HttpResponse('', status=500)
 
 
-@permission_required('editor.repository.can_read')
+@permission_required('editor.change_repository')
 def local_merge(request, rid):
     if request.method == 'POST':
         repository = Repository.objects.get(pk=rid)

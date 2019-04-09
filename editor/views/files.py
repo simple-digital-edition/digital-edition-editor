@@ -10,7 +10,7 @@ from git import Repo, Actor
 from ..models import Repository
 
 
-@permission_required('editor.repository.can_read')
+@permission_required('editor.view_repository')
 def listing(request, rid):
     repository = Repository.objects.get(pk=rid)
     base_path = os.path.join(repository.local_path, str(request.user.username))
@@ -27,7 +27,7 @@ def listing(request, rid):
                                                    'files': tei_files})
 
 
-@permission_required('editor.repository.can_read')
+@permission_required('editor.change_repository')
 def edit(request, rid, fid):
     repository = Repository.objects.get(pk=rid)
     base_path = os.path.join(repository.local_path, str(request.user.username))
@@ -53,7 +53,7 @@ def edit(request, rid, fid):
                                                   'last_commit_msg': last_commit_msg})
 
 
-@permission_required('editor.repository.can_read')
+@permission_required('editor.change_repository')
 def raw_tei(request, rid, fid):
     repository = Repository.objects.get(pk=rid)
     base_path = os.path.join(repository.local_path, str(request.user.username))
