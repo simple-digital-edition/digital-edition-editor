@@ -12,7 +12,7 @@ export PIPENV_VENV_IN_PROJECT=True
 pipenv install
 
 # Update the static files
-pipenv run python manage.py collectstatic --settings digital_edition_editor.deploy_settings
+pipenv run python manage.py collectstatic --settings digital_edition_editor.deploy_settings --noinput
 
 # Run any optional server-restart commands
 if [ -f 'post-install' ]
