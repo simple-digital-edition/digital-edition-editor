@@ -12,6 +12,3 @@ django-widget-tweaks = "*"
 gitpython = "*"
 requests = "*"
 uwsgi = "*"
-
-[requires]
-python_version = "3.6"
