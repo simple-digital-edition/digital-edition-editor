@@ -15,3 +15,7 @@ pipenv install
 pipenv run python manage.py collectstatic --settings digital_edition_editor.deploy_settings
 
 # Run any optional server-restart commands
+if [ -f 'post-install' ]
+then
+    ./post-install
+fi
