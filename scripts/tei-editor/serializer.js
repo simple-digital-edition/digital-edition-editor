@@ -249,7 +249,7 @@
                         {
                             name: 'target',
                             selector: 'target',
-                            value: '${value}'
+                            value: '#${value}'
                         }
                     ]
                 }

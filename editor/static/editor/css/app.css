@@ -5459,6 +5459,9 @@ header.top-bar {
     margin-left: 3rem; }
   .tei-editor-prosemirror-editor .quote {
     font-style: italic; }
+  .tei-editor-prosemirror-editor .annotation {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted; }
   .tei-editor-prosemirror-editor h1 {
     font-size: 15pt;
     font-weight: bold;

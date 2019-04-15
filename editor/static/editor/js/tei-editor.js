@@ -155,6 +155,7 @@
                             attrs: {
                                 target: {
                                     selector: '@target',
+                                    strip_id: true
                                 }
                             }
                         }
@@ -777,7 +778,7 @@
                         {
                             name: 'target',
                             selector: 'target',
-                            value: '${value}'
+                            value: '#${value}'
                         }
                     ]
                 }
@@ -4189,7 +4190,7 @@ else for(var r=C.length-1;r>=0;r--)(i=C[r])&&(n=(V<3?i(n):V>3?i(e,t,n):i(e,t))||
 V>3&&n&&Object.defineProperty(e,t,n)})([R],GV.prototype,"status",void 0)
 function $V(C){return"tei"===C?"http://www.tei-c.org/ns/1.0":"xml"===C?"http://www.w3.org/XML/1998/namespace":"http://www.tei-c.org/ns/1.0"}class qV{constructor(C){this.dom=C}evaluate(C,e,t){return this.dom.evaluate(e,C,$V,t,null)}firstNode(C,e){return this.evaluate(C,e,XPathResult.FIRST_ORDERED_NODE_TYPE).singleNodeValue}nodeIterator(C,e){return this.evaluate(C,e,XPathResult.ORDERED_NODE_ITERATOR_TYPE)}stringValue(C,e){return this.evaluate(C,e,XPathResult.STRING_TYPE).stringValue}}class KV{constructor(C,e){let t=new DOMParser
 this.dom=t.parseFromString(C,"application/xml"),this.xpath=new qV(this.dom),this.parser=e}parseAttrs(C,e,t){for(let H in e){let i=e[H],V=this.xpath.stringValue(C,i.selector)
-null!==V&&(i.values?(V=V.split(" ")).forEach(C=>{void 0!==i.values[C]&&(t[H]=i.values[C])}):t[H]=V)}}parseMarks(C,e){let t=[]
+null!==V&&(i.values?(V=V.split(" ")).forEach(C=>{void 0!==i.values[C]&&(t[H]=i.values[C])}):i.strip_id?t[H]=V.substring(1):t[H]=V)}}parseMarks(C,e){let t=[]
 for(let H in e){let i=e[H]
 if(!0===i)t.push({type:H})
 else{let e=this.xpath.stringValue(C,i.selector)

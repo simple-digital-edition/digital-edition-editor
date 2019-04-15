@@ -107,6 +107,7 @@
                             attrs: {
                                 target: {
                                     selector: '@target',
+                                    strip_id: true
                                 }
                             }
                         }
