@@ -25,6 +25,10 @@
             padding-right: $global-padding;
         }
 
+        &[role="separator"] {
+            width: $global-padding;
+        }
+
         *[role="menuitem"] {
             cursor: pointer;
             height: 100%;

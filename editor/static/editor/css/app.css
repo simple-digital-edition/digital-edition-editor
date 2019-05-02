@@ -5363,6 +5363,8 @@ html.is-reveal-open {
       color: inherit; }
     *[role="menu"] li.separator {
       padding-right: 1rem; }
+    *[role="menu"] li[role="separator"] {
+      width: 1rem; }
     *[role="menu"] li *[role="menuitem"] {
       cursor: pointer;
       height: 100%; }
@@ -5429,78 +5431,89 @@ header.top-bar {
 .tei-editor-prosemirror-sidebar {
   background: #e6e6e6;
   padding: 1rem; }
+  .tei-editor-prosemirror-sidebar dd {
+    margin-bottom: 1rem; }
+
+#annotations .tei-editor-prosemirror-editor {
+  font-family: 'Merriweather Sans', Arial, serif; }
 
 .tei-editor-prosemirror-editor {
-  padding: 1rem; }
-  .tei-editor-prosemirror-editor .page-break {
+  padding: 1rem;
+  font-family: 'Merriweather', Georgia, serif; }
+  .tei-editor-prosemirror-editor .tei-editor-pageBegin {
     font-size: 80%;
     font-style: italic; }
-    .tei-editor-prosemirror-editor .page-break::before {
+    .tei-editor-prosemirror-editor .tei-editor-pageBegin::before {
       content: '['; }
-    .tei-editor-prosemirror-editor .page-break::after {
+    .tei-editor-prosemirror-editor .tei-editor-pageBegin::after {
       content: ']'; }
-  .tei-editor-prosemirror-editor .letter-sparse {
+  .tei-editor-prosemirror-editor .tei-editor-letterSparse {
     letter-spacing: 1.5pt; }
-  .tei-editor-prosemirror-editor .font-weight-bold {
+  .tei-editor-prosemirror-editor .tei-editor-fontWeightBold {
     font-weight: 700; }
-  .tei-editor-prosemirror-editor .font-style-italic {
+  .tei-editor-prosemirror-editor .tei-editor-fontStyleItalic {
     font-style: italic; }
-  .tei-editor-prosemirror-editor .font-size-large {
-    font-size: 15pt; }
-  .tei-editor-prosemirror-editor .font-size-medium {
-    font-size: 13pt; }
-  .tei-editor-prosemirror-editor .font-size-small {
+  .tei-editor-prosemirror-editor .tei-editor-fontSize[data-size="small"] {
     font-size: 10pt; }
-  .tei-editor-prosemirror-editor .font-size-very-small {
-    font-size: 8pt; }
-  .tei-editor-prosemirror-editor .foreign-language {
+  .tei-editor-prosemirror-editor .tei-editor-fontSize[data-size="medium"] {
+    font-size: 13pt; }
+  .tei-editor-prosemirror-editor .tei-editor-fontSize[data-size="large"] {
+    font-size: 15pt; }
+  .tei-editor-prosemirror-editor .tei-editor-foreignLanguage {
     font-weight: 300; }
-  .tei-editor-prosemirror-editor .indent-big {
-    margin-left: 3rem; }
-  .tei-editor-prosemirror-editor .quote {
+  .tei-editor-prosemirror-editor .tei-editor-sup {
+    font-size: 80%;
+    vertical-align: super; }
+  .tei-editor-prosemirror-editor .tei-editor-quotation {
     font-style: italic; }
-  .tei-editor-prosemirror-editor .annotation {
+  .tei-editor-prosemirror-editor .tei-editor-annotation {
     -webkit-text-decoration: underline dotted;
     text-decoration: underline dotted; }
-  .tei-editor-prosemirror-editor h1 {
+  .tei-editor-prosemirror-editor .tei-editor-heading[data-level="1"] {
     font-size: 15pt;
     font-weight: bold;
     text-align: center;
     margin: 0; }
-  .tei-editor-prosemirror-editor * + h1 {
+  .tei-editor-prosemirror-editor * + .tei-editor-heading[data-level="1"] {
     padding-top: 3rem; }
-  .tei-editor-prosemirror-editor h1 + h1 {
+  .tei-editor-prosemirror-editor .tei-editor-heading[data-level="1"] + .tei-editor-heading[data-level="1"] {
     padding-top: 0; }
-  .tei-editor-prosemirror-editor h2 {
+  .tei-editor-prosemirror-editor .tei-editor-heading[data-level="2"] {
     font-size: 13pt;
     font-weight: bold;
     text-align: center; }
-  .tei-editor-prosemirror-editor * + h2 {
+  .tei-editor-prosemirror-editor * + .tei-editor-heading[data-level="2"] {
     padding-top: 2rem; }
-  .tei-editor-prosemirror-editor h1 + h2 {
+  .tei-editor-prosemirror-editor .tei-editor-heading[data-level="2"] + .tei-editor-heading[data-level="2"] {
     padding-top: 0; }
-  .tei-editor-prosemirror-editor h3 {
+  .tei-editor-prosemirror-editor .tei-editor-heading[data-level="3"] {
     font-size: 12pt;
     font-weight: bold;
     text-align: center; }
-  .tei-editor-prosemirror-editor * + h3 {
+  .tei-editor-prosemirror-editor * + .tei-editor-heading[data-level="3"] {
     padding-top: 1.5rem; }
-  .tei-editor-prosemirror-editor h2 + h3 {
+  .tei-editor-prosemirror-editor .tei-editor-heading[data-level="2"] + .tei-editor-heading[data-level="3"] {
     padding-top: 0; }
-  .tei-editor-prosemirror-editor .content-heading {
-    font-size: 13pt; }
-  .tei-editor-prosemirror-editor h1 + .content-heading {
-    margin-top: 1.5rem; }
-  .tei-editor-prosemirror-editor p {
+  .tei-editor-prosemirror-editor .tei-editor-paragraph {
     font-size: 11pt;
     margin-bottom: 0;
     margin-top: 1rem; }
-    .tei-editor-prosemirror-editor p.no-indent {
+    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-noindent="true"] {
       margin-top: 0; }
-  .tei-editor-prosemirror-editor h1 + p, .tei-editor-prosemirror-editor h2 + p {
+    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="center"] {
+      text-align: center; }
+    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="right"] {
+      text-align: right; }
+    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="justify"] {
+      text-align: justify; }
+  .tei-editor-prosemirror-editor .tei-editor-heading[data-level="1"] + .tei-editor-paragraph, .tei-editor-prosemirror-editor .tei-editor-heading[data-level="2"] + .tei-editor-paragraph {
     margin-top: 3rem !important; }
-  .tei-editor-prosemirror-editor a {
-    cursor: help;
-    color: inherit;
-    -webkit-text-decoration: underline dotted;
-    text-decoration: underline dotted; }
+  .tei-editor-prosemirror-editor .tei-editor-lineGroup {
+    margin-top: 1rem;
+    margin-left: 2rem; }
+  .tei-editor-prosemirror-editor .tei-editor-line {
+    font-size: 11pt; }
+  .tei-editor-prosemirror-editor .tei-editor-pageLineRef {
+    font-weight: bold; }
+  .tei-editor-prosemirror-editor .tei-editor-wordRange {
+    padding-left: 1rem; }

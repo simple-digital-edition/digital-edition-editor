@@ -19,7 +19,7 @@
   flex: 1 1 0px;
   overflow: hidden;
 }
-.tei-editor #tei-editor-main-text {
+.tei-editor .tei-editor-view-single-text {
   display: flex;
   flex-flow: row nowrap;
   overflow-y: auto;
@@ -27,8 +27,9 @@
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+  height: 100%;
 }
-.tei-editor #tei-editor-main-text > div:nth-child(1) {
+.tei-editor .tei-editor-view-single-text > div:nth-child(1) {
   flex: 0 0 auto;
   min-height: 0px;
   min-width: 0px;
@@ -38,8 +39,9 @@
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+  height: 100%;
 }
-.tei-editor #tei-editor-main-text > div:nth-child(2) {
+.tei-editor .tei-editor-view-single-text > div:nth-child(2) {
   flex: 0 0 auto;
   min-height: 0px;
   min-width: 0px;
@@ -49,115 +51,77 @@
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+  height: 100%;
 }
-.tei-editor #tei-editor-global-annotations {
+.tei-editor .tei-editor-view-multi-text {
   display: flex;
-  flex-flow: row nowrap;
-  overflow-y: auto;
-  max-height: 100%;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
+  flex-flow: column nowrap;
+  overflow: hidden;
+  height: 100%;
 }
-.tei-editor #tei-editor-global-annotations > div:nth-child(1) {
-  flex: 0 0 auto;
-  min-height: 0px;
-  min-width: 0px;
-  width: 66.6666666667%;
-  overflow-y: auto;
-  max-height: 100%;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-.tei-editor #tei-editor-global-annotations > div:nth-child(2) {
-  flex: 0 0 auto;
-  min-height: 0px;
-  min-width: 0px;
-  width: 33.3333333333%;
-  overflow-y: auto;
-  max-height: 100%;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-.tei-editor #tei-editor-individual-annotations {
-  display: flex;
-  flex-flow: column wrap;
-  overflow-y: auto;
-  max-height: 100%;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-.tei-editor #tei-editor-individual-annotations > div:nth-child(1) {
+.tei-editor .tei-editor-view-multi-text > nav {
   flex: 0 0 auto;
 }
-.tei-editor #tei-editor-individual-annotations > div:nth-child(2) {
+.tei-editor .tei-editor-view-multi-text > div {
   flex: 1 1 0px;
   display: flex;
   flex-flow: row nowrap;
+  overflow: hidden;
 }
-.tei-editor #tei-editor-individual-annotations > div:nth-child(2) > div:nth-child(1) {
+.tei-editor .tei-editor-view-multi-text > div > div:nth-child(1) {
+  flex: 0 0 auto;
+  min-height: 0px;
+  min-width: 0px;
   width: 66.6666666667%;
   overflow-y: auto;
   max-height: 100%;
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+  height: 100%;
 }
-.tei-editor #tei-editor-individual-annotations > div:nth-child(2) > div:nth-child(2) {
+.tei-editor .tei-editor-view-multi-text > div > div:nth-child(2) {
+  flex: 0 0 auto;
+  min-height: 0px;
+  min-width: 0px;
   width: 33.3333333333%;
   overflow-y: auto;
   max-height: 100%;
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+  height: 100%;
 }
-.tei-editor #tei-editor-metadata {
+.tei-editor .tei-editor-view-header {
   overflow-y: auto;
   max-height: 100%;
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
-.tei-editor #tei-editor-metadata > dl {
+.tei-editor .tei-editor-view-header > dl {
   padding: 1rem;
 }
-.tei-editor #tei-editor-metadata > dl ul li {
+.tei-editor .tei-editor-view-header > dl ul li {
   list-style-type: none;
 }
-.tei-editor #tei-editor-metadata > dl ul li.tei-editor-metadata-single {
+.tei-editor .tei-editor-view-header > dl ul li.tei-editor-metadata-single {
   max-width: 43rem;
 }
-.tei-editor #tei-editor-metadata > dl ul li.tei-editor-metadata-multiple > div {
+.tei-editor .tei-editor-view-header > dl ul li.tei-editor-metadata-multiple > div {
   display: flex;
   flex-flow: row nowrap;
 }
-.tei-editor #tei-editor-metadata > dl ul li.tei-editor-metadata-multiple > div div {
+.tei-editor .tei-editor-view-header > dl ul li.tei-editor-metadata-multiple > div div {
   flex: 0 0 auto;
   min-height: 0px;
   min-width: 0px;
   flex: 1 1 0px;
   width: auto;
 }
-.tei-editor #tei-editor-metadata > dl ul li.tei-editor-metadata-multiple > div nav {
+.tei-editor .tei-editor-view-header > dl ul li.tei-editor-metadata-multiple > div nav {
   align-self: flex-end;
   padding-bottom: 0.5rem;
-}
-.tei-editor .tei-editor-prosemirror-editor {
-  overflow-y: auto;
-  max-height: 100%;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-.tei-editor .tei-editor-prosemirror-sidebar {
-  overflow-y: auto;
-  max-height: 100%;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
 /*
