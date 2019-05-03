@@ -5395,6 +5395,12 @@ header.top-bar {
   padding-bottom: 0;
   border-bottom: 1px solid #cacaca; }
 
+.margin-top {
+  margin-top: 1rem; }
+
+.margin-bottom {
+  margin-bottom: 1rem; }
+
 .tei-editor-menubar > [role="menu"] {
   border-bottom: 1px solid #cacaca; }
   .tei-editor-menubar > [role="menu"] [role="menu"] {

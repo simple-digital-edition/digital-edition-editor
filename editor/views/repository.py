@@ -22,29 +22,52 @@ def index(request):
 def repository(request, rid):
     repository = Repository.objects.get(pk=rid)
     base_path = os.path.join(repository.local_path, str(request.user.username))
+    errors = []
     # Clone or load the repository
     if not os.path.exists(base_path):
         repo = Repo.clone_from(repository.url, base_path)
         # Ensure local and remote user branch exist
-        if request.user.username in repo.remotes.origin.refs:
-            branch = repo.create_head(request.user.username)
-            branch.set_tracking_branch(repo.remotes.origin.refs[request.user.username])
-            branch.checkout()
-        else:
-            branch = repo.create_head(request.user.username)
-            branch.checkout()
+        try:
+            if request.user.username in repo.remotes.origin.refs:
+                branch = repo.create_head(request.user.username)
+                branch.set_tracking_branch(repo.remotes.origin.refs[request.user.username])
+                branch.checkout()
+            else:
+                branch = repo.create_head(request.user.username)
+                branch.checkout()
+        except:
+            errors.append({'msg': 'Unfortunately fetching the latest version of the content from the server failed. ' +
+                                  'You should refrain from making changes until this error has been resolved by an ' +
+                                  'administrator. If this error message does not go away, please contact an ' +
+                                  'administrator',
+                           'level': 'alert'})
         try:
             repo.git.push('--set-upstream', 'origin', request.user.username)
         except:
-            pass
+            errors.append({'msg': 'Your local changes could not be synchronised with the server. This may simply be ' +
+                                  'because there are changes on the server that need to be merged first. Click the ' +
+                                  'merge button below and then your changes should be synchronised to the server as ' +
+                                  'well. If this warning message does not go away, please contact an administrator.',
+                           'level': 'warning'})
     else:
         repo = Repo(base_path)
         # Fetch remote change information
-        repo.remotes.origin.fetch()
+        try:
+            repo.remotes.origin.fetch()
+        except:
+            errors.append({'msg': 'Unfortunately fetching the latest version of the content from the server failed. ' +
+                                  'You should refrain from making changes until this error has been resolved by an ' +
+                                  'administrator. If this error message does not go away, please contact an ' +
+                                  'administrator',
+                           'level': 'alert'})
         try:
             repo.git.push('--set-upstream', 'origin', request.user.username)
         except:
-            pass
+            errors.append({'msg': 'Your local changes could not be synchronised with the server. This may simply be ' +
+                                  'because there are changes on the server that need to be merged first. Click the ' +
+                                  'merge button below and then your changes should be synchronised to the server as ' +
+                                  'well. If this warning message does not go away, please contact an administrator.',
+                           'level': 'warning'})
     # Identify the changes
     remote_changes = [{'message': commit.message,
                        'author': commit.author.name,
@@ -56,7 +79,8 @@ def repository(request, rid):
                       for commit in repo.iter_commits('%s..master@{u}' % request.user.username)]
     return render(request, 'editor/repository.jinja2', {'repository': repository,
                                                         'remote_changes': remote_changes,
-                                                        'master_changes': master_changes})
+                                                        'master_changes': master_changes,
+                                                        'errors': errors})
 
 
 @permission_required('editor.change_repository')

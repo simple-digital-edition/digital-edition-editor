@@ -8,6 +8,17 @@
 {% endblock menubar %}
 
 {% block content %}
+  {% if errors %}
+  <div class="grid-container margin-top margin-bottom">
+    <div class="grid-x">
+      <div class="cell small-12 medium-10 medium-offset-1 large-8 large-offset-2">
+        {% for error in errors %}
+          <div class="callout {{error.level}}">{{error.msg}}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
   <div class="grid-x grid-padding-x">
     <div class="cell small-12">
       <h1>{{ repository.title }}</h1>

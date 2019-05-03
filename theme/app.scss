@@ -17,6 +17,13 @@ header.top-bar {
     border-bottom: 1px solid $medium-gray;
 }
 
+.margin-top {
+    margin-top: $global-margin;
+}
+.margin-bottom {
+    margin-bottom: $global-margin;
+}
+
 .tei-editor-menubar > [role="menu"] {
     border-bottom: 1px solid $medium-gray;
 
