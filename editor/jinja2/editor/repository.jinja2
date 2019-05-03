@@ -14,7 +14,7 @@
       {% if not remote_changes and not master_changes %}
         <p>There are no outstanding changes. <a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}">Select a file to edit</a>.</p>
       {% endif %}
-      {% if remote_changes %}
+      {% if remote_changes and not master_changes %}
         <h2>Changes that have not yet been integrated</h2>
         <ul class="no-bullet">
           {% for change in remote_changes %}

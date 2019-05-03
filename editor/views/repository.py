@@ -33,12 +33,18 @@ def repository(request, rid):
         else:
             branch = repo.create_head(request.user.username)
             branch.checkout()
-        repo.git.push('--set-upstream', 'origin', request.user.username)
+        try:
+            repo.git.push('--set-upstream', 'origin', request.user.username)
+        except:
+            pass
     else:
         repo = Repo(base_path)
         # Fetch remote change information
         repo.remotes.origin.fetch()
-        repo.git.push('--set-upstream', 'origin', request.user.username)
+        try:
+            repo.git.push('--set-upstream', 'origin', request.user.username)
+        except:
+            pass
     # Identify the changes
     remote_changes = [{'message': commit.message,
                        'author': commit.author.name,
