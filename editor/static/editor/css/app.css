@@ -5390,6 +5390,13 @@ html.is-reveal-open {
   width: 18px;
   height: 18px; }
 
+svg.mdi-icon {
+  height: 24px;
+  width: 24px; }
+
+.help aside dd {
+  margin-bottom: 1rem; }
+
 header.top-bar {
   padding-top: 0;
   padding-bottom: 0;
@@ -5400,6 +5407,9 @@ header.top-bar {
 
 .margin-bottom {
   margin-bottom: 1rem; }
+
+.margin-right {
+  margin-right: 1rem; }
 
 .tei-editor-menubar > [role="menu"] {
   border-bottom: 1px solid #cacaca; }

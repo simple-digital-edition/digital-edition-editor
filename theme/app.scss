@@ -11,6 +11,17 @@
     height: 18px;
 }
 
+svg.mdi-icon {
+    height: 24px;
+    width: 24px;
+}
+
+.help aside {
+    dd {
+        margin-bottom: $global-margin;
+    }
+}
+
 header.top-bar {
     padding-top: 0;
     padding-bottom: 0;
@@ -22,6 +33,9 @@ header.top-bar {
 }
 .margin-bottom {
     margin-bottom: $global-margin;
+}
+.margin-right {
+    margin-right: $global-margin;
 }
 
 .tei-editor-menubar > [role="menu"] {

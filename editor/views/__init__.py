@@ -1,1 +1,1 @@
-from . import repository, files  # no-qa
+from . import repository, files, help  # no-qa

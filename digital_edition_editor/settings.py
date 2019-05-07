@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import re
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -128,3 +129,32 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Version information
+VERSION = None
+HISTORY = []
+_icon_mappings = {'new': 'new-box',
+                  'update': 'alert-decagram',
+                  'bugfix': 'bug'}
+with open('CHANGES.md') as in_f:
+    last_version = None
+    last_date = None
+    changes = []
+    for line in in_f:
+        match = re.match('## ([0-9]+\\.[0-9]+\\.[0-9]+) \\(([0-9]{2}\\.[0-9]{2}\\.[0-9]{4})\\)', line.strip())
+        if match and last_version != match.group(1):
+            if len(changes) > 0:
+                HISTORY.append((last_version, last_date, tuple(changes)))
+                changes = []
+            last_version = match.group(1)
+            last_date = match.group(2)
+        else:
+            match = re.match('\\* \\*\\*([a-zA-Z]+):\*\*\s((?:\w|\s|[-,.:;"])+)', line.strip())
+            if match:
+                changes.append((match.group(1).lower(), _icon_mappings[match.group(1).lower()], match.group(2)))
+    if last_version and len(changes) > 0:
+        HISTORY.append((last_version, last_date, tuple(changes)))
+HISTORY = tuple(HISTORY)
+if HISTORY:
+    VERSION = HISTORY[0][0]
