@@ -10,19 +10,49 @@ from git import Repo, Actor
 from ..models import Repository
 
 
+def list_to_tree(lst, hash):
+    if lst:
+        if len(lst) == 1:
+            return {
+                'label': lst[0],
+                'id': hash
+            }
+        else:
+            return {
+                'label': lst[0],
+                'children': [list_to_tree(lst[1:], hash)]
+            }
+    else:
+        return None
+
+
+def merge_trees(base, merge):
+    found = False
+    for node in base['children']:
+        if node['label'] == merge['label']:
+            merge_trees(node, merge['children'][0])
+            found = True
+            break
+    if not found:
+        base['children'].append(merge)
+
+
 @permission_required('editor.view_repository')
 def listing(request, rid):
     repository = Repository.objects.get(pk=rid)
     base_path = os.path.join(repository.local_path, str(request.user.username))
     repo = Repo(base_path)
-    tei_files = {}
+    tei_files = {
+        'label': None,
+        'children': []
+    }
     for path, _, filenames in os.walk(base_path):
         for filename in filenames:
             if path[len(base_path) + 1:].startswith('content') and filename.endswith('.tei'):
                 filename = os.path.join(path[len(base_path) + 1:], filename)
                 hash = hashlib.sha256()
                 hash.update(filename.encode('utf-8'))
-                tei_files[hash.hexdigest()] = filename
+                merge_trees(tei_files, list_to_tree(filename.split(os.path.sep), hash.hexdigest()))
     return render(request, 'editor/files.jinja2', {'repository': repository,
                                                    'files': tei_files})
 

@@ -46,6 +46,18 @@ header.top-bar {
     }
 }
 
+ul.tree {
+    margin: 0;
+
+    li {
+        list-style-type: none;
+
+        ul {
+            margin-left: $global-margin;
+        }
+    }
+}
+
 #loading {
     z-index: -10;
     position: fixed;

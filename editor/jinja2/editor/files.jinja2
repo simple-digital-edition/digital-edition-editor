@@ -1,6 +1,22 @@
 {% extends 'base.jinja2' %}
 {% import 'macros/icons.jinja2' as icons %}
 
+{% macro file_tree(node) %}
+  {% if node['label'] %}
+    <li>{% if 'id' in node %}<a href="{{ url('editor:edit', kwargs={'rid': repository.id, 'fid': node['id']}) }}">{{ node['label'] }}</a>{% else %}{{ node['label'] }}{% endif %}
+  {% endif %}
+  {% if node['children'] %}
+    <ul class="tree">
+      {% for child in node['children']|sort(attribute='label') %}
+        {{ file_tree(child) }}
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% if node['label'] %}
+    </li>
+  {% endif %}
+{% endmacro %}
+
 {% block menubar %}
   <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="Repositories">{{ icons.icon('server-network') }}</a></li>
   <li role="presentation"><a href="{{ url('editor:repository', kwargs={'rid': repository.id}) }}" role="menuitem">{{ repository.title }}</a></li>
@@ -8,14 +24,13 @@
 {% endblock menubar %}
 
 {% block content %}
-  <div class="grid-x grid-padding-x">
-    <div class="cell small-12">
-      <h1>Files in {{ repository.title }}</h1>
-      <ul class="no-bullet">
-        {% for hash, filename in files.items() %}
-          <li><a href="{{ url('editor:edit', kwargs={'rid': repository.id, 'fid': hash}) }}">{{ filename }}</a></li>
-        {% endfor %}
-      </ul>
+  <div class="grid-container">
+    <div class="grid-x grid-padding-x">
+      <div class="cell small-12">
+        <h1>Files</h1>
+        <p>The following files are available for editing:</p>
+        {{ file_tree(files) }}
+      </div>
     </div>
   </div>
 {% endblock content %}
