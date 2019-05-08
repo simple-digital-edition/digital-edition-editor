@@ -4,51 +4,62 @@
 {% block menubar %}
   <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="Repositories">{{ icons.icon('server-network') }}</a></li>
   <li role="presentation"><a href="{{ url('editor:repository', kwargs={'rid': repository.id}) }}" role="menuitem" aria-current="true">{{ repository.title }}</a></li>
-  <li role="presentation"><a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}" role="menuitem" aria-label="Files for the {{ repository.title }} repository" >{{ icons.icon('file-multiple') }}</a></li>
+  {% if not master_changes %}
+    <li role="presentation"><a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}" role="menuitem" aria-label="Files for the {{ repository.title }} repository" >{{ icons.icon('file-multiple') }}</a></li>
+  {% endif %}
 {% endblock menubar %}
 
 {% block content %}
-  {% if errors %}
   <div class="grid-container margin-top margin-bottom">
-    <div class="grid-x">
-      <div class="cell small-12 medium-10 medium-offset-1 large-8 large-offset-2">
-        {% for error in errors %}
-          <div class="callout {{error.level}}">{{error.msg}}</div>
-        {% endfor %}
+    <div class="grid-x grid-padding-x">
+      <div class="cell small-12">
+        <h1>{{ repository.title }}</h1>
       </div>
     </div>
-  </div>
-  {% endif %}
-  <div class="grid-x grid-padding-x">
-    <div class="cell small-12">
-      <h1>{{ repository.title }}</h1>
-      {% if not remote_changes and not master_changes %}
-        <p>There are no outstanding changes. <a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}">Select a file to edit</a>.</p>
-      {% endif %}
-      {% if remote_changes and not master_changes %}
-        <h2>Changes that have not yet been integrated</h2>
-        <ul class="no-bullet">
-          {% for change in remote_changes %}
-            <li>
-              <h3>{{ change.message }}</h3>
-              <p>{{ change.author }} - {{ change.datetime}}</p>
-            </li>
+    {% if errors %}
+      <div class="grid-x">
+        <div class="cell small-12 medium-10 medium-offset-1 large-8 large-offset-2">
+          {% for error in errors %}
+            <div class="callout {{error.level}}">{{error.msg}}</div>
           {% endfor %}
-        </ul>
-        <button class="button" data-action="integration">Request integration</button>
-      {% endif %}
-      {% if master_changes %}
-        <h2>Other Changes</h2>
-        <ul class="no-bullet">
-          {% for change in master_changes %}
-            <li>
-              <h3>{{ change.message }}</h3>
-              <p>{{ change.author }} - {{ change.datetime}}</p>
-            </li>
-          {% endfor %}
-        </ul>
-        <button class="button" data-action="merge">Merge changes</button>
-      {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    <div class="grid-x grid-padding-x">
+      <div class="cell small-12">
+        {% if not master_changes %}
+          <p>All master copy changes have been merged into your copy. You can
+            <a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}">select a file to edit</a>.</p>
+        {% endif %}
+        {% if remote_changes and not master_changes %}
+          <p>The following changes have been made in your copy of the {{ repository.title }}, but have not yet been
+            integrated into the master copy. When you feel you have completed a cohesive block of changes, then
+            you can request the integration into the master copy.</p>
+          <ul class="no-bullet">
+            {% for change in remote_changes %}
+              <li>
+                <h3>{{ change.message }}</h3>
+                <p>{{ change.author }} - {{ change.datetime}}</p>
+              </li>
+            {% endfor %}
+          </ul>
+          <button class="button" data-action="integration">Request integration</button>
+        {% endif %}
+        {% if master_changes %}
+          <p>The following changes have been made in the master copy of the {{ repository.title }}, but not in your
+            own copy. You need to merge these changes into your own copy, before you can continue editing the
+            {{ repository.title }}.</p>
+          <ul class="no-bullet">
+            {% for change in master_changes %}
+              <li>
+                <h3>{{ change.message }}</h3>
+                <p>{{ change.author }} - {{ change.datetime}}</p>
+              </li>
+            {% endfor %}
+          </ul>
+          <button class="button" data-action="merge">Merge all changes</button>
+        {% endif %}
+      </div>
     </div>
   </div>
 {% endblock content %}
@@ -112,9 +123,12 @@ if (merge_btn) {
         }).then(function(resp) {
             if (resp.status === 200) {
                 merge_running = false;
-                merge_btn.innerHTML = 'Merge completed';
+                merge_btn.innerHTML = 'Merge completed. The page will reload automatically.';
                 merge_btn.classList.add('success');
                 merge_btn.classList.remove('secondary');
+                setTimeout(function() {
+                    window.location.reload(true);
+                }, 3000);
             } else {
                 merge_running = false;
                 merge_btn.innerHTML = 'Merge failed';

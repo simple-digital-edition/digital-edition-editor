@@ -63,11 +63,11 @@ def repository(request, rid):
         try:
             repo.git.push('--set-upstream', 'origin', request.user.username)
         except:
-            errors.append({'msg': 'Your local changes could not be synchronised with the server. This may simply be ' +
-                                  'because there are changes on the server that need to be merged first. Click the ' +
-                                  'merge button below and then your changes should be synchronised to the server as ' +
-                                  'well. If this warning message does not go away, please contact an administrator.',
-                           'level': 'warning'})
+            if len(list(repo.iter_commits('%s..master@{u}' % request.user.username))) == 0:
+                errors.append({'msg': 'Your local changes could not be synchronised with the server. This is most ' +
+                                      'likely due to a network error. If this warning message does not go away, ' +
+                                      'please contact an administrator.',
+                               'level': 'alert'})
     # Identify the changes
     remote_changes = [{'message': commit.message,
                        'author': commit.author.name,
