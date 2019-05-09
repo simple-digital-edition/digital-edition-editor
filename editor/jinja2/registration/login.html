@@ -5,19 +5,19 @@
   <form action="{{ url('login') }}" method="post" class="cell small-12 medium-6 large-4 medium-offset-3 large-offset-4">
     {{ csrf_input }}
     {% if next %}<input type="hidden" name="next" value="{{ next }}"/>{% endif %}
-    <h1>Login</h1>
+    <h1>{% trans %}Login{% endtrans %}</h1>
     {% if form.errors %}
       <div>
         <label class="is-invalid-label">{{ form.username.label }}
           {{ form.username|add_class('is-invalid-input') }}
         </label>
-        <span class="form-error is-visible">This user is unknown or you got the password wrong.</span>
+        <span class="form-error is-visible">{% trans %}This user is unknown or you got the password wrong.{% endtrans %}</span>
       </div>
       <div>
         <label class="is-invalid-label">{{ form.password.label }}
           {{ form.password|add_class('is-invalid-input') }}
         </label>
-        <span class="form-error is-visible">This user is unknown or you got the password wrong.</span>
+        <span class="form-error is-visible">{% trans %}This user is unknown or you got the password wrong.{% endtrans %}</span>
       </div>
     {% else %}
       <div>
@@ -32,8 +32,8 @@
       </div>
     {% endif %}
     <div class="text-right">
-      <a href="{{ url('password_reset') }}" class="button secondary">Reset your password</a>
-      <button class="button">Login</button>
+      <a href="{{ url('password_reset') }}" class="button secondary">{% trans %}Reset your password{% endtrans %}</a>
+      <button class="button">{% trans %}Login{% endtrans %}</button>
     </div>
   </form>
 </div>

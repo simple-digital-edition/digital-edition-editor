@@ -1,0 +1,49 @@
+# Translations template for PROJECT.
+# Copyright (C) 2019 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2019-05-09 21:08+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: editor/jinja2/base.jinja2:19
+msgid "Help"
+msgstr ""
+
+#: editor/jinja2/base.jinja2:21
+msgid "Logout"
+msgstr ""
+
+#: editor/jinja2/base.jinja2:23 editor/jinja2/registration/login.html:8
+#: editor/jinja2/registration/login.html:36
+msgid "Login"
+msgstr ""
+
+#: editor/jinja2/editor/index.jinja2:5 editor/jinja2/editor/index.jinja2:12
+msgid "Editions"
+msgstr ""
+
+#: editor/jinja2/editor/index.jinja2:13
+msgid "The following editions are available for you to work on:"
+msgstr ""
+
+#: editor/jinja2/registration/login.html:14
+#: editor/jinja2/registration/login.html:20
+msgid "This user is unknown or you got the password wrong."
+msgstr ""
+
+#: editor/jinja2/registration/login.html:35
+msgid "Reset your password"
+msgstr ""
+
