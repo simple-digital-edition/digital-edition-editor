@@ -1,25 +1,27 @@
 {% extends 'base.jinja2' %}
 {% import 'macros/icons.jinja2' as icons %}
 
+{% block title %}{% trans %}Help{% endtrans %}{% endblock title %}
+
 {% block menubar %}
-  <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="Repositories">{{ icons.icon('server-network') }}</a></li>
+  <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="{% trans %}Editions{% endtrans %}">{{ icons.icon('server-network') }}</a></li>
 {% endblock menubar %}
 
 {% block content %}
   <div class="grid-container help">
     <div class="grid-x grid-padding-x">
       <div class="cell small-12 medium-8 large-9">
-        <h1>Help</h1>
+        <h1>{% trans %}Help{% endtrans %}</h1>
       </div>
       <aside class="cell small-12 medium-4 large-3 margin-top">
         <div class="callout secondary">
-          <h2>About</h2>
+          <h2>{% trans %}About{% endtrans %}</h2>
           <dl>
-            <dt>Version</dt>
+            <dt>{% trans %}Version{% endtrans %}</dt>
             <dd>{{ history[0][0] }}</dd>
-            <dt>Released</dt>
+            <dt>{% trans %}Released{% endtrans %}</dt>
             <dd>{{ history[0][1] }}</dd>
-            <dt>Changes</dt>
+            <dt>{% trans %}Changes{% endtrans %}</dt>
             <dd>
               <ul class="no-bullet no-indent">
                 {% for change in history[0][2] %}
@@ -30,7 +32,7 @@
                 {% endfor %}
                 <li class="grid-x">
                   <div class="cell shrink">{{ icons.icon('dots-horizontal', {'class': 'mdi-icon margin-right'}) }}</div>
-                  <div class="cell auto"><a href="{{ url('editor:changelog') }}">Full Changelog</a></div>
+                  <div class="cell auto"><a href="{{ url('editor:changelog') }}">{% trans %}Full Changelog{% endtrans %}</a></div>
                 </li>
               </ul>
             </dd>

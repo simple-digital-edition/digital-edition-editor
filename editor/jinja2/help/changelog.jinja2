@@ -1,15 +1,17 @@
 {% extends 'base.jinja2' %}
 {% import 'macros/icons.jinja2' as icons %}
 
+{% block title %}{% trans %}Changelog{% endtrans %}{% endblock %}
+
 {% block menubar %}
-  <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="Repositories">{{ icons.icon('server-network') }}</a></li>
+  <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="{% trans %}Editions{% endtrans %}">{{ icons.icon('server-network') }}</a></li>
 {% endblock menubar %}
 
 {% block content %}
   <div class="grid-container help">
     <div class="grid-x grid-padding-x">
       <div class="cell small-12">
-        <h1>Changelog</h1>
+        <h1>{% trans %}Changelog{% endtrans %}</h1>
         {% for version, date, changes in history %}
           <section>
             <h2>{{ version }} <small>{{ date }}</small></h2>

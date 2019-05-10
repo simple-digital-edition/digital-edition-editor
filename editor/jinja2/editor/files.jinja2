@@ -18,17 +18,17 @@
 {% endmacro %}
 
 {% block menubar %}
-  <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="Repositories">{{ icons.icon('server-network') }}</a></li>
+  <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="{% trans %}Editions{% endtrans %}">{{ icons.icon('server-network') }}</a></li>
   <li role="presentation"><a href="{{ url('editor:repository', kwargs={'rid': repository.id}) }}" role="menuitem">{{ repository.title }}</a></li>
-  <li role="presentation"><a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}" role="menuitem" aria-current="true" aria-label="Files for the {{ repository.title }} repository" >{{ icons.icon('file-multiple') }}</a></li>
+  <li role="presentation"><a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}" role="menuitem" aria-label="{% trans title=repository.title %}Files for the {{ title }} edition{% endtrans %}" aria-current="true">{{ icons.icon('file-multiple') }}</a></li>
 {% endblock menubar %}
 
 {% block content %}
   <div class="grid-container">
     <div class="grid-x grid-padding-x">
       <div class="cell small-12">
-        <h1>Files</h1>
-        <p>The following files are available for editing:</p>
+        <h1>{% trans %}Files{% endtrans %}</h1>
+        <p>{% trans %}The following files are available for editing:{% endtrans %}</p>
         {{ file_tree(files) }}
       </div>
     </div>

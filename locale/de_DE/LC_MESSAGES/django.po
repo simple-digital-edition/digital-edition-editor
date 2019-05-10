@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-05-09 21:08+0200\n"
+"POT-Creation-Date: 2019-05-10 05:18+0200\n"
 "PO-Revision-Date: 2019-05-09 20:48+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de_DE\n"
@@ -18,33 +18,131 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
 
-#: editor/jinja2/base.jinja2:19
+#: editor/jinja2/base.jinja2:19 editor/jinja2/editor/edit.jinja2:25
+#: editor/jinja2/help/index.jinja2:4 editor/jinja2/help/index.jinja2:14
 msgid "Help"
 msgstr "Hilfe"
 
-#: editor/jinja2/base.jinja2:21
+#: editor/jinja2/base.jinja2:21 editor/jinja2/editor/edit.jinja2:27
 msgid "Logout"
 msgstr "Ausloggen"
 
-#: editor/jinja2/base.jinja2:23 editor/jinja2/registration/login.html:8
-#: editor/jinja2/registration/login.html:36
+#: editor/jinja2/base.jinja2:23 editor/jinja2/editor/edit.jinja2:29
 msgid "Login"
 msgstr "Einloggen"
 
+#: editor/jinja2/editor/edit.jinja2:17 editor/jinja2/editor/files.jinja2:21
 #: editor/jinja2/editor/index.jinja2:5 editor/jinja2/editor/index.jinja2:12
+#: editor/jinja2/editor/repository.jinja2:7
+#: editor/jinja2/help/changelog.jinja2:7 editor/jinja2/help/index.jinja2:7
 msgid "Editions"
 msgstr "Editionen"
+
+#: editor/jinja2/editor/edit.jinja2:19 editor/jinja2/editor/files.jinja2:23
+#: editor/jinja2/editor/repository.jinja2:10
+#, python-format
+msgid "Files for the %(title)s edition"
+msgstr "Dateien für die %(title)s Edition"
+
+#: editor/jinja2/editor/files.jinja2:30
+msgid "Files"
+msgstr "Dateien"
+
+#: editor/jinja2/editor/files.jinja2:31
+msgid "The following files are available for editing:"
+msgstr "Die folgenden Dateien können bearbeitet werden:"
 
 #: editor/jinja2/editor/index.jinja2:13
 msgid "The following editions are available for you to work on:"
 msgstr "Die folgenden Editionen können bearbeitet werden:"
 
-#: editor/jinja2/registration/login.html:14
-#: editor/jinja2/registration/login.html:20
-msgid "This user is unknown or you got the password wrong."
-msgstr "Dieser Nutzer existiert nicht oder das Passwort ist inkorrekt."
+#: editor/jinja2/editor/repository.jinja2:33
+msgid "All master copy changes have been merged into your copy."
+msgstr "Alle Änderungen in der primären Kopie wurden in ihre Kopie integriert."
 
-#: editor/jinja2/registration/login.html:35
-msgid "Reset your password"
-msgstr "Passwort zurücksetzen"
+#: editor/jinja2/editor/repository.jinja2:34
+msgid "You can select a file to edit"
+msgstr "Wählen sie die Datei aus, die sie bearbeiten wollen"
 
+#: editor/jinja2/editor/repository.jinja2:37
+#, python-format
+msgid "Unintegrated changes in %(title)s"
+msgstr "Änderungen in %(title)s die noch integriert werden müssen"
+
+#: editor/jinja2/editor/repository.jinja2:46
+msgid "Request integration"
+msgstr "Integration beantragen"
+
+#: editor/jinja2/editor/repository.jinja2:49
+#, python-format
+msgid "Master changes in %(title)s that need integration."
+msgstr "Änderungen in der primären Kopie, welche integriert werden müssen"
+
+#: editor/jinja2/editor/repository.jinja2:58
+msgid "Merge all changes"
+msgstr "Alle Änderungen integrieren"
+
+#: editor/jinja2/editor/repository.jinja2:87
+msgid "Request sent"
+msgstr "Anfrage erfolgreich gesandt"
+
+#: editor/jinja2/editor/repository.jinja2:92
+#: editor/jinja2/editor/repository.jinja2:98
+msgid "Request failed"
+msgstr "Anfrage fehlgeschlagen"
+
+#: editor/jinja2/editor/repository.jinja2:112
+msgid "Merge running"
+msgstr "Integration läuft..."
+
+#: editor/jinja2/editor/repository.jinja2:124
+msgid "Merge completed. The page will reload automatically."
+msgstr "Integration erfolgreich. Die Seite wird automatisch aktualisiert"
+
+#: editor/jinja2/editor/repository.jinja2:132
+#: editor/jinja2/editor/repository.jinja2:138
+msgid "Merge failed"
+msgstr "Integration fehlgeschlagen"
+
+#: editor/jinja2/help/changelog.jinja2:4 editor/jinja2/help/changelog.jinja2:14
+msgid "Changelog"
+msgstr "Änderungshistorie"
+
+#: editor/jinja2/help/index.jinja2:18
+msgid "About"
+msgstr "Über die Anwendung"
+
+#: editor/jinja2/help/index.jinja2:20
+msgid "Version"
+msgstr "Version"
+
+#: editor/jinja2/help/index.jinja2:22
+msgid "Released"
+msgstr "Datum"
+
+#: editor/jinja2/help/index.jinja2:24
+msgid "Changes"
+msgstr "Änderungen"
+
+#: editor/jinja2/help/index.jinja2:35
+msgid "Full Changelog"
+msgstr "Alle Änderungen"
+
+#: editor/views/files.py:79 editor/views/files.py:109
+#, python-format
+msgid "Updated %(filename)sfilename"
+msgstr "%(filenames) bearbeitet"
+
+#: editor/views/repository.py:40 editor/views/repository.py:53
+msgid "Fetching changes failed"
+msgstr ""
+"Leider konnte die aktuellste Version der Inhalte nicht vom Server geholt werden. "
+"Bis dies behoben ist, sollten sie keine Änderungen durchführen. Bitte wenden sie "
+"sich an einen Administrator um dies zu beheben."
+
+#: editor/views/repository.py:45 editor/views/repository.py:59
+msgid "Pushing changes failed"
+msgstr ""
+"Ihre Änderungen konnten nicht mit dem Server synchronisiert werden. Dies ist "
+"vermutlich ein Netzwerkproblem und sollte sich von selbst beheben. Falls die "
+"Fehlermeldung bestehen bleibt, wenden sie sich bitte an einen Administrator."

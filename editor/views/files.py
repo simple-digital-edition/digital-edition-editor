@@ -76,7 +76,7 @@ def edit(request, rid, fid):
         commit = next(commits)
         last_commit_msg = commit.message.replace('\n', ' ').replace('\'', '\\\'')
     except StopIteration:
-        last_commit_msg = 'Edited %s' % os.path.basename(tei_file)
+        last_commit_msg = _('Updated %(filename)s' % {'filename': os.path.basename(tei_file)})
     return render(request, 'editor/edit.jinja2', {'repository': repository,
                                                   'filename': os.path.basename(tei_file),
                                                   'fid': fid,
@@ -106,7 +106,7 @@ def raw_tei(request, rid, fid):
                             if 'HTTP_X_COMMIT_MESSAGE' in request.META:
                                 commit_msg = request.META['HTTP_X_COMMIT_MESSAGE']
                             else:
-                                commit_msg = 'Updated %s' % os.path.basename(file_path)
+                                commit_msg = _('Updated %(filename)s' % {'filename': os.path.basename(file_path)})
                             local_commits = list(repo.iter_commits('%s@{u}..%s' % (request.user.username,
                                                                                    request.user.username)))
 

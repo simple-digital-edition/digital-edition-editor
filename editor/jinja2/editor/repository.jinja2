@@ -1,11 +1,13 @@
 {% extends 'base.jinja2' %}
 {% import 'macros/icons.jinja2' as icons %}
 
+{% block title %}{{ repository.title}}{% endblock %}
+
 {% block menubar %}
-  <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="Repositories">{{ icons.icon('server-network') }}</a></li>
+  <li role="presentation"><a href="{{ url('editor:index') }}" role="menuitem" aria-label="{% trans %}Editions{% endtrans %}">{{ icons.icon('server-network') }}</a></li>
   <li role="presentation"><a href="{{ url('editor:repository', kwargs={'rid': repository.id}) }}" role="menuitem" aria-current="true">{{ repository.title }}</a></li>
   {% if not master_changes %}
-    <li role="presentation"><a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}" role="menuitem" aria-label="Files for the {{ repository.title }} repository" >{{ icons.icon('file-multiple') }}</a></li>
+    <li role="presentation"><a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}" role="menuitem" aria-label="{% trans title=repository.title %}Files for the {{ title }} edition{% endtrans %}">{{ icons.icon('file-multiple') }}</a></li>
   {% endif %}
 {% endblock menubar %}
 
@@ -28,13 +30,11 @@
     <div class="grid-x grid-padding-x">
       <div class="cell small-12">
         {% if not master_changes %}
-          <p>All master copy changes have been merged into your copy. You can
-            <a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}">select a file to edit</a>.</p>
+          <p>{% trans %}All master copy changes have been merged into your copy.{% endtrans %}
+            <a href="{{ url('editor:files', kwargs={'rid': repository.id}) }}">{% trans %}You can select a file to edit{% endtrans %}</a>.</p>
         {% endif %}
         {% if remote_changes and not master_changes %}
-          <p>The following changes have been made in your copy of the {{ repository.title }}, but have not yet been
-            integrated into the master copy. When you feel you have completed a cohesive block of changes, then
-            you can request the integration into the master copy.</p>
+          <p>{% trans title=repository.title %}Unintegrated changes in {{ title }}{% endtrans %}</p>
           <ul class="no-bullet">
             {% for change in remote_changes %}
               <li>
@@ -43,12 +43,10 @@
               </li>
             {% endfor %}
           </ul>
-          <button class="button" data-action="integration">Request integration</button>
+          <button class="button" data-action="integration">{% trans %}Request integration{% endtrans %}</button>
         {% endif %}
         {% if master_changes %}
-          <p>The following changes have been made in the master copy of the {{ repository.title }}, but not in your
-            own copy. You need to merge these changes into your own copy, before you can continue editing the
-            {{ repository.title }}.</p>
+          <p>{% trans title=repository.title %}Master changes in {{ title }} that need integration.{% endtrans %}</p>
           <ul class="no-bullet">
             {% for change in master_changes %}
               <li>
@@ -57,7 +55,7 @@
               </li>
             {% endfor %}
           </ul>
-          <button class="button" data-action="merge">Merge all changes</button>
+          <button class="button" data-action="merge">{% trans %}Merge all changes{% endtrans %}</button>
         {% endif %}
       </div>
     </div>
@@ -86,18 +84,18 @@ if (pull_request_btn) {
         }).then(function(resp) {
             if (resp.status === 200) {
                 pull_request_running = false;
-                pull_request_btn.innerHTML = 'Request sent';
+                pull_request_btn.innerHTML = '{% trans %}Request sent{% endtrans %}';
                 pull_request_btn.classList.add('success');
                 pull_request_btn.classList.remove('secondary');
             } else {
                 pull_request_running = false;
-                pull_request_btn.innerHTML = 'Request failed';
+                pull_request_btn.innerHTML = '{% trans %}Request failed{% endtrans %}';
                 pull_request_btn.classList.add('alert');
                 pull_request_btn.classList.remove('secondary');
             }
         }).catch(function() {
             pull_request_running = false;
-            pull_request_btn.innerHTML = 'Request failed';
+            pull_request_btn.innerHTML = '{% trans %}Request failed{% endtrans %}';
             pull_request_btn.classList.add('alert');
             pull_request_btn.classList.remove('secondary');
         });
@@ -111,7 +109,7 @@ if (merge_btn) {
             return;
         }
         merge_running = true;
-        merge_btn.innerHTML = 'Merge running...';
+        merge_btn.innerHTML = '{% trans %}Merge running{% endtrans %}';
         merge_btn.classList.add('secondary');
         merge_btn.classList.remove('alert');
         merge_btn.classList.remove('success');
@@ -123,7 +121,7 @@ if (merge_btn) {
         }).then(function(resp) {
             if (resp.status === 200) {
                 merge_running = false;
-                merge_btn.innerHTML = 'Merge completed. The page will reload automatically.';
+                merge_btn.innerHTML = '{% trans %}Merge completed. The page will reload automatically.{% endtrans %}';
                 merge_btn.classList.add('success');
                 merge_btn.classList.remove('secondary');
                 setTimeout(function() {
@@ -131,13 +129,13 @@ if (merge_btn) {
                 }, 3000);
             } else {
                 merge_running = false;
-                merge_btn.innerHTML = 'Merge failed';
+                merge_btn.innerHTML = '{% trans %}Merge failed{% endtrans %}';
                 merge_btn.classList.add('alert');
                 merge_btn.classList.remove('secondary');
             }
         }).catch(function() {
             merge_running = false;
-            merge_btn.innerHTML = 'Merge failed';
+            merge_btn.innerHTML = '{% trans %}Merge failed{% endtrans %}';
             merge_btn.classList.add('alert');
             merge_btn.classList.remove('secondary');
         });

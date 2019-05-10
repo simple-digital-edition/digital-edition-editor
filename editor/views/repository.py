@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 from git import Repo
 
 from ..models import Repository
@@ -36,37 +37,26 @@ def repository(request, rid):
                 branch = repo.create_head(request.user.username)
                 branch.checkout()
         except:
-            errors.append({'msg': 'Unfortunately fetching the latest version of the content from the server failed. ' +
-                                  'You should refrain from making changes until this error has been resolved by an ' +
-                                  'administrator. If this error message does not go away, please contact an ' +
-                                  'administrator',
+            errors.append({'msg': _('Fetching changes failed'),
                            'level': 'alert'})
         try:
             repo.git.push('--set-upstream', 'origin', request.user.username)
         except:
-            errors.append({'msg': 'Your local changes could not be synchronised with the server. This may simply be ' +
-                                  'because there are changes on the server that need to be merged first. Click the ' +
-                                  'merge button below and then your changes should be synchronised to the server as ' +
-                                  'well. If this warning message does not go away, please contact an administrator.',
-                           'level': 'warning'})
+            errors.append({'msg': _('Pushing changes failed'),
+                           'level': 'alert'})
     else:
         repo = Repo(base_path)
         # Fetch remote change information
         try:
             repo.remotes.origin.fetch()
         except:
-            errors.append({'msg': 'Unfortunately fetching the latest version of the content from the server failed. ' +
-                                  'You should refrain from making changes until this error has been resolved by an ' +
-                                  'administrator. If this error message does not go away, please contact an ' +
-                                  'administrator',
+            errors.append({'msg': _('Fetching changes failed'),
                            'level': 'alert'})
         try:
             repo.git.push('--set-upstream', 'origin', request.user.username)
         except:
             if len(list(repo.iter_commits('%s..master@{u}' % request.user.username))) == 0:
-                errors.append({'msg': 'Your local changes could not be synchronised with the server. This is most ' +
-                                      'likely due to a network error. If this warning message does not go away, ' +
-                                      'please contact an administrator.',
+                errors.append({'msg': _('Pushing changes failed'),
                                'level': 'alert'})
     # Identify the changes
     remote_changes = [{'message': commit.message,
