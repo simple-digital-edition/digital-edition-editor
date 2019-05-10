@@ -22,7 +22,7 @@
         </nav>
         <nav class="top-bar-right">
           <ul role="menu">
-            <li class="presentation"><a href="{{ url('editor:help') }}" role="menuitem" tabindex="0" aria-label="{% trans %}Help{% endtrans %}" target="digital-edition-editor-help">{{ icons.icon('help-circle') }}</a></li>
+            <li class="presentation"><a href="{{ url('editor:help') }}" role="menuitem" tabindex="0" aria-label="{% trans %}Help{% endtrans %}" target="digital-edition-editor-help" data-no-loading-indicator="true">{{ icons.icon('help-circle') }}</a></li>
             {% if request.user.is_authenticated %}
               <li class="presentation"><a href="{{ url('logout') }}?next={{ request.path }}" role="menuitem" tabindex="-1">{% trans %}Logout{% endtrans %}</a></li>
             {% else %}

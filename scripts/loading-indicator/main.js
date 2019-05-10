@@ -5,8 +5,10 @@
 (function() {
     let links = document.querySelectorAll('a[href]');
     for(let idx = 0; idx < links.length; idx++) {
-        links[idx].addEventListener('click', function() {
-            document.querySelector('#loading').classList.add('is-visible');
-        });
+        if (!links[idx].getAttribute('data-no-loading-indicator')) {
+            links[idx].addEventListener('click', function() {
+                document.querySelector('#loading').classList.add('is-visible');
+            });
+        }
     }
 })();
