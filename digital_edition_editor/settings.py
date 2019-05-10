@@ -152,7 +152,7 @@ with open('CHANGES.md') as in_f:
             last_version = match.group(1)
             last_date = match.group(2)
         else:
-            match = re.match('\\* \\*\\*([a-zA-Z]+):\*\*\s((?:\w|\s|[-,.:;"])+)', line.strip())
+            match = re.match('\\* \\*\\*([a-zA-Z]+):\*\*\s((?:\w|\s|[-,.:;"\'])+)', line.strip())
             if match:
                 changes.append((match.group(1).lower(), _icon_mappings[match.group(1).lower()], match.group(2)))
     if last_version and len(changes) > 0:

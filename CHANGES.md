@@ -4,6 +4,7 @@
 
 * **New:** Full localisation of the interface for English and German
 * **Bugfix:** Don't show the loading indicator when opening the help page
+* **Bugfix:** Fixed loading some change messages
 
 ## 0.2.0 (08.05.2019)
 
