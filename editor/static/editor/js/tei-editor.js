@@ -1029,7 +1029,7 @@
                             },
                             {
                                 type: 'sourceList',
-                                label: 'Quellen',
+                                label: 'Quellenliste',
                                 wrapping: true
                             },
                             {
