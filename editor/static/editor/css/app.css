@@ -5517,17 +5517,17 @@ ul.tree {
     padding-top: 1.5rem; }
   .tei-editor-prosemirror-editor .tei-editor-heading[data-level="2"] + .tei-editor-heading[data-level="3"] {
     padding-top: 0; }
-  .tei-editor-prosemirror-editor .tei-editor-paragraph {
+  .tei-editor-prosemirror-editor .tei-editor-paragraph, .tei-editor-prosemirror-editor .tei-editor-sourceList {
     font-size: 11pt;
     margin-bottom: 0;
     margin-top: 1rem; }
-    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-noindent="true"] {
+    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-noindent="true"], .tei-editor-prosemirror-editor .tei-editor-sourceList[data-noindent="true"] {
       margin-top: 0; }
-    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="center"] {
+    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="center"], .tei-editor-prosemirror-editor .tei-editor-sourceList[data-textalign="center"] {
       text-align: center; }
-    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="right"] {
+    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="right"], .tei-editor-prosemirror-editor .tei-editor-sourceList[data-textalign="right"] {
       text-align: right; }
-    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="justify"] {
+    .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="justify"], .tei-editor-prosemirror-editor .tei-editor-sourceList[data-textalign="justify"] {
       text-align: justify; }
   .tei-editor-prosemirror-editor .tei-editor-heading[data-level="1"] + .tei-editor-paragraph, .tei-editor-prosemirror-editor .tei-editor-heading[data-level="2"] + .tei-editor-paragraph {
     margin-top: 3rem !important; }

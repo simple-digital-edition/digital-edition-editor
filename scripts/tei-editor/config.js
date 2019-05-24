@@ -822,24 +822,39 @@
                             },
                             defining: true
                         },
-                        line: {
+                        source: {
                             group: 'block',
                             content: 'inline*',
                             parser: {
-                                selector: 'tei:l'
+                                selector: 'tei:item'
                             },
                             serializer: {
-                                tag: 'tei:l'
+                                tag: 'tei:item'
+                            },
+                            attrs: {
+                                sourceId: {
+                                    default: '',
+                                    parser: {
+                                        selector: '@data-source-id'
+                                    },
+                                    serializer: {
+                                        attr: 'data-source-id',
+                                        value: '${value}'
+                                    }
+                                }
                             }
                         },
-                        lineGroup: {
+                        sourceList: {
                             group: 'block',
-                            content: 'line+',
+                            content: 'source+',
                             parser: {
-                                selector: 'tei:lg'
+                                selector: 'tei:list[@type="sources"]'
                             },
                             serializer: {
-                                tag: 'tei:lg'
+                                tag: 'tei:list',
+                                attrs: {
+                                    type: 'sources'
+                                }
                             }
                         },
                         text: {
@@ -1013,13 +1028,13 @@
                                 label: 'Absatz'
                             },
                             {
-                                type: 'lineGroup',
-                                label: 'Vers',
+                                type: 'sourceList',
+                                label: 'Quellen',
                                 wrapping: true
                             },
                             {
-                                type: 'line',
-                                label: 'Zeile'
+                                type: 'source',
+                                label: 'Quelle'
                             },
                             {
                                 type: 'annotation',
@@ -1100,6 +1115,18 @@
                                 value: 'justify',
                                 label: 'Block',
                                 icon: '<svg viewBox="0 0 24 24" class="mdi-icon"><path d="M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z" /></svg>'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Quelle',
+                        type: 'toolbar',
+                        context: 'blocks.source',
+                        entries: [
+                            {
+                                type: 'text-attr',
+                                attr: 'sourceId',
+                                dataType: 'text'
                             }
                         ]
                     },

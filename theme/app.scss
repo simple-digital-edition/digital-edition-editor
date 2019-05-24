@@ -183,7 +183,7 @@ ul.tree {
     .tei-editor-heading[data-level="2"] + .tei-editor-heading[data-level="3"] {
         padding-top: 0;
     }
-    .tei-editor-paragraph {
+    .tei-editor-paragraph, .tei-editor-sourceList {
         font-size: 11pt;
         margin-bottom: 0;
         margin-top: 1rem;
