@@ -104,14 +104,14 @@ def raw_tei(request, rid, fid):
                         repo = Repo(base_path)
                         if repo.index.diff(None) or repo.index.diff('HEAD'):
                             if 'HTTP_X_COMMIT_MESSAGE' in request.META:
-                                commit_msg = request.META['HTTP_X_COMMIT_MESSAGE']
+                                commit_msg = request.META['HTTP_X_COMMIT_MESSAGE'].strip()
                             else:
                                 commit_msg = _('Updated %(filename)s' % {'filename': os.path.basename(file_path)})
                             local_commits = list(repo.iter_commits('%s@{u}..%s' % (request.user.username,
                                                                                    request.user.username)))
 
                             # Ammend the last commit if it has the same commit message as the new one
-                            if len(local_commits) > 0 and local_commits[0].message == commit_msg and \
+                            if len(local_commits) > 0 and local_commits[0].message.strip() == commit_msg and \
                                 local_commits[0].author.email == request.user.email:
                                 repo.index.add([os.path.abspath(file_path)])
                                 repo.git.commit('--amend',

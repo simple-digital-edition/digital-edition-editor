@@ -2,6 +2,7 @@
 
 ## 0.3.1 ()
 
+* **Bugfix:** Made the recognition of updatable commits a bit more robust
 * **Bugfix:** Typo in the login form
 
 ## 0.3.0 (10.05.2019)
