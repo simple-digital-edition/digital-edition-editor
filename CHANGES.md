@@ -1,5 +1,9 @@
 # Changes
 
+## 0.3.1 ()
+
+* **Bugfix:** Typo in the login form
+
 ## 0.3.0 (10.05.2019)
 
 * **New:** Full localisation of the interface for English and German
