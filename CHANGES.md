@@ -1,6 +1,6 @@
 # Changes
 
-## Development ()
+## 0.3.1 (24.05.2019)
 
 * **Update:** Enabled explicit markup of sources
 * **Bugfix:** Made the recognition of updatable commits a bit more robust
