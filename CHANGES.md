@@ -1,6 +1,6 @@
 # Changes
 
-## 0.3.1 ()
+## Development ()
 
 * **Update:** Enabled explicit markup of sources
 * **Bugfix:** Made the recognition of updatable commits a bit more robust

@@ -145,6 +145,8 @@ with open('CHANGES.md') as in_f:
     changes = []
     for line in in_f:
         match = re.match('## ([0-9]+\\.[0-9]+\\.[0-9]+) \\(([0-9]{2}\\.[0-9]{2}\\.[0-9]{4})\\)', line.strip())
+        if match is None:
+            match = re.match('## (Development) \(()\)', line.strip())
         if match and last_version != match.group(1):
             if len(changes) > 0:
                 HISTORY.append((last_version, last_date, tuple(changes)))
