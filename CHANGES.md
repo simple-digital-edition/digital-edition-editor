@@ -1,5 +1,7 @@
 # Changes
 
+* **Bugfix:** Fix a bug caused by no recent commit message
+
 ## 0.3.1 (24.05.2019)
 
 * **Update:** Enabled explicit markup of sources

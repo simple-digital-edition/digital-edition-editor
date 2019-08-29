@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 from git import Repo, Actor
 
 from ..models import Repository
@@ -63,7 +64,7 @@ def edit(request, rid, fid):
     base_path = os.path.join(repository.local_path, str(request.user.username))
     repo = Repo(base_path)
     tei_file = None
-    for path, _, filenames in os.walk(base_path):
+    for path, directories, filenames in os.walk(base_path):
         for filename in filenames:
             if path[len(base_path) + 1:].startswith('content') and filename.endswith('.tei'):
                 filename = os.path.join(path[len(base_path) + 1:], filename)
@@ -76,7 +77,7 @@ def edit(request, rid, fid):
         commit = next(commits)
         last_commit_msg = commit.message.replace('\n', ' ').replace('\'', '\\\'')
     except StopIteration:
-        last_commit_msg = _('Updated %(filename)s' % {'filename': os.path.basename(tei_file)})
+        last_commit_msg = _('Updated {filename}'.format(filename=os.path.basename(tei_file)))
     return render(request, 'editor/edit.jinja2', {'repository': repository,
                                                   'filename': os.path.basename(tei_file),
                                                   'fid': fid,
