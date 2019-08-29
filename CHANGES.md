@@ -1,5 +1,7 @@
 # Changes
 
+## 0.3.2 (29.08.2019)
+
 * **Bugfix:** Fix a bug caused by no recent commit message
 
 ## 0.3.1 (24.05.2019)
