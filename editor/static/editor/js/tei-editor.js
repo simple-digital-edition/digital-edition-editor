@@ -394,6 +394,39 @@
                                 tag: 'tei:seg'
                             }
                         },
+                        annotationGlobal: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:ref[@target="#global"]',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:ref'
+                            },
+                            attrs: {
+                                target: {
+                                    default: 'global',
+                                    parser: {
+                                        selector: 'substring(@target, 2)'
+                                    },
+                                    serializer: {
+                                        attr: 'target',
+                                        value: '#${value}'
+                                    }
+                                },
+                                headingId: {
+                                    default: null,
+                                    parser: {
+                                        selector: '@data-heading-id'
+                                    },
+                                    serializer: {
+                                        attr: 'data-heading-id'
+                                    }
+                                }
+                            }
+                        },
                         annotation: {
                             group: 'inline',
                             inline: true,
@@ -554,7 +587,11 @@
                             },
                             {
                                 type: 'annotation',
-                                label: 'Annotation'
+                                label: 'Einzelstellenverweis'
+                            },
+                            {
+                                type: 'annotationGlobal',
+                                label: 'Globalkommentarverweis'
                             },
                             {
                                 type: 'pageBegin',
@@ -701,7 +738,7 @@
                         ]
                     },
                     {
-                        title: 'Kommentar',
+                        title: 'Einzelstellenverweis',
                         type: 'toolbar',
                         context: 'blocks.annotation',
                         entries: [
@@ -709,6 +746,18 @@
                                 type: 'select-attr',
                                 attr: 'target',
                                 valueSource: 'annotations'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Globalkommentarverweis Abschnitt (optional)',
+                        type: 'toolbar',
+                        context: 'blocks.annotationGlobal',
+                        entries: [
+                            {
+                                type: 'text-attr',
+                                attr: 'headingId',
+                                dataType: 'text'
                             }
                         ]
                     }
@@ -719,7 +768,7 @@
             // Globalkommentar
             // ===============
             globalComment: {
-                title: 'Globalkommentar',
+                title: 'Kommentierung',
                 type: 'single-text',
                 parser: {
                     selector: 'tei:text/tei:interpGrp[@type="global"]',
@@ -737,7 +786,8 @@
                             serializer: {
                                 tag: 'tei:interpGrp',
                                 attrs: {
-                                    type: 'global'
+                                    type: 'global',
+                                    'xml:id': 'global'
                                 }
                             }
                         },
@@ -809,6 +859,15 @@
                                 tag: 'tei:head'
                             },
                             attrs: {
+                                headingId: {
+                                    default: null,
+                                    parser: {
+                                        selector: '@data-heading-id'
+                                    },
+                                    serializer: {
+                                        attr: 'data-heading-id'
+                                    }
+                                },
                                 level: {
                                     default: 1,
                                     parser: {
@@ -878,6 +937,69 @@
                                 tag: 'tei:seg'
                             }
                         },
+                        pageLineRef: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:citedRange[@type="page-line-ref"]',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:citedRange',
+                                attrs: {
+                                    type: 'page-line-ref'
+                                }
+                            }
+                        },
+                        wordRange: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:citedRange[@type="word-range"]',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:citedRange',
+                                attrs: {
+                                    type: 'word-range'
+                                }
+                            }
+                        },
+                        annotationGlobal: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:ref[@target="#global"]',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:ref'
+                            },
+                            attrs: {
+                                target: {
+                                    default: 'global',
+                                    parser: {
+                                        selector: 'substring(@target, 2)'
+                                    },
+                                    serializer: {
+                                        attr: 'target',
+                                        value: '#${value}'
+                                    }
+                                },
+                                headingId: {
+                                    default: null,
+                                    parser: {
+                                        selector: '@data-heading-id'
+                                    },
+                                    serializer: {
+                                        attr: 'data-heading-id'
+                                    }
+                                }
+                            }
+                        },
                         annotation: {
                             group: 'inline',
                             inline: true,
@@ -902,21 +1024,6 @@
                                 }
                             }
                         },
-                        pageBegin: {
-                            group: 'inline',
-                            inline: true,
-                            content: 'text*',
-                            parser: {
-                                selector: 'tei:pb',
-                                text: '@n'
-                            },
-                            serializer: {
-                                tag: 'tei:pb',
-                                text: {
-                                    attr: 'n'
-                                }
-                            }
-                        }
                     },
                     marks: {
                         foreignLanguage: {
@@ -1011,6 +1118,14 @@
                                     }
                                 }
                             }
+                        },
+                        quotation: {
+                            parser: {
+                                selector: 'self::tei:q'
+                            },
+                            serializer: {
+                                tag: 'tei:q'
+                            }
                         }
                     }
                 },
@@ -1037,12 +1152,20 @@
                                 label: 'Quelle'
                             },
                             {
-                                type: 'annotation',
-                                label: 'Annotation'
+                                type: 'pageLineRef',
+                                label: 'Seite & Zeile'
                             },
                             {
-                                type: 'pageBegin',
-                                label: 'Seitenanfang'
+                                type: 'wordRange',
+                                label: 'Wortspanne'
+                            },
+                            {
+                                type: 'annotation',
+                                label: 'Einzelstellenverweis'
+                            },
+                            {
+                                type: 'annotationGlobal',
+                                label: 'Globalkommentarverweis'
                             }
                         ]
                     },
@@ -1068,6 +1191,11 @@
                                         value: 'Ebene 3'
                                     }
                                 ]
+                            },
+                            {
+                                type: 'text-attr',
+                                attr: 'headingId',
+                                dataType: 'text'
                             }
                         ]
                     },
@@ -1188,11 +1316,17 @@
                                 mark: 'foreignLanguage',
                                 label: 'Fremdsprachiger Text',
                                 icon: '<svg viewBox="0 0 24 24" class="mdi-icon"><path d="M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z" /></svg>'
+                            },
+                            {
+                                type: 'toggle-mark',
+                                mark: 'quotation',
+                                label: 'Zitat',
+                                icon: '<svg viewBox="0 0 24 24" class="mdi-icon"><path d="M14,17H17L19,13V7H13V13H16M6,17H9L11,13V7H5V13H8L6,17Z" /></svg>'
                             }
                         ]
                     },
                     {
-                        title: 'Kommentar',
+                        title: 'Einzelstellenverweis',
                         type: 'toolbar',
                         context: 'blocks.annotation',
                         entries: [
@@ -1200,6 +1334,18 @@
                                 type: 'select-attr',
                                 attr: 'target',
                                 valueSource: 'annotations'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Globalkommentarverweis Abschnitt (optional)',
+                        type: 'toolbar',
+                        context: 'blocks.annotationGlobal',
+                        entries: [
+                            {
+                                type: 'text-attr',
+                                attr: 'headingId',
+                                dataType: 'text'
                             }
                         ]
                     }
@@ -1210,7 +1356,7 @@
             // Einstelstellenkommentare
             // ========================
             annotations: {
-                title: 'Annotations',
+                title: 'Einzelstellenerläuterungen',
                 type: 'multi-text',
                 parser: {
                     selector: 'tei:text/tei:interpGrp[@type="individual"]',
@@ -1351,6 +1497,63 @@
                                     type: 'word-range'
                                 }
                             }
+                        },
+                        annotationGlobal: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:ref[@target="#global"]',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:ref'
+                            },
+                            attrs: {
+                                target: {
+                                    default: 'global',
+                                    parser: {
+                                        selector: 'substring(@target, 2)'
+                                    },
+                                    serializer: {
+                                        attr: 'target',
+                                        value: '#${value}'
+                                    }
+                                },
+                                headingId: {
+                                    default: null,
+                                    parser: {
+                                        selector: '@data-heading-id'
+                                    },
+                                    serializer: {
+                                        attr: 'data-heading-id'
+                                    }
+                                }
+                            }
+                        },
+                        annotation: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:ref',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:ref'
+                            },
+                            attrs: {
+                                target: {
+                                    default: 'unknown',
+                                    parser: {
+                                        selector: 'substring(@target, 2)'
+                                    },
+                                    serializer: {
+                                        attr: 'target',
+                                        value: '#${value}'
+                                    }
+                                }
+                            }
                         }
                     },
                     marks: {
@@ -1467,6 +1670,14 @@
                             {
                                 type: 'wordRange',
                                 label: 'Wortspanne'
+                            },
+                            {
+                                type: 'annotation',
+                                label: 'Einzelstellenverweis'
+                            },
+                            {
+                                type: 'annotationGlobal',
+                                label: 'Globalkommentarverweis'
                             }
                         ]
                     },
@@ -1569,6 +1780,30 @@
                                 mark: 'quotation',
                                 label: 'Zitat',
                                 icon: '<svg viewBox="0 0 24 24" class="mdi-icon"><path d="M14,17H17L19,13V7H13V13H16M6,17H9L11,13V7H5V13H8L6,17Z" /></svg>'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Einzelstellenverweis',
+                        type: 'toolbar',
+                        context: 'blocks.annotation',
+                        entries: [
+                            {
+                                type: 'select-attr',
+                                attr: 'target',
+                                valueSource: 'annotations'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Globalkommentarverweis Abschnitt (optional)',
+                        type: 'toolbar',
+                        context: 'blocks.annotationGlobal',
+                        entries: [
+                            {
+                                type: 'text-attr',
+                                attr: 'headingId',
+                                dataType: 'text'
                             }
                         ]
                     },

@@ -1,5 +1,11 @@
 # Changes
 
+## dev ()
+
+* **New:** Enable cross-references between individual annotations
+* **New:** Enable references to the global comment
+* **Update:** Updated localisation to bring in line with the deployed site
+
 ## 0.3.2 (29.08.2019)
 
 * **Bugfix:** Fix a bug caused by no recent commit message

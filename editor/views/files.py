@@ -101,7 +101,6 @@ def raw_tei(request, rid, fid):
                     if request.method == 'PATCH':
                         with open(file_path, 'wb') as out_f:
                             out_f.write(request.body)
-                        print(base_path)
                         repo = Repo(base_path)
                         if repo.index.diff(None) or repo.index.diff('HEAD'):
                             if 'HTTP_X_COMMIT_MESSAGE' in request.META:

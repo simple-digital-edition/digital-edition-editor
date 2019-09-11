@@ -5489,7 +5489,7 @@ ul.tree {
     vertical-align: super; }
   .tei-editor-prosemirror-editor .tei-editor-quotation {
     font-style: italic; }
-  .tei-editor-prosemirror-editor .tei-editor-annotation {
+  .tei-editor-prosemirror-editor .tei-editor-annotation, .tei-editor-prosemirror-editor .tei-editor-annotationGlobal {
     -webkit-text-decoration: underline dotted;
     text-decoration: underline dotted; }
   .tei-editor-prosemirror-editor .tei-editor-heading[data-level="1"] {
