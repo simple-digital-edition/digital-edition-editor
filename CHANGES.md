@@ -1,6 +1,6 @@
 # Changes
 
-## dev ()
+## 0.4.0 (11.09.2019)
 
 * **New:** Enable cross-references between individual annotations
 * **New:** Enable references to the global comment
