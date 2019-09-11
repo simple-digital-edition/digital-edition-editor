@@ -13,6 +13,6 @@
     "gulp-concat": "^2.6.1",
     "gulp-sass": "^4.0.2",
     "pump": "^3.0.0",
-    "tei-editor": "^0.0.10"
+    "tei-editor": "^0.0.11"
   }
 }
