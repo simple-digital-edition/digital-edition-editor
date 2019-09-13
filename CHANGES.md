@@ -1,5 +1,9 @@
 # Changes
 
+## Dev ()
+
+* **New:** Enabled italic main text
+
 ## 0.4.0 (11.09.2019)
 
 * **New:** Enable cross-references between individual annotations
