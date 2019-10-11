@@ -10,10 +10,7 @@ gulp.task('css:theme', function(cb) {
         sass({
             includePaths: ['node_modules/foundation-sites/scss']
         }),
-        autoprefixer({
-            browsers: ['last 2 versions'],
-            cascade: false
-        }),
+        autoprefixer(),
         gulp.dest('editor/static/editor/css')
     ], cb);
 });
