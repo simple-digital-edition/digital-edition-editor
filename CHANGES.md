@@ -1,5 +1,9 @@
 # Changes
 
+## DEV
+
+* **Bugfix:** Generate missing CSS prefixes
+
 ## 0.4.2 (11.10.2019)
 
 * **Bugfix:** Don't serialise empty attributes
