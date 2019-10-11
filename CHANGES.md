@@ -1,6 +1,6 @@
 # Changes
 
-## DEV
+## 0.4.2 (11.10.2019)
 
 * **Bugfix:** Don't serialise empty attributes
 * **Bugfix:** Updated the editor to fix a serialisation bug
