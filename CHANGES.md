@@ -1,6 +1,6 @@
 # Changes
 
-## DEV
+## 0.4.3 (11.10.2019)
 
 * **Bugfix:** Generate missing CSS prefixes
 
