@@ -102,7 +102,7 @@ def raw_tei(request, rid, fid):
                         with open(file_path, 'wb') as out_f:
                             out_f.write(request.body)
                         repo = Repo(base_path)
-                        if repo.index.diff(None) or repo.index.diff('HEAD'):
+                        if False and (repo.index.diff(None) or repo.index.diff('HEAD')):
                             if 'HTTP_X_COMMIT_MESSAGE' in request.META:
                                 commit_msg = request.META['HTTP_X_COMMIT_MESSAGE'].strip()
                             else:

@@ -1,5 +1,9 @@
 # Changes
 
+## DEV
+
+* **Bugfix:** Updated the editor to fix a serialisation bug
+
 ## 0.4.1 (13.09.2019)
 
 * **New:** Enabled italic main text
