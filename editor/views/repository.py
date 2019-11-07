@@ -49,6 +49,7 @@ def repository(request, rid):
         # Fetch remote change information
         try:
             repo.remotes.origin.fetch()
+            repo.remotes.origin.pull()
         except:
             errors.append({'msg': _('Fetching changes failed'),
                            'level': 'alert'})

@@ -1,5 +1,9 @@
 # Changes
 
+## 0.4.3 (07.11.2019)
+
+* **Update:** Improve synchronisation robustness
+
 ## 0.4.3 (11.10.2019)
 
 * **Bugfix:** Generate missing CSS prefixes
