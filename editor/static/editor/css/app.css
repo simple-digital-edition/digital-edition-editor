@@ -5545,3 +5545,6 @@ ul.tree {
     font-weight: bold; }
   .tei-editor-prosemirror-editor .tei-editor-wordRange {
     padding-left: 1rem; }
+  .tei-editor-prosemirror-editor .tei-editor-footnote {
+    font-size: 9pt;
+    font-weight: normal; }

@@ -465,6 +465,33 @@
                                     attr: 'n'
                                 }
                             }
+                        },
+                        footnote: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:note',
+                                text: '@data-marker'
+                            },
+                            serializer: {
+                                tag: 'tei:note',
+                                text: {
+                                    attr: 'data-marker'
+                                }
+                            },
+                            attrs: {
+                                text: {
+                                    default: '',
+                                    parser: {
+                                        selector: '@text'
+                                    },
+                                    serializer: {
+                                        attr: 'text',
+                                        value: '${value}'
+                                    }
+                                }
+                            }
                         }
                     },
                     marks: {
@@ -609,6 +636,10 @@
                             {
                                 type: 'pageBegin',
                                 label: 'Seitenanfang'
+                            },
+                            {
+                                type: 'footnote',
+                                label: 'Fußnote'
                             }
                         ]
                     },
@@ -776,6 +807,18 @@
                             {
                                 type: 'text-attr',
                                 attr: 'headingId',
+                                dataType: 'text'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Fußnote',
+                        type: 'toolbar',
+                        context: 'blocks.footnote',
+                        entries: [
+                            {
+                                type: 'text-attr',
+                                attr: 'text',
                                 dataType: 'text'
                             }
                         ]
