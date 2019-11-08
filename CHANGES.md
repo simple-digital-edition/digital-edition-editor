@@ -1,6 +1,6 @@
 # Changes
 
-## 0.4.4-dev ()
+## 0.4.4 (08.11.2019)
 
 * **New:** Support footnotes
 * **New:** Support corrections and lemmas
