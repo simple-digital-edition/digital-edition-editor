@@ -127,6 +127,13 @@
 /*
  * ARIA Compliant Menu
  */
+nav.expanded *[role=menu] li {
+  flex: 1 1 0px;
+}
+nav.expanded *[role=menu] input, nav.expanded *[role=menu] textarea {
+  width: 100%;
+}
+
 *[role=menu] {
   padding: 0;
   margin: 0;
@@ -213,3 +220,5 @@ svg.mdi-icon {
 *[contenteditable]:focus {
   outline: 0px solid transparent;
 }
+
+/*# sourceMappingURL=app.css.map */

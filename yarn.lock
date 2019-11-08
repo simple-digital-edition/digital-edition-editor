@@ -2889,10 +2889,10 @@ tar@^4:
     safe-buffer "^5.1.2"
     yallist "^3.0.3"
 
-tei-editor@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/tei-editor/-/tei-editor-0.1.1.tgz#4a14b379a11625d5e5e1172440807741b10e37f9"
-  integrity sha512-JVCGdIihjVqo3QuYXYs2U9U+E+giPWNCTdbLlEbV4qv8uJojhPZqHmHyBjrNSVRO3HqGv7QAb7psOwJKFVwKzQ==
+tei-editor@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/tei-editor/-/tei-editor-0.1.2.tgz#b664c4a7a8e31ce0d17a92242f691a8cd39e02c7"
+  integrity sha512-9DqpZcfQjDfy+wyh/igMm77yGdhEYk2qPfgOiE8vM/8ViOAlOGFg17Xmv8satmghAyZi67EPvtnBtHMeSHw7CA==
 
 through2-filter@^3.0.0:
   version "3.0.0"

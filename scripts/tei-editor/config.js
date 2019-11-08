@@ -484,11 +484,10 @@
                                 text: {
                                     default: '',
                                     parser: {
-                                        selector: '@text'
+                                        selector: 'text()'
                                     },
                                     serializer: {
-                                        attr: 'text',
-                                        value: '${value}'
+                                        attr: 'text()'
                                     }
                                 }
                             }
