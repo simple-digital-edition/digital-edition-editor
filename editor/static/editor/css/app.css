@@ -5323,6 +5323,9 @@ html.is-reveal-open {
 /*
  * ARIA Compliant Menu
  */
+nav.expanded *[role="menu"] textarea {
+  height: 8rem; }
+
 *[role="menu"] {
   padding: 0;
   margin: 0;

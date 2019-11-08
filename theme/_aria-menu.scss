@@ -1,6 +1,14 @@
 /*
  * ARIA Compliant Menu
  */
+nav.expanded {
+    *[role="menu"] {
+        textarea {
+            height: 8rem;
+        }
+    }
+}
+
 *[role="menu"] {
     @include menu-base;
     background: $light-gray;

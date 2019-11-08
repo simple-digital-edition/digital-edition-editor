@@ -467,7 +467,7 @@
                             inline: true,
                             content: 'text*',
                             parser: {
-                                selector: 'tei:note',
+                                selector: 'tei:note[@type="footnote"]',
                                 text: '@data-marker'
                             },
                             serializer: {
@@ -477,6 +477,13 @@
                                 }
                             },
                             attrs: {
+                                type: {
+                                    default: 'footnote',
+                                    serializer: {
+                                        attr: 'type',
+                                        value: 'footnote'
+                                    }
+                                },
                                 text: {
                                     default: '',
                                     parser: {
@@ -811,9 +818,10 @@
                         title: 'Fußnote',
                         type: 'toolbar',
                         context: 'blocks.footnote',
+                        class: 'expanded',
                         entries: [
                             {
-                                type: 'text-attr',
+                                type: 'text-block-attr',
                                 attr: 'text',
                                 dataType: 'text'
                             }
