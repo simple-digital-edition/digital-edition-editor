@@ -1091,7 +1091,8 @@
                             inline: true,
                             content: 'text*',
                             parser: {
-                                selector: 'tei:foreign'
+                                selector: 'tei:foreign',
+                                text: 'text()'
                             },
                             serializer: {
                                 tag: 'tei:foreign'
@@ -1102,10 +1103,35 @@
                             inline: true,
                             content: 'text*',
                             parser: {
-                                selector: 'tei:q'
+                                selector: 'tei:q',
+                                text: 'text()'
                             },
                             serializer: {
                                 tag: 'tei:q'
+                            }
+                        },
+                        lemma: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:lem',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:lem',
+                            }
+                        },
+                        correction: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:corr',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:corr',
                             }
                         }
                     },
@@ -1248,7 +1274,15 @@
                             {
                                 type: 'quotation',
                                 label: 'Zitat'
-                            }
+                            },
+                            {
+                                type: 'lemma',
+                                label: 'Lemma'
+                            },
+                            {
+                                type: 'correction',
+                                label: 'Korrigierter Text'
+                            },
                         ]
                     },
                     {

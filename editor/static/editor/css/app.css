@@ -5548,3 +5548,10 @@ ul.tree {
     font-weight: bold; }
   .tei-editor-prosemirror-editor .tei-editor-wordRange {
     padding-left: 1rem; }
+  .tei-editor-prosemirror-editor .tei-editor-correction {
+    font-style: italic; }
+    .tei-editor-prosemirror-editor .tei-editor-correction::after {
+      content: ' ]';
+      font-style: normal; }
+  .tei-editor-prosemirror-editor .tei-editor-lemma {
+    font-style: italic; }

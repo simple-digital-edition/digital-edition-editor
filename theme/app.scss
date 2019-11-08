@@ -220,4 +220,15 @@ ul.tree {
     .tei-editor-wordRange {
         padding-left: $global-padding;
     }
+    .tei-editor-correction {
+        font-style: italic;
+
+        &::after {
+            content: ' ]';
+            font-style: normal;
+        }
+    }
+    .tei-editor-lemma {
+        font-style: italic;
+    }
 }

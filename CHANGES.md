@@ -3,6 +3,7 @@
 ## 0.4.4-dev ()
 
 * **New:** Support footnotes
+* **New:** Support corrections and lemmas
 * **Update:** Improve synchronisation robustness
 
 ## 0.4.3 (11.10.2019)
