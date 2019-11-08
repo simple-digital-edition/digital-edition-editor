@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-05-10 05:18+0200\n"
+"POT-Creation-Date: 2019-11-08 10:17+0000\n"
 "PO-Revision-Date: 2019-05-09 20:48+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de_DE\n"
@@ -28,6 +28,9 @@ msgid "Logout"
 msgstr "Ausloggen"
 
 #: editor/jinja2/base.jinja2:23 editor/jinja2/editor/edit.jinja2:29
+#: editor/jinja2/registration/login.html:3
+#: editor/jinja2/registration/login.html:9
+#: editor/jinja2/registration/login.html:37
 msgid "Login"
 msgstr "Einloggen"
 
@@ -57,8 +60,9 @@ msgid "The following editions are available for you to work on:"
 msgstr "Die folgenden Editionen können bearbeitet werden:"
 
 #: editor/jinja2/editor/repository.jinja2:33
-msgid "All master copy changes have been merged into your copy."
-msgstr "Alle Änderungen in der primären Kopie wurden in ihre Kopie integriert."
+#, python-format
+msgid "Your copy of %(title)s is up to date."
+msgstr "Ihre Kopie der %(title)s ist aktuell."
 
 #: editor/jinja2/editor/repository.jinja2:34
 msgid "You can select a file to edit"
@@ -66,21 +70,29 @@ msgstr "Wählen sie die Datei aus, die sie bearbeiten wollen"
 
 #: editor/jinja2/editor/repository.jinja2:37
 #, python-format
-msgid "Unintegrated changes in %(title)s"
-msgstr "Änderungen in %(title)s die noch integriert werden müssen"
+msgid ""
+"Changes in your copy of %(title)s that have not yet been added to the "
+"master copy:"
+msgstr ""
+"Änderungen in ihrer Kopie der %(title)s, welche noch nicht der primären "
+"Kopie hinzugefügt wurden:"
 
 #: editor/jinja2/editor/repository.jinja2:46
-msgid "Request integration"
-msgstr "Integration beantragen"
+msgid "Request adding to the master copy"
+msgstr "Integration in die pimäre Kopie beantragen"
 
 #: editor/jinja2/editor/repository.jinja2:49
 #, python-format
-msgid "Master changes in %(title)s that need integration."
-msgstr "Änderungen in der primären Kopie, welche integriert werden müssen"
+msgid ""
+"Changes in the master copy of %(title)s that have not yet been added to "
+"your copy:"
+msgstr ""
+"Änderungen in der primären Kopie der %(title)s, welche noch nicht ihrer "
+"Kopie hinzugefügt wurden:"
 
 #: editor/jinja2/editor/repository.jinja2:58
-msgid "Merge all changes"
-msgstr "Alle Änderungen integrieren"
+msgid "Add to your copy"
+msgstr "Ihrer Kopie hinzufügen"
 
 #: editor/jinja2/editor/repository.jinja2:87
 msgid "Request sent"
@@ -92,17 +104,19 @@ msgid "Request failed"
 msgstr "Anfrage fehlgeschlagen"
 
 #: editor/jinja2/editor/repository.jinja2:112
-msgid "Merge running"
-msgstr "Integration läuft..."
+msgid "Adding changes"
+msgstr "Änderungen werden hinzugefügt"
 
 #: editor/jinja2/editor/repository.jinja2:124
-msgid "Merge completed. The page will reload automatically."
-msgstr "Integration erfolgreich. Die Seite wird automatisch aktualisiert"
+msgid "Changes added. The page will reload automatically in three seconds."
+msgstr ""
+"Änderungen hinzugefügt. Diese Seite wird in drei Sekunden automatisch neu"
+" geladen."
 
 #: editor/jinja2/editor/repository.jinja2:132
 #: editor/jinja2/editor/repository.jinja2:138
-msgid "Merge failed"
-msgstr "Integration fehlgeschlagen"
+msgid "Adding failed"
+msgstr "Fehler beim Hinzufügen der Änderungen"
 
 #: editor/jinja2/help/changelog.jinja2:4 editor/jinja2/help/changelog.jinja2:14
 msgid "Changelog"
@@ -128,21 +142,36 @@ msgstr "Änderungen"
 msgid "Full Changelog"
 msgstr "Alle Änderungen"
 
-#: editor/views/files.py:79 editor/views/files.py:109
+#: editor/jinja2/registration/login.html:15
+#: editor/jinja2/registration/login.html:21
+msgid "This user is unknown or you got the password wrong."
+msgstr "Diese_r Nutzer_in ist unbekannt oder das Passwort ist falsch."
+
+#: editor/jinja2/registration/login.html:36
+msgid "Reset your password"
+msgstr "Passwort zurücksetzen"
+
+#: editor/views/files.py:80
+msgid "Updated {filename}"
+msgstr "{filename} aktualisiert"
+
+#: editor/views/files.py:109
 #, python-format
 msgid "Updated %(filename)sfilename"
-msgstr "%(filenames) bearbeitet"
+msgstr "%(filename)s aktualisiert"
 
-#: editor/views/repository.py:40 editor/views/repository.py:53
+#: editor/views/repository.py:40 editor/views/repository.py:54
 msgid "Fetching changes failed"
 msgstr ""
-"Leider konnte die aktuellste Version der Inhalte nicht vom Server geholt werden. "
-"Bis dies behoben ist, sollten sie keine Änderungen durchführen. Bitte wenden sie "
-"sich an einen Administrator um dies zu beheben."
+"Leider konnte die aktuellste Version der Inhalte nicht vom Server geholt "
+"werden. Bis dies behoben ist, sollten sie keine Änderungen durchführen. "
+"Bitte wenden sie sich an einen Administrator um dies zu beheben."
 
-#: editor/views/repository.py:45 editor/views/repository.py:59
+#: editor/views/repository.py:45 editor/views/repository.py:60
 msgid "Pushing changes failed"
 msgstr ""
-"Ihre Änderungen konnten nicht mit dem Server synchronisiert werden. Dies ist "
-"vermutlich ein Netzwerkproblem und sollte sich von selbst beheben. Falls die "
-"Fehlermeldung bestehen bleibt, wenden sie sich bitte an einen Administrator."
+"Ihre Änderungen konnten nicht mit dem Server synchronisiert werden. Dies "
+"ist vermutlich ein Netzwerkproblem und sollte sich von selbst beheben. "
+"Falls die Fehlermeldung bestehen bleibt, wenden sie sich bitte an einen "
+"Administrator."
+

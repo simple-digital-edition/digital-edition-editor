@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-05-10 05:18+0200\n"
+"POT-Creation-Date: 2019-11-08 10:17+0000\n"
 "PO-Revision-Date: 2019-05-09 20:48+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en_GB\n"
@@ -28,6 +28,9 @@ msgid "Logout"
 msgstr "Logout"
 
 #: editor/jinja2/base.jinja2:23 editor/jinja2/editor/edit.jinja2:29
+#: editor/jinja2/registration/login.html:3
+#: editor/jinja2/registration/login.html:9
+#: editor/jinja2/registration/login.html:37
 msgid "Login"
 msgstr "Login"
 
@@ -57,8 +60,9 @@ msgid "The following editions are available for you to work on:"
 msgstr "The following editions are available for you to work on:"
 
 #: editor/jinja2/editor/repository.jinja2:33
-msgid "All master copy changes have been merged into your copy."
-msgstr "All master copy changes have been merged into your copy."
+#, python-format
+msgid "Your copy of %(title)s is up to date."
+msgstr "Your copy of %(title)s is up to date."
 
 #: editor/jinja2/editor/repository.jinja2:34
 msgid "You can select a file to edit"
@@ -66,28 +70,29 @@ msgstr "You can select a file to edit"
 
 #: editor/jinja2/editor/repository.jinja2:37
 #, python-format
-msgid "Unintegrated changes in %(title)s"
+msgid ""
+"Changes in your copy of %(title)s that have not yet been added to the "
+"master copy:"
 msgstr ""
-"The following changes have been made in your copy of the %(title)s, but "
-"have not yet been integrated into the master copy. When you feel you have"
-" completed a cohesive block of changes, then you can request the "
-"integration into the master copy."
+"Changes in your copy of %(title)s that have not yet been added to the "
+"master copy:"
 
 #: editor/jinja2/editor/repository.jinja2:46
-msgid "Request integration"
-msgstr "Request integration"
+msgid "Request adding to the master copy"
+msgstr "Request adding to the master copy"
 
 #: editor/jinja2/editor/repository.jinja2:49
 #, python-format
-msgid "Master changes in %(title)s that need integration."
+msgid ""
+"Changes in the master copy of %(title)s that have not yet been added to "
+"your copy:"
 msgstr ""
-"The following changes have been made in the master copy of the %(title)s,"
-" but not in your own copy. You need to merge these changes into your own "
-"copy, before you can continue editing the %(title)s"
+"Changes in the master copy of %(title)s that have not yet been added to "
+"your copy:"
 
 #: editor/jinja2/editor/repository.jinja2:58
-msgid "Merge all changes"
-msgstr "Merge all changes"
+msgid "Add to your copy"
+msgstr "Add to your copy"
 
 #: editor/jinja2/editor/repository.jinja2:87
 msgid "Request sent"
@@ -99,17 +104,17 @@ msgid "Request failed"
 msgstr "Request failed"
 
 #: editor/jinja2/editor/repository.jinja2:112
-msgid "Merge running"
-msgstr "Merge running..."
+msgid "Adding changes"
+msgstr "Adding changes"
 
 #: editor/jinja2/editor/repository.jinja2:124
-msgid "Merge completed. The page will reload automatically."
-msgstr "Merge completed. The page will reload automatically."
+msgid "Changes added. The page will reload automatically in three seconds."
+msgstr "Changes added. The page will reload automatically in three seconds."
 
 #: editor/jinja2/editor/repository.jinja2:132
 #: editor/jinja2/editor/repository.jinja2:138
-msgid "Merge failed"
-msgstr "Merge failed"
+msgid "Adding failed"
+msgstr "Adding failed"
 
 #: editor/jinja2/help/changelog.jinja2:4 editor/jinja2/help/changelog.jinja2:14
 msgid "Changelog"
@@ -135,12 +140,25 @@ msgstr "Changes"
 msgid "Full Changelog"
 msgstr "Full Changelog"
 
-#: editor/views/files.py:79 editor/views/files.py:109
+#: editor/jinja2/registration/login.html:15
+#: editor/jinja2/registration/login.html:21
+msgid "This user is unknown or you got the password wrong."
+msgstr "This user is unknown or you got the password wrong."
+
+#: editor/jinja2/registration/login.html:36
+msgid "Reset your password"
+msgstr "Reset your password"
+
+#: editor/views/files.py:80
+msgid "Updated {filename}"
+msgstr "Updated {filename}"
+
+#: editor/views/files.py:109
 #, python-format
 msgid "Updated %(filename)sfilename"
 msgstr "Updated %(filename)s"
 
-#: editor/views/repository.py:40 editor/views/repository.py:53
+#: editor/views/repository.py:40 editor/views/repository.py:54
 msgid "Fetching changes failed"
 msgstr ""
 "Unfortunately fetching the latest version of the content from the server "
@@ -148,9 +166,10 @@ msgstr ""
 "resolved by an administrator. If this error message does not go away, "
 "please contact an administrator."
 
-#: editor/views/repository.py:45 editor/views/repository.py:59
+#: editor/views/repository.py:45 editor/views/repository.py:60
 msgid "Pushing changes failed"
 msgstr ""
 "Your local changes could not be synchronised with the server. This is "
 "most likely due to a network error. If this warning message does not go "
 "away, please contact an administrator."
+

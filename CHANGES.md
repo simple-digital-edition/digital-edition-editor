@@ -5,6 +5,7 @@
 * **New:** Support footnotes
 * **New:** Support corrections and lemmas
 * **Update:** Improve synchronisation robustness
+* **Update:** Improved user interface labels
 
 ## 0.4.3 (11.10.2019)
 

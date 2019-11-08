@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-05-10 05:18+0200\n"
+"POT-Creation-Date: 2019-11-08 10:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,9 @@ msgid "Logout"
 msgstr ""
 
 #: editor/jinja2/base.jinja2:23 editor/jinja2/editor/edit.jinja2:29
+#: editor/jinja2/registration/login.html:3
+#: editor/jinja2/registration/login.html:9
+#: editor/jinja2/registration/login.html:37
 msgid "Login"
 msgstr ""
 
@@ -56,7 +59,8 @@ msgid "The following editions are available for you to work on:"
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:33
-msgid "All master copy changes have been merged into your copy."
+#, python-format
+msgid "Your copy of %(title)s is up to date."
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:34
@@ -65,20 +69,24 @@ msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:37
 #, python-format
-msgid "Unintegrated changes in %(title)s"
+msgid ""
+"Changes in your copy of %(title)s that have not yet been added to the "
+"master copy:"
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:46
-msgid "Request integration"
+msgid "Request adding to the master copy"
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:49
 #, python-format
-msgid "Master changes in %(title)s that need integration."
+msgid ""
+"Changes in the master copy of %(title)s that have not yet been added to "
+"your copy:"
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:58
-msgid "Merge all changes"
+msgid "Add to your copy"
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:87
@@ -91,16 +99,16 @@ msgid "Request failed"
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:112
-msgid "Merge running"
+msgid "Adding changes"
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:124
-msgid "Merge completed. The page will reload automatically."
+msgid "Changes added. The page will reload automatically in three seconds."
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:132
 #: editor/jinja2/editor/repository.jinja2:138
-msgid "Merge failed"
+msgid "Adding failed"
 msgstr ""
 
 #: editor/jinja2/help/changelog.jinja2:4 editor/jinja2/help/changelog.jinja2:14
@@ -127,16 +135,29 @@ msgstr ""
 msgid "Full Changelog"
 msgstr ""
 
-#: editor/views/files.py:79 editor/views/files.py:109
+#: editor/jinja2/registration/login.html:15
+#: editor/jinja2/registration/login.html:21
+msgid "This user is unknown or you got the password wrong."
+msgstr ""
+
+#: editor/jinja2/registration/login.html:36
+msgid "Reset your password"
+msgstr ""
+
+#: editor/views/files.py:80
+msgid "Updated {filename}"
+msgstr ""
+
+#: editor/views/files.py:109
 #, python-format
 msgid "Updated %(filename)sfilename"
 msgstr ""
 
-#: editor/views/repository.py:40 editor/views/repository.py:53
+#: editor/views/repository.py:40 editor/views/repository.py:54
 msgid "Fetching changes failed"
 msgstr ""
 
-#: editor/views/repository.py:45 editor/views/repository.py:59
+#: editor/views/repository.py:45 editor/views/repository.py:60
 msgid "Pushing changes failed"
 msgstr ""
 
