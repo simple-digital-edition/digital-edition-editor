@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-11-08 10:17+0000\n"
+"POT-Creation-Date: 2019-11-14 12:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.6.0\n"
+"Generated-By: Babel 2.7.0\n"
 
 #: editor/jinja2/base.jinja2:19 editor/jinja2/editor/edit.jinja2:25
 #: editor/jinja2/help/index.jinja2:4 editor/jinja2/help/index.jinja2:14
@@ -115,23 +115,29 @@ msgstr ""
 msgid "Changelog"
 msgstr ""
 
-#: editor/jinja2/help/index.jinja2:18
+#: editor/jinja2/help/index.jinja2:15
+msgid ""
+"Detailed help can be found <a href=\"https://digital-edition-"
+"editor.readthedocs.io\">here</a>."
+msgstr ""
+
+#: editor/jinja2/help/index.jinja2:19
 msgid "About"
 msgstr ""
 
-#: editor/jinja2/help/index.jinja2:20
+#: editor/jinja2/help/index.jinja2:21
 msgid "Version"
 msgstr ""
 
-#: editor/jinja2/help/index.jinja2:22
+#: editor/jinja2/help/index.jinja2:23
 msgid "Released"
 msgstr ""
 
-#: editor/jinja2/help/index.jinja2:24
+#: editor/jinja2/help/index.jinja2:25
 msgid "Changes"
 msgstr ""
 
-#: editor/jinja2/help/index.jinja2:35
+#: editor/jinja2/help/index.jinja2:36
 msgid "Full Changelog"
 msgstr ""
 

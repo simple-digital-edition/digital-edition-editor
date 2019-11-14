@@ -2,6 +2,7 @@
 
 ## 0.5.0 (DEV)
 
+* **New:** Link to external help documentation
 * **Update:** Make footnotes stylable
 * **Update:** Change indentation rendering
 * **Update:** Change how text changes are encoded
