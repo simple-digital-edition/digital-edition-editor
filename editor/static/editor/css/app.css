@@ -5528,9 +5528,9 @@ ul.tree {
   .tei-editor-prosemirror-editor .tei-editor-paragraph, .tei-editor-prosemirror-editor .tei-editor-sourceList {
     font-size: 11pt;
     margin-bottom: 0;
-    margin-top: 1rem; }
+    text-indent: 1cm; }
     .tei-editor-prosemirror-editor .tei-editor-paragraph[data-noindent="true"], .tei-editor-prosemirror-editor .tei-editor-sourceList[data-noindent="true"] {
-      margin-top: 0; }
+      text-indent: 0; }
     .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="center"], .tei-editor-prosemirror-editor .tei-editor-sourceList[data-textalign="center"] {
       text-align: center; }
     .tei-editor-prosemirror-editor .tei-editor-paragraph[data-textalign="right"], .tei-editor-prosemirror-editor .tei-editor-sourceList[data-textalign="right"] {
