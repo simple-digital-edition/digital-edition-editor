@@ -2,6 +2,7 @@
 
 ## 0.5.0 (DEV)
 
+* **Update:** Make footnotes stylable
 * **Update:** Change indentation rendering
 * **Update:** Change how text changes are encoded
 * **Bugfix:** Fixed inability to create new individual annotations

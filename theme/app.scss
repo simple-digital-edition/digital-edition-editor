@@ -231,4 +231,13 @@ ul.tree {
             font-style: normal;
         }
     }
+    .tei-editor-footnote {
+        font-size: 9pt;
+        font-weight: normal;
+        font-style: normal;
+        border: 1px solid $dark-gray;
+        border-radius: 3px;
+        padding: 0.1rem 0.2rem;
+        background: $light-gray;
+    }
 }

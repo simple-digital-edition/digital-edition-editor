@@ -5555,3 +5555,11 @@ ul.tree {
     .tei-editor-prosemirror-editor .tei-editor-lemma::after {
       content: ' ]';
       font-style: normal; }
+  .tei-editor-prosemirror-editor .tei-editor-footnote {
+    font-size: 9pt;
+    font-weight: normal;
+    font-style: normal;
+    border: 1px solid #8a8a8a;
+    border-radius: 3px;
+    padding: 0.1rem 0.2rem;
+    background: #e6e6e6; }

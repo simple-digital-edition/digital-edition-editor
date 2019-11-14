@@ -468,13 +468,10 @@
                             content: 'text*',
                             parser: {
                                 selector: 'tei:note[@type="footnote"]',
-                                text: '@data-marker'
+                                text: 'text()'
                             },
                             serializer: {
                                 tag: 'tei:note',
-                                text: {
-                                    attr: 'data-marker'
-                                }
                             },
                             attrs: {
                                 type: {
@@ -484,13 +481,13 @@
                                         value: 'footnote'
                                     }
                                 },
-                                text: {
+                                marker: {
                                     default: '',
                                     parser: {
-                                        selector: 'text()'
+                                        selector: '@data-marker'
                                     },
                                     serializer: {
-                                        attr: 'text()'
+                                        attr: 'data-marker'
                                     }
                                 }
                             }
@@ -815,14 +812,13 @@
                         ]
                     },
                     {
-                        title: 'Fußnote',
+                        title: 'Fußnotenmarkierung',
                         type: 'toolbar',
                         context: 'blocks.footnote',
-                        class: 'expanded',
                         entries: [
                             {
-                                type: 'text-block-attr',
-                                attr: 'text',
+                                type: 'text-attr',
+                                attr: 'marker',
                                 dataType: 'text'
                             }
                         ]
