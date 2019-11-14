@@ -1122,16 +1122,16 @@
                                 tag: 'tei:lem',
                             }
                         },
-                        correction: {
+                        sic: {
                             group: 'inline',
                             inline: true,
                             content: 'text*',
                             parser: {
-                                selector: 'tei:corr',
+                                selector: 'tei:sic',
                                 text: 'text()'
                             },
                             serializer: {
-                                tag: 'tei:corr',
+                                tag: 'tei:sic',
                             }
                         }
                     },
@@ -1280,7 +1280,7 @@
                                 label: 'Lemma'
                             },
                             {
-                                type: 'correction',
+                                type: 'sic',
                                 label: 'Korrigierter Text'
                             },
                         ]
