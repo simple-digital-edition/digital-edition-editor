@@ -2,3 +2,4 @@
 node_modules
 /static
 .venv
+docs/_build
