@@ -1,5 +1,9 @@
 # Changes
 
+## 0.5.0 (DEV)
+
+* **Bugfix:** Fixed inability to create new individual annotations
+
 ## 0.4.4 (08.11.2019)
 
 * **New:** Support footnotes

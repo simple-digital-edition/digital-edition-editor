@@ -1912,26 +1912,26 @@
                             type: 'paragraph',
                             content: [
                                 {
-                                    type: 'text',
-                                    marks: [
+                                    type: 'pageLineRef',
+                                    content: [
                                         {
-                                            type: 'pageLineRef'
+                                            type: 'text',
+                                            text: 'Seite & Zeile'
                                         }
                                     ],
-                                    text: 'Seite & Zeile'
                                 },
                                 {
                                     type: 'text',
                                     text: ' '
                                 },
                                 {
-                                    type: 'text',
-                                    marks: [
+                                    type: 'wordRange',
+                                    content: [
                                         {
-                                            type: 'wordRange'
+                                            type: 'text',
+                                            text: 'Textspanne'
                                         }
                                     ],
-                                    text: 'Wortspanne'
                                 }
                             ]
                         },
