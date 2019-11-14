@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-11-14 12:37+0000\n"
+"POT-Creation-Date: 2019-11-14 14:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,13 +22,17 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-#: editor/jinja2/base.jinja2:21 editor/jinja2/editor/edit.jinja2:27
+#: editor/jinja2/base.jinja2:21
+msgid "Change Password"
+msgstr ""
+
+#: editor/jinja2/base.jinja2:22 editor/jinja2/editor/edit.jinja2:27
 msgid "Logout"
 msgstr ""
 
-#: editor/jinja2/base.jinja2:23 editor/jinja2/editor/edit.jinja2:29
+#: editor/jinja2/base.jinja2:24 editor/jinja2/editor/edit.jinja2:29
 #: editor/jinja2/registration/login.html:3
-#: editor/jinja2/registration/login.html:9
+#: editor/jinja2/registration/login.html:10
 #: editor/jinja2/registration/login.html:37
 msgid "Login"
 msgstr ""
@@ -37,6 +41,8 @@ msgstr ""
 #: editor/jinja2/editor/index.jinja2:5 editor/jinja2/editor/index.jinja2:12
 #: editor/jinja2/editor/repository.jinja2:7
 #: editor/jinja2/help/changelog.jinja2:7 editor/jinja2/help/index.jinja2:7
+#: editor/jinja2/registration/password_change_done.html:6
+#: editor/jinja2/registration/password_change_form.html:6
 msgid "Editions"
 msgstr ""
 
@@ -141,13 +147,24 @@ msgstr ""
 msgid "Full Changelog"
 msgstr ""
 
-#: editor/jinja2/registration/login.html:15
-#: editor/jinja2/registration/login.html:21
+#: editor/jinja2/registration/login.html:16
+#: editor/jinja2/registration/login.html:22
 msgid "This user is unknown or you got the password wrong."
 msgstr ""
 
-#: editor/jinja2/registration/login.html:36
-msgid "Reset your password"
+#: editor/jinja2/registration/password_change_done.html:3
+#: editor/jinja2/registration/password_change_done.html:12
+msgid "Password changed"
+msgstr ""
+
+#: editor/jinja2/registration/password_change_done.html:13
+msgid "You have successfully changed your password."
+msgstr ""
+
+#: editor/jinja2/registration/password_change_form.html:3
+#: editor/jinja2/registration/password_change_form.html:14
+#: editor/jinja2/registration/password_change_form.html:58
+msgid "Change your Password"
 msgstr ""
 
 #: editor/views/files.py:80

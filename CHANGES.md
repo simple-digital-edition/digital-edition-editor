@@ -1,5 +1,9 @@
 # Changes
 
+## DEV (DEV)
+
+* **New:** Enabled password changing
+
 ## 0.5.1 (14.11.2019)
 
 * **Update:** Fix help link to open in a new window

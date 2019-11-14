@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-11-14 12:37+0000\n"
+"POT-Creation-Date: 2019-11-14 14:52+0000\n"
 "PO-Revision-Date: 2019-05-09 20:48+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de_DE\n"
@@ -23,13 +23,17 @@ msgstr ""
 msgid "Help"
 msgstr "Hilfe"
 
-#: editor/jinja2/base.jinja2:21 editor/jinja2/editor/edit.jinja2:27
+#: editor/jinja2/base.jinja2:21
+msgid "Change Password"
+msgstr "Passwort ändern"
+
+#: editor/jinja2/base.jinja2:22 editor/jinja2/editor/edit.jinja2:27
 msgid "Logout"
 msgstr "Ausloggen"
 
-#: editor/jinja2/base.jinja2:23 editor/jinja2/editor/edit.jinja2:29
+#: editor/jinja2/base.jinja2:24 editor/jinja2/editor/edit.jinja2:29
 #: editor/jinja2/registration/login.html:3
-#: editor/jinja2/registration/login.html:9
+#: editor/jinja2/registration/login.html:10
 #: editor/jinja2/registration/login.html:37
 msgid "Login"
 msgstr "Einloggen"
@@ -38,6 +42,8 @@ msgstr "Einloggen"
 #: editor/jinja2/editor/index.jinja2:5 editor/jinja2/editor/index.jinja2:12
 #: editor/jinja2/editor/repository.jinja2:7
 #: editor/jinja2/help/changelog.jinja2:7 editor/jinja2/help/index.jinja2:7
+#: editor/jinja2/registration/password_change_done.html:6
+#: editor/jinja2/registration/password_change_form.html:6
 msgid "Editions"
 msgstr "Editionen"
 
@@ -128,8 +134,8 @@ msgid ""
 "editor.readthedocs.io\" target=\"_blank\" rel=\"noopener\">here</a>."
 msgstr ""
 "Detaillierte Hilfe kann <a href=\"https://digital-edition-"
-"editor.readthedocs.io\" target=\"_blank\" rel=\"noopener\">hier</a>"
-" gefunden werden."
+"editor.readthedocs.io\" target=\"_blank\" rel=\"noopener\">hier</a> "
+"gefunden werden."
 
 #: editor/jinja2/help/index.jinja2:19
 msgid "About"
@@ -151,14 +157,25 @@ msgstr "Änderungen"
 msgid "Full Changelog"
 msgstr "Alle Änderungen"
 
-#: editor/jinja2/registration/login.html:15
-#: editor/jinja2/registration/login.html:21
+#: editor/jinja2/registration/login.html:16
+#: editor/jinja2/registration/login.html:22
 msgid "This user is unknown or you got the password wrong."
 msgstr "Diese_r Nutzer_in ist unbekannt oder das Passwort ist falsch."
 
-#: editor/jinja2/registration/login.html:36
-msgid "Reset your password"
-msgstr "Passwort zurücksetzen"
+#: editor/jinja2/registration/password_change_done.html:3
+#: editor/jinja2/registration/password_change_done.html:12
+msgid "Password changed"
+msgstr "Passwort geändert"
+
+#: editor/jinja2/registration/password_change_done.html:13
+msgid "You have successfully changed your password."
+msgstr "Sie haben erfolgreich ihr Passwort geändert."
+
+#: editor/jinja2/registration/password_change_form.html:3
+#: editor/jinja2/registration/password_change_form.html:14
+#: editor/jinja2/registration/password_change_form.html:58
+msgid "Change your Password"
+msgstr "Ihr Passwort ändern"
 
 #: editor/views/files.py:80
 msgid "Updated {filename}"
