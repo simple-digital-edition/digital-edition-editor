@@ -1,6 +1,6 @@
 # Changes
 
-## DEV (DEV)
+## 0.6.0 (14.11.2019)
 
 * **New:** Enabled password changing
 
