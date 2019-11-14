@@ -1,6 +1,6 @@
 # Changes
 
-## 0.5.0 (DEV)
+## 0.5.0 (14.11.2019)
 
 * **New:** Link to external help documentation
 * **Update:** Make footnotes stylable
