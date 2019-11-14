@@ -1,5 +1,9 @@
 # Changes
 
+## 0.5.1 (14.11.2019)
+
+* **Update:** Fix help link to open in a new window
+
 ## 0.5.0 (14.11.2019)
 
 * **New:** Link to external help documentation

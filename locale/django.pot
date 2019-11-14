@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-11-14 12:32+0000\n"
+"POT-Creation-Date: 2019-11-14 12:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,7 +118,7 @@ msgstr ""
 #: editor/jinja2/help/index.jinja2:15
 msgid ""
 "Detailed help can be found <a href=\"https://digital-edition-"
-"editor.readthedocs.io\">here</a>."
+"editor.readthedocs.io\" target=\"_blank\" rel=\"noopener\">here</a>."
 msgstr ""
 
 #: editor/jinja2/help/index.jinja2:19
