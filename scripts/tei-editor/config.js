@@ -1129,7 +1129,28 @@
                             serializer: {
                                 tag: 'tei:sic',
                             }
-                        }
+                        },
+                        missing: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:metamark[@function="missing"]',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:metamark'
+                            },
+                            attrs: {
+                                function: {
+                                    default: 'missing',
+                                    serializer: {
+                                        attr: 'function',
+                                        value: 'missing'
+                                    }
+                                },
+                            },
+                        },
                     },
                     marks: {
                         letterSparse: {
@@ -1278,6 +1299,10 @@
                             {
                                 type: 'sic',
                                 label: 'Korrigierter Text'
+                            },
+                            {
+                                type: 'missing',
+                                label: 'Nicht ermittelt'
                             },
                         ]
                     },
@@ -1647,7 +1672,28 @@
                                     }
                                 }
                             }
-                        }
+                        },
+                        missing: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:metamark[@function="missing"]',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:metamark'
+                            },
+                            attrs: {
+                                function: {
+                                    default: 'missing',
+                                    serializer: {
+                                        attr: 'function',
+                                        value: 'missing'
+                                    }
+                                },
+                            },
+                        },
                     },
                     marks: {
                         foreignLanguage: {
@@ -1771,7 +1817,11 @@
                             {
                                 type: 'annotationGlobal',
                                 label: 'Globalkommentarverweis'
-                            }
+                            },
+                            {
+                                type: 'missing',
+                                label: 'Nicht ermittelt'
+                            },
                         ]
                     },
                     {

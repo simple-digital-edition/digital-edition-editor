@@ -240,4 +240,14 @@ ul.tree {
         padding: 0.1rem 0.2rem;
         background: $light-gray;
     }
+    .tei-editor-missing {
+        &::before {
+            content: '\25fc';
+            vertical-align: sub;
+        }
+        &::after {
+            content: '\25fc';
+            vertical-align: super;
+        }
+    }
 }

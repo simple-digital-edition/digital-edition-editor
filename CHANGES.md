@@ -1,5 +1,9 @@
 # Changes
 
+## DEV (DEV)
+
+* **New:** Enable marking up missing editorial notes
+
 ## 0.6.0 (14.11.2019)
 
 * **New:** Enabled password changing

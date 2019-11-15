@@ -5563,3 +5563,9 @@ ul.tree {
     border-radius: 3px;
     padding: 0.1rem 0.2rem;
     background: #e6e6e6; }
+  .tei-editor-prosemirror-editor .tei-editor-missing::before {
+    content: '\25fc';
+    vertical-align: sub; }
+  .tei-editor-prosemirror-editor .tei-editor-missing::after {
+    content: '\25fc';
+    vertical-align: super; }
