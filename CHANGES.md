@@ -1,6 +1,6 @@
 # Changes
 
-## DEV (DEV)
+## 0.6.1 (15.11.2019)
 
 * **New:** Enable marking up missing editorial notes
 
