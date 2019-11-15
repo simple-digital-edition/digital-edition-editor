@@ -1673,6 +1673,30 @@
                                 }
                             }
                         },
+                        foreignLanguage: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:foreign',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:foreign'
+                            }
+                        },
+                        quotation: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:q',
+                                text: 'text()'
+                            },
+                            serializer: {
+                                tag: 'tei:q'
+                            }
+                        },
                         missing: {
                             group: 'inline',
                             inline: true,
@@ -1696,14 +1720,6 @@
                         },
                     },
                     marks: {
-                        foreignLanguage: {
-                            parser: {
-                                selector: 'self::tei:foreign'
-                            },
-                            serializer: {
-                                tag: 'tei:foreign'
-                            }
-                        },
                         letterSparse: {
                             parser: {
                                 selector: 'contains(@style, "letter-sparse")'
@@ -1776,14 +1792,6 @@
                                 }
                             }
                         },
-                        quotation: {
-                            parser: {
-                                selector: 'self::tei:q'
-                            },
-                            serializer: {
-                                tag: 'tei:q'
-                            }
-                        }
                     }
                 },
                 ui: [
@@ -1799,7 +1807,7 @@
                         ]
                     },
                     {
-                        title: 'Blocktypen',
+                        title: 'Auszeichnungen',
                         type: 'block-type',
                         blocks: [
                             {
@@ -1817,6 +1825,14 @@
                             {
                                 type: 'annotationGlobal',
                                 label: 'Globalkommentarverweis'
+                            },
+                            {
+                                type: 'foreignLanguage',
+                                label: 'Fremdsprachiger Text'
+                            },
+                            {
+                                type: 'quotation',
+                                label: 'Zitat'
                             },
                             {
                                 type: 'missing',
@@ -1904,25 +1920,6 @@
                                 mark: 'sup',
                                 label: 'Hochgestellt',
                                 icon: '<svg viewBox="0 0 24 24" class="mdi-icon"><path d="M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z" /></svg>'
-                            }
-                        ]
-                    },
-                    {
-                        title: 'Markup',
-                        type: 'toolbar',
-                        context: 'marks',
-                        entries: [
-                            {
-                                type: 'toggle-mark',
-                                mark: 'foreignLanguage',
-                                label: 'Fremdsprachiger Text',
-                                icon: '<svg viewBox="0 0 24 24" class="mdi-icon"><path d="M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z" /></svg>'
-                            },
-                            {
-                                type: 'toggle-mark',
-                                mark: 'quotation',
-                                label: 'Zitat',
-                                icon: '<svg viewBox="0 0 24 24" class="mdi-icon"><path d="M14,17H17L19,13V7H13V13H16M6,17H9L11,13V7H5V13H8L6,17Z" /></svg>'
                             }
                         ]
                     },
