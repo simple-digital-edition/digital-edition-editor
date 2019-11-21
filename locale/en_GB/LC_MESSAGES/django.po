@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-11-14 14:52+0000\n"
+"POT-Creation-Date: 2019-11-21 10:06+0000\n"
 "PO-Revision-Date: 2019-05-09 20:48+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en_GB\n"
@@ -83,11 +83,15 @@ msgstr ""
 "Changes in your copy of %(title)s that have not yet been added to the "
 "master copy:"
 
-#: editor/jinja2/editor/repository.jinja2:46
+#: editor/jinja2/editor/repository.jinja2:47
+msgid "Integration of the changes has already been requested"
+msgstr "Integration of the changes has already been requested"
+
+#: editor/jinja2/editor/repository.jinja2:49
 msgid "Request adding to the master copy"
 msgstr "Request adding to the master copy"
 
-#: editor/jinja2/editor/repository.jinja2:49
+#: editor/jinja2/editor/repository.jinja2:53
 #, python-format
 msgid ""
 "Changes in the master copy of %(title)s that have not yet been added to "
@@ -96,29 +100,29 @@ msgstr ""
 "Changes in the master copy of %(title)s that have not yet been added to "
 "your copy:"
 
-#: editor/jinja2/editor/repository.jinja2:58
+#: editor/jinja2/editor/repository.jinja2:62
 msgid "Add to your copy"
 msgstr "Add to your copy"
 
-#: editor/jinja2/editor/repository.jinja2:87
+#: editor/jinja2/editor/repository.jinja2:91
 msgid "Request sent"
 msgstr "Request sent"
 
-#: editor/jinja2/editor/repository.jinja2:92
-#: editor/jinja2/editor/repository.jinja2:98
+#: editor/jinja2/editor/repository.jinja2:96
+#: editor/jinja2/editor/repository.jinja2:102
 msgid "Request failed"
 msgstr "Request failed"
 
-#: editor/jinja2/editor/repository.jinja2:112
+#: editor/jinja2/editor/repository.jinja2:116
 msgid "Adding changes"
 msgstr "Adding changes"
 
-#: editor/jinja2/editor/repository.jinja2:124
+#: editor/jinja2/editor/repository.jinja2:128
 msgid "Changes added. The page will reload automatically in three seconds."
 msgstr "Changes added. The page will reload automatically in three seconds."
 
-#: editor/jinja2/editor/repository.jinja2:132
-#: editor/jinja2/editor/repository.jinja2:138
+#: editor/jinja2/editor/repository.jinja2:136
+#: editor/jinja2/editor/repository.jinja2:142
 msgid "Adding failed"
 msgstr "Adding failed"
 

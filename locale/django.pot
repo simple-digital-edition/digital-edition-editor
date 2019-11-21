@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-11-14 14:52+0000\n"
+"POT-Creation-Date: 2019-11-21 10:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,40 +80,44 @@ msgid ""
 "master copy:"
 msgstr ""
 
-#: editor/jinja2/editor/repository.jinja2:46
-msgid "Request adding to the master copy"
+#: editor/jinja2/editor/repository.jinja2:47
+msgid "Integration of the changes has already been requested"
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:49
+msgid "Request adding to the master copy"
+msgstr ""
+
+#: editor/jinja2/editor/repository.jinja2:53
 #, python-format
 msgid ""
 "Changes in the master copy of %(title)s that have not yet been added to "
 "your copy:"
 msgstr ""
 
-#: editor/jinja2/editor/repository.jinja2:58
+#: editor/jinja2/editor/repository.jinja2:62
 msgid "Add to your copy"
 msgstr ""
 
-#: editor/jinja2/editor/repository.jinja2:87
+#: editor/jinja2/editor/repository.jinja2:91
 msgid "Request sent"
 msgstr ""
 
-#: editor/jinja2/editor/repository.jinja2:92
-#: editor/jinja2/editor/repository.jinja2:98
+#: editor/jinja2/editor/repository.jinja2:96
+#: editor/jinja2/editor/repository.jinja2:102
 msgid "Request failed"
 msgstr ""
 
-#: editor/jinja2/editor/repository.jinja2:112
+#: editor/jinja2/editor/repository.jinja2:116
 msgid "Adding changes"
 msgstr ""
 
-#: editor/jinja2/editor/repository.jinja2:124
+#: editor/jinja2/editor/repository.jinja2:128
 msgid "Changes added. The page will reload automatically in three seconds."
 msgstr ""
 
-#: editor/jinja2/editor/repository.jinja2:132
-#: editor/jinja2/editor/repository.jinja2:138
+#: editor/jinja2/editor/repository.jinja2:136
+#: editor/jinja2/editor/repository.jinja2:142
 msgid "Adding failed"
 msgstr ""
 

@@ -68,9 +68,16 @@ def repository(request, rid):
                        'author': commit.author.name,
                        'datetime': commit.committed_datetime.strftime('%d %B %Y %H:%M')}
                       for commit in repo.iter_commits('%s..master@{u}' % request.user.username)]
+    response = requests.get('%s/merge_requests' % repository.gitlab_api,
+                            headers={'PRIVATE-TOKEN': repository.gitlab_api_token},
+                            params={'state': 'opened',
+                                    'source_branch': request.user.username,
+                                    'target_branch': 'master'})
+    existing_merge_request = len(response.json()) > 0
     return render(request, 'editor/repository.jinja2', {'repository': repository,
                                                         'remote_changes': remote_changes,
                                                         'master_changes': master_changes,
+                                                        'existing_merge_request': existing_merge_request,
                                                         'errors': errors})
 
 
@@ -82,7 +89,8 @@ def pull_request(request, rid):
                                  headers={'PRIVATE-TOKEN': repository.gitlab_api_token},
                                  params={'source_branch': request.user.username,
                                          'target_branch': 'master',
-                                         'title': 'TEI Editor Changes'})
+                                         'title': 'Merge changes by {0} {1}'.format(request.user.first_name,
+                                                                                          request.user.last_name)})
         if response.status_code >= 200 and response.status_code < 300:
             return HttpResponse('', status=200)
         else:

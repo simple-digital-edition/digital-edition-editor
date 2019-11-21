@@ -43,7 +43,11 @@
               </li>
             {% endfor %}
           </ul>
-          <button class="button" data-action="integration">{% trans %}Request adding to the master copy{% endtrans %}</button>
+          {% if existing_merge_request %}
+            <button class="button secondary">{% trans %}Integration of the changes has already been requested{% endtrans %}</button>
+          {% else %}
+            <button class="button" data-action="integration">{% trans %}Request adding to the master copy{% endtrans %}</button>
+          {% endif %}
         {% endif %}
         {% if master_changes %}
           <p>{% trans title=repository.title %}Changes in the master copy of {{ title }} that have not yet been added to your copy:{% endtrans %}</p>
