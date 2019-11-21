@@ -3,6 +3,7 @@
 ## DEV (DEV)
 
 * **New:** Don't allow merge requests when one already exists.
+* **Update:** Added level 4 headings
 
 ## 0.6.1 (15.11.2019)
 
