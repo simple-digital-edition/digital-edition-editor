@@ -1,6 +1,6 @@
 # Changes
 
-## DEV (DEV)
+## 0.7.1 (27.11.2019)
 
 * **Bugfix:** Updated the TEI editor dependency
 
