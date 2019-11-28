@@ -1,6 +1,6 @@
 # Changes
 
-## DEV (DEV)
+## 0.8.1 (28.11.2019)
 
 * **Update:** Link to the existing merge request if available
 * **Bugfix:** Hide spinner when opening the documentation
