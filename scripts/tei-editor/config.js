@@ -332,7 +332,7 @@
                             },
                             attrs: {
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },
@@ -413,7 +413,7 @@
                                     }
                                 },
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },
@@ -476,6 +476,9 @@
                             attrs: {
                                 type: {
                                     default: 'footnote',
+                                    parser: {
+                                        selector: '@type',
+                                    },
                                     serializer: {
                                         attr: 'type',
                                         value: 'footnote'
@@ -926,7 +929,7 @@
                             },
                             attrs: {
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },
@@ -1052,7 +1055,7 @@
                                     }
                                 },
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },
@@ -1148,6 +1151,9 @@
                             attrs: {
                                 function: {
                                     default: 'missing',
+                                    parser: {
+                                        selector: '@function',
+                                    },
                                     serializer: {
                                         attr: 'function',
                                         value: 'missing'
@@ -1647,7 +1653,7 @@
                                     }
                                 },
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },

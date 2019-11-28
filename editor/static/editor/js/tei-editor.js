@@ -332,7 +332,7 @@
                             },
                             attrs: {
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },
@@ -413,7 +413,7 @@
                                     }
                                 },
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },
@@ -476,6 +476,9 @@
                             attrs: {
                                 type: {
                                     default: 'footnote',
+                                    parser: {
+                                        selector: '@type',
+                                    },
                                     serializer: {
                                         attr: 'type',
                                         value: 'footnote'
@@ -926,7 +929,7 @@
                             },
                             attrs: {
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },
@@ -1052,7 +1055,7 @@
                                     }
                                 },
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },
@@ -1148,6 +1151,9 @@
                             attrs: {
                                 function: {
                                     default: 'missing',
+                                    parser: {
+                                        selector: '@function',
+                                    },
                                     serializer: {
                                         attr: 'function',
                                         value: 'missing'
@@ -1647,7 +1653,7 @@
                                     }
                                 },
                                 headingId: {
-                                    default: null,
+                                    default: '',
                                     parser: {
                                         selector: '@data-heading-id'
                                     },
@@ -4788,7 +4794,7 @@ for(let a=0;a<s.length;a++){let e=s[a]
 if("boolean"===e.type)n[r]=this.xpath.booleanValue(t,e.selector)
 else if("number"===e.type)try{n[r]=this.xpath.numberValue(t,e.selector)}catch(o){console.log(o)}else if("static"===e.type)this.xpath.booleanValue(t,e.selector)&&(n[r]=e.value)
 else try{let i=this.xpath.stringValue(t,e.selector)
-i&&""!==i&&(n[r]=i)}catch(o){console.log(o)}}}),n}parseContentMarks(t,e){let n=[]
+i&&(n[r]=i)}catch(o){console.log(o)}}}),n}parseContentMarks(t,e){let n=[]
 return Object.entries(e).forEach(e=>{let r=e[0],i=e[1],s=[]
 i.parser?s.push(i.parser):i.parsers&&(s=i.parsers)
 for(let o=0;o<s.length;o++)if(this.xpath.booleanValue(t,s[o].selector)){let e={type:r}

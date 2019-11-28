@@ -1,5 +1,9 @@
 # Changes
 
+## DEV (DEV)
+
+* **Bugfix:** Fix issue with invalid TEI being generated
+
 ## 0.8.2 (28.11.2019)
 
 * **Update:** Disable merging again
