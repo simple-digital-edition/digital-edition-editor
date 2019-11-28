@@ -1,6 +1,6 @@
 # Changes
 
-## DEV (DEV)
+## 0.8.3 (28.11.2019)
 
 * **Bugfix:** Fix issue with invalid TEI being generated
 
