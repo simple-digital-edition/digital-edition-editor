@@ -1,5 +1,9 @@
 # Changes
 
+## DEV (DEV)
+
+* **Update:** Disable merging again
+
 ## 0.8.1 (28.11.2019)
 
 * **Update:** Link to the existing merge request if available
