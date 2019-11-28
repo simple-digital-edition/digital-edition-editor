@@ -108,7 +108,10 @@ def local_merge(request, rid):
         repository.remotes.origin.pull()
         repository.heads[request.user.username].checkout()
         # Merge them in
-        repository.git.merge('master')
+        try:
+            repository.git.rebase('master')
+        except:
+            repository.git.merge('master')
         # Pull any branch changes
         repository.remotes.origin.pull()
         # Push all changes

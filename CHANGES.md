@@ -1,5 +1,9 @@
 # Changes
 
+## DEV (DEV)
+
+* **New:** Use rebasing where possible when merging changes from the master branch
+
 ## 0.7.1 (27.11.2019)
 
 * **Bugfix:** Updated the TEI editor dependency
