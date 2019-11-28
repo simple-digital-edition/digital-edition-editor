@@ -1,6 +1,6 @@
 # Changes
 
-## DEV (DEV)
+## 0.8.2 (28.11.2019)
 
 * **Update:** Disable merging again
 
