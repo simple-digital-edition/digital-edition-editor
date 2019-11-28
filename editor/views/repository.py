@@ -73,7 +73,7 @@ def repository(request, rid):
                             params={'state': 'opened',
                                     'source_branch': request.user.username,
                                     'target_branch': 'master'})
-    existing_merge_request = len(response.json()) > 0
+    existing_merge_request = response.json()[0] if len(response.json()) > 0 else None
     return render(request, 'editor/repository.jinja2', {'repository': repository,
                                                         'remote_changes': remote_changes,
                                                         'master_changes': master_changes,

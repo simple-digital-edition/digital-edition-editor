@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-11-21 10:06+0000\n"
+"POT-Creation-Date: 2019-11-28 12:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,7 +81,9 @@ msgid ""
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:47
-msgid "Integration of the changes has already been requested"
+msgid ""
+"Integration of the changes has been requested. Click here to view the "
+"status."
 msgstr ""
 
 #: editor/jinja2/editor/repository.jinja2:49

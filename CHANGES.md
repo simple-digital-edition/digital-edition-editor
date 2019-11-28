@@ -1,5 +1,9 @@
 # Changes
 
+## DEV (DEV)
+
+* **Update:** Link to the existing merge request if available
+
 ## 0.8.0 (28.11.2019)
 
 * **New:** Use rebasing where possible when merging changes from the master branch

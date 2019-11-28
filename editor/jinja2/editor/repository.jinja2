@@ -44,7 +44,7 @@
             {% endfor %}
           </ul>
           {% if existing_merge_request %}
-            <button class="button secondary">{% trans %}Integration of the changes has already been requested{% endtrans %}</button>
+            <a href="{{ existing_merge_request.web_url }}" target="_blank" rel="noopener" class="button secondary" data-no-loading-indicator="true">{% trans %}Integration of the changes has been requested. Click here to view the status.{% endtrans %}</a>
           {% else %}
             <button class="button" data-action="integration">{% trans %}Request adding to the master copy{% endtrans %}</button>
           {% endif %}

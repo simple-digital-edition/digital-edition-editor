@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-11-21 10:06+0000\n"
+"POT-Creation-Date: 2019-11-28 12:37+0000\n"
 "PO-Revision-Date: 2019-05-09 20:48+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en_GB\n"
@@ -84,8 +84,12 @@ msgstr ""
 "master copy:"
 
 #: editor/jinja2/editor/repository.jinja2:47
-msgid "Integration of the changes has already been requested"
-msgstr "Integration of the changes has already been requested"
+msgid ""
+"Integration of the changes has been requested. Click here to view the "
+"status."
+msgstr ""
+"Integration of the changes has been requested. Click here to view the "
+"status."
 
 #: editor/jinja2/editor/repository.jinja2:49
 msgid "Request adding to the master copy"
