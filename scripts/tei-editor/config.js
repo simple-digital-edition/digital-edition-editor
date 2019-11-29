@@ -837,7 +837,7 @@
             // Globalkommentar
             // ===============
             globalComment: {
-                title: 'Kommentierung',
+                title: 'Apparat',
                 type: 'single-text',
                 parser: {
                     selector: 'tei:text/tei:interpGrp[@type="global"]',

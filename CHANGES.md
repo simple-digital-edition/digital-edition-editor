@@ -3,6 +3,7 @@
 ## Development ()
 
 * **New**: Show the currently logged in user
+* **Update**: Re-label menu items
 
 ## 0.8.3 (28.11.2019)
 
