@@ -4,6 +4,7 @@
 
 * **New**: Show the currently logged in user
 * **Update**: Re-label menu items
+* **Bugfix**: Fix issue with editing new files
 
 ## 0.8.3 (28.11.2019)
 

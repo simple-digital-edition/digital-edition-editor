@@ -4844,7 +4844,7 @@ if(t._text&&(n.text=t._text),t._attrs&&(n.attrs={},Object.entries(t._attrs).forE
 for(let r=0;r<e.children.length;r++)if(t[e.children[r].tag.substring(4)]){let i=this.serializeMetadataNode(t[e.children[r].tag.substring(4)],e.children[r])
 Array.isArray(i)?n.children=n.children.concat(i):n.children.push(i)}}return n})
 {let n={node:e.tag}
-if(t._text&&(n.text=t._text),t._attrs&&(n.attrs={},Object.entries(t._attrs).forEach(t=>{n.attrs[t[0]]=[t[1]]})),e.children){n.children=[]
+if(t&&(t._text&&(n.text=t._text),t._attrs&&(n.attrs={},Object.entries(t._attrs).forEach(t=>{n.attrs[t[0]]=[t[1]]})),e.children)){n.children=[]
 for(let r=0;r<e.children.length;r++)if(t[e.children[r].tag.substring(4)]){let i=this.serializeMetadataNode(t[e.children[r].tag.substring(4)],e.children[r])
 Array.isArray(i)?n.children=n.children.concat(i):n.children.push(i)}}return n}}serializeMultiText(t,e){let n={node:e.parts.serializer.tag,children:t.map(t=>this.serializeTextNode(t.text,e))}
 return e.parts.serializer.attrs&&(n.attrs={},Object.entries(e.parts.serializer.attrs).forEach(t=>{n.attrs[t[0]]=[t[1]]})),{node:"tei:TEI",children:[{node:e.serializer.tag,children:[n]}]}}toString(t,e){function n(t){return t.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")}let r=[],i=[e,"<",t.node]
@@ -4876,7 +4876,9 @@ for(;e&&("separator"===e.getAttribute("role")||"true"===e.querySelector('*[role=
 e&&e.querySelector('*[role="menuitem"]').focus()}}},"template:/tei-editor/components/AriaMenu":{id:"IoCg9v0u",block:'{"symbols":["@class","@label","&default"],"statements":[[6,"nav"],[10,"role","menubar"],[11,"class",[21,1,[]],null],[11,"arial-label",[21,2,[]],null],[8],[0,"\\n  "],[6,"ul"],[10,"role","menu"],[11,"onkeydown",[26,"action",[[22,["keyDown"]]],null],null],[8],[0,"\\n    "],[13,3],[0,"\\n  "],[9],[0,"\\n"],[9],[0,"\\n"]],"hasEval":false}',meta:{specifier:"template:/tei-editor/components/AriaMenu"}},"component:/tei-editor/components/AriaMenuAction":Gi,"template:/tei-editor/components/AriaMenuAction":{id:"E5+xlPLz",block:'{"symbols":["@action","@label","@current","@hidden","&default","@disabled"],"statements":[[6,"li"],[10,"role","presentation"],[8],[4,"if",[[21,6,[]]],null,{"statements":[[6,"a"],[10,"role","menuitem"],[11,"onclick",[26,"action",[[22,["noAction"]]],null],null],[11,"tabindex",[20,"tabindex"],null],[11,"title",[21,2,[]],null],[11,"aria-label",[21,2,[]],null],[10,"aria-disabled","true"],[11,"aria-current",[21,3,[]],null],[11,"aria-hidden",[21,4,[]],null],[8],[13,5],[9]],"parameters":[]},{"statements":[[6,"a"],[10,"role","menuitem"],[11,"onclick",[21,1,[]],null],[11,"tabindex",[20,"tabindex"],null],[11,"title",[21,2,[]],null],[11,"aria-label",[21,2,[]],null],[10,"aria-disabled","false"],[11,"aria-current",[21,3,[]],null],[11,"aria-hidden",[21,4,[]],null],[8],[13,5],[9]],"parameters":[]}],[9],[0,"\\n"]],"hasEval":false}',meta:{specifier:"template:/tei-editor/components/AriaMenuAction"}},"component:/tei-editor/components/MetadataEditor":class extends G{setMetadataField(t,e){e.preventDefault()
 let n=Yi([this.args.metadata])
 n=Qi([n,t,e.target.value]),this.args.update(n)}addMultiFieldRow(t,e,n){n.preventDefault()
-let r=Yi([this.args.metadata]),i=Xi([r,t]),s=[]
+let r=Yi([this.args.metadata]),i=Xi([r,t])
+void 0===i&&(Qi([r,t,[]]),i=Xi([r,t]))
+let s=[]
 e.forEach(t=>{let e={}
 e=Qi([e,t.path,""]),s.push(e)}),i.push(s),this.args.update(r)}removeMultiFieldRow(t,e,n){n.preventDefault()
 let r=Yi([this.args.metadata])
