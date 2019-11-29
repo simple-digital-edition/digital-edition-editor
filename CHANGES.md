@@ -1,6 +1,6 @@
 # Changes
 
-## Development ()
+## 0.8.4 (29.11.2019)
 
 * **New**: Show the currently logged in user
 * **Update**: Re-label menu items
