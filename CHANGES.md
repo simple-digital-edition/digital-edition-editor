@@ -1,5 +1,9 @@
 # Changes
 
+## Development ()
+
+* **New**: Support marking up text variants
+
 ## 0.8.6 (02.12.2019)
 
 * **Bugfix**: Added missing translations

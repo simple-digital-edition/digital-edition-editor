@@ -5548,7 +5548,7 @@ ul.tree {
     font-weight: bold; }
   .tei-editor-prosemirror-editor .tei-editor-wordRange {
     padding-left: 1rem; }
-  .tei-editor-prosemirror-editor .tei-editor-sic {
+  .tei-editor-prosemirror-editor .tei-editor-sic, .tei-editor-prosemirror-editor .tei-editor-reading {
     font-style: italic; }
   .tei-editor-prosemirror-editor .tei-editor-lemma {
     font-style: italic; }

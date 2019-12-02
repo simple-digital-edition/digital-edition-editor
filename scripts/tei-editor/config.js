@@ -1137,6 +1137,30 @@
                                 tag: 'tei:sic',
                             }
                         },
+                        reading: {
+                            group: 'inline',
+                            inline: true,
+                            content: 'text*',
+                            parser: {
+                                selector: 'tei:rdg',
+                                text: 'text()',
+                            },
+                            serializer: {
+                                tag: 'tei:rdg',
+                            },
+                            attrs: {
+                                wit: {
+                                    default: '',
+                                    parser: {
+                                        selector: 'substring(@wit, 2)',
+                                    },
+                                    serializer: {
+                                        attr: 'wit',
+                                        value: '#${value}',
+                                    }
+                                }
+                            }
+                        },
                         missing: {
                             group: 'inline',
                             inline: true,
@@ -1308,7 +1332,11 @@
                             },
                             {
                                 type: 'sic',
-                                label: 'Korrigierter Text'
+                                label: 'Textvorlage'
+                            },
+                            {
+                                type: 'reading',
+                                label: 'Variante'
                             },
                             {
                                 type: 'missing',
@@ -1480,7 +1508,19 @@
                                 dataType: 'text'
                             }
                         ]
-                    }
+                    },
+                    {
+                        title: 'Variante',
+                        type: 'toolbar',
+                        context: 'blocks.reading',
+                        entries: [
+                            {
+                                type: 'text-attr',
+                                attr: 'wit',
+                                dataType: 'text',
+                            }
+                        ]
+                    },
                 ]
             },
 
