@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-11-28 12:37+0000\n"
+"POT-Creation-Date: 2019-12-02 10:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,15 +22,19 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-#: editor/jinja2/base.jinja2:21
+#: editor/jinja2/base.jinja2:22
+msgid "Preview"
+msgstr ""
+
+#: editor/jinja2/base.jinja2:23
 msgid "Change Password"
 msgstr ""
 
-#: editor/jinja2/base.jinja2:22 editor/jinja2/editor/edit.jinja2:27
+#: editor/jinja2/base.jinja2:24 editor/jinja2/editor/edit.jinja2:27
 msgid "Logout"
 msgstr ""
 
-#: editor/jinja2/base.jinja2:24 editor/jinja2/editor/edit.jinja2:29
+#: editor/jinja2/base.jinja2:26 editor/jinja2/editor/edit.jinja2:29
 #: editor/jinja2/registration/login.html:3
 #: editor/jinja2/registration/login.html:10
 #: editor/jinja2/registration/login.html:37
@@ -130,7 +134,8 @@ msgstr ""
 #: editor/jinja2/help/index.jinja2:15
 msgid ""
 "Detailed help can be found <a href=\"https://digital-edition-"
-"editor.readthedocs.io\" target=\"_blank\" rel=\"noopener\">here</a>."
+"editor.readthedocs.io\" target=\"_blank\" rel=\"noopener\" data-no-"
+"loading-indicator=\"true\">here</a>."
 msgstr ""
 
 #: editor/jinja2/help/index.jinja2:19
