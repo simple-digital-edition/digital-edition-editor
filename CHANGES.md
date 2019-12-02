@@ -1,6 +1,6 @@
 # Changes
 
-## DEV (DEV)
+## 0.8.5 (02.12.2019)
 
 * **New**: Added a preview link
 
