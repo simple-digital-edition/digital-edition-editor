@@ -1,6 +1,6 @@
 # Changes
 
-## Development ()
+## 0.8.8 (02.12.2019)
 
 * **Bugfix**: Missing menu options in the editor
 
