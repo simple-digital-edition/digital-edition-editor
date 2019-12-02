@@ -19,6 +19,7 @@
           <li class="presentation"><a href="{{ url('editor:help') }}" role="menuitem" tabindex="0" aria-label="{% trans %}Help{% endtrans %}" target="digital-edition-editor-help" data-no-loading-indicator="true">{{ icons.icon('help-circle') }}</a></li>
           {% if request.user.is_authenticated %}
             <li class="presentation menu-text">{{ request.user.first_name }}:</li>
+            <li class="presentation"><a href="https://gutzkow.uzi.uni-halle.de/preview/{{ request.user.username }}" role="menuitem" tabindex="-1" target="_blank" rel="noopener" data-no-loading-indicator="true">{% trans %}Preview{% endtrans %}</a></li>
             <li class="presentation"><a href="{{ url('password_change') }}" role="menuitem" tabindex="-1">{% trans %}Change Password{% endtrans %}</a></li>
             <li class="presentation"><a href="{{ url('logout') }}?next={{ request.path }}" role="menuitem" tabindex="-1">{% trans %}Logout{% endtrans %}</a></li>
           {% else %}
