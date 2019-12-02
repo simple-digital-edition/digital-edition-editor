@@ -1,5 +1,9 @@
 # Changes
 
+## Development ()
+
+* **Bugfix**: Missing menu options in the editor
+
 ## 0.8.7 (02.12.2019)
 
 * **New**: Support marking up text variants
