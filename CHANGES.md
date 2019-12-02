@@ -1,6 +1,6 @@
 # Changes
 
-## Development ()
+## 0.8.6 (02.12.2019)
 
 * **Bugfix**: Added missing translations
 
