@@ -1,0 +1,7 @@
+include:
+  template: Dependency-Scanning.gitlab-ci.yml
+  
+dependency_scanning:
+  variables:
+    DS_DISABLE_DIND: "true"
+    DS_PYTHON_VERSION: "3.6"
