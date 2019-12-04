@@ -4849,11 +4849,20 @@ else{let r=[]
 for(let n=0;n<t.children.length;n++){let i=this.parseContentNode(t.children[n],e)
 i&&r.push(i)}n.content=r}else{let r=[]
 for(let n=0;n<t.children.length;n++){let i=this.parseContentNode(t.children[n],e)
-i&&r.push(i)}n.content=r}return n}}}}parseHeaderNode(t,e){let n=this.xpath.nodeIterator(t,e.tag),r=[],i=n.iterateNext()
+i&&r.push(i)}n.content=r}return n}}}}generatePermutations(t){if(t.length>1){let e=[]
+return this.generatePermutations(t.slice(1)).forEach(n=>{t[0].forEach(t=>{e.push([t].concat(n.slice(0)))})}),e}return t[0].map(t=>[t])}duplicateNode(t,e){let n=[],r=(e[0],e.map(e=>Xi([t,e.tag.substring(e.tag.indexOf(":")+1)])))
+return this.generatePermutations(r).forEach(r=>{let i=Yi([t])
+for(let t=0;t<e.length;t++)i[e[t].tag.substring(e[t].tag.indexOf(":")+1)]=r[t]
+n.push(i)}),n}parseHeaderNode(t,e){let n=this.xpath.nodeIterator(t,e.tag),r=[],i=n.iterateNext()
 for(;i;){let t={_attrs:{},_text:0===i.children.length?this.xpath.stringValue(i,"text()"):null}
 for(let e=0;e<i.attributes.length;e++)t._attrs[i.attributes[e].name]=i.attributes[e].value
-if(e.children)for(let n=0;n<e.children.length;n++){let r=this.parseHeaderNode(i,e.children[n])
-r&&(t[e.children[n].tag.substring(4)]=r)}r.push(t),i=n.iterateNext()}return 0===r.length?null:e.multiple?r:r[0]}parseHeader(t){let e=this.xpath.firstNode(this.dom.documentElement,t.tag),n={}
+if(e.children){e.deduplicate&&e.children.forEach(t=>{e.deduplicate.merge.forEach(e=>{t.tag===e.tag&&(t.multiple=!0)})})
+for(let n=0;n<e.children.length;n++){let r=this.parseHeaderNode(i,e.children[n])
+r&&(t[e.children[n].tag.substring(e.children[n].tag.indexOf(":")+1)]=r)}e.deduplicate&&e.children.forEach(t=>{e.deduplicate.merge.forEach(e=>{t.tag===e.tag&&(t.multiple=!1)})})}r.push(t),i=n.iterateNext()}if(0===r.length)return null
+if(e.multiple){if(e.deduplicate){let t=[]
+r.forEach(n=>{let r=!1
+e.deduplicate.merge.forEach(t=>{let e=Xi([n,t.tag.substring(t.tag.indexOf(":")+1)])
+e&&e.length>1&&(r=!0)}),r?t=t.concat(this.duplicateNode(n,e.deduplicate.merge)):t.append(n)}),r=t}return r}return r[0]}parseHeader(t){let e=this.xpath.firstNode(this.dom.documentElement,t.tag),n={}
 for(let r=0;r<t.schema.length;r++){let i=this.parseHeaderNode(e,t.schema[r])
 i&&(n[t.schema[r].tag.substring(4)]=i)}return n}parseMultiText(t){let e=this.xpath.firstNode(this.dom.documentElement,t.parser.selector)
 if(e){let n=[],r=this.xpath.nodeIterator(e,t.parts.parser.selector),i=r.iterateNext()
@@ -4879,11 +4888,17 @@ let t=n
 t.node=null,r.forEach(e=>{if(null===t.node||t.node===e.node)t.node=e.node,Object.entries(e.attrs).forEach(e=>{t.attrs[e[0]]?t.attrs[e[0]]=t.attrs[e[0]].concat(e[1]):t.attrs[e[0]]=e[1]})
 else{let n={node:e.node,attrs:e.attrs,children:[],text:t.text}
 t.text=null,t.children.push(n),t=n}})}else r.forEach(t=>{t.node&&(n.node=t.node),t.attrs&&Object.entries(t.attrs).forEach(t=>{n.attrs[t[0]]?n.attrs[t[0]]=n.attrs[t[0]].concat(t[1]):n.attrs[t[0]]=t[1]})})}}else t.content&&t.content.forEach(t=>{n.children.push(this.serializeTextNode(t,e))})
-return n}serializeHeader(t,e){return{node:"tei:TEI",children:[{node:e.tag,children:e.schema.map(e=>this.serializeMetadataNode(t[e.tag.substring(4)],e))}]}}serializeMetadataNode(t,e){if(e.multiple)return t.map(t=>{let n={node:e.tag}
+return n}serializeHeader(t,e){return{node:"tei:TEI",children:[{node:e.tag,children:e.schema.map(e=>this.serializeMetadataNode(t[e.tag.substring(4)],e))}]}}serializeMetadataNode(t,e){if(e.multiple){let n=t.map(t=>{let n={node:e.tag}
 if(t._text&&(n.text=t._text),t._attrs&&(n.attrs={},Object.entries(t._attrs).forEach(t=>{n.attrs[t[0]]=[t[1]]})),e.children){n.children=[]
 for(let r=0;r<e.children.length;r++)if(t[e.children[r].tag.substring(4)]){let i=this.serializeMetadataNode(t[e.children[r].tag.substring(4)],e.children[r])
 Array.isArray(i)?n.children=n.children.concat(i):n.children.push(i)}}return n})
-{let n={node:e.tag}
+if(e.deduplicate){let t=[],r=[]
+n.forEach(n=>{let i=Xi([n,e.deduplicate.key])
+i=i.length>0?i[0]:null
+let s=r.indexOf(i)
+if(s>=0){let r=t[s]
+n.children&&n.children.length>0&&e.deduplicate.merge.forEach(t=>{n.children.forEach(e=>{if(e.node===t.tag){let t=r.children.length,n=0
+r.children.forEach((r,i)=>{0===n&&r.node===e.node?n=1:1===n&&r.node!==e.node&&(n=2,t=i),r.node===e.node&&this.objectsMatch(r,e)&&(n=3)}),3!=n&&r.children.splice(t,0,e)}})})}else r.push(i),t.push(n)}),n=t}return n}{let n={node:e.tag}
 if(t&&(t._text&&(n.text=t._text),t._attrs&&(n.attrs={},Object.entries(t._attrs).forEach(t=>{n.attrs[t[0]]=[t[1]]})),e.children)){n.children=[]
 for(let r=0;r<e.children.length;r++)if(t[e.children[r].tag.substring(4)]){let i=this.serializeMetadataNode(t[e.children[r].tag.substring(4)],e.children[r])
 Array.isArray(i)?n.children=n.children.concat(i):n.children.push(i)}}return n}}serializeMultiText(t,e){let n={node:e.parts.serializer.tag,children:t.map(t=>this.serializeTextNode(t.text,e))}
