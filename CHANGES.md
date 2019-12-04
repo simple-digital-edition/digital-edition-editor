@@ -1,6 +1,6 @@
 # Changes
 
-## Development ()
+## 0.8.9 (04.12.2019)
 
 * **Update**: Updated TEI editor to address duplicate metadata issue
 
