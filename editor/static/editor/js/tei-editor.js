@@ -28,6 +28,17 @@
                                     {
                                         tag: 'tei:respStmt',
                                         multiple: true,
+                                        deduplicate: {
+                                            key: 'attrs.xml:id',
+                                            merge: [
+                                                {
+                                                    tag: 'tei:resp',
+                                                },
+                                                {
+                                                    tag: 'tei:name'
+                                                },
+                                            ],
+                                        },
                                         attrs: {
                                             'xml:id': '_attrs.xml:id'
                                         },

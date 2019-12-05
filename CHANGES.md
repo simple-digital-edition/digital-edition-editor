@@ -1,5 +1,9 @@
 # Changes
 
+## 0.8.10:
+
+* **Bugfix**: Updated the config to actually enable the deduplication
+
 ## 0.8.9 (04.12.2019)
 
 * **Update**: Updated TEI editor to address duplicate metadata issue
