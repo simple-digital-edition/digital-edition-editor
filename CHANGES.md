@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.8.12 (10.12.2019):
+
 * **Bugfix**: Updated the TEI editor dependency
 
 ## 0.8.11 (10.12.2019):
