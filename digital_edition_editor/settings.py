@@ -148,7 +148,7 @@ with open('CHANGES.md') as in_f:
         if match is None:
             match = re.match('## (Development) \(()\)', line.strip())
         if match and last_version != match.group(1):
-            if len(changes) > 0:
+            if len(changes) > 0 and (DEBUG or last_version != 'Development'):
                 HISTORY.append((last_version, last_date, tuple(changes)))
                 changes = []
             last_version = match.group(1)
@@ -157,7 +157,7 @@ with open('CHANGES.md') as in_f:
             match = re.match('\\* \\*\\*([a-zA-Z]+)\*\*:\s+((?:\w|\s|[-,.:;"\'])+)', line.strip())
             if match:
                 changes.append((match.group(1).lower(), _icon_mappings[match.group(1).lower()], match.group(2)))
-    if last_version and len(changes) > 0:
+    if last_version and len(changes) > 0 and (DEBUG or last_version != 'Development'):
         HISTORY.append((last_version, last_date, tuple(changes)))
 HISTORY = tuple(HISTORY)
 if HISTORY:
