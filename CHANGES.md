@@ -1,5 +1,9 @@
 # Changes
 
+## Development ():
+
+* **Bugfix**: Update the TEI editor dependency
+
 ## 0.8.10 (05.12.2019):
 
 * **Bugfix**: Updated the config to actually enable the deduplication
