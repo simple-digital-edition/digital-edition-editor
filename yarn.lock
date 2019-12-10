@@ -2890,9 +2890,9 @@ tar@^4:
     yallist "^3.0.3"
 
 tei-editor@^0.4.0:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/tei-editor/-/tei-editor-0.4.1.tgz#ec92fa25ede82d25c24e413179660a24f9130345"
-  integrity sha512-vXuAZgEBiH+og4KwSQfdshrRZiEodYwejFF80ED4Ndf+uj6lQVx1+vL6H/NzF8j37bLxCj+S2L0vuVhtn3MPXQ==
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/tei-editor/-/tei-editor-0.4.2.tgz#ce86557e51ef660c44ecf7672e9de91a124183bc"
+  integrity sha512-tNAbs3y9qxxFOwb0bc4wznGOX9OJlcYFKH8ND2MxmY8NF8t/TUAWMpYRFjp8JIE5+Z7w3K57Zv+Rn4lqUPRFeg==
 
 through2-filter@^3.0.0:
   version "3.0.0"

@@ -4873,7 +4873,7 @@ r&&(t[e.children[n].tag.substring(e.children[n].tag.indexOf(":")+1)]=r)}e.dedupl
 if(e.multiple){if(e.deduplicate){let t=[]
 r.forEach(n=>{let r=!1
 e.deduplicate.merge.forEach(t=>{let e=Xi([n,t.tag.substring(t.tag.indexOf(":")+1)])
-e&&e.length>1&&(r=!0)}),r?t=t.concat(this.duplicateNode(n,e.deduplicate.merge)):t.push(n)}),r=t}return r}return r[0]}parseHeader(t){let e=this.xpath.firstNode(this.dom.documentElement,t.tag),n={}
+e&&e.length>1&&(r=!0)}),r?t=t.concat(this.duplicateNode(n,e.deduplicate.merge)):(Object.keys(n).forEach(t=>{n[t]&&1===n[t].length&&(n[t]=n[t][0])}),t.push(n))}),r=t}return r}return r[0]}parseHeader(t){let e=this.xpath.firstNode(this.dom.documentElement,t.tag),n={}
 for(let r=0;r<t.schema.length;r++){let i=this.parseHeaderNode(e,t.schema[r])
 i&&(n[t.schema[r].tag.substring(4)]=i)}return n}parseMultiText(t){let e=this.xpath.firstNode(this.dom.documentElement,t.parser.selector)
 if(e){let n=[],r=this.xpath.nodeIterator(e,t.parts.parser.selector),i=r.iterateNext()
