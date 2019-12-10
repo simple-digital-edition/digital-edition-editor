@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.8.13 (10.12.2019):
+
 * **Update**: Updated the documentation
 * **Update**: Improved the labeling for date metadata inputs
 
