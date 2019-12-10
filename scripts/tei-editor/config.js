@@ -161,7 +161,7 @@
                             },
                             {
                                 type: 'single-text',
-                                label: 'Veröffentlichungsdatum (JJJJ-MM-TT)',
+                                label: 'Veröffentlichungsdatum (JJJJ-MM-TT, JJJJ-MM, JJJJ)',
                                 path: 'profileDesc.creation.date._attrs.when'
                             },
                             {
@@ -241,7 +241,7 @@
                                     },
                                     {
                                         type: 'single-text',
-                                        label: 'Datum (JJJJ-MM-TT)',
+                                        label: 'Datum (JJJJ-MM-TT, JJJJ-MM, JJJJ)',
                                         path: '_attrs.when'
                                     }
                                 ]

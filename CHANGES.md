@@ -3,6 +3,7 @@
 ## Development ():
 
 * **Update**: Updated the documentation
+* **Update**: Improved the labeling for date metadata inputs
 
 ## 0.8.12 (10.12.2019):
 
