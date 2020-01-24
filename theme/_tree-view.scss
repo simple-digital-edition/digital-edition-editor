@@ -1,0 +1,11 @@
+ul.tree {
+    margin: 0;
+
+    li {
+        list-style-type: none;
+
+        ul {
+            margin-left: $global-margin;
+        }
+    }
+}

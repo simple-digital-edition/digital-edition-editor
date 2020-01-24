@@ -12,7 +12,7 @@
                 tag: 'tei:teiHeader',
                 schema: [
                     {
-                        tag: 'tei:fileDesc',
+                        "tag": 'tei:fileDesc',
                         children: [
                             {
                                 tag: 'tei:titleStmt',

@@ -9,7 +9,7 @@ nav.expanded {
     }
 }
 
-*[role="menu"] {
+*[role="menu"], *[role="menubar"] {
     @include menu-base;
     background: $light-gray;
 
@@ -43,9 +43,24 @@ nav.expanded {
 
             &[aria-disabled="true"] {
                 cursor: not-allowed;
+                background: $white;
+                color: $light-gray;
+
+                svg path {
+                    fill: $light-gray;
+                }
+
+                &[aria-current="true"], &[aria-checked="true"], &:hover {
+                    background: $white;
+                    color: $light-gray;
+
+                    svg path {
+                        fill: $light-gray;
+                    }
+                }
             }
 
-            &[aria-current="true"], &:hover {
+            &[aria-current="true"], &[aria-checked="true"], &:hover {
                 background: $primary-color;
                 color: $white;
 
