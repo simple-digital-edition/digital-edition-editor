@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Update**: Updated to use the new TEI editor
+
 ## 0.8.13 (10.12.2019):
 
 * **Update**: Updated the documentation

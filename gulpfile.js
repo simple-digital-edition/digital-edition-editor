@@ -17,7 +17,9 @@ gulp.task('css:theme', function(cb) {
 
 gulp.task('css:editor', function(cb) {
     pump([
-        gulp.src(['node_modules/tei-editor/dist/app.css']),
+        gulp.src([
+            'node_modules/tei-editor/dist/css/app.css',
+        ]),
         concat('tei-editor.css'),
         gulp.dest('editor/static/editor/css')
     ], cb);
@@ -37,8 +39,8 @@ gulp.task('js:ui', function(cb) {
 gulp.task('js:editor', function(cb) {
     pump([
         gulp.src([
-            'scripts/tei-editor/*.js',
-            'node_modules/tei-editor/dist/app.js'
+            'node_modules/tei-editor/dist/js/chunk-vendors.js',
+            'node_modules/tei-editor/dist/js/app.js',
         ]),
         concat('tei-editor.js'),
         gulp.dest('editor/static/editor/js')

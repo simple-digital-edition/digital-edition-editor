@@ -76,11 +76,2151 @@
               }
           }
       }
+      window.TEIEditor = {
+          callbacks: {
+              autoLoad: function(callback) {
+                  document.querySelector('#loading').classList.add('is-visible');
+                  window.fetch('{{ url('editor:raw_tei', kwargs={'rid': repository.id, 'fid': fid}) }}').then(function(response) {
+                      response.text().then(function(data) {
+                          callback(data);
+                          document.querySelector('#loading').classList.remove('is-visible');
+                      }).catch(function() {
+                          document.querySelector('#loading').classList.remove('is-visible');
+                      });
+                  }).catch(function() {
+                      document.querySelector('#loading').classList.remove('is-visible');
+                  });
+              },
+              save: function(data) {
+                var commit_msg = prompt('Describe the change you made', last_commit_msg);
+                if (commit_msg) {
+                    document.querySelector('#loading').classList.add('is-visible');
+                    window.fetch('{{ url('editor:raw_tei', kwargs={'rid': repository.id, 'fid': fid}) }}', {
+                        method: 'PATCH',
+                        body: data,
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'X-Commit-Message': commit_msg
+                        }
+                    }).then(function() {
+                        last_commit_msg = commit_msg;
+                        document.querySelector('#loading').classList.remove('is-visible');
+                    }).catch(function() {
+                        document.querySelector('#loading').classList.remove('is-visible');
+                    });
+                }
+              }
+          }
+      }
       </script>
-      <script src="{{ static('editor/js/tei-editor.js') }}"></script>
-      <tei-editor></tei-editor>
+      <div id="app"></div>
     </main>
     <div id="loading">{{ icons.spinner() }}</div>
+    <script id="TEIEditorConfig" type="application/json">
+      {
+          "sections": {
+              "body": {
+                  "label": "Haupttext",
+                  "type": "TextEditor",
+                  "parser": {
+                      "selector": "tei:text/tei:body"
+                  },
+                  "serialiser": {
+                      "tag": "tei:text/tei:body"
+                  },
+                  "schema": [
+                      {
+                          "name": "paragraph",
+                          "type": "block",
+                          "parser": {
+                              "selector": "tei:p"
+                          },
+                          "serialiser": {
+                              "tag": "tei:p"
+                          },
+                          "attrs": {
+                              "noIndent": {
+                                  "default": false,
+                                  "parser": {
+                                      "selector": "contains(@style, \"no-indent\")"
+                                  },
+                                  "serialiser": {
+                                      "attr": "style",
+                                      "values": {
+                                          "true": "no-indent"
+                                      }
+                                  }
+                              },
+                              "textAlign": {
+                                  "default": "left",
+                                  "parsers": [
+                                      {
+                                          "selector": "contains(@style, \"text-left\")",
+                                          "type": "static",
+                                          "value": "left"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"text-center\")",
+                                          "type": "static",
+                                          "value": "center"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"text-right\")",
+                                          "type": "static",
+                                          "value": "right"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"text-justify\")",
+                                          "type": "static",
+                                          "value": "justify"
+                                      }
+                                  ],
+                                  "serialiser": {
+                                      "attr": "style",
+                                      "value": "text-{value}"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "heading",
+                          "type": "block",
+                          "content": "inline*",
+                          "parser": {
+                              "selector": "tei:head"
+                          },
+                          "serialiser": {
+                              "tag": "tei:head"
+                          },
+                          "attrs": {
+                              "headingId": {
+                                  "default": "",
+                                  "parser": {
+                                      "selector": "@data-heading-id"
+                                  },
+                                  "serialiser": {
+                                      "attr": "data-heading-id"
+                                  }
+                              },
+                              "level": {
+                                  "default": "1",
+                                  "parser": {
+                                      "selector": "substring(@type, 7)"
+                                  },
+                                  "serialiser": {
+                                      "attr": "type",
+                                      "value": "level-{value}"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "line",
+                          "type": "block",
+                          "parser": {
+                              "selector": "tei:l"
+                          },
+                          "serialiser": {
+                              "tag": "tei:l"
+                          }
+                      },
+                      {
+                          "name": "lineGroup",
+                          "type": "wrapping",
+                          "content": "line",
+                          "parser": {
+                              "selector": "tei:lg"
+                          },
+                          "serialiser": {
+                              "tag": "tei:lg"
+                          }
+                      },
+                      {
+                          "name": "pageLineRef",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:citedRange[@type=\"page-line-ref\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:citedRange",
+                              "attrs": {
+                                  "type": "page-line-ref"
+                              }
+                          }
+                      },
+                      {
+                          "name": "wordRange",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:citedRange[@type=\"word-range\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:citedRange",
+                              "attrs": {
+                                  "type": "word-range"
+                              }
+                          }
+                      },
+                      {
+                          "name": "quotation",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:q",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:q"
+                          }
+                      },
+                      {
+                          "name": "annotation",
+                          "type": "nested",
+                          "parser": {
+                              "selector": "tei:interp[@type=\"esv\"]"
+                          },
+                          "serialiser": {
+                              "tag": "tei:interp",
+                              "attrs": {
+                                  "type": "esv"
+                              }
+                          },
+                          "attrs": {
+                              "id": {
+                                  "parser": {
+                                      "selector": "@xml:id"
+                                  },
+                                  "serialiser": {
+                                      "attr": "xml:id"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "footnote",
+                          "type": "nested",
+                          "parser": {
+                              "selector": "tei:note[@type=\"footnote\"]"
+                          },
+                          "serialiser": {
+                              "tag": "tei:note",
+                              "attrs": {
+                                  "type": "footnote"
+                              }
+                          },
+                          "attrs": {
+                              "id": {
+                                  "parser": {
+                                      "selector": "@xml:id"
+                                  },
+                                  "serialiser": {
+                                      "attr": "xml:id"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "text",
+                          "type": "inline",
+                          "parsers": [
+                              {
+                                  "selector": "tei:seg",
+                                  "text": "text()"
+                              },
+                              {
+                                  "selector": "tei:hi",
+                                  "text": "text()"
+                              }
+                          ],
+                          "serialiser": {
+                              "tag": "tei:seg"
+                          }
+                      },
+                      {
+                          "name": "annotationGlobal",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:ref[@target=\"#global\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:ref"
+                          },
+                          "attrs": {
+                              "target": {
+                                  "default": "global",
+                                  "parser": {
+                                      "selector": "substring(@target, 2)"
+                                  },
+                                  "serialiser": {
+                                      "attr": "target",
+                                      "value": "#{value}"
+                                  }
+                              },
+                              "headingId": {
+                                  "default": "",
+                                  "parser": {
+                                      "selector": "@data-heading-id"
+                                  },
+                                  "serialiser": {
+                                      "attr": "data-heading-id"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "annotationMarker",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:ref[@type=\"esv\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:ref",
+                              "attrs": {
+                                  "type": "esv"
+                              }
+                          },
+                          "attrs": {
+                              "target": {
+                                  "default": "",
+                                  "parser": {
+                                      "selector": "substring(@target, 2)"
+                                  },
+                                  "serialiser": {
+                                      "attr": "target",
+                                      "value": "#{value}"
+                                  }
+                              }
+                          },
+                          "reference": {
+                              "type": "annotation",
+                              "attr": "target"
+                          }
+                      },
+                      {
+                          "name": "footnoteMarker",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:ref[@type=\"footnote\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:ref",
+                              "attrs": {
+                                  "type": "footnote"
+                              }
+                          },
+                          "attrs": {
+                              "target": {
+                                  "default": "",
+                                  "parser": {
+                                      "selector": "substring(@target, 2)"
+                                  },
+                                  "serialiser": {
+                                      "attr": "target",
+                                      "value": "#{value}"
+                                  }
+                              }
+                          },
+                          "reference": {
+                              "type": "footnote",
+                              "attr": "target"
+                          }
+                      },
+                      {
+                          "name": "pageBegin",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:pb",
+                              "text": "@n"
+                          },
+                          "serialiser": {
+                              "tag": "tei:pb",
+                              "text": {
+                                  "attr": "n"
+                              }
+                          }
+                      },
+                      {
+                          "name": "foreignLanguage",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:foreign",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:foreign"
+                          }
+                      },
+                      {
+                          "name": "lemma",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:lem",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:lem"
+                          }
+                      },
+                      {
+                          "name": "sic",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:sic",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:sic"
+                          }
+                      },
+                      {
+                          "name": "reading",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:rdg",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:rdg"
+                          },
+                          "attrs": {
+                              "wit": {
+                                  "default": "",
+                                  "parser": {
+                                      "selector": "substring(@wit, 2)"
+                                  },
+                                  "serialiser": {
+                                      "attr": "wit",
+                                      "value": "#{value}"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "missing",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:metamark[@function=\"missing\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:metamark",
+                              "attrs": {
+                                  "function": "missing"
+                              }
+                          }
+                      },
+                      {
+                          "name": "letterSparse",
+                          "type": "mark",
+                          "parser": {
+                              "selector": "contains(@style, \"letter-sparse\")"
+                          },
+                          "serialiser": {
+                              "tag": "tei:hi",
+                              "attrs": {
+                                  "style": {
+                                      "value": "letter-sparse"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "sup",
+                          "type": "mark",
+                          "parser": {
+                              "selector": "contains(@style, \"sup\")"
+                          },
+                          "serialiser": {
+                              "tag": "tei:hi",
+                              "attrs": {
+                                  "style": {
+                                      "value": "sup"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "fontSize",
+                          "type": "mark",
+                          "parsers": [
+                              {
+                                  "selector": "contains(@style, \"font-size-small\")"
+                              },
+                              {
+                                  "selector": "contains(@style, \"font-size-medium\")"
+                              },
+                              {
+                                  "selector": "contains(@style, \"font-size-large\")"
+                              }
+                          ],
+                          "serialiser": {
+                              "tag": "tei:hi"
+                          },
+                          "attrs": {
+                              "size": {
+                                  "default": "",
+                                  "parsers": [
+                                      {
+                                          "selector": "contains(@style, \"font-size-small\")",
+                                          "type": "static",
+                                          "value": "small"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"font-size-medium\")",
+                                          "type": "static",
+                                          "value": "medium"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"font-size-large\")",
+                                          "type": "static",
+                                          "value": "large"
+                                      }
+                                  ],
+                                  "serialiser": {
+                                      "attr": "style",
+                                      "values": {
+                                          "small": "font-size-small",
+                                          "medium": "font-size-medium",
+                                          "large": "font-size-large"
+                                      }
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "fontWeightBold",
+                          "type": "mark",
+                          "parser": {
+                              "selector": "contains(@style, \"font-weight-bold\")"
+                          },
+                          "serialiser": {
+                              "tag": "tei:hi",
+                              "attrs": {
+                                  "style": {
+                                      "value": "font-weight-bold"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "fontStyleItalic",
+                          "type": "mark",
+                          "parser": {
+                              "selector": "contains(@style, \"font-style-italic\")"
+                          },
+                          "serialiser": {
+                              "tag": "tei:hi",
+                              "attrs": {
+                                  "style": {
+                                      "value": "font-style-italic"
+                                  }
+                              }
+                          }
+                      }
+                  ],
+                  "ui": {
+                      "doc": [
+                          {
+                              "label": "Blocktypen",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Überschrift",
+                                              "nodeType": "heading"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Absatz",
+                                              "nodeType": "paragraph"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Vers",
+                                              "nodeType": "lineGroup"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Auszeichnungen",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Einzelstellenverweis",
+                                              "nodeType": "annotationMarker"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Globalkommentarverweis",
+                                              "nodeType": "annotationGlobal"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Seitenanfang",
+                                              "nodeType": "pageBegin"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Fußnote",
+                                              "nodeType": "footnoteMarker"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Fremdsprachiger Text",
+                                              "nodeType": "foreignLanguage"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Darstellung",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "selectMarkAttr",
+                                              "markType": "fontSize",
+                                              "attr": "size",
+                                              "values": [
+                                                  {
+                                                      "value": "",
+                                                      "label": "Normal"
+                                                  },
+                                                  {
+                                                      "value": "small",
+                                                      "label": "Klein"
+                                                  },
+                                                  {
+                                                      "value": "medium",
+                                                      "label": "Mittel"
+                                                  },
+                                                  {
+                                                      "value": "large",
+                                                      "label": "Groß"
+                                                  }
+                                              ]
+                                          },
+                                          {
+                                              "type": "separator"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "fontWeightBold",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "fontStyleItalic",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M10,4V7H12.21L8.79,15H6V18H14V15H11.79L15.21,7H18V4H10Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "letterSparse",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "sup",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Überschrift",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "heading"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "selectNodeAttr",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "values": [
+                                                  {
+                                                      "label": "Ebene 1",
+                                                      "value": "1"
+                                                  },
+                                                  {
+                                                      "label": "Ebene 2",
+                                                      "value": "2"
+                                                  },
+                                                  {
+                                                      "label": "Ebene 3",
+                                                      "value": "3"
+                                                  },
+                                                  {
+                                                      "label": "Ebene 4",
+                                                      "value": "4"
+                                                  }
+                                              ]
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "list",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrString",
+                                              "nodeType": "heading",
+                                              "attr": "headingId",
+                                              "label": "Navigationsmarker"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Absatz",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "paragraph"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "selectNodeAttr",
+                                              "nodeType": "paragraph",
+                                              "attr": "noIndent",
+                                              "values": [
+                                                  {
+                                                      "label": "Einrücken",
+                                                      "value": "false"
+                                                  },
+                                                  {
+                                                      "label": "Nicht einrücken",
+                                                      "value": "true"
+                                                  }
+                                              ]
+                                          },
+                                          {
+                                              "type": "separator"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "left",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "center",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "right",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "justify",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z\" /></svg>"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Einzelstellenverweis",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "annotationMarker"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "linkNestedDoc",
+                                              "nodeType": "annotationMarker",
+                                              "attr": "target",
+                                              "targetNodeType": "annotation"
+                                          },
+                                          {
+                                              "type": "editNestedDoc",
+                                              "nodeType": "annotationMarker",
+                                              "attr": "target",
+                                              "label": "Bearbeiten",
+                                              "targetNodeType": "annotation"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Globalkommentarverweis",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "annotationGlobal"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "list",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrString",
+                                              "label": "Abschnitt (optional)",
+                                              "nodeType": "annotationGlobal",
+                                              "attr": "headingId"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Fußnote",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "footnoteMarker"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "editNestedDoc",
+                                              "nodeType": "footnoteMarker",
+                                              "attr": "target",
+                                              "label": "Bearbeiten",
+                                              "targetNodeType": "footnote"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          }
+                      ],
+                      "annotation": [
+                          {
+                              "label": "Einzelstellenverweis",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "closeNested",
+                                              "label": "Schließen"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Auszeichnungen",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Seite & Zeile",
+                                              "nodeType": "pageLineRef"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Wortspanne",
+                                              "nodeType": "wordRange"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Einzelstellenverweis",
+                                              "nodeType": "annotationMarker"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Globalkommentarverweis",
+                                              "nodeType": "annotationGlobal"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Fremdsprachiger Text",
+                                              "nodeType": "foreignLanguage"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Zitat",
+                                              "nodeType": "quotation"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Lemma",
+                                              "nodeType": "lemma"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Textvorlage",
+                                              "nodeType": "sic"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Variante",
+                                              "nodeType": "reading"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Nicht ermittelt",
+                                              "nodeType": "missing"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Darstellung",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "selectMarkAttr",
+                                              "markType": "fontSize",
+                                              "attr": "size",
+                                              "values": [
+                                                  {
+                                                      "value": "",
+                                                      "label": "Normal"
+                                                  },
+                                                  {
+                                                      "value": "small",
+                                                      "label": "Klein"
+                                                  },
+                                                  {
+                                                      "value": "medium",
+                                                      "label": "Mittel"
+                                                  },
+                                                  {
+                                                      "value": "large",
+                                                      "label": "Groß"
+                                                  }
+                                              ]
+                                          },
+                                          {
+                                              "type": "separator"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "fontWeightBold",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "letterSparse",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "sup",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Einzelstellenverweis",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "annotationMarker"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "linkNestedDoc",
+                                              "nodeType": "annotationMarker",
+                                              "attr": "target",
+                                              "targetNodeType": "annotation"
+                                          },
+                                          {
+                                              "type": "editNestedDoc",
+                                              "nodeType": "annotationMarker",
+                                              "attr": "target",
+                                              "label": "Edit",
+                                              "targetNodeType": "annotation"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Globalkommentarverweis",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "annotationGlobal"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "list",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrString",
+                                              "label": "Abschnitt (optional)",
+                                              "nodeType": "annotationGlobal",
+                                              "attr": "headingId"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Variante",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "reading"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "list",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrString",
+                                              "label": "Quellenkürzel",
+                                              "nodeType": "reading",
+                                              "attr": "wit"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          }
+                      ],
+                      "footnote": [
+                          {
+                              "label": "Fußnote",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "closeNested",
+                                              "label": "Schließen"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Auszeichnungen",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Einzelstellenverweis",
+                                              "nodeType": "annotationMarker"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Globalkommentarverweis",
+                                              "nodeType": "annotationGlobal"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Fremdsprachiger Text",
+                                              "nodeType": "foreignLanguage"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Zitat",
+                                              "nodeType": "quotation"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Darstellung",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "selectMarkAttr",
+                                              "markType": "fontSize",
+                                              "attr": "size",
+                                              "values": [
+                                                  {
+                                                      "value": "",
+                                                      "label": "Normal"
+                                                  },
+                                                  {
+                                                      "value": "small",
+                                                      "label": "Klein"
+                                                  },
+                                                  {
+                                                      "value": "medium",
+                                                      "label": "Mittel"
+                                                  },
+                                                  {
+                                                      "value": "large",
+                                                      "label": "Groß"
+                                                  }
+                                              ]
+                                          },
+                                          {
+                                              "type": "separator"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "fontWeightBold",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "fontStyleItalic",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "letterSparse",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "sup",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          }
+                      ]
+                  }
+              },
+              "apparat": {
+                  "label": "Apparat",
+                  "type": "TextEditor",
+                  "parser": {
+                      "selector": "tei:text/tei:interpGrp[@type=\"global\"]"
+                  },
+                  "serialiser": {
+                      "tag": "tei:text/tei:interpGrp",
+                      "attrs": {
+                          "type": "global"
+                      }
+                  },
+                  "schema": [
+                      {
+                          "name": "paragraph",
+                          "type": "block",
+                          "parser": {
+                              "selector": "tei:p"
+                          },
+                          "serialiser": {
+                              "tag": "tei:p"
+                          },
+                          "attrs": {
+                              "noIndent": {
+                                  "default": false,
+                                  "parser": {
+                                      "selector": "contains(@style, \"no-indent\")"
+                                  },
+                                  "serialiser": {
+                                      "attr": "style",
+                                      "values": {
+                                          "true": "no-indent"
+                                      }
+                                  }
+                              },
+                              "textAlign": {
+                                  "default": "left",
+                                  "parsers": [
+                                      {
+                                          "selector": "contains(@style, \"text-left\")",
+                                          "type": "static",
+                                          "value": "left"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"text-center\")",
+                                          "type": "static",
+                                          "value": "center"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"text-right\")",
+                                          "type": "static",
+                                          "value": "right"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"text-justify\")",
+                                          "type": "static",
+                                          "value": "justify"
+                                      }
+                                  ],
+                                  "serialiser": {
+                                      "attr": "style",
+                                      "value": "text-{value}"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "heading",
+                          "type": "block",
+                          "content": "inline*",
+                          "parser": {
+                              "selector": "tei:head"
+                          },
+                          "serialiser": {
+                              "tag": "tei:head"
+                          },
+                          "attrs": {
+                              "headingId": {
+                                  "default": "",
+                                  "parser": {
+                                      "selector": "@data-heading-id"
+                                  },
+                                  "serialiser": {
+                                      "attr": "data-heading-id"
+                                  }
+                              },
+                              "level": {
+                                  "default": "1",
+                                  "parser": {
+                                      "selector": "substring(@type, 7)"
+                                  },
+                                  "serialiser": {
+                                      "attr": "type",
+                                      "value": "level-{value}"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "source",
+                          "type": "block",
+                          "parser": {
+                              "selector": "tei:item"
+                          },
+                          "serialiser": {
+                              "tag": "tei:item"
+                          },
+                          "attrs": {
+                              "sourceId": {
+                                  "default": "",
+                                  "parser": {
+                                      "selector": "@data-source-id"
+                                  },
+                                  "serialiser": {
+                                      "attr": "data-source-id"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "sourceList",
+                          "type": "wrapping",
+                          "content": "source",
+                          "parser": {
+                              "selector": "tei:list[@type=\"sources\"]"
+                          },
+                          "serialiser": {
+                              "tag": "tei:list",
+                              "attrs": {
+                                  "type": "sources"
+                              }
+                          }
+                      },
+                      {
+                          "name": "text",
+                          "type": "inline",
+                          "parsers": [
+                              {
+                                  "selector": "tei:seg",
+                                  "text": "text()"
+                              },
+                              {
+                                  "selector": "tei:hi",
+                                  "text": "text()"
+                              }
+                          ],
+                          "serialiser": {
+                              "tag": "tei:seg"
+                          }
+                      },
+                      {
+                          "name": "pageLineRef",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:citedRange[@type=\"page-line-ref\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:citedRange",
+                              "attrs": {
+                                  "type": "page-line-ref"
+                              }
+                          }
+                      },
+                      {
+                          "name": "wordRange",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:citedRange[@type=\"word-range\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:citedRange",
+                              "attrs": {
+                                  "type": "word-range"
+                              }
+                          }
+                      },
+                      {
+                          "name": "annotationGlobal",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:ref[@target=\"#global\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:ref"
+                          },
+                          "attrs": {
+                              "target": {
+                                  "default": "global",
+                                  "parser": {
+                                      "selector": "substring(@target, 2)"
+                                  },
+                                  "serialiser": {
+                                      "attr": "target",
+                                      "value": "#{value}"
+                                  }
+                              },
+                              "headingId": {
+                                  "default": "",
+                                  "parser": {
+                                      "selector": "@data-heading-id"
+                                  },
+                                  "serialiser": {
+                                      "attr": "data-heading-id"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "annotationMarker",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:ref",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:ref"
+                          },
+                          "attrs": {
+                              "target": {
+                                  "default": "unknown",
+                                  "parser": {
+                                      "selector": "substring(@target, 2)"
+                                  },
+                                  "serialiser": {
+                                      "attr": "target",
+                                      "value": "#{value}"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "foreignLanguage",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:foreign",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:foreign"
+                          }
+                      },
+                      {
+                          "name": "quotation",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:q",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:q"
+                          }
+                      },
+                      {
+                          "name": "lemma",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:lem",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:lem"
+                          }
+                      },
+                      {
+                          "name": "sic",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:sic",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:sic"
+                          }
+                      },
+                      {
+                          "name": "reading",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:rdg",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:rdg"
+                          },
+                          "attrs": {
+                              "wit": {
+                                  "default": "",
+                                  "parser": {
+                                      "selector": "substring(@wit, 2)"
+                                  },
+                                  "serialiser": {
+                                      "attr": "wit",
+                                      "value": "#{value}"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "missing",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:metamark[@function=\"missing\"]",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:metamark",
+                              "attrs": {
+                                  "function": "missing"
+                              }
+                          }
+                      },
+                      {
+                          "name": "letterSparse",
+                          "type": "mark",
+                          "parser": {
+                              "selector": "contains(@style, \"letter-sparse\")"
+                          },
+                          "serialiser": {
+                              "tag": "tei:hi",
+                              "attrs": {
+                                  "style": {
+                                      "value": "letter-sparse"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "sup",
+                          "type": "mark",
+                          "parser": {
+                              "selector": "contains(@style, \"sup\")"
+                          },
+                          "serialiser": {
+                              "tag": "tei:hi",
+                              "attrs": {
+                                  "style": {
+                                      "value": "sup"
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "fontSize",
+                          "type": "mark",
+                          "parsers": [
+                              {
+                                  "selector": "contains(@style, \"font-size-small\")"
+                              },
+                              {
+                                  "selector": "contains(@style, \"font-size-medium\")"
+                              },
+                              {
+                                  "selector": "contains(@style, \"font-size-large\")"
+                              }
+                          ],
+                          "serialiser": {
+                              "tag": "tei:hi"
+                          },
+                          "attrs": {
+                              "size": {
+                                  "default": "",
+                                  "parsers": [
+                                      {
+                                          "selector": "contains(@style, \"font-size-small\")",
+                                          "type": "static",
+                                          "value": "small"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"font-size-medium\")",
+                                          "type": "static",
+                                          "value": "medium"
+                                      },
+                                      {
+                                          "selector": "contains(@style, \"font-size-large\")",
+                                          "type": "static",
+                                          "value": "large"
+                                      }
+                                  ],
+                                  "serialiser": {
+                                      "attr": "style",
+                                      "values": {
+                                          "small": "font-size-small",
+                                          "medium": "font-size-medium",
+                                          "large": "font-size-large"
+                                      }
+                                  }
+                              }
+                          }
+                      },
+                      {
+                          "name": "fontWeightBold",
+                          "type": "mark",
+                          "parser": {
+                              "selector": "contains(@style, \"font-weight-bold\")"
+                          },
+                          "serialiser": {
+                              "tag": "tei:hi",
+                              "attrs": {
+                                  "style": {
+                                      "value": "font-weight-bold"
+                                  }
+                              }
+                          }
+                      }
+                  ],
+                  "ui": {
+                      "doc": [
+                          {
+                              "label": "Blocktypen",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Überschrift",
+                                              "nodeType": "heading"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Absatz",
+                                              "nodeType": "paragraph"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Quellenliste",
+                                              "nodeType": "sourceList"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Auszeichnungen",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Seite & Zeile",
+                                              "nodeType": "pageLineRef"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Wortspanne",
+                                              "nodeType": "wordRange"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Einzelstellenverweis",
+                                              "nodeType": "annotationMarker"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Globalkommentarverweis",
+                                              "nodeType": "annotationGlobal"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Fremdsprachiger Text",
+                                              "nodeType": "foreignLanguage"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Zitat",
+                                              "nodeType": "quotation"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Lemma",
+                                              "nodeType": "lemma"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Textvorlage",
+                                              "nodeType": "sic"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Variante",
+                                              "nodeType": "reading"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "Nicht ermittelt",
+                                              "nodeType": "missing"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Darstellung",
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "selectMarkAttr",
+                                              "markType": "fontSize",
+                                              "attr": "size",
+                                              "values": [
+                                                  {
+                                                      "value": "",
+                                                      "label": "Normal"
+                                                  },
+                                                  {
+                                                      "value": "small",
+                                                      "label": "Klein"
+                                                  },
+                                                  {
+                                                      "value": "medium",
+                                                      "label": "Mittel"
+                                                  },
+                                                  {
+                                                      "value": "large",
+                                                      "label": "Groß"
+                                                  }
+                                              ]
+                                          },
+                                          {
+                                              "type": "separator"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "fontWeightBold",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "letterSparse",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "toggleMark",
+                                              "markType": "sup",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Überschrift",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "heading"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "selectNodeAttr",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "values": [
+                                                  {
+                                                      "label": "Ebene 1",
+                                                      "value": "1"
+                                                  },
+                                                  {
+                                                      "label": "Ebene 2",
+                                                      "value": "2"
+                                                  },
+                                                  {
+                                                      "label": "Ebene 3",
+                                                      "value": "3"
+                                                  },
+                                                  {
+                                                      "label": "Ebene 4",
+                                                      "value": "4"
+                                                  }
+                                              ]
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "list",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrString",
+                                              "nodeType": "heading",
+                                              "attr": "headingId",
+                                              "label": "Navigationsmarker"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Absatz",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "paragraph"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "selectNodeAttr",
+                                              "nodeType": "paragraph",
+                                              "attr": "noIndent",
+                                              "values": [
+                                                  {
+                                                      "label": "Einrücken",
+                                                      "value": "false"
+                                                  },
+                                                  {
+                                                      "label": "Nicht einrücken",
+                                                      "value": "true"
+                                                  }
+                                              ]
+                                          },
+                                          {
+                                              "type": "separator"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "left",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "center",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "right",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z\" /></svg>"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "justify",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z\" /></svg>"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Quelle",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "source"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "list",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrString",
+                                              "label": "Quellenkürzel",
+                                              "nodeType": "source",
+                                              "attr": "sourceId"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Einzelstellenverweis",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "annotationMarker"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "list",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrString",
+                                              "label": "Verweisidentifikator",
+                                              "nodeType": "annotationMarker",
+                                              "attr": "target"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Globalkommentarverweis",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "annotationGlobal"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "list",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrString",
+                                              "label": "Abschnitt (optional)",
+                                              "nodeType": "annotationGlobal",
+                                              "attr": "headingId"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Variante",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "reading"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "list",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrString",
+                                              "label": "Quellenkürzel",
+                                              "nodeType": "reading",
+                                              "attr": "wit"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          }
+                      ]
+                  }
+              },
+              "metadata": {
+                  "label": "Metadata",
+                  "type": "MetadataEditor",
+                  "schema": [
+                      {
+                          "tag": "tei:fileDesc",
+                          "children": [
+                              {
+                                  "tag": "tei:titleStmt",
+                                  "children": [
+                                      {
+                                          "tag": "tei:title",
+                                          "text": "fileDesc.titleStmt.title._text"
+                                      },
+                                      {
+                                          "tag": "tei:author",
+                                          "text": "fileDesc.titleStmt.author._text"
+                                      },
+                                      {
+                                          "tag": "tei:respStmt",
+                                          "multiple": true,
+                                          "attrs": {
+                                              "xml:id": "_attrs.xml:id"
+                                          },
+                                          "children": [
+                                              {
+                                                  "tag": "tei:resp",
+                                                  "text": "resp._text",
+                                                  "multiple": true
+                                              },
+                                              {
+                                                  "tag": "tei:name",
+                                                  "text": "name._text",
+                                                  "multiple": true
+                                              }
+                                          ]
+                                      }
+                                  ]
+                              },
+                              {
+                                  "tag": "tei:publicationStmt",
+                                  "children": [
+                                      {
+                                          "tag": "tei:distributor",
+                                          "text": "fileDesc.publicationStmt.distributor._text"
+                                      }
+                                  ]
+                              }
+                          ]
+                      },
+                      {
+                          "tag": "tei:encodingDesc",
+                          "children": [
+                              {
+                                  "tag": "tei:classDecl",
+                                  "children": [
+                                      {
+                                          "tag": "tei:taxonomy",
+                                          "attrs": {
+                                              "xml:id": "encodingDesc.classDecl.taxonomy._attrs.xml:id"
+                                          },
+                                          "children": [
+                                              {
+                                                  "tag": "tei:bibl",
+                                                  "text": "encodingDesc.classDecl.taxonomy.bibl._text"
+                                              }
+                                          ]
+                                      }
+                                  ]
+                              }
+                          ]
+                      },
+                      {
+                          "tag": "tei:sourceDesc",
+                          "children": [
+                              {
+                                  "tag": "tei:bibl",
+                                  "text": "sourceDesc.bibl._text"
+                              }
+                          ]
+                      },
+                      {
+                          "tag": "tei:profileDesc",
+                          "children": [
+                              {
+                                  "tag": "tei:creation",
+                                  "children": [
+                                      {
+                                          "tag": "tei:date",
+                                          "attrs": {
+                                              "when": "profileDesc.creation.date._attrs.when"
+                                          },
+                                          "text": "profileDesc.creation.date._text"
+                                      }
+                                  ]
+                              },
+                              {
+                                  "tag": "tei:textClass",
+                                  "children": [
+                                      {
+                                          "tag": "tei:catRef",
+                                          "attrs": {
+                                              "target": "profileDesc.textClass.catRef._attrs.target"
+                                          }
+                                      }
+                                  ]
+                              }
+                          ]
+                      },
+                      {
+                          "tag": "tei:revisionDesc",
+                          "children": [
+                              {
+                                  "tag": "tei:change",
+                                  "multiple": true,
+                                  "attrs": {
+                                      "when": "_attrs.when",
+                                      "who": "_attrs.who"
+                                  },
+                                  "text": "_text"
+                              }
+                          ]
+                      }
+                  ],
+                  "ui": [
+                      {
+                          "label": "Bibliographie",
+                          "entries": [
+                              {
+                                  "type": "single-text",
+                                  "label": "Titel",
+                                  "path": "fileDesc.titleStmt.title._text"
+                              },
+                              {
+                                  "type": "single-text",
+                                  "label": "Autor",
+                                  "path": "fileDesc.titleStmt.author._text"
+                              },
+                              {
+                                  "type": "single-text",
+                                  "label": "Quelle",
+                                  "path": "sourceDesc.bibl._text"
+                              },
+                              {
+                                  "type": "multi-field",
+                                  "path": "",
+                                  "entries": [
+                                      {
+                                          "type": "single-text",
+                                          "label": "Veröffentlichungsdatum (JJJJ-MM-TT, JJJJ-MM, JJJJ)",
+                                          "path": "profileDesc.creation.date._attrs.when"
+                                      },
+                                      {
+                                          "type": "single-text",
+                                          "label": "Veröffentlichungsdatum (natürlichsprachlich)",
+                                          "path": "profileDesc.creation.date._text"
+                                      }
+                                  ]
+                              }
+                          ]
+                      },
+                      {
+                          "label": "Digitale Version",
+                          "entries": [
+                              {
+                                  "type": "single-text",
+                                  "label": "Distributor",
+                                  "path": "fileDesc.publicationStmt.distributor._text"
+                              },
+                              {
+                                  "type": "single-text",
+                                  "label": "Taxonomie: Schlüssel",
+                                  "path": "encodingDesc.classDecl.taxonomy._attrs.xml:id"
+                              },
+                              {
+                                  "type": "single-text",
+                                  "label": "Taxonomie: Name",
+                                  "path": "encodingDesc.classDecl.taxonomy.bibl._text"
+                              },
+                              {
+                                  "type": "single-text",
+                                  "label": "Kategorie",
+                                  "path": "profileDesc.textClass.catRef._attrs.target"
+                              }
+                          ]
+                      },
+                      {
+                          "label": "Verantwortliche",
+                          "entries": [
+                              {
+                                  "type": "multi-row",
+                                  "path": "fileDesc.titleStmt.respStmt",
+                                  "entries":
+                                  [
+                                      {
+                                          "type": "multi-field",
+                                          "path": "",
+                                          "entries": [
+                                              {
+                                                  "type": "single-text",
+                                                  "label": "Identifier",
+                                                  "path": "._attrs.xml:id"
+                                              },
+                                              {
+                                                  "type": "multi-row",
+                                                  "path": ".resp",
+                                                  "entries": [
+                                                      {
+                                                          "type": "single-text",
+                                                          "label": "Responsible for",
+                                                          "path": "._text"
+                                                      }
+                                                  ]
+                                              },
+                                              {
+                                                  "type": "multi-row",
+                                                  "path": ".name",
+                                                  "entries": [
+                                                      {
+                                                          "type": "single-text",
+                                                          "label": "Name",
+                                                          "path": "._text"
+                                                      }
+                                                  ]
+                                              }
+                                          ]
+                                      }
+                                  ]
+                              }
+                          ]
+                      },
+                      {
+                          "label": "Änderungsgeschichte",
+                          "entries": [
+                              {
+                                  "type": "multi-row",
+                                  "path": "revisionDesc.change",
+                                  "entries": [
+                                      {
+                                          "type": "multi-field",
+                                          "path": "",
+                                          "entries": [
+                                              {
+                                                  "type": "single-text",
+                                                  "label": "Änderung",
+                                                  "path": "._text"
+                                              },
+                                              {
+                                                  "type": "single-text",
+                                                  "label": "Durch",
+                                                  "path": "._attrs.who"
+                                              },
+                                              {
+                                                  "type": "single-text",
+                                                  "label": "Datum (JJJJ-MM-TT, JJJJ-MM, JJJJ)",
+                                                  "path": "._attrs.when"
+                                              }
+                                          ]
+                                      }
+                                  ]
+                              }
+                          ]
+                      }
+                  ]
+              }
+          }
+      }
+    </script>
+    <script src="{{ static('editor/js/tei-editor.js') }}"></script>
     <script src="{{ static('editor/js/app.js') }}"></script>
   </body>
 </html>
