@@ -20,49 +20,47 @@ Blocktypen
 
 Folgende Textblöcke können ausgewählt werden.
 
-Überschrift
------------
+Überschrift |heading_img_1| |heading_img_2| |heading_img_3| |heading_img_4|
+---------------------------------------------------------------------------
 
-Zeichnet den Block als Überschrift aus. Für alle Überschriften gibt es zwei Attribute, welche rechts eingestellt
-werden können:
+.. |heading_img_1| image:: icons/heading-level-1.svg
+.. |heading_img_2| image:: icons/heading-level-2.svg
+.. |heading_img_3| image:: icons/heading-level-3.svg
+.. |heading_img_4| image:: icons/heading-level-4.svg
 
-* **Ebene**: Die Überschriftenebene von 1-3.
+Zeichnet den Block als Überschrift der jeweiligen Ebene aus. Für alle Überschriften gibt es ein Attribut, welches rechts
+eingestellt werden kann:
+
 * **Kennzeichnung**: Eine (beliebige) Kennzeichnung. Diese darf nur aus Buchstaben und den Zeichen - und _ bestehen. Diese
   wird vom Lesesystem zur generierung des Inhaltsverzeichnisses genutzt. Eine Überschrift ohne Kennzeichnung wird nicht
   in das Inhaltsverzeichnis übernommen. Falls zwei aufeinanderfolgende Überschriften die gleiche Kennzeichnung haben,
   dann werden diese im Inhaltsverzeichnis als ein Eintrag (Titel/Untertitel) dargestellt.
 
 
-Absatz
-------
+Absatz |absatz_img|
+-------------------
 
-Zeichnet den Block als Textabsatz aus. Folgende Attribute können eingstellt werden:
+.. |absatz_img| image:: icons/absatz.svg
+
+Zeichnet den Block als Textabsatz aus. Folgende Attribute können eingestellt werden:
 
 * **Eingrückt**: Die erste Textzeile des Absatzes ist eingerückt oder nicht.
 * **Textausrichtung**: Links-bündig, zentriert, rechts-bündig, oder Blocksatz.
 
-Vers
-----
+Vers |vers_img|
+---------------
 
-Markiert ein oder mehrere Zeilen als Vers. Dazu zuerst jede einzelne Zeile als Zeile auszeichnen. Danach alle Zeilen
-die zu einem Vers gehören auswählen und dann als Vers auszeichnen.
+.. |vers_img| image:: icons/vers.svg
 
-Zeile
------
+Markiert ein oder mehrere Zeilen als Vers. Dazu alle Zeilen des Vers auswählen und dann als Vers auszeichnen.
 
-Markiert den Textblock als Verszeile. Dies muss zuerst für alle Zeilen gemacht werden, welche in einen Vers
-zusammengefasst werden sollen.
+Quellenliste |quelle_img|
+-------------------------
 
-Quellenliste
-------------
+.. |quelle_img| image:: icons/quelle.svg
 
-Markiert ein oder mehrere Quellen als Quellenliste. Dazu zuerst jede einzelne Quelle als Quelle auszeichnen. Danach
-alle Quellen auswählen und als Quellenliste auszeichnen.
-
-Quelle
-------
-
-Markiert den Textblock als Quelle. Folgende Attribute können eingestell werden:
+Markiert ein oder mehrere Quellen als Quellenliste. Dazu alle Quellen auswählen und dann als Quellenliste auszeichnen.
+Die einzelnen Quellen haben folgendes Attribt das eingestellt werden kann:
 
 * **Kennzeichnung**: Das Kennzeichnungskürzel der Quelle. Dies darf nicht im Textblock selbst stehen, da es ansonst auf
   der Webseite verdoppelt wird
@@ -70,45 +68,57 @@ Markiert den Textblock als Quelle. Folgende Attribute können eingestell werden:
 Auszeichnungen
 ==============
 
-Folgende Auszeichnungne können innerhalb von Textblöcken vergeben werden:
+Folgende Auszeichnungen können innerhalb von Textblöcken vergeben werden:
 
-Einzelstellenverweis
---------------------
+Stellenkommentar |stellenkommentar_img|
+---------------------------------------
 
-Markiert den ausgewählten Text als Verweis auf eine :doc:`Einzelstellenerläuterung <individual_comments>`. Folgende
-Attribute können eingestellt werden:
+.. |stellenkommentar_img| image:: icons/stellenkommentar.svg
 
-* **Einzelstellenerläuterung**: Die zu verlinkende Einzelstellenerläuterung. Diese muss erstellt werden **bevor** sie
-  hier verlinkt werden kann.
+Markiert den ausgewählten Text als Stellenkommentar. Folgende Attribute können eingestellt werden:
 
-Globalkommentarverweis
-----------------------
+* **Stellenkommentar**: Der zu verlinkenden Stellenkommentar.
 
-Markiert den ausgewählten Text als Verweis auf den :doc:`Kommentar <global_comments>`. Folgende
+  Für einen neuen Stellenkommentar die Option "New" ausgewählt lassen und auf den |edit_img| klicken um den
+  Stellenkommentar zu bearbeiten.
+
+  Für einen Verweis auf einen bestehenden Stellenkommentar einfach den zu verlinkenden Stellenkommentar aus der Liste
+  auswählen.
+
+  Um den Stellenkommentar zu bearbeiten einfach auf |edit_img| klicken.
+
+.. |edit_img| image:: icons/edit.svg
+
+Globalkommentarverweis |verweis_apparat_img|
+--------------------------------------------
+
+.. |verweis_apparat_img| image:: icons/verweis-apparat.svg
+
+Markiert den ausgewählten Text als Verweis auf den :doc:`Apparat <global_comments>`. Folgende
 Attribute können eingestellt werden:
 
 * **Abschnitt**: Der Abschnitt auf den verwiesen werden soll. Dies ist die Kennzeichnung die für die Überschrift im
-  Kommentar vergeben wurde.
+  Apparat vergeben wurde.
 
-Seitenanfang
-------------
+Seitenanfang |seitenanfang_img|
+-------------------------------
+
+.. |seitenanfang_img| image:: icons/page-begin.svg
 
 Markiert den ausgewählten Text als den Anfang einer Seite.
 
-Fußnote
--------
+Fußnote |fussnote_img|
+----------------------
 
-Markiert den ausgewählten Text als Fußnote. Folgende Attribute können eingstellt werden:
+.. |fussnote_img| image:: icons/footnote.svg
 
-* **Symbol**: Das Symbol, welches in der Webseite als Hinweis auf die Fußnote verwendet wird.
+Markiert den ausgewählten Text als Fußnotenmarkierung. Um den Text der Fußnote zu bearbeiten, auf den |edit_img|
+klicken.
 
-.. important::
+Fremdsprachiger Text |foreign_img|
+----------------------------------
 
-    Der Text der Fußnote wird zwar im Text des Editors bearbeitet (und auch weiter ausgezeichnet, falls notwendig),
-    aber in der Darstellung auf der Webseite wird der Fußnotentext separat angezeigt.
-
-Fremdsprachiger Text
---------------------
+.. |foreign_img| image:: icons/foreign.svg
 
 Markiert den ausgewählten Text als fremdsprachigen Text.
 
@@ -122,8 +132,10 @@ Wortspanne
 
 Markiert den ausgewählten Text als Wortspanne, generell nach einer "Seite & Zeile" Auszeichnung.
 
-Zitat
------
+Zitat |zitat_img|
+-----------------
+
+.. |zitat_img| image:: icons/quote.svg
 
 Markiert den ausgewählten Text als Zitat.
 
@@ -132,13 +144,22 @@ Lemma
 
 Markiert den ausgewählten Text als Lemma.
 
-Korrigierter Text
------------------
+Textvorlage
+-----------
 
-Markiert den ausgewählten Text als den ursprünglichen, korrigierten Text.
+Markiert den ausgewählten Text als den Originaltext aus der Vorlage.
 
-Nicht ermittelt
----------------
+Variante
+--------
+
+Markiert den ausgewählten Text als eine Variante in einer der Quellen. Folgendes Attribut kann eingestellt werden:
+
+* **Quellenkürzel**: Das Quellenkürzel der Quelle aus der die Variante stammt.
+
+Nicht ermittelt |nicht_ermittelt_img|
+-------------------------------------
+
+.. |nicht_ermittelt_img| image:: icons/nicht-ermittelt.svg
 
 Markiert den ausgewählten Text als noch zu ermittelnde Information.
 
@@ -152,18 +173,24 @@ Textgröße
 
 Für die Textgröße sind die Größen: Normal, Klein, Mittel, und Groß vorhanden.
 
-Fettdruck
----------
+Fettdruck |bold_img|
+--------------------
+
+.. |bold_img| image:: icons/bold.svg
 
 Markiert den ausgewählten Text als fettgedruckt.
 
-Kursiv
-------
+Kursiv |italic_img|
+-------------------
+
+.. |italic_img| image:: icons/italic.svg
 
 Markiert den ausgewählten Text als kursiv.
 
-Sperrung
---------
+Sperrung |sperrung_img|
+-----------------------
+
+.. |sperrung_img| image:: icons/sperrung.svg
 
 Markiert den ausgewählten Text als Sperrung.
 
@@ -173,7 +200,9 @@ Markiert den ausgewählten Text als Sperrung.
     ausgelassen werden. Das ist notwendig, damit der Text in TEI korrekt repräsentiert wird. In aktuellen Browsern kann
     das zwar vereinzelt zu leicht unschönen Darstellungen führen, aber diese werden im Laufe der Zeit ausgemerzt.
 
-Hochgestellt
-------------
+Hochgestellt |sup_img|
+----------------------
+
+.. |sup_img| image:: icons/sup.svg
 
 Markiert den ausgewählten Text als hochgestellt.

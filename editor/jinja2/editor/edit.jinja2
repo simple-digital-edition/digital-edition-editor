@@ -631,19 +631,48 @@
                                       "type": "menubar",
                                       "entities": [
                                           {
-                                              "type": "setNodeType",
-                                              "label": "Überschrift",
-                                              "nodeType": "heading"
+                                              "type": "setNodeAttrValue",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M3,4H5V10H9V4H11V18H9V12H5V18H3V4M14,18V16H16V6.31L13.5,7.75V5.44L16,4H18V16H20V18H14Z\" /></svg>",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "value": "1",
+                                              "ariaLabel": "Überschrift - Ebene 1"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M3,4H5V10H9V4H11V18H9V12H5V18H3V4M21,18H15A2,2 0 0,1 13,16C13,15.47 13.2,15 13.54,14.64L18.41,9.41C18.78,9.05 19,8.55 19,8A2,2 0 0,0 17,6A2,2 0 0,0 15,8H13A4,4 0 0,1 17,4A4,4 0 0,1 21,8C21,9.1 20.55,10.1 19.83,10.83L15,16H21V18Z\" /></svg>",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "value": "2",
+                                              "ariaLabel": "Überschrift - Ebene 2"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M3,4H5V10H9V4H11V18H9V12H5V18H3V4M15,4H19A2,2 0 0,1 21,6V16A2,2 0 0,1 19,18H15A2,2 0 0,1 13,16V15H15V16H19V12H15V10H19V6H15V7H13V6A2,2 0 0,1 15,4Z\" /></svg>",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "value": "3",
+                                              "ariaLabel": "Überschrift - Ebene 3"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M3,4H5V10H9V4H11V18H9V12H5V18H3V4M18,18V13H13V11L18,4H20V11H21V13H20V18H18M18,11V7.42L15.45,11H18Z\" /></svg>",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "value": "4",
+                                              "ariaLabel": "Überschrift - Ebene 4"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Absatz",
-                                              "nodeType": "paragraph"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M4,5H20V7H4V5M4,9H20V11H4V9M4,13H20V15H4V13M4,17H14V19H4V17Z\" /></svg>",
+                                              "nodeType": "paragraph",
+                                              "ariaLabel": "Absatz"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Vers",
-                                              "nodeType": "lineGroup"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M4,9H20V11H4V9M4,13H14V15H4V13Z\" /></svg>",
+                                              "nodeType": "lineGroup",
+                                              "ariaLabel": "Vers"
                                           }
                                       ]
                                   }
@@ -657,28 +686,38 @@
                                       "entities": [
                                           {
                                               "type": "setNodeType",
-                                              "label": "Einzelstellenverweis",
-                                              "nodeType": "annotationMarker"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,16V19.08L13.08,16H20V4H4V16H10M6,7H18V9H6V7M6,11H15V13H6V11Z\" /></svg>",
+                                              "nodeType": "annotationMarker",
+                                              "ariaLabel": "Stellenkommentar"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Globalkommentarverweis",
-                                              "nodeType": "annotationGlobal"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H8V21C8 21.6 8.4 22 9 22H9.5C9.7 22 10 21.9 10.2 21.7L13.9 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H13.1L10 19.1V16H4V4H20V16M8 9V11H12.5L10.7 12.8L12 14L16 10L12 6L10.8 7.2L12.5 9H8Z\" /></svg>",
+                                              "nodeType": "annotationGlobal",
+                                              "ariaLabel": "Verweis auf den Apparat"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Seitenanfang",
-                                              "nodeType": "pageBegin"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,10V4.5L19.5,10M5,3C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V9L15,3H5Z\" /></svg>",
+                                              "nodeType": "footnoteMarker",
+                                              "ariaLabel": "Fußnote"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M19,2L14,6.5V17.5L19,13V2M6.5,5C4.55,5 2.45,5.4 1,6.5V21.16C1,21.41 1.25,21.66 1.5,21.66C1.6,21.66 1.65,21.59 1.75,21.59C3.1,20.94 5.05,20.5 6.5,20.5C8.45,20.5 10.55,20.9 12,22C13.35,21.15 15.8,20.5 17.5,20.5C19.15,20.5 20.85,20.81 22.25,21.56C22.35,21.61 22.4,21.59 22.5,21.59C22.75,21.59 23,21.34 23,21.09V6.5C22.4,6.05 21.75,5.75 21,5.5V7.5L21,13V19C19.9,18.65 18.7,18.5 17.5,18.5C15.8,18.5 13.35,19.15 12,20V13L12,8.5V6.5C10.55,5.4 8.45,5 6.5,5V5Z\" /></svg>",
+                                              "nodeType": "pageBegin",
+                                              "ariaLabel": "Seitenanfang"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Fußnote",
-                                              "nodeType": "footnoteMarker"
-                                          },
-                                          {
-                                              "type": "setNodeType",
-                                              "label": "Fremdsprachiger Text",
-                                              "nodeType": "foreignLanguage"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z\" /></svg>",
+                                              "nodeType": "foreignLanguage",
+                                              "ariaLabel": "Fremdsprachiger Text"
                                           }
                                       ]
                                   }
@@ -719,22 +758,26 @@
                                           {
                                               "type": "toggleMark",
                                               "markType": "fontWeightBold",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>",
+                                              "ariaLabel": "Fett"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "fontStyleItalic",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M10,4V7H12.21L8.79,15H6V18H14V15H11.79L15.21,7H18V4H10Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M10,4V7H12.21L8.79,15H6V18H14V15H11.79L15.21,7H18V4H10Z\" /></svg>",
+                                              "ariaLabel": "Kursivtext"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "letterSparse",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>",
+                                              "ariaLabel": "Textsperrung"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "sup",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>",
+                                              "ariaLabel": "Hochgestellt"
                                           }
                                       ]
                                   }
@@ -748,41 +791,13 @@
                               },
                               "entities": [
                                   {
-                                      "type": "menubar",
-                                      "entities": [
-                                          {
-                                              "type": "selectNodeAttr",
-                                              "nodeType": "heading",
-                                              "attr": "level",
-                                              "values": [
-                                                  {
-                                                      "label": "Ebene 1",
-                                                      "value": "1"
-                                                  },
-                                                  {
-                                                      "label": "Ebene 2",
-                                                      "value": "2"
-                                                  },
-                                                  {
-                                                      "label": "Ebene 3",
-                                                      "value": "3"
-                                                  },
-                                                  {
-                                                      "label": "Ebene 4",
-                                                      "value": "4"
-                                                  }
-                                              ]
-                                          }
-                                      ]
-                                  },
-                                  {
                                       "type": "list",
                                       "entities": [
                                           {
                                               "type": "setNodeAttrString",
                                               "nodeType": "heading",
                                               "attr": "headingId",
-                                              "label": "Navigationsmarker"
+                                              "label": "Kennzeichnung"
                                           }
                                       ]
                                   }
@@ -821,35 +836,39 @@
                                               "nodeType": "paragraph",
                                               "attr": "textAlign",
                                               "value": "left",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Linksbündig"
                                           },
                                           {
                                               "type": "setNodeAttrValue",
                                               "nodeType": "paragraph",
                                               "attr": "textAlign",
                                               "value": "center",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Zentriert"
                                           },
                                           {
                                               "type": "setNodeAttrValue",
                                               "nodeType": "paragraph",
                                               "attr": "textAlign",
                                               "value": "right",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Rechtsbündig"
                                           },
                                           {
                                               "type": "setNodeAttrValue",
                                               "nodeType": "paragraph",
                                               "attr": "textAlign",
                                               "value": "justify",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Blocksatz"
                                           }
                                       ]
                                   }
                               ]
                           },
                           {
-                              "label": "Einzelstellenverweis",
+                              "label": "Stellenkommentar",
                               "condition": {
                                   "type": "isActive",
                                   "activeType": "annotationMarker"
@@ -868,8 +887,9 @@
                                               "type": "editNestedDoc",
                                               "nodeType": "annotationMarker",
                                               "attr": "target",
-                                              "label": "Bearbeiten",
-                                              "targetNodeType": "annotation"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z\" /></svg>",
+                                              "targetNodeType": "annotation",
+                                              "ariaLabel": "Bearbeiten"
                                           }
                                       ]
                                   }
@@ -909,8 +929,9 @@
                                               "type": "editNestedDoc",
                                               "nodeType": "footnoteMarker",
                                               "attr": "target",
-                                              "label": "Bearbeiten",
-                                              "targetNodeType": "footnote"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z\" /></svg>",
+                                              "targetNodeType": "footnote",
+                                              "ariaLabel": "Bearbeiten"
                                           }
                                       ]
                                   }
@@ -919,14 +940,15 @@
                       ],
                       "annotation": [
                           {
-                              "label": "Einzelstellenverweis",
+                              "label": "Stellenkommentar",
                               "entities": [
                                   {
                                       "type": "menubar",
                                       "entities": [
                                           {
                                               "type": "closeNested",
-                                              "label": "Schließen"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z\" /></svg>",
+                                              "ariaLabel": "Zurück zum Haupttext"
                                           }
                                       ]
                                   }
@@ -947,27 +969,52 @@
                                               "type": "setNodeType",
                                               "label": "Wortspanne",
                                               "nodeType": "wordRange"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,16V19.08L13.08,16H20V4H4V16H10M6,7H18V9H6V7M6,11H15V13H6V11Z\" /></svg>",
+                                              "nodeType": "annotationMarker",
+                                              "ariaLabel": "Stellenkommentar"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Einzelstellenverweis",
-                                              "nodeType": "annotationMarker"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H8V21C8 21.6 8.4 22 9 22H9.5C9.7 22 10 21.9 10.2 21.7L13.9 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H13.1L10 19.1V16H4V4H20V16M8 9V11H12.5L10.7 12.8L12 14L16 10L12 6L10.8 7.2L12.5 9H8Z\" /></svg>",
+                                              "nodeType": "annotationGlobal",
+                                              "ariaLabel": "Verweis auf den Apparat"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z\" /></svg>",
+                                              "nodeType": "foreignLanguage",
+                                              "ariaLabel": "Fremdsprachiger Text"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Globalkommentarverweis",
-                                              "nodeType": "annotationGlobal"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,17H17L19,13V7H13V13H16M6,17H9L11,13V7H5V13H8L6,17Z\" /></svg>",
+                                              "nodeType": "quotation",
+                                              "ariaLabel": "Zitat"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Fremdsprachiger Text",
-                                              "nodeType": "foreignLanguage"
-                                          },
-                                          {
-                                              "type": "setNodeType",
-                                              "label": "Zitat",
-                                              "nodeType": "quotation"
-                                          },
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z\" /></svg>",
+                                              "nodeType": "missing",
+                                              "ariaLabel": "Nicht ermittelt"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
                                           {
                                               "type": "setNodeType",
                                               "label": "Lemma",
@@ -982,11 +1029,6 @@
                                               "type": "setNodeType",
                                               "label": "Variante",
                                               "nodeType": "reading"
-                                          },
-                                          {
-                                              "type": "setNodeType",
-                                              "label": "Nicht ermittelt",
-                                              "nodeType": "missing"
                                           }
                                       ]
                                   }
@@ -1027,24 +1069,27 @@
                                           {
                                               "type": "toggleMark",
                                               "markType": "fontWeightBold",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>",
+                                              "ariaLabel": "Fett"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "letterSparse",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>",
+                                              "ariaLabel": "Textsperrung"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "sup",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>",
+                                              "ariaLabel": "Hochgestellt"
                                           }
                                       ]
                                   }
                               ]
                           },
                           {
-                              "label": "Einzelstellenverweis",
+                              "label": "Stellenkommentar",
                               "condition": {
                                   "type": "isActive",
                                   "activeType": "annotationMarker"
@@ -1063,15 +1108,16 @@
                                               "type": "editNestedDoc",
                                               "nodeType": "annotationMarker",
                                               "attr": "target",
-                                              "label": "Edit",
-                                              "targetNodeType": "annotation"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z\" /></svg>",
+                                              "targetNodeType": "annotation",
+                                              "ariaLabel": "Bearbeiten"
                                           }
                                       ]
                                   }
                               ]
                           },
                           {
-                              "label": "Globalkommentarverweis",
+                              "label": "Verweis auf den Apparat",
                               "condition": {
                                   "type": "isActive",
                                   "activeType": "annotationGlobal"
@@ -1120,7 +1166,8 @@
                                       "entities": [
                                           {
                                               "type": "closeNested",
-                                              "label": "Schließen"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z\" /></svg>",
+                                              "ariaLabel": "Zurück zum Haupttext"
                                           }
                                       ]
                                   }
@@ -1134,23 +1181,32 @@
                                       "entities": [
                                           {
                                               "type": "setNodeType",
-                                              "label": "Einzelstellenverweis",
-                                              "nodeType": "annotationMarker"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,16V19.08L13.08,16H20V4H4V16H10M6,7H18V9H6V7M6,11H15V13H6V11Z\" /></svg>",
+                                              "nodeType": "annotationMarker",
+                                              "ariaLabel": "Stellenkommentar"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Globalkommentarverweis",
-                                              "nodeType": "annotationGlobal"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H8V21C8 21.6 8.4 22 9 22H9.5C9.7 22 10 21.9 10.2 21.7L13.9 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H13.1L10 19.1V16H4V4H20V16M8 9V11H12.5L10.7 12.8L12 14L16 10L12 6L10.8 7.2L12.5 9H8Z\" /></svg>",
+                                              "nodeType": "annotationGlobal",
+                                              "ariaLabel": "Verweis auf den Apparat"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z\" /></svg>",
+                                              "nodeType": "foreignLanguage",
+                                              "ariaLabel": "Fremdsprachiger Text"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Fremdsprachiger Text",
-                                              "nodeType": "foreignLanguage"
-                                          },
-                                          {
-                                              "type": "setNodeType",
-                                              "label": "Zitat",
-                                              "nodeType": "quotation"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,17H17L19,13V7H13V13H16M6,17H9L11,13V7H5V13H8L6,17Z\" /></svg>",
+                                              "nodeType": "quotation",
+                                              "ariaLabel": "Zitat"
                                           }
                                       ]
                                   }
@@ -1191,22 +1247,26 @@
                                           {
                                               "type": "toggleMark",
                                               "markType": "fontWeightBold",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>",
+                                              "ariaLabel": "Fett"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "fontStyleItalic",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M10,4V7H12.21L8.79,15H6V18H14V15H11.79L15.21,7H18V4H10Z\" /></svg>",
+                                              "ariaLabel": "Kursivtext"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "letterSparse",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>",
+                                              "ariaLabel": "Textsperrung"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "sup",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>",
+                                              "ariaLabel": "Hochgestellt"
                                           }
                                       ]
                                   }
@@ -1632,19 +1692,48 @@
                                       "type": "menubar",
                                       "entities": [
                                           {
-                                              "type": "setNodeType",
-                                              "label": "Überschrift",
-                                              "nodeType": "heading"
+                                              "type": "setNodeAttrValue",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M3,4H5V10H9V4H11V18H9V12H5V18H3V4M14,18V16H16V6.31L13.5,7.75V5.44L16,4H18V16H20V18H14Z\" /></svg>",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "value": "1",
+                                              "ariaLabel": "Überschrift - Ebene 1"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M3,4H5V10H9V4H11V18H9V12H5V18H3V4M21,18H15A2,2 0 0,1 13,16C13,15.47 13.2,15 13.54,14.64L18.41,9.41C18.78,9.05 19,8.55 19,8A2,2 0 0,0 17,6A2,2 0 0,0 15,8H13A4,4 0 0,1 17,4A4,4 0 0,1 21,8C21,9.1 20.55,10.1 19.83,10.83L15,16H21V18Z\" /></svg>",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "value": "2",
+                                              "ariaLabel": "Überschrift - Ebene 2"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M3,4H5V10H9V4H11V18H9V12H5V18H3V4M15,4H19A2,2 0 0,1 21,6V16A2,2 0 0,1 19,18H15A2,2 0 0,1 13,16V15H15V16H19V12H15V10H19V6H15V7H13V6A2,2 0 0,1 15,4Z\" /></svg>",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "value": "3",
+                                              "ariaLabel": "Überschrift - Ebene 3"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M3,4H5V10H9V4H11V18H9V12H5V18H3V4M18,18V13H13V11L18,4H20V11H21V13H20V18H18M18,11V7.42L15.45,11H18Z\" /></svg>",
+                                              "nodeType": "heading",
+                                              "attr": "level",
+                                              "value": "4",
+                                              "ariaLabel": "Überschrift - Ebene 4"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Absatz",
-                                              "nodeType": "paragraph"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M4,5H20V7H4V5M4,9H20V11H4V9M4,13H20V15H4V13M4,17H14V19H4V17Z\" /></svg>",
+                                              "nodeType": "paragraph",
+                                              "ariaLabel": "Absatz"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Quellenliste",
-                                              "nodeType": "sourceList"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M21,5C19.89,4.65 18.67,4.5 17.5,4.5C15.55,4.5 13.45,4.9 12,6C10.55,4.9 8.45,4.5 6.5,4.5C4.55,4.5 2.45,4.9 1,6V20.65C1,20.9 1.25,21.15 1.5,21.15C1.6,21.15 1.65,21.1 1.75,21.1C3.1,20.45 5.05,20 6.5,20C8.45,20 10.55,20.4 12,21.5C13.35,20.65 15.8,20 17.5,20C19.15,20 20.85,20.3 22.25,21.05C22.35,21.1 22.4,21.1 22.5,21.1C22.75,21.1 23,20.85 23,20.6V6C22.4,5.55 21.75,5.25 21,5M21,18.5C19.9,18.15 18.7,18 17.5,18C15.8,18 13.35,18.65 12,19.5V8C13.35,7.15 15.8,6.5 17.5,6.5C18.7,6.5 19.9,6.65 21,7V18.5Z\" /></svg>",
+                                              "nodeType": "sourceList",
+                                              "ariaLabel": "Quellenliste"
                                           }
                                       ]
                                   }
@@ -1665,27 +1754,46 @@
                                               "type": "setNodeType",
                                               "label": "Wortspanne",
                                               "nodeType": "wordRange"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H8V21C8 21.6 8.4 22 9 22H9.5C9.7 22 10 21.9 10.2 21.7L13.9 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H13.1L10 19.1V16H4V4H20V16M8 9V11H12.5L10.7 12.8L12 14L16 10L12 6L10.8 7.2L12.5 9H8Z\" /></svg>",
+                                              "nodeType": "annotationGlobal",
+                                              "ariaLabel": "Verweis innerhalb des Apparat"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z\" /></svg>",
+                                              "nodeType": "foreignLanguage",
+                                              "ariaLabel": "Fremdsprachiger Text"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Einzelstellenverweis",
-                                              "nodeType": "annotationMarker"
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,17H17L19,13V7H13V13H16M6,17H9L11,13V7H5V13H8L6,17Z\" /></svg>",
+                                              "nodeType": "quotation",
+                                              "ariaLabel": "Zitat"
                                           },
                                           {
                                               "type": "setNodeType",
-                                              "label": "Globalkommentarverweis",
-                                              "nodeType": "annotationGlobal"
-                                          },
-                                          {
-                                              "type": "setNodeType",
-                                              "label": "Fremdsprachiger Text",
-                                              "nodeType": "foreignLanguage"
-                                          },
-                                          {
-                                              "type": "setNodeType",
-                                              "label": "Zitat",
-                                              "nodeType": "quotation"
-                                          },
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z\" /></svg>",
+                                              "nodeType": "missing",
+                                              "ariaLabel": "Nicht ermittelt"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
                                           {
                                               "type": "setNodeType",
                                               "label": "Lemma",
@@ -1700,11 +1808,6 @@
                                               "type": "setNodeType",
                                               "label": "Variante",
                                               "nodeType": "reading"
-                                          },
-                                          {
-                                              "type": "setNodeType",
-                                              "label": "Nicht ermittelt",
-                                              "nodeType": "missing"
                                           }
                                       ]
                                   }
@@ -1745,17 +1848,20 @@
                                           {
                                               "type": "toggleMark",
                                               "markType": "fontWeightBold",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>",
+                                              "ariaLabel": "Fett"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "letterSparse",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>",
+                                              "ariaLabel": "Textsperrung"
                                           },
                                           {
                                               "type": "toggleMark",
                                               "markType": "sup",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>",
+                                              "ariaLabel": "Hochgestellt"
                                           }
                                       ]
                                   }
@@ -1769,41 +1875,13 @@
                               },
                               "entities": [
                                   {
-                                      "type": "menubar",
-                                      "entities": [
-                                          {
-                                              "type": "selectNodeAttr",
-                                              "nodeType": "heading",
-                                              "attr": "level",
-                                              "values": [
-                                                  {
-                                                      "label": "Ebene 1",
-                                                      "value": "1"
-                                                  },
-                                                  {
-                                                      "label": "Ebene 2",
-                                                      "value": "2"
-                                                  },
-                                                  {
-                                                      "label": "Ebene 3",
-                                                      "value": "3"
-                                                  },
-                                                  {
-                                                      "label": "Ebene 4",
-                                                      "value": "4"
-                                                  }
-                                              ]
-                                          }
-                                      ]
-                                  },
-                                  {
                                       "type": "list",
                                       "entities": [
                                           {
                                               "type": "setNodeAttrString",
                                               "nodeType": "heading",
                                               "attr": "headingId",
-                                              "label": "Navigationsmarker"
+                                              "label": "Kennzeichnung"
                                           }
                                       ]
                                   }
@@ -1842,28 +1920,32 @@
                                               "nodeType": "paragraph",
                                               "attr": "textAlign",
                                               "value": "left",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Linksbündig"
                                           },
                                           {
                                               "type": "setNodeAttrValue",
                                               "nodeType": "paragraph",
                                               "attr": "textAlign",
                                               "value": "center",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Zentriert"
                                           },
                                           {
                                               "type": "setNodeAttrValue",
                                               "nodeType": "paragraph",
                                               "attr": "textAlign",
                                               "value": "right",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Rechtsbündig"
                                           },
                                           {
                                               "type": "setNodeAttrValue",
                                               "nodeType": "paragraph",
                                               "attr": "textAlign",
                                               "value": "justify",
-                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z\" /></svg>"
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Blocksatz"
                                           }
                                       ]
                                   }
@@ -1890,27 +1972,7 @@
                               ]
                           },
                           {
-                              "label": "Einzelstellenverweis",
-                              "condition": {
-                                  "type": "isActive",
-                                  "activeType": "annotationMarker"
-                              },
-                              "entities": [
-                                  {
-                                      "type": "list",
-                                      "entities": [
-                                          {
-                                              "type": "setNodeAttrString",
-                                              "label": "Verweisidentifikator",
-                                              "nodeType": "annotationMarker",
-                                              "attr": "target"
-                                          }
-                                      ]
-                                  }
-                              ]
-                          },
-                          {
-                              "label": "Globalkommentarverweis",
+                              "label": "Verweis innerhalb des Apparat",
                               "condition": {
                                   "type": "isActive",
                                   "activeType": "annotationGlobal"
@@ -1953,7 +2015,7 @@
                   }
               },
               "metadata": {
-                  "label": "Metadata",
+                  "label": "Metadaten",
                   "type": "MetadataEditor",
                   "schema": [
                       {
