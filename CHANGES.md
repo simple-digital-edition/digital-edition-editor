@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.9.2 (30.01.2020):
+
 * **Update**: Updated icons in the menu
 
 ## 0.9.1 (27.01.2020):
