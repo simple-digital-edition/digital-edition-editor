@@ -23,7 +23,7 @@ gulp.task('css:editor', function(cb) {
         concat('tei-editor.css'),
         gulp.dest('editor/static/editor/css')
     ], cb);
-})
+});
 
 gulp.task('css', gulp.parallel('css:theme', 'css:editor'));
 
@@ -35,7 +35,8 @@ gulp.task('js:ui', function(cb) {
         concat('app.js'),
         gulp.dest('editor/static/editor/js')
     ], cb);
-})
+});
+
 gulp.task('js:editor', function(cb) {
     pump([
         gulp.src([
@@ -55,4 +56,4 @@ gulp.task('watch', gulp.series('default', function(cb) {
     gulp.watch('theme/**/*.scss', gulp.series('css:theme'));
     gulp.watch('scripts/**/*.js', gulp.series('js'));
     cb();
-}))
+}));
