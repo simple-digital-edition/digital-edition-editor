@@ -1,8 +1,8 @@
-#########
-Kommentar
-#########
+#######
+Apparat
+#######
 
-Über den Menüpunkt "Kommentar" kann der Kommentar zum zu edierenden Text bearbeitet werden. Der Editor besteht aus einem
+Über den Menüpunkt "Apparat" kann der Apparat zum zu edierenden Text bearbeitet werden. Der Editor besteht aus einem
 Textbereich auf der linken Seite und einem Auszeichnungsbalken auf der rechten Seite. Die Darstellung des Textes richtet
 sich soweit möglich nach der Darstellung auf der öffentlichen Webseite.
 

@@ -5416,8 +5416,8 @@ nav.expanded *[role="menu"] textarea {
   margin-right: 1rem; }
 
 [role="menuitem"] svg, [role="menuitem"] svg.mdi-icon {
-  width: 18px;
-  height: 18px; }
+  width: 18px !important;
+  height: 18px !important; }
 
 svg.mdi-icon {
   height: 24px;

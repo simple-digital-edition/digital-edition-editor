@@ -2,9 +2,17 @@
 
 ## Development ():
 
-## 0.9.1 (04.02.2020):
+## 0.9.3 (04.02.2020):
 
 * **Update**: Updated the TEI editor dependency
+
+## 0.9.2 (30.01.2020):
+
+* **Update**: Updated icons in the menu
+
+## 0.9.1 (27.01.2020):
+
+* **Update**: Updated the TEI editor dependency for some performance improvements
 
 ## 0.9.0 (24.01.2020):
 
