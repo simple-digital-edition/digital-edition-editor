@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.9.4 (11.03.2020):
+
 * **New**: Added support for marking up signatures
 * **New**: Added support for paragraph alignment in footnotes and annotations
 
