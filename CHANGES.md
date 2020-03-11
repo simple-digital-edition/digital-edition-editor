@@ -2,6 +2,9 @@
 
 ## Development ():
 
+* **New**: Added support for marking up signatures
+* **New**: Added support for paragraph alignment in footnotes and annotations
+
 ## 0.9.3 (04.02.2020):
 
 * **Update**: Updated the TEI editor dependency

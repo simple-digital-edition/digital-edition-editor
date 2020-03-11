@@ -5594,6 +5594,8 @@ ul.tree {
   #tei-editor .text-editor .node-missing::after {
     content: '\25fc';
     vertical-align: super; }
+  #tei-editor .text-editor .node-signed {
+    font-weight: bold; }
   #tei-editor .text-editor .mark-letterSparse {
     letter-spacing: 1.5pt; }
   #tei-editor .text-editor .mark-fontWeightBold {

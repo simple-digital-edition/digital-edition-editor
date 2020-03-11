@@ -514,6 +514,17 @@
                           }
                       },
                       {
+                          "name": "signed",
+                          "type": "inline",
+                          "parser": {
+                              "selector": "tei:signed",
+                              "text": "text()"
+                          },
+                          "serialiser": {
+                              "tag": "tei:signed"
+                          }
+                      },
+                      {
                           "name": "letterSparse",
                           "type": "mark",
                           "parser": {
@@ -718,6 +729,12 @@
                                               "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z\" /></svg>",
                                               "nodeType": "foreignLanguage",
                                               "ariaLabel": "Fremdsprachiger Text"
+                                          },
+                                          {
+                                              "type": "setNodeType",
+                                              "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M22,22H2V20H22V22M6.2,17.3L5.5,18L4.1,16.6L2.7,18L2,17.3L3.4,15.9L2,14.5L2.7,13.8L4.1,15.2L5.5,13.8L6.2,14.5L4.8,15.9L6.2,17.3M16.22,14.43C16.22,13.85 15.5,13.2 14.06,12.46C12.23,11.54 11,10.79 10.36,10.24C9.71,9.68 9.39,9.06 9.39,8.37C9.39,6.59 10.3,5.12 12.12,3.95C13.94,2.78 15.43,2.19 16.57,2.19C17.31,2.19 17.85,2.32 18.18,2.58C18.5,2.83 18.68,3.27 18.68,3.9C18.68,4.18 18.56,4.42 18.31,4.63C18.07,4.83 17.87,4.93 17.74,4.93C17.63,4.93 17.43,4.83 17.13,4.64L16.55,4.38C16.08,4.38 15.14,4.71 13.71,5.38C12.29,6.04 11.58,6.79 11.58,7.63C11.58,8.14 11.82,8.6 12.32,9C12.82,9.42 13.71,9.93 15,10.53C16.03,11 16.86,11.5 17.5,12.07C18.1,12.61 18.41,13.25 18.41,14C18.41,15.34 17.47,16.41 15.58,17.17C13.7,17.94 11.9,18.32 10.19,18.32C8.75,18.32 8,17.83 8,16.86C8,16.5 8.19,16.27 8.5,16.11C8.83,15.95 9.16,15.87 9.5,15.87L10.25,16L10.97,16.13C11.95,16.13 13,15.97 14.13,15.64C15.26,15.32 15.96,14.91 16.22,14.43Z\" /></svg>",
+                                              "nodeType": "signed",
+                                              "ariaLabel": "Unterschrift"
                                           }
                                       ]
                                   }
@@ -1035,6 +1052,52 @@
                               ]
                           },
                           {
+                              "label": "Absatz",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "paragraph"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "left",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Linksbündig"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "center",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Zentriert"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "right",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Rechtsbündig"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "justify",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Blocksatz"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
                               "label": "Darstellung",
                               "entities": [
                                   {
@@ -1207,6 +1270,52 @@
                                               "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,17H17L19,13V7H13V13H16M6,17H9L11,13V7H5V13H8L6,17Z\" /></svg>",
                                               "nodeType": "quotation",
                                               "ariaLabel": "Zitat"
+                                          }
+                                      ]
+                                  }
+                              ]
+                          },
+                          {
+                              "label": "Absatz",
+                              "condition": {
+                                  "type": "isActive",
+                                  "activeType": "paragraph"
+                              },
+                              "entities": [
+                                  {
+                                      "type": "menubar",
+                                      "entities": [
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "left",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Linksbündig"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "center",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Zentriert"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "right",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Rechtsbündig"
+                                          },
+                                          {
+                                              "type": "setNodeAttrValue",
+                                              "nodeType": "paragraph",
+                                              "attr": "textAlign",
+                                              "value": "justify",
+                                              "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                              "ariaLabel": "Blocksatz"
                                           }
                                       ]
                                   }
