@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Bugfix**: Handle git merge errors more cleanly
+
 ## 0.9.4 (11.03.2020):
 
 * **New**: Added support for marking up signatures

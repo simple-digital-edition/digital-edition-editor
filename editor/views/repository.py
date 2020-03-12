@@ -51,6 +51,7 @@ def repository(request, rid):
             repo.remotes.origin.fetch()
             repo.remotes.origin.pull()
         except:
+            repo.git.checkout('--')
             errors.append({'msg': _('Fetching changes failed'),
                            'level': 'alert'})
         try:
@@ -107,10 +108,13 @@ def local_merge(request, rid):
         repository.heads.master.checkout()
         repository.remotes.origin.pull()
         repository.heads[request.user.username].checkout()
-        # Merge them in
-        repository.git.merge('master')
-        # Pull any branch changes
-        repository.remotes.origin.pull()
-        # Push all changes
-        repository.remotes.origin.push()
+        try:
+            # Merge them in
+            repository.git.merge('master')
+            # Pull any branch changes
+            repository.remotes.origin.pull()
+            # Push all changes
+            repository.remotes.origin.push()
+        except:
+            repository.git.merge('--abort')
         return HttpResponse('', status=200)
