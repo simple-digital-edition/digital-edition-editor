@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.9.5 (12.03.2020):
+
 * **Bugfix**: Handle git merge errors more cleanly
 
 ## 0.9.4 (11.03.2020):
