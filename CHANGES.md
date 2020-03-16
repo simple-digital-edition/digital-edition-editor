@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Update**: Update the TEI editor
+
 ## 0.9.5 (12.03.2020):
 
 * **Bugfix**: Handle git merge errors more cleanly

@@ -40,11 +40,9 @@ gulp.task('js:ui', function(cb) {
 gulp.task('js:editor', function(cb) {
     pump([
         gulp.src([
-            'node_modules/tei-editor/dist/js/chunk-vendors.js',
-            'node_modules/tei-editor/dist/js/app.js',
+            'node_modules/tei-editor/dist/js/*',
         ]),
-        concat('tei-editor.js'),
-        gulp.dest('editor/static/editor/js')
+        gulp.dest('editor/static/editor/js/editor')
     ], cb);
 });
 
