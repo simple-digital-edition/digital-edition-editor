@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.9.6 (16.03.2020):
+
 * **Update**: Update the TEI editor
 
 ## 0.9.5 (12.03.2020):
