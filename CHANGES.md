@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Bugfix**: Generate the missing JavaScript files
+
 ## 0.9.7 (24.03.2020):
 
 * **Bugfix**: Update the TEI editor to 0.7.2
