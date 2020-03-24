@@ -2300,9 +2300,9 @@ prosemirror-model@^1.0.0, prosemirror-model@^1.1.0, prosemirror-model@^1.8.1, pr
     orderedmap "^1.1.0"
 
 prosemirror-state@^1.0.0, prosemirror-state@^1.2.2, prosemirror-state@^1.3.1, prosemirror-state@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/prosemirror-state/-/prosemirror-state-1.3.2.tgz#1b910b0dc01c1f00926bb9ba1589f7b7ac0d658b"
-  integrity sha512-t/JqE3aR0SV9QrzFVkAXsQwsgrQBNs/BDbcFH20RssW0xauqNNdjTXxy/J/kM7F+0zYi6+BRmz7cMMQQFU3mwQ==
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/prosemirror-state/-/prosemirror-state-1.3.3.tgz#b2862866b14dec2b3ae1ab18229f2bd337651a2c"
+  integrity sha512-PLXh2VJsIgvlgSTH6I2Yg6vk1CzPDp21DFreVpQtDMY2S6WaMmrQgDTLRcsrD8X38v8Yc873H7+ogdGzyIPn+w==
   dependencies:
     prosemirror-model "^1.0.0"
     prosemirror-transform "^1.0.0"
@@ -2319,9 +2319,9 @@ prosemirror-tables@^1.0.0:
     prosemirror-view "^1.13.3"
 
 prosemirror-transform@^1.0.0, prosemirror-transform@^1.1.0, prosemirror-transform@^1.2.1:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/prosemirror-transform/-/prosemirror-transform-1.2.3.tgz#239d17591af24d39ef3f1999daa09e1f1c76b06a"
-  integrity sha512-PUfayeskQfuUBXktvL6207ZWRwHBFNPNPiek4fR+LgCPnBofuEb2+L0FfbNtrAwffHVs6M3DaFvJB1W2VQdV0A==
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/prosemirror-transform/-/prosemirror-transform-1.2.4.tgz#8d5843834f5ccedfb614faa9220672bb4834b00a"
+  integrity sha512-0A668uf0EN89L9O9brE05kHcqp7FHmT5YN7Tom58Kj926QqOBs7iNRHDLWxrSaQB5MNZtzDOD9T3EyJ88YDcBg==
   dependencies:
     prosemirror-model "^1.0.0"
 
@@ -2330,19 +2330,10 @@ prosemirror-utils@^0.9.6:
   resolved "https://registry.yarnpkg.com/prosemirror-utils/-/prosemirror-utils-0.9.6.tgz#3d97bd85897e3b535555867dc95a51399116a973"
   integrity sha512-UC+j9hQQ1POYfMc5p7UFxBTptRiGPR7Kkmbl3jVvU8VgQbkI89tR/GK+3QYC8n+VvBZrtAoCrJItNhWSxX3slA==
 
-prosemirror-view@^1.13.3:
-  version "1.13.10"
-  resolved "https://registry.yarnpkg.com/prosemirror-view/-/prosemirror-view-1.13.10.tgz#df441c2bb48fe71fab407d9ea26ad0731428852a"
-  integrity sha512-v5hEq2w3HFqWXMv/f2DEpwD4ijWDnIO6t3VQp8zQdOOEjx7+D8+2ep5/Y5o2Zb8ljSX+dkZWfnG96VWekpxWHg==
-  dependencies:
-    prosemirror-model "^1.1.0"
-    prosemirror-state "^1.0.0"
-    prosemirror-transform "^1.1.0"
-
-prosemirror-view@^1.14.2:
-  version "1.14.3"
-  resolved "https://registry.yarnpkg.com/prosemirror-view/-/prosemirror-view-1.14.3.tgz#a9b7fbcdb3cb1e0b8779a70355164c4e990a51ed"
-  integrity sha512-ImWh8AUcpTbMglKTQMicgREFVgNMdGF7bAHbp0xlRA+s7AfZYET0JA/5s+82OicEfaOqxJEd9kWTTZONSoA4lw==
+prosemirror-view@^1.13.3, prosemirror-view@^1.14.2:
+  version "1.14.5"
+  resolved "https://registry.yarnpkg.com/prosemirror-view/-/prosemirror-view-1.14.5.tgz#1b57cf1d6b2e413b744e2de3ffdf5a8a07fdc9b7"
+  integrity sha512-kKxvECC0LuOh9IVIsb2EdXuJvD1o4VgVioCq9/g1nMPClrwzrHPDRSkj3fnoCNwu7mry28LvcRCSYvC2LI8ZZw==
   dependencies:
     prosemirror-model "^1.1.0"
     prosemirror-state "^1.0.0"
@@ -2926,9 +2917,9 @@ tar@^2.0.0:
     inherits "2"
 
 tei-editor@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/tei-editor/-/tei-editor-0.7.0.tgz#c4e768d431b65948df9f0c05b711fbfc5204f615"
-  integrity sha512-ORAK7IFdoJ2Y78jOGf7XlOZ021Y1APX2/b+IHG8FrfL1upaS7o7CLAbK7WaMWgGuM4P1nEy8H7B0+Vu4AnSm6g==
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/tei-editor/-/tei-editor-0.7.2.tgz#433983f33df8841863da2787f8947179862b6cfa"
+  integrity sha512-rZwGan2bABqN/itOQ8IM11KQJd/PEfyo5u+Fjt42IfEVvvfMb4n7UcRm5W/4pzpVm74vAc3Q737Y0SOTAfxdxw==
   dependencies:
     "@types/prosemirror-commands" "^1.0.1"
     "@types/prosemirror-history" "^1.0.1"
@@ -3232,14 +3223,14 @@ vinyl@^2.0.0:
     replace-ext "^1.0.0"
 
 vue-class-component@^7.0.2, vue-class-component@^7.1.0:
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.2.2.tgz#aecc6d28801f64c61eb04407cf3a5476da26b0c0"
-  integrity sha512-QjVfjRffux0rUBNtxr1hvUxDrfifDvk9q/OSdB/sKIlfxAudDF2E1YTeiEC+qOYIOOBGWkgSKQSnast6H+S38w==
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.2.3.tgz#a5b1abd53513a72ad51098752e2dedd499807cca"
+  integrity sha512-oEqYpXKaFN+TaXU+mRLEx8dX0ah85aAJEe61mpdoUrq0Bhe/6sWhyZX1JjMQLhVsHAkncyhedhmCdDVSasUtDw==
 
 vue-property-decorator@^8.3.0:
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/vue-property-decorator/-/vue-property-decorator-8.3.0.tgz#536f027dc7d626f37c8d85a2dc02f0a6cb979440"
-  integrity sha512-77YtTbZHd5CNiPzbqv51kEgL48yvD2dUDfF28vEyw3MbQ9bBAb/tDyFzskcqjNRbWyXk1vq4oM2CK/LfhxuIBg==
+  version "8.4.1"
+  resolved "https://registry.yarnpkg.com/vue-property-decorator/-/vue-property-decorator-8.4.1.tgz#fd8045b8678e1348fed57f9149279e00e404ed38"
+  integrity sha512-8R4Us7DxFO0rwAL/2fv6vaZL8Oa4n/HGanHODYGTcvQHwT0FYJr9UuuFm2GoWAIXQu1mDO03HNeHswFp9vmTVA==
   dependencies:
     vue-class-component "^7.1.0"
 
@@ -3249,9 +3240,9 @@ vue@^2.6.10:
   integrity sha512-VfPwgcGABbGAue9+sfrD4PuwFar7gPb1yl1UK1MwXoQPAw0BKSqWfoYCT/ThFrdEVWoI51dBuyCoiNU9bZDZxQ==
 
 vuex@^3.1.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.2.tgz#a2863f4005aa73f2587e55c3fadf3f01f69c7d4d"
-  integrity sha512-ha3jNLJqNhhrAemDXcmMJMKf1Zu4sybMPr9KxJIuOpVcsDQlTBYLLladav2U+g1AvdYDG5Gs0xBTb0M5pXXYFQ==
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.3.tgz#f2ad73e3fb73691698b38c93f66e58e267947180"
+  integrity sha512-k8vZqNMSNMgKelVZAPYw5MNb2xWSmVgCKtYKAptvm9YtZiOXnRXFWu//Y9zQNORTrm3dNj1n/WaZZI26tIX6Mw==
 
 w3c-keyname@^2.2.0:
   version "2.2.2"

@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Bugfix**: Update the TEI editor to 0.7.2
+
 ## 0.9.6 (16.03.2020):
 
 * **Update**: Update the TEI editor
