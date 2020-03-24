@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.9.8 (24.03.2020):
+
 * **Bugfix**: Generate the missing JavaScript files
 
 ## 0.9.7 (24.03.2020):
