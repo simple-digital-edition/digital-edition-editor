@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Update**: Removed old source data identifier attribute
+
 ## 0.9.8 (24.03.2020):
 
 * **Bugfix**: Generate the missing JavaScript files
