@@ -4,3 +4,4 @@ node_modules
 development.ini
 production.ini
 *.sqlite
+__pycache__
