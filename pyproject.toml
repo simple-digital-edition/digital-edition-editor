@@ -34,6 +34,9 @@ pylint = "^2.5.3"
 [tool.poetry.extras]
 postgresql = ["psycopg2"]
 
+[tool.poetry.scripts]
+digi_edit = "digi_edit.scripts:main"
+
 [tool.poetry.plugins."paste.app_factory"]
 main = "digi_edit:main"
 
