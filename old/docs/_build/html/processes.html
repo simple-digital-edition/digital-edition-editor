@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Abläufe &#8212; Digital Edition Editor 0.5.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Text Editor" href="editor/index.html" />
+    <link rel="prev" title="Überblick" href="overview.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="ablaufe">
+<h1>Abläufe<a class="headerlink" href="#ablaufe" title="Permalink to this headline">¶</a></h1>
+<p>Der Digital Edition Editor nutzt im Hintergrund ein verteiltes Speichersystem, welches ein verteiltes Arbeiten an der
+Edition ermöglicht und gleichzeitig ein permanentes Backup bereitstellt. In diesem verteilten System erhält jede_r
+Benutzer_in eine eigene Kopie aller Daten. Zusätzlich gibt es noch eine primäre Kopie, aus welcher die Webseite dann
+generiert wird. Damit die Arbeit so reibungslos wie möglich ist, müssen ein paar Abläufe befolgt werden.</p>
+<div class="section" id="globaler-ablauf">
+<h2>Globaler Ablauf<a class="headerlink" href="#globaler-ablauf" title="Permalink to this headline">¶</a></h2>
+<p>Die folgenden drei Schritte definieren den globalen Ablauf der Bearbeitung der Ausgabe:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#process-begin-session"><span class="std std-ref">Eine Session anfangen</span></a>.</p></li>
+<li><p><a class="reference internal" href="#process-edit-file"><span class="std std-ref">Eine Datei bearbeiten</span></a>. Dieser Schritt kann wiederholt für verschiedene Dateien ausgeführt werden.</p></li>
+<li><p><a class="reference internal" href="#process-end-session"><span class="std std-ref">Die Session beenden</span></a>.</p></li>
+</ol>
+<p>Wenn ein Block an Änderungen abgeschlossen ist, dann kann <a class="reference internal" href="#process-integrate-changes"><span class="std std-ref">die Integration der Änderungen beantragt</span></a>
+werden.</p>
+</div>
+<div class="section" id="anfang-einer-session">
+<span id="process-begin-session"></span><h2>Anfang einer Session<a class="headerlink" href="#anfang-einer-session" title="Permalink to this headline">¶</a></h2>
+<p>Am Anfang einer neuen Session sind folgende Schritte auszuführen:</p>
+<ol class="arabic simple">
+<li><p>Einloggen.</p></li>
+<li><p>Edition auswählen, in diesem Fall durch Auswählen der “Gutzkow Digitale Gesamtausgabe”.</p></li>
+<li><p>Die Synchronisation der eigenen Änderungen mit dem Backup geschieht automatisch, wenn man auf die Seite der
+Edition geht. Falls neue Änderungen in der primären Kopie existieren, dann werden diese automatisch aufgelistet
+und die_der Benutzer_in <strong>muss</strong> die Änderungen in die eigene Kopie übernehmen. Bevor dies nicht durchgeführt wurde
+können keine Dateien bearbeitet werden.</p></li>
+</ol>
+</div>
+<div class="section" id="eine-datei-bearbeiten">
+<span id="process-edit-file"></span><h2>Eine Datei bearbeiten<a class="headerlink" href="#eine-datei-bearbeiten" title="Permalink to this headline">¶</a></h2>
+<p>Um eine Datei zu bearbeiten, folgen sie diesen Schritten:</p>
+<ol class="arabic simple">
+<li><p>Die Edition auswählen.</p></li>
+<li><p>Dem Link zum Bearbeiten einer Datei folgen <em>oder</em> in der Menüzeile auf den “Dateien” Icon clicken.</p></li>
+<li><p>Aus der Liste die zu bearbeitende Datei auswählen und auf ihren Namen clicken um sie im Editor zu öffnen. Die
+Dateien sind in ihren Verzeichnissen alphabetisch sortiert.</p></li>
+</ol>
+<p>Details zur nutzung des Texteditors finden sie <a class="reference internal" href="editor/index.html"><span class="doc">hier</span></a>.</p>
+<p>Schritte 2 und 3 können wiederholt ausgeführt werden. Insbesondere über den “Dateien” Icon kann man immer schnell zur
+Liste der zu bearbeitenden Dateien kommen.</p>
+</div>
+<div class="section" id="ende-einer-session">
+<span id="process-end-session"></span><h2>Ende einer Session<a class="headerlink" href="#ende-einer-session" title="Permalink to this headline">¶</a></h2>
+<p>Die folgenden zwei Schritte sind am Ende der Arbeitssession durchzuführen, um sicherzustellen, dass keine Daten
+verloren gehen:</p>
+<ol class="arabic simple">
+<li><p>Zur Edition zurückkehren, in diesem Fall durch Auswählen der “Gutzow Digitale Gesamtausgabe” in der Menüzeile.</p></li>
+<li><p>Ihre Änderungen werden automatisch mit dem Backup synchronisiert.</p></li>
+</ol>
+</div>
+<div class="section" id="integration-in-die-primare-kopie">
+<span id="process-integrate-changes"></span><h2>Integration in die primäre Kopie<a class="headerlink" href="#integration-in-die-primare-kopie" title="Permalink to this headline">¶</a></h2>
+<p>Damit Änderungen auf der Webseite sichtbar werden, müssen sie in die primäre Kopie übernommen werden:</p>
+<ol class="arabic simple">
+<li><p>Zur Edition zurückkehren, in diesem Fall durch Auswählen der “Gutzkow Digitale Gesamtausgabe” in der Menüzeile.</p></li>
+<li><p>Auf die Schaltfläche “Integration beantragen” clicken.</p></li>
+</ol>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Nachdem eine Integration beantragt wurde, kann keine weitere beantragt werden, bevor die erste abgeschlossen oder
+zurückgewiesen wurde. Alle Änderungen die nach der Beantragung, aber vor dem Abschluss der Integration, gemacht
+werden, werden automatisch dem Integrationsantrag hinzugefügt.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Digital Edition Editor</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Überblick</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Abläufe</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#globaler-ablauf">Globaler Ablauf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#anfang-einer-session">Anfang einer Session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#eine-datei-bearbeiten">Eine Datei bearbeiten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ende-einer-session">Ende einer Session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-in-die-primare-kopie">Integration in die primäre Kopie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="editor/index.html">Text Editor</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="overview.html" title="previous chapter">Überblick</a></li>
+      <li>Next: <a href="editor/index.html" title="next chapter">Text Editor</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Mark Hall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/processes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

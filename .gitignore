@@ -1,6 +1,6 @@
-*.sqlite3
 node_modules
-/static
 .venv
-docs/_build
-tmp
+*.egg-info
+development.ini
+production.ini
+*.sqlite

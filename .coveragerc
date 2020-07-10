@@ -1,0 +1,3 @@
+[run]
+source = digi_edit
+omit = digi_edit/test*
