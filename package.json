@@ -1,0 +1,12 @@
+{
+  "name": "digital-edition-editor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@gitlab.informatik.uni-halle.de:gutzkow/digital-edition-editor.git",
+  "author": "Mark <mark.hall@work.room3b.eu>",
+  "license": "MIT",
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "pump": "^3.0.0"
+  }
+}
