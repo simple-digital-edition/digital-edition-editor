@@ -8,12 +8,12 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
     {
         path: '/',
-        name: 'EditionOverview',
+        name: 'root',
         component: EditionOverview,
     },
     {
-        path: '/about',
-        name: 'About',
+        path: '/login',
+        name: 'login',
         component: About,
     },
 ]
