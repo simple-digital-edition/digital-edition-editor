@@ -1,0 +1,15 @@
+svg.icon {
+    width: rem-calc(18px);
+    height: rem-calc(18px);
+
+    &.large {
+        width: rem-calc(24px);
+        height: rem-calc(24px);
+    }
+
+    &.small {
+        width: rem-calc(14px);
+        height: rem-calc(14px);
+    }
+
+}

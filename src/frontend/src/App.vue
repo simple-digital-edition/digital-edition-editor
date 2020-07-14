@@ -1,32 +1,44 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <div id="app">
+        <nav class="main">
+            <aria-menubar v-slot="{ keyboardNav }">
+                <ul role="menubar">
+                    <li role="presentation"><span>Digital Edition Editor</span></li>
+                    <router-link to="/" v-slot="{ href, navigate, isActive, isExactActive }">
+                        <li role="presentation"><a role="menuitem" tabindex="0" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">Edition</a></li>
+                    </router-link>
+                    <router-link :to="'/' + selectedBranchId" v-slot="{ href, navigate, isActive, isExactActive }">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">Branch-Name</a></li>
+                    </router-link>
+                    <router-link :to="'/' + selectedBranchId + '/' + selectedFileId" v-slot="{ href, navigate, isActive, isExactActive }">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">File</a></li>
+                    </router-link>
+                </ul>
+            </aria-menubar>
+        </nav>
+        <main>
+            <router-view/>
+        </main>
     </div>
-    <router-view/>
-  </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
 
-#nav {
-  padding: 30px;
-}
+import AriaMenubar from '@/components/AriaMenubar.vue';
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+@Component({
+    components: {
+        AriaMenubar
+    },
+})
+export default class App extends Vue {
+    public get selectedBranchId(): string {
+        return '1';
+    }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+    public get selectedFileId(): string {
+        return 'abcd';
+    }
 }
-</style>
+</script>

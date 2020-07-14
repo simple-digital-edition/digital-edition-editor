@@ -1,0 +1,44 @@
+[role="dialog"] {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 35rem;
+    height: 20rem;
+    background: $white;
+    box-shadow: 0 0 rem-calc(10px) $black;
+    padding: $global-padding;
+    border-radius: rem-calc(3px);
+    display: flex;
+    flex-direction: column;
+    z-index: 10000;
+
+    &[aria-modal="true"] {
+        left: 0;
+        top: 0;
+        transform: none;
+        width: 100vw;
+        height: 100vh;
+        background: #e6e6e666;
+        box-shadow: none;
+        padding: 0;
+        border-radius: 0;
+        display: block;
+
+        > * {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 35rem;
+            height: 20rem;
+            background: $white;
+            box-shadow: 0 0 rem-calc(10px) $dark-gray;
+            padding: $global-padding;
+            border-radius: rem-calc(3px);
+            display: flex;
+            flex-direction: column;
+            z-index: 10001;
+        }
+    }
+}

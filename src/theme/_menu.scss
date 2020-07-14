@@ -1,0 +1,33 @@
+nav {
+    ul[role="menubar"] {
+        display: flex;
+        flex-direction: row;
+        margin: 0;
+        padding: 0;
+        background: $light-gray;
+
+        li {
+            list-style-type: none;
+        }
+
+        a[role="menuitem"] {
+            display: block;
+            padding: $global-padding/2 $global-padding;
+            cursor: pointer;
+            text-decoration: none;
+            border-bottom: rem-calc(4px) solid transparent;
+            color: $colour-primary-dark;
+
+            &[aria-current="true"] {
+                border-bottom: rem-calc(4px) solid $colour-primary;
+            }
+        }
+
+        span {
+            display: block;
+            padding: $global-padding/2 $global-padding;
+            font-weight: bold;
+            border-bottom: rem-calc(4px) solid transparent;
+        }
+    }
+}

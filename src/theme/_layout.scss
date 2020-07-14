@@ -1,0 +1,21 @@
+#app {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    > nav {
+        flex: 0 0 auto;
+    }
+
+    > main {
+        flex: 1 1 auto;
+        overflow: hidden;
+    }
+}
+
+.width-limited {
+    max-width: 50rem;
+    margin: 0 auto;
+}

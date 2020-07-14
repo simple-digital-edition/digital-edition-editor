@@ -1,0 +1,32 @@
+a {
+    color: $colour-primary;
+    cursor: pointer;
+
+    &.with-icon {
+        display: inline-flex;
+        align-items: center;
+
+        > span {
+            padding-left: $global-padding/4;
+        }
+    }
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+}
+
+h1, .size-h1 {
+    font-size: rem-calc(18px);
+    font-weight: bold;
+}
+
+h2, .size-h2 {
+    font-size: rem-calc(16px);
+    font-weight: bold;
+}
+
+h3, .size-h3 {
+    font-size: rem-calc(14px);
+    font-weight: bold;
+}
