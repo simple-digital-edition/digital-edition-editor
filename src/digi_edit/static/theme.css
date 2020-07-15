@@ -1,3 +1,7 @@
+html {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px; }
+
 a {
   color: #b7512a;
   cursor: pointer; }
@@ -22,15 +26,56 @@ h3, .size-h3 {
   font-size: 1rem;
   font-weight: bold; }
 
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 0; }
+  ul.no-bullet, ol.no-bullet {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0; }
+
+dl {
+  margin: 0; }
+
+.margin-top {
+  margin-top: 1rem; }
+
+.margin-left {
+  margin-left: 1rem; }
+
+.margin-bottom {
+  margin-bottom: 1rem; }
+
+.padding-left {
+  padding-left: 1rem; }
+
+.text-right {
+  text-align: right; }
+
+.text-center {
+  text-align: center; }
+
+.full-width {
+  width: 100%; }
+
 .flex {
   display: flex;
   flex-direction: row; }
   .flex.vertical {
     flex-direction: column; }
   .flex > * {
-    flex: 1 1 auto; }
+    flex: 1 1 auto;
+    box-sizing: border-box; }
   .flex > .shrink {
     flex: 0 0 auto; }
+  .flex > span {
+    display: block; }
+  .flex > .align-end {
+    align-self: flex-end; }
+  .flex > .flex-25 {
+    width: 25%; }
+  .flex > .flex-75 {
+    width: 75%; }
 
 nav ul[role="menubar"] {
   display: flex;
@@ -139,10 +184,37 @@ svg.icon {
 
 form label {
   display: block;
-  width: 100%; }
-  form label input[type="text"] {
+  width: 100%;
+  font-size: 0.85714rem; }
+  form label input[type="text"], form label input[type="email"], form label input[type="password"] {
     display: block;
-    width: 100%; }
+    width: 100%;
+    font-size: 0.92857rem;
+    border: 1px solid #cacaca;
+    padding: 0.5rem 0.5rem; }
+    form label input[type="text"]:focus, form label input[type="email"]:focus, form label input[type="password"]:focus {
+      box-shadow: 0 0 0.21429rem #e6e6e6 inset;
+      background: #fefefe; }
+
+form span.error-msg {
+  display: block;
+  color: #cc0000;
+  font-size: 0.85714rem; }
+  form span.error-msg.empty:after {
+    display: block;
+    content: '\00a0'; }
+
+.button {
+  border: 1px solid #b24400;
+  background: #b7512a;
+  color: #fefefe;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.92857rem;
+  cursor: pointer;
+  display: inline-block; }
+  .button.outline {
+    background: #fefefe;
+    color: #b7512a; }
 
 #app {
   width: 100vw;
@@ -151,14 +223,21 @@ form label {
   display: flex;
   flex-direction: column; }
   #app > nav {
-    flex: 0 0 auto; }
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row; }
+    #app > nav > ul:first-child {
+      flex: 1 1 auto; }
+    #app > nav > ul:last-child {
+      flex: 0 0 auto; }
   #app > main {
     flex: 1 1 auto;
     overflow: hidden; }
 
 .width-limited {
   max-width: 50rem;
-  margin: 0 auto; }
+  margin-left: auto;
+  margin-right: auto; }
 
 div.home {
   height: 100%;

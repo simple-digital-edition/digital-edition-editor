@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import EditionOverview from '@/views/EditionOverview.vue';
-import About from '@/views/About.vue';
+import Login from '@/views/Login.vue';
+import BranchOverview from '@/views/BranchOverview.vue';
+import FileEditor from '@/views/FileEditor.vue';
 
 Vue.use(VueRouter);
 
@@ -14,8 +16,20 @@ const routes: Array<RouteConfig> = [
     {
         path: '/login',
         name: 'login',
-        component: About,
+        component: Login,
     },
+    {
+        path: '/branches/:bid',
+        name: 'branch',
+        component: BranchOverview,
+        children: [
+            {
+                path: 'files/:fid',
+                name: 'file',
+                component: FileEditor,
+            }
+        ]
+    }
 ]
 
 const router = new VueRouter({

@@ -2,10 +2,45 @@ form {
     label {
         display: block;
         width: 100%;
+        font-size: rem-calc(12px);
 
-        input[type="text"] {
+        input[type="text"], input[type="email"], input[type="password"] {
             display: block;
             width: 100%;
+            font-size: rem-calc(13px);
+            border: 1px solid $medium-gray;
+            padding: $global-padding/2 $global-padding/2;
+
+            &:focus {
+                box-shadow: 0 0 rem-calc(3px) $light-gray inset;
+                background: $white;
+            }
         }
+    }
+
+    span.error-msg {
+        display: block;
+        color: $colour-error;
+        font-size: rem-calc(12px);
+
+        &.empty:after {
+            display: block;
+            content: '\00a0';
+        }
+    }
+}
+
+.button {
+    border: 1px solid $colour-primary-dark;
+    background: $colour-primary;
+    color: $white;
+    padding: $global-padding/2 $global-padding/2;
+    font-size: rem-calc(13px);
+    cursor: pointer;
+    display: inline-block;
+
+    &.outline {
+        background: $white;
+        color: $colour-primary;
     }
 }

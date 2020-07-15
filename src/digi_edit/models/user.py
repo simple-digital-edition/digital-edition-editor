@@ -47,5 +47,14 @@ class User(Base):
         return self.permissions + [perm for group, permissions in GROUPS.items()
                                    if group in self.groups for perm in permissions]
 
+    def as_jsonapi(self, request):
+        return {
+            'type': 'users',
+            'id': str(self.id),
+            'attributes': {
+                'email': self.email,
+                'token': self.attributes['token'] if 'token' in self.attributes else '',
+            }}
+
 
 Index('users_email_ix', User.email, unique=True, mysql_length=191)

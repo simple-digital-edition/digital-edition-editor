@@ -8,9 +8,26 @@
 
     > * {
         flex: 1 1 auto;
+        box-sizing: border-box;
     }
 
     > .shrink {
         flex: 0 0 auto;
+    }
+
+    > span {
+        display: block;
+    }
+
+    > .align-end {
+        align-self: flex-end;
+    }
+
+    > .flex-25 {
+        width: 25%;
+    }
+
+    > .flex-75 {
+        width: 75%;
     }
 }
