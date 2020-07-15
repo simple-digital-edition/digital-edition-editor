@@ -106,9 +106,9 @@ def files_item_get(request):
                     files[identifier] = {'branch': branch,
                                          'filename': os.path.join(basepath, filename)}
     if request.matchdict['iid'] in files:
-        base_path = base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{files[request.matchdict["iid"]]["branch"]}')
+        base_path = base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{files[request.matchdict["iid"]]["branch"].id}')
         pathname, filename = os.path.split(files[request.matchdict['iid']]['filename'])
-        pathname = pathname[len(base_path):]
+        pathname = pathname[len(base_path) + 1:]
         if not pathname:
             pathname = '/'
         with open(files[request.matchdict['iid']]['filename']) as in_f:
