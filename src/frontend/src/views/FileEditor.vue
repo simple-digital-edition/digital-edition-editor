@@ -5,8 +5,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, Vue } from 'vue-property-decorator';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+import { Component, Vue } from 'vue-property-decorator';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import deepcopy from 'deepcopy';
 

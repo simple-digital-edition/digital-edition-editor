@@ -260,3 +260,21 @@ div.home {
       cursor: text; }
       .text-editor > div .cm-content:focus, .text-editor > div .cm-content::-moz-focus-inner {
         outline: none; }
+
+#busy {
+  background: transparent;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  cursor: wait; }
+  #busy progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 0.28571rem;
+    border: none;
+    background: #8a8a8a; }

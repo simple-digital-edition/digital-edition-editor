@@ -1,5 +1,8 @@
 <template>
     <div id="app">
+        <div v-if="$store.state.busy" id="busy">
+            <progress :value="$store.state.completedBusyCounter" :max="$store.state.maxBusyCounter"></progress>
+        </div>
         <nav class="main">
             <aria-menubar v-slot="{ keyboardNav }">
                 <ul role="menubar">

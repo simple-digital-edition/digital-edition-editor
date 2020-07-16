@@ -23,8 +23,6 @@ import { EditorState } from "@codemirror/next/state";
 import { EditorView, keymap } from "@codemirror/next/view";
 import { defaultKeymap } from "@codemirror/next/commands";
 
-import { JSONAPIObject } from '../store/index';
-
 @Component
 export default class FileEditor extends Vue {
     @Prop() text!: string;

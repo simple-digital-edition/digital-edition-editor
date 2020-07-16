@@ -11,6 +11,10 @@ interface State {
     userId: string;
     userToken: string;
     loggedIn: boolean;
+    busy: boolean;
+    busyCounter: number;
+    maxBusyCounter: number;
+    completedBusyCounter: number;
 }
 
 interface Config {
@@ -92,6 +96,10 @@ export default new Vuex.Store({
         userId: '',
         userToken: '',
         loggedIn: false,
+        busy: false,
+        busyCounter: 0,
+        maxBusyCounter: 0,
+        completedBusyCounter: 0,
     } as State,
     mutations: {
         setConfig(state, config: Config) {
@@ -124,6 +132,25 @@ export default new Vuex.Store({
         deleteObject(state, obj) {
             if (state.data[obj.type]) {
                 Vue.delete(state.data[obj.type], obj.id);
+            }
+        },
+
+        setBusy(state, busy) {
+            if (busy) {
+                state.busyCounter = state.busyCounter + 1;
+                state.maxBusyCounter = state.maxBusyCounter + 1;
+            } else {
+                state.busyCounter = state.busyCounter - 1;
+                state.completedBusyCounter = state.completedBusyCounter + 1;
+            }
+            if (state.busyCounter === 0) {
+                setTimeout(() => {
+                    state.busy = false;
+                    state.maxBusyCounter = 0;
+                    state.completedBusyCounter = 0;
+                }, 300);
+            } else {
+                state.busy = true;
             }
         },
     },
@@ -179,6 +206,7 @@ export default new Vuex.Store({
 
         async fetchAll({ commit, state }, type: string) {
             try {
+                commit('setBusy', true);
                 const objs = (await axios({
                     method: 'GET',
                     url: state.config.api.baseURL + '/' + type,
@@ -187,8 +215,10 @@ export default new Vuex.Store({
                 (objs as {data: JSONAPIObject[]}).data.forEach((obj) => {
                     commit('setObject', obj);
                 });
+                commit('setBusy', false);
                 return objs.data;
             } catch(error) {
+                commit('setBusy', false);
                 if (error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
@@ -202,14 +232,17 @@ export default new Vuex.Store({
 
         async fetchSingle({ commit, state }, ref) {
             try {
+                commit('setBusy', true);
                 const obj = (await axios({
                     method: 'GET',
                     url: state.config.api.baseURL + '/' + ref.type + '/' + ref.id,
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 })).data.data;
                 commit('setObject', obj);
+                commit('setBusy', false);
                 return obj;
             } catch(error) {
+                commit('setBusy', false);
                 if (error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
@@ -223,6 +256,7 @@ export default new Vuex.Store({
 
         async createSingle({ commit, state }, obj: JSONAPIObject) {
             try {
+                commit('setBusy', true);
                 obj = (await axios({
                     method: 'POST',
                     url: state.config.api.baseURL + '/' + obj.type,
@@ -232,8 +266,10 @@ export default new Vuex.Store({
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 })).data.data;
                 commit('setObject', obj);
+                commit('setBusy', false);
                 return obj;
             } catch(error) {
+                commit('setBusy', false);
                 if (error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
@@ -245,8 +281,9 @@ export default new Vuex.Store({
             }
         },
 
-        async saveSingle({commit, state }, obj:JSONAPIObject) {
+        async saveSingle({commit, state }, obj: JSONAPIObject) {
             try {
+                commit('setBusy', true);
                 await axios({
                     method: 'PATCH',
                     url: state.config.api.baseURL + '/' + obj.type + '/' + obj.id,
@@ -256,7 +293,10 @@ export default new Vuex.Store({
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 });
                 commit('deleteObject', obj);
+                commit('setBusy', false);
+                return obj;
             } catch(error) {
+                commit('setBusy', false);
                 if (error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
@@ -270,13 +310,16 @@ export default new Vuex.Store({
 
         async deleteSingle({ commit, state }, obj: JSONAPIObject) {
             try {
+                commit('setBusy', true);
                 await axios({
                     method: 'DELETE',
                     url: state.config.api.baseURL + '/' + obj.type + '/' + obj.id,
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 });
                 commit('deleteObject', obj);
+                commit('setBusy', false);
             } catch(error) {
+                commit('setBusy', false);
                 if (error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
@@ -289,6 +332,7 @@ export default new Vuex.Store({
         },
 
         async login({ dispatch, commit, state }, loginData: LoginData) {
+            commit('setBusy', true);
             const user = await axios({
                 method: 'POST',
                 url: state.config.api.baseURL + '/users/login',
@@ -305,6 +349,7 @@ export default new Vuex.Store({
             commit('setLoggedIn', true);
             await dispatch('init');
             router.push({name: 'root'});
+            commit('setBusy', false);
         },
     },
     modules: {
