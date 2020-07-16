@@ -19,7 +19,6 @@ import TextEditor from '../components/TextEditor.vue';
     }
 })
 export default class FileEditor extends Vue {
-    public editorView = null as EditorView | null;
     public rawData = null as JSONAPIObject | null;
 
     public get file(): JSONAPIObject | null {

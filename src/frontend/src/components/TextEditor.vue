@@ -26,14 +26,17 @@ import { defaultKeymap } from "@codemirror/next/commands";
 @Component
 export default class FileEditor extends Vue {
     @Prop() text!: string;
-    editorView = null as EditorView | null;
+    public editorView = null as null | EditorView;
 
     public mounted(): void {
         this.loadEditor();
     }
 
     public save(ev: Event): void {
-        this.$emit('save', this.editorView.state.doc.toString());
+        ev.preventDefault();
+        if (this.editorView) {
+            this.$emit('save', this.editorView.state.doc.toString());
+        }
     }
 
     private loadEditor(): void {
