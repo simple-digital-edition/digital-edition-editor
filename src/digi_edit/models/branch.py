@@ -15,6 +15,7 @@ from digi_edit.util import jsonapi_type_schema, get_config_setting
 
 
 class Branch(Base):
+    """The :class:`~digi_edit.models.branch.Branch` represents a single branch."""
 
     __tablename__ = 'branches'
 
@@ -32,6 +33,7 @@ class Branch(Base):
         return True
 
     def as_jsonapi(self, request):
+        """Return this :class:`~digi_edit.models.branch.Branch` in JSONAPI format."""
         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
         data = {
             'type': 'branches',
@@ -54,6 +56,7 @@ class Branch(Base):
 
     @classmethod
     def create_schema(cls):
+        """Return the validation schema for creating a new instance."""
         return {
             'type': jsonapi_type_schema('branches'),
             'attributes': {'type': 'dict',
@@ -63,15 +66,19 @@ class Branch(Base):
         }
 
     def pre_create(self, request):
+        """Before creation set the creation date."""
         self.attributes['created'] = datetime.utcnow().isoformat()
 
     def post_create(self, request):
+        """After creation clone the repository, checkout the new branch, and push that to the remote repository."""
         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
         repo = Repo.clone_from(get_config_setting(request, 'git.url'), base_path)
         branch = repo.create_head(f'branch-{self.id}')
         branch.checkout()
+        repo.git.push('--set-upstream', 'origin', f'branch-{self.id}', '--force')
 
     def pre_delete(self, request):
+        """Delete the remote branch and the local directory."""
         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
         repo = Repo(base_path)
         repo.git.push('origin', '--delete', f'branch-{self.id}')
