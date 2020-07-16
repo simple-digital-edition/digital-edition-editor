@@ -73,4 +73,6 @@ class Branch(Base):
 
     def pre_delete(self, request):
         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
+        repo = Repo(base_path)
+        repo.git.push('origin', '--delete', f'branch-{self.id}')
         rmtree(base_path)
