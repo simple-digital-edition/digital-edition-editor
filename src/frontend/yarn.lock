@@ -822,6 +822,20 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@codemirror/next@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@codemirror/next/-/next-0.8.0.tgz#60d2f9045bb3a1bbed56167634d6d5907516fea7"
+  integrity sha512-bDKoKh8hGxTFRdGEJtVYiefb4Zj/sSOEZhjwWb4+G0kYt1EOkYkZiYzndqwPgB6hjyG+STyS1lDYASia5pOvRA==
+  dependencies:
+    lezer "^0.9.0"
+    lezer-css "^0.9.0"
+    lezer-html "^0.9.0"
+    lezer-javascript "^0.9.0"
+    lezer-python "^0.9.0"
+    lezer-tree "^0.9.0"
+    style-mod "^2.2.2"
+    w3c-keyname "^2.2.4"
+
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
@@ -2878,6 +2892,13 @@ deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
   integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
+
+deepcopy@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/deepcopy/-/deepcopy-2.0.0.tgz#2acb9b7645f9f54d815eee991455e790e72e2252"
+  integrity sha512-d5ZK7pJw7F3k6M5vqDjGiiUS9xliIyWkdzBjnPhnSeRGjkYOGZMCFkdKVwV/WiHOe0NwzB8q+iDo7afvSf0arA==
+  dependencies:
+    type-detect "^4.0.8"
 
 deepmerge@^1.5.2:
   version "1.5.2"
@@ -4968,6 +4989,46 @@ levn@^0.3.0, levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+lezer-css@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/lezer-css/-/lezer-css-0.9.0.tgz#fc18e5056c25a62706013d30e8661ed4052afb40"
+  integrity sha512-rpK/O4++1K+zkHuo4rWZrJiFeaJ1vITWWPTqJK2wkwvbzd3FqvJmFC92oLC43eRhloOuiCD7R2nueRZAR6Oocg==
+  dependencies:
+    lezer "^0.9.0"
+
+lezer-html@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/lezer-html/-/lezer-html-0.9.0.tgz#1dc269e072fa576da08e886e945050ab967a6521"
+  integrity sha512-CLceSQ5mOxQnqZXROX1+A34jAelJaSwiPyOLDMXk4SFLvPOIq/WkAlLyquJ2wY3JaWCwkrdPsP7OzVHd5unpfQ==
+  dependencies:
+    lezer "^0.9.0"
+
+lezer-javascript@^0.9.0:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/lezer-javascript/-/lezer-javascript-0.9.1.tgz#0a06c260979c172a63f7dbbcf6e57dcfe1137d9e"
+  integrity sha512-XoZeWiVAoo41jywONr5ajGxK8xaS1AeObB3amVXh3Jc4pqN8Y8uBY/bQ9deh1blm7bvZRbQmJWjrb1mCEEy8UQ==
+  dependencies:
+    lezer "^0.9.0"
+
+lezer-python@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/lezer-python/-/lezer-python-0.9.0.tgz#6b3a7de643a1ea1a0ac7d8b23b9007f484b961ac"
+  integrity sha512-sJ/YY48uQMZDTqQx6GCkqnyhxjph3YghcLqdrAyU8KVKxMHvwWRiSdEKtp3k7uQLhP4Bzp5NfkAFaSEK6wH1Mw==
+  dependencies:
+    lezer "^0.9.0"
+
+lezer-tree@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/lezer-tree/-/lezer-tree-0.9.0.tgz#c62aee4ddcd18e210369162ea1c93cd10365f80f"
+  integrity sha512-bz/jTNrQFCJ7GBQIkw8y44DWMKL+rrPh40GnrFhnnrezA22T8US38gJAnAAv23zYsoYQfHmwCHJpxv9A3E1OTQ==
+
+lezer@^0.9.0:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/lezer/-/lezer-0.9.1.tgz#33c4f57f6a097bf7312cff4fba3ddf3f7cd6c94b"
+  integrity sha512-mvLVBOmh/Ti96qRkQRcI1ZiEDdOgWo4pBRq4ivmQlcRF9L2jH0kND5tm6CZC7OUPZiQfjT/a7ULVfmryGFCXsA==
+  dependencies:
+    lezer-tree "^0.9.0"
 
 lines-and-columns@^1.1.6:
   version "1.1.6"
@@ -7449,6 +7510,11 @@ strip-json-comments@^3.0.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.0.tgz#7638d31422129ecf4457440009fba03f9f9ac180"
   integrity sha512-e6/d0eBu7gHtdCqFt0xJr642LdToM5/cN4Qb9DbHjVx1CP5RyeM+zH7pbecEmDv/lBqb0QH+6Uqq75rxFPkM0w==
 
+style-mod@^2.2.2:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/style-mod/-/style-mod-2.2.3.tgz#44ac9ff663f3129a88e8aad952bac75f49073381"
+  integrity sha512-xeT8Ky7LVF6a+kbdvzwcdyz7IVhNUK1uZh78kMPS7j6/yTUA8jF0e3yuEsLCR0VX7rxMR4ppTTXSSYQAPSD+wg==
+
 stylehacks@^4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/stylehacks/-/stylehacks-4.0.3.tgz#6718fcaf4d1e07d8a1318690881e8d96726a71d5"
@@ -7769,6 +7835,11 @@ type-check@~0.3.2:
   integrity sha1-WITKtRLPHTVeP7eE8wgEsrUg23I=
   dependencies:
     prelude-ls "~1.1.2"
+
+type-detect@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.0.8.tgz#7646fb5f18871cfbb7749e69bd39a6388eb7450c"
+  integrity sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==
 
 type-fest@^0.11.0:
   version "0.11.0"
@@ -8107,6 +8178,11 @@ vuex@^3.4.0:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.5.1.tgz#f1b8dcea649bc25254cf4f4358081dbf5da18b3d"
   integrity sha512-w7oJzmHQs0FM9LXodfskhw9wgKBiaB+totOdb8sNzbTB2KDCEEwEs29NzBZFh/lmEK1t5tDmM1vtsO7ubG1DFw==
+
+w3c-keyname@^2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/w3c-keyname/-/w3c-keyname-2.2.4.tgz#4ade6916f6290224cdbd1db8ac49eab03d0eef6b"
+  integrity sha512-tOhfEwEzFLJzf6d1ZPkYfGj+FWhIpBux9ppoP3rlclw3Z0BZv3N7b7030Z1kYth+6rDuAsXUFr+d0VE6Ed1ikw==
 
 watchpack-chokidar2@^2.0.0:
   version "2.0.0"

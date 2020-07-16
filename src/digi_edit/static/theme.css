@@ -77,6 +77,9 @@ dl {
   .flex > .flex-75 {
     width: 75%; }
 
+nav.border-top {
+  border-top: 1px solid #cacaca; }
+
 nav ul[role="menubar"] {
   display: flex;
   flex-direction: row;
@@ -243,3 +246,17 @@ div.home {
   height: 100%;
   padding: 1rem;
   overflow: auto; }
+
+.editor {
+  height: 100%;
+  overflow: hidden; }
+
+.text-editor {
+  height: 100%;
+  overflow: hidden; }
+  .text-editor > div {
+    overflow: auto; }
+    .text-editor > div .cm-content {
+      cursor: text; }
+      .text-editor > div .cm-content:focus, .text-editor > div .cm-content::-moz-focus-inner {
+        outline: none; }

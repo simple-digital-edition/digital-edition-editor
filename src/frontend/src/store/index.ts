@@ -245,6 +245,29 @@ export default new Vuex.Store({
             }
         },
 
+        async saveSingle({commit, state }, obj:JSONAPIObject) {
+            try {
+                await axios({
+                    method: 'PATCH',
+                    url: state.config.api.baseURL + '/' + obj.type + '/' + obj.id,
+                    data: {
+                        data: obj,
+                    },
+                    headers: {'X-Authorization': state.userId + ' ' + state.userToken}
+                });
+                commit('deleteObject', obj);
+            } catch(error) {
+                if (error.response.status === 401) {
+                    commit('setUserId', '');
+                    commit('setUserToken', '');
+                    commit('setLoggedIn', '');
+                    router.push({name: 'login'});
+                } else {
+                    throw error;
+                }
+            }
+        },
+
         async deleteSingle({ commit, state }, obj: JSONAPIObject) {
             try {
                 await axios({

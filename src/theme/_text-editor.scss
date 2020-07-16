@@ -1,0 +1,16 @@
+.text-editor {
+    height: 100%;
+    overflow: hidden;
+
+    > div {
+        overflow: auto;
+
+        .cm-content {
+            cursor: text;
+
+            &:focus, &::-moz-focus-inner {
+                outline: none;
+            }
+        }
+    }
+}

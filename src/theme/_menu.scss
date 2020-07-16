@@ -1,4 +1,8 @@
 nav {
+    &.border-top {
+        border-top: 1px solid $medium-gray;
+    }
+
     ul[role="menubar"] {
         display: flex;
         flex-direction: row;

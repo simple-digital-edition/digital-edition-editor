@@ -3,12 +3,13 @@ import os
 
 from cerberus import Validator
 from copy import deepcopy
+from git import Repo, Actor
 from hashlib import sha256, sha512
 from pyramid.httpexceptions import HTTPBadRequest, HTTPUnauthorized, HTTPNotFound, HTTPNoContent
 from secrets import token_hex
 
 from digi_edit.models import User, Branch
-from digi_edit.util import jsonapi_type_schema, get_config_setting
+from digi_edit.util import jsonapi_type_schema, jsonapi_id_schema, get_config_setting
 
 
 def includeme(config):
@@ -20,6 +21,10 @@ def includeme(config):
     generate_api(config, 'branches', Branch)
     config.add_route(f'api.files.item.get', f'/api/files/{{iid}}', request_method='GET')
     config.add_view(files_item_get, route_name=f'api.files.item.get', renderer='json')
+    config.add_route(f'api.data.item.get', f'/api/data/{{iid}}', request_method='GET')
+    config.add_view(data_item_get, route_name=f'api.data.item.get', renderer='json')
+    config.add_route(f'api.data.item.patch', f'/api/data/{{iid}}', request_method='PATCH')
+    config.add_view(data_item_patch, route_name=f'api.data.item.patch', renderer='json')
 
 
 def flatten_errors(errors, path=''):
@@ -111,13 +116,89 @@ def files_item_get(request):
         pathname = pathname[len(base_path) + 1:]
         if not pathname:
             pathname = '/'
-        with open(files[request.matchdict['iid']]['filename']) as in_f:
-            data = in_f.read()
         return {'data': {'type': 'files',
                          'id': request.matchdict['iid'],
                          'attributes': {
                              'path': pathname,
                              'filename': filename,
+                         },
+                         'relationships': {
+                             'data': {
+                                 'data': {
+                                     'type': 'data',
+                                     'id': request.matchdict['iid'],
+                                 }
+                             }
+                         }}}
+    else:
+        raise HTTPNotFound()
+
+
+def data_item_get(request):
+    check_authorization(request)
+    files = {}
+    for branch in request.dbsession.query(Branch):
+        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
+        for basepath, _, filenames in os.walk(base_path):
+            if not basepath.endswith('.git') and '/.git/' not in basepath:
+                for filename in filenames:
+                    identifier = sha256((str(branch.id) + '$$' + os.path.join(basepath, filename)).encode('utf-8')).hexdigest()
+                    files[identifier] = {'branch': branch,
+                                         'filename': os.path.join(basepath, filename)}
+    if request.matchdict['iid'] in files:
+        with open(files[request.matchdict['iid']]['filename']) as in_f:
+            data = in_f.read()
+        return {'data': {'type': 'data',
+                         'id': request.matchdict['iid'],
+                         'attributes': {
+                             'data': data,
+                         }}}
+    else:
+        raise HTTPNotFound()
+
+
+data_item_patch_schema = {
+    'type': jsonapi_type_schema('data'),
+    'attributes': {
+        'type': 'dict',
+        'schema': {
+            'data': {'type': 'string', 'required': True},
+        },
+        'required': True,
+    }
+}
+
+def data_item_patch(request):
+    user = check_authorization(request)
+    files = {}
+    for branch in request.dbsession.query(Branch):
+        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
+        for basepath, _, filenames in os.walk(base_path):
+            if not basepath.endswith('.git') and '/.git/' not in basepath:
+                for filename in filenames:
+                    identifier = sha256((str(branch.id) + '$$' + os.path.join(basepath, filename)).encode('utf-8')).hexdigest()
+                    files[identifier] = {'branch': branch,
+                                         'filename': os.path.join(basepath, filename)}
+    if request.matchdict['iid'] in files:
+        schema = deepcopy(data_item_patch_schema)
+        schema['id'] = jsonapi_id_schema(value=request.matchdict['iid'])
+        body = validate_body(request.body, schema)
+        fullpath = files[request.matchdict['iid']]['filename']
+        branch = files[request.matchdict['iid']]['branch']
+        _, filename = os.path.split(fullpath)
+        with open(files[request.matchdict['iid']]['filename'], 'w') as out_f:
+            out_f.write(body['attributes']['data'])
+        repo = Repo(base_path)
+        if repo.index.diff(None) or repo.index.diff('HEAD'):
+            repo.index.add([os.path.abspath(fullpath)])
+            actor = Actor(user.attributes['name'], user.email)
+            repo.index.commit(f'Updated {filename}', author=actor, committer=actor)
+            repo.git.push('--set-upstream', 'origin', f'branch-{branch.id}', '--force')
+        with open(files[request.matchdict['iid']]['filename']) as in_f:
+            data = in_f.read()
+        return {'data': {'type': 'data',
+                         'id': request.matchdict['iid'],
+                         'attributes': {
                              'data': data,
                          }}}
     else:
@@ -130,7 +211,7 @@ def check_authorization(request):
             userId, token = request.headers['X-Authorization'].split(' ')
             user = request.dbsession.query(User).filter(User.id == userId).first()
             if user and 'token' in user.attributes and user.attributes['token'] == token:
-                return True
+                return user
             else:
                 raise HTTPUnauthorized()
         except:

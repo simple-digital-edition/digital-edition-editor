@@ -5,6 +5,18 @@ def jsonapi_type_schema(type_name):
             'empty': False}
 
 
+def jsonapi_id_schema(value=None):
+    if value:
+        return {'type': 'string',
+                'required': True,
+                'empty': False,
+                'allowed': [value]}
+    else:
+        return {'type': 'string',
+                'required': True,
+                'empty': False}
+
+
 def convert_type(value, target_type, default=None):
     """Attempts to convert the ``value`` to the given ``target_type``. Will
     return ``default`` if the conversion fails.
