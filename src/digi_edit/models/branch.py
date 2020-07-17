@@ -3,7 +3,6 @@ import os
 from collections import OrderedDict
 from datetime import datetime
 from git import Repo
-from hashlib import sha256
 from pyramid.decorator import reify
 from shutil import rmtree
 from sqlalchemy import (Column, Index, Integer, Unicode, DateTime)
@@ -11,7 +10,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_json import NestedMutableJson
 
 from .meta import Base
-from digi_edit.util import jsonapi_type_schema, get_config_setting
+from digi_edit.jsonapi import jsonapi_type_schema
+from digi_edit.util import get_config_setting, get_files_for_branch, get_file_identifier
 
 
 class Branch(Base):
@@ -39,16 +39,13 @@ class Branch(Base):
             'type': 'branches',
             'id': str(self.id),
             'attributes': self.attributes}
-        repo = Repo(base_path)
-        files = []
-        for basepath, _, filenames in os.walk(base_path):
-            if not basepath.endswith('.git') and '/.git/' not in basepath:
-                for filename in filenames:
-                    files.append(os.path.join(basepath, filename))
-        files.sort()
+        # Find all editable files of this branch
+        files = get_files_for_branch(request, self)
         files = list(map(lambda fn: {'type': 'files',
-                                     'id': sha256((str(self.id) + '$$' + fn).encode('utf-8')).hexdigest()}, files))
+                                     'id': get_file_identifier(self, fn)}, files))
         data['relationships'] = {'files': {'data': files}}
+        # Get the repository information
+        repo = Repo(base_path)
         last_commit = next(repo.iter_commits())
         if last_commit:
             data['attributes']['updated'] = last_commit.committed_datetime.isoformat()

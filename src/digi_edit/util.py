@@ -1,20 +1,6 @@
-def jsonapi_type_schema(type_name):
-    return {'type': 'string',
-            'required': True,
-            'allowed': [type_name],
-            'empty': False}
+import os
 
-
-def jsonapi_id_schema(value=None):
-    if value:
-        return {'type': 'string',
-                'required': True,
-                'empty': False,
-                'allowed': [value]}
-    else:
-        return {'type': 'string',
-                'required': True,
-                'empty': False}
+from hashlib import sha256
 
 
 def convert_type(value, target_type, default=None):
@@ -83,3 +69,40 @@ def get_config_setting(request, key, target_type=None, default=None):
         else:
             CACHED_SETTINGS[key] = default
         return get_config_setting(request, key, target_type=target_type, default=default)
+
+
+def get_file_identifier(branch, filepath):
+    """Calculate the file identifier.
+
+    :param branch: The branch the file is on
+    :type branch: :class:`~digi_edit.models.branch.Branch`
+    :param filepath: The file's path
+    :type filepath: ``string``
+    :return: The file's identifier (sha256 hash)
+    :rtype: ``string``
+    """
+    hash = sha256()
+    hash.update(str(branch.id).encode('utf-8'))
+    hash.update(b'$$')
+    hash.update(filepath.encode('utf-8'))
+    return hash.hexdigest()
+
+
+def get_files_for_branch(request, branch):
+    """Return a sorted list of absolute file paths to editable files within the ``branch``.
+
+    :param request: The request to use for accessing settings
+    :type request: :class:`~pyramid.request.Request`
+    :param branch: The branch to return all files for
+    :type branch: :class:`~digi_edit.models.branch.Branch`
+    :return: A sorted list of absolute file paths
+    :rtype: ``list`` of ``string``
+    """
+    base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
+    files = []
+    for basepath, _, filenames in os.walk(base_path):
+        if not basepath.endswith('.git') and '/.git/' not in basepath:
+            for filename in filenames:
+                files.append(os.path.join(basepath, filename))
+    files.sort()
+    return files

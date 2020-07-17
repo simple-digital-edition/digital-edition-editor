@@ -8,23 +8,20 @@ from hashlib import sha256, sha512
 from pyramid.httpexceptions import HTTPBadRequest, HTTPUnauthorized, HTTPNotFound, HTTPNoContent
 from secrets import token_hex
 
-from digi_edit.models import User, Branch
-from digi_edit.util import jsonapi_type_schema, jsonapi_id_schema, get_config_setting
+from digi_edit.models import User, Branch, File, Data
+from digi_edit.jsonapi import jsonapi_type_schema, jsonapi_id_schema
+from digi_edit.util import get_config_setting, get_files_for_branch, get_file_identifier
 
 
 def includeme(config):
+    """Setup the API routes."""
     config.add_route('api', '/api')
-
-    generate_api(config, 'users', User)
+    generate_db_api(config, 'users', User)
     config.add_route('api.users.item.post', '/api/users/login', request_method='POST')
     config.add_view(users_item_post, route_name='api.users.item.post', renderer='json')
-    generate_api(config, 'branches', Branch)
-    config.add_route(f'api.files.item.get', f'/api/files/{{iid}}', request_method='GET')
-    config.add_view(files_item_get, route_name=f'api.files.item.get', renderer='json')
-    config.add_route(f'api.data.item.get', f'/api/data/{{iid}}', request_method='GET')
-    config.add_view(data_item_get, route_name=f'api.data.item.get', renderer='json')
-    config.add_route(f'api.data.item.patch', f'/api/data/{{iid}}', request_method='PATCH')
-    config.add_view(data_item_patch, route_name=f'api.data.item.patch', renderer='json')
+    generate_db_api(config, 'branches', Branch)
+    generate_file_api(config, 'files', File)
+    generate_file_api(config, 'data', Data)
 
 
 def flatten_errors(errors, path=''):
@@ -41,6 +38,18 @@ def flatten_errors(errors, path=''):
 
 
 def validate_body(body, schema):
+    """Validate the request ``body`` against the Cerberus ``schema``. Returns the content of the ``data`` key.
+
+    Raises :class:`~pyramid.httpexceptions.HTTPBadRequest` if the body does not validate. The response contains
+    the error(s) formatted in the JSONAPI error structure.
+
+    :param body: The request body
+    :type body: ``string``
+    :param schema: The Cerberus schema to validate against
+    :type schema: ``dict``
+    :return: The validated object
+    :rtype: ``dict``
+    """
     try:
         body = json.loads(body)
         validator = Validator({'data': {'type': 'dict',
@@ -78,7 +87,7 @@ def users_item_post(request):
         hash.update(body['attributes']['password'].encode('utf-8'))
         if user.password == hash.hexdigest():
             user.attributes['token'] = token_hex(64)
-            return user.as_jsonapi()
+            return user.as_jsonapi(request)
         else:
             raise HTTPBadRequest(body=json.dumps({
                 'errors': [
@@ -99,113 +108,8 @@ def users_item_post(request):
         }))
 
 
-def files_item_get(request):
-    check_authorization(request)
-    files = {}
-    for branch in request.dbsession.query(Branch):
-        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
-        for basepath, _, filenames in os.walk(base_path):
-            if not basepath.endswith('.git') and '/.git/' not in basepath:
-                for filename in filenames:
-                    identifier = sha256((str(branch.id) + '$$' + os.path.join(basepath, filename)).encode('utf-8')).hexdigest()
-                    files[identifier] = {'branch': branch,
-                                         'filename': os.path.join(basepath, filename)}
-    if request.matchdict['iid'] in files:
-        base_path = base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{files[request.matchdict["iid"]]["branch"].id}')
-        pathname, filename = os.path.split(files[request.matchdict['iid']]['filename'])
-        pathname = pathname[len(base_path) + 1:]
-        if not pathname:
-            pathname = '/'
-        return {'data': {'type': 'files',
-                         'id': request.matchdict['iid'],
-                         'attributes': {
-                             'path': pathname,
-                             'filename': filename,
-                         },
-                         'relationships': {
-                             'data': {
-                                 'data': {
-                                     'type': 'data',
-                                     'id': request.matchdict['iid'],
-                                 }
-                             }
-                         }}}
-    else:
-        raise HTTPNotFound()
-
-
-def data_item_get(request):
-    check_authorization(request)
-    files = {}
-    for branch in request.dbsession.query(Branch):
-        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
-        for basepath, _, filenames in os.walk(base_path):
-            if not basepath.endswith('.git') and '/.git/' not in basepath:
-                for filename in filenames:
-                    identifier = sha256((str(branch.id) + '$$' + os.path.join(basepath, filename)).encode('utf-8')).hexdigest()
-                    files[identifier] = {'branch': branch,
-                                         'filename': os.path.join(basepath, filename)}
-    if request.matchdict['iid'] in files:
-        with open(files[request.matchdict['iid']]['filename']) as in_f:
-            data = in_f.read()
-        return {'data': {'type': 'data',
-                         'id': request.matchdict['iid'],
-                         'attributes': {
-                             'data': data,
-                         }}}
-    else:
-        raise HTTPNotFound()
-
-
-data_item_patch_schema = {
-    'type': jsonapi_type_schema('data'),
-    'attributes': {
-        'type': 'dict',
-        'schema': {
-            'data': {'type': 'string', 'required': True},
-        },
-        'required': True,
-    }
-}
-
-def data_item_patch(request):
-    user = check_authorization(request)
-    files = {}
-    for branch in request.dbsession.query(Branch):
-        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
-        for basepath, _, filenames in os.walk(base_path):
-            if not basepath.endswith('.git') and '/.git/' not in basepath:
-                for filename in filenames:
-                    identifier = sha256((str(branch.id) + '$$' + os.path.join(basepath, filename)).encode('utf-8')).hexdigest()
-                    files[identifier] = {'branch': branch,
-                                         'filename': os.path.join(basepath, filename)}
-    if request.matchdict['iid'] in files:
-        schema = deepcopy(data_item_patch_schema)
-        schema['id'] = jsonapi_id_schema(value=request.matchdict['iid'])
-        body = validate_body(request.body, schema)
-        fullpath = files[request.matchdict['iid']]['filename']
-        branch = files[request.matchdict['iid']]['branch']
-        _, filename = os.path.split(fullpath)
-        with open(files[request.matchdict['iid']]['filename'], 'w') as out_f:
-            out_f.write(body['attributes']['data'])
-        repo = Repo(base_path)
-        if repo.index.diff(None) or repo.index.diff('HEAD'):
-            repo.index.add([os.path.abspath(fullpath)])
-            actor = Actor(user.attributes['name'], user.email)
-            repo.index.commit(f'Updated {filename}', author=actor, committer=actor)
-            repo.git.push('--set-upstream', 'origin', f'branch-{branch.id}', '--force')
-        with open(files[request.matchdict['iid']]['filename']) as in_f:
-            data = in_f.read()
-        return {'data': {'type': 'data',
-                         'id': request.matchdict['iid'],
-                         'attributes': {
-                             'data': data,
-                         }}}
-    else:
-        raise HTTPNotFound()
-
-
 def check_authorization(request):
+    """Checks the request for the required authorisation."""
     if 'X-Authorization' in request.headers:
         try:
             userId, token = request.headers['X-Authorization'].split(' ')
@@ -220,13 +124,22 @@ def check_authorization(request):
         raise HTTPUnauthorized()
 
 
-def generate_api(config, type_name, db_class):
+def generate_db_api(config, type_name, db_class):
+    """Generates the API endpoints for models backed by the database.
+
+    :param config: The Pyramid configuration
+    :param type_name: The name of the type
+    :type type_name: ``string``
+    :param db_class: The DB-model class to generate the endpoints for
+    """
     def collection_get(request):
+        """Fetch the set of all items."""
         check_authorization(request)
         objs = request.dbsession.query(db_class)
         return {'data': [obj.as_jsonapi(request) for obj in objs]}
 
     def collection_post(request):
+        """Create a new item."""
         check_authorization(request)
         body = validate_body(request.body, db_class.create_schema())
         obj = db_class(attributes=body['attributes'])
@@ -240,6 +153,7 @@ def generate_api(config, type_name, db_class):
         return {'data': obj.as_jsonapi(request)}
 
     def item_get(request):
+        """Fetch a single item."""
         check_authorization(request)
         obj = request.dbsession.query(db_class).filter(db_class.id == request.matchdict['iid']).first()
         if obj:
@@ -248,6 +162,7 @@ def generate_api(config, type_name, db_class):
             raise HTTPNotFound()
 
     def item_delete(request):
+        """Delete a single item."""
         check_authorization(request)
         obj = request.dbsession.query(db_class).filter(db_class.id == request.matchdict['iid']).first()
         if obj:
@@ -266,3 +181,56 @@ def generate_api(config, type_name, db_class):
     config.add_view(item_get, route_name=f'api.{type_name}.item.get', renderer='json')
     config.add_route(f'api.{type_name}.item.delete', f'/api/{type_name}/{{iid}}', request_method='DELETE')
     config.add_view(item_delete, route_name=f'api.{type_name}.item.delete', renderer='json')
+
+
+def get_files_for_all_branches(request):
+    """Returns a ``dict`` mapping file identifiers to their branch and filename."""
+    files = {}
+    for branch in request.dbsession.query(Branch):
+        files.update(dict([(get_file_identifier(branch, fn), {'branch': branch, 'filename': fn})
+                           for fn in get_files_for_branch(request, branch)]))
+    return files
+
+
+def generate_file_api(config, type_name, file_class):
+    """Generates the API endpoints for a file-backed model.
+
+    :param config: The Pyramid configuration
+    :param type_name: The name of the type
+    :type type_name: ``string``
+    :param file_class: The class to generate endpoints for
+    """
+    def item_get(request):
+        """Fetch a single item."""
+        check_authorization(request)
+        files = get_files_for_all_branches(request)
+        if request.matchdict['iid'] in files:
+            dataFile = file_class(request.matchdict['iid'],
+                                  files[request.matchdict['iid']]['branch'].id,
+                                  files[request.matchdict['iid']]['filename'])
+            return {'data': dataFile.as_jsonapi(request)}
+        else:
+            raise HTTPNotFound()
+
+    def item_patch(request):
+        """Update a single item."""
+        user = check_authorization(request)
+        files = get_files_for_all_branches(request)
+        if request.matchdict['iid'] in files:
+            dataFile = file_class(request.matchdict['iid'],
+                                  files[request.matchdict['iid']]['branch'].id,
+                                  files[request.matchdict['iid']]['filename'])
+            schema = deepcopy(file_class.patch_schema())
+            schema['id'] = jsonapi_id_schema(value=request.matchdict['iid'])
+            body = validate_body(request.body, schema)
+            dataFile.patch(request, body, user)
+            return {'data': dataFile.as_jsonapi(request)}
+        else:
+            raise HTTPNotFound()
+
+
+    config.add_route(f'api.{type_name}.item.get', f'/api/{type_name}/{{iid}}', request_method='GET')
+    config.add_view(item_get, route_name=f'api.{type_name}.item.get', renderer='json')
+    if hasattr(file_class, 'patch_schema'):
+        config.add_route(f'api.{type_name}.item.patch', f'/api/{type_name}/{{iid}}', request_method='PATCH')
+        config.add_view(item_patch, route_name=f'api.{type_name}.item.patch', renderer='json')
