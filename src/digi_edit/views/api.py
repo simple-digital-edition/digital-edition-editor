@@ -17,8 +17,8 @@ def includeme(config):
     """Setup the API routes."""
     config.add_route('api', '/api')
     generate_db_api(config, 'users', User)
-    # config.add_route('api.users.item.post', '/api/users/login', request_method='POST')
-    # config.add_view(users_item_post, route_name='api.users.item.post', renderer='json')
+    config.add_route('api.login', '/api/login', request_method='POST')
+    config.add_view(user_login, route_name='api.login', renderer='json')
     generate_db_api(config, 'branches', Branch)
     generate_file_api(config, 'files', File)
     generate_file_api(config, 'data', Data)
@@ -76,7 +76,7 @@ user_login_schema = {
                                            'empty': False}}}}
 
 
-def users_item_post(request):
+def user_login(request):
     """Handle user login."""
     body = validate_body(request.body, user_login_schema)
     user = request.dbsession.query(User).filter(User.email == body['attributes']['email']).first()

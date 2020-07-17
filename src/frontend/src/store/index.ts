@@ -332,24 +332,29 @@ export default new Vuex.Store({
         },
 
         async login({ dispatch, commit, state }, loginData: LoginData) {
-            commit('setBusy', true);
-            const user = await axios({
-                method: 'POST',
-                url: state.config.api.baseURL + '/users/login',
-                data: {
+            try {
+                commit('setBusy', true);
+                const user = await axios({
+                    method: 'POST',
+                    url: state.config.api.baseURL + '/login',
                     data: {
-                        type: 'users',
-                        attributes: loginData,
+                        data: {
+                            type: 'users',
+                            attributes: loginData,
+                        },
                     },
-                },
-                headers: {'X-Authorization': state.userId + ' ' + state.userToken}
-            });
-            commit('setUserId', user.data.id);
-            commit('setUserToken', user.data.attributes.token);
-            commit('setLoggedIn', true);
-            await dispatch('init');
-            router.push({name: 'root'});
-            commit('setBusy', false);
+                    headers: {'X-Authorization': state.userId + ' ' + state.userToken}
+                });
+                commit('setUserId', user.data.id);
+                commit('setUserToken', user.data.attributes.token);
+                commit('setLoggedIn', true);
+                await dispatch('init');
+                router.push({name: 'root'});
+                commit('setBusy', false);
+            } catch(error) {
+                commit('setBusy', false);
+                throw error;
+            }
         },
 
         async action({ commit, state }, payload: {obj: JSONAPIObject, action: string}) {
