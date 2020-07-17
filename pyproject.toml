@@ -25,6 +25,7 @@ pwh_pyramid_routes = "^1.0.0"
 "zope.sqlalchemy" = "^1.3"
 sqlalchemy_json = "^0.4.0"
 gitpython = "^3.1.7"
+pygithub = "^1.51"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"

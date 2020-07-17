@@ -17,8 +17,8 @@ def includeme(config):
     """Setup the API routes."""
     config.add_route('api', '/api')
     generate_db_api(config, 'users', User)
-    config.add_route('api.users.item.post', '/api/users/login', request_method='POST')
-    config.add_view(users_item_post, route_name='api.users.item.post', renderer='json')
+    # config.add_route('api.users.item.post', '/api/users/login', request_method='POST')
+    # config.add_view(users_item_post, route_name='api.users.item.post', renderer='json')
     generate_db_api(config, 'branches', Branch)
     generate_file_api(config, 'files', File)
     generate_file_api(config, 'data', Data)
@@ -161,6 +161,20 @@ def generate_db_api(config, type_name, db_class):
         else:
             raise HTTPNotFound()
 
+    def item_post(request):
+        """Run an action on a single item."""
+        check_authorization(request)
+        obj = request.dbsession.query(db_class).filter(db_class.id == request.matchdict['iid']).first()
+        if obj and hasattr(obj, 'action'):
+            if 'X-Action' in request.headers:
+                obj.action(request, request.headers['X-Action'])
+                return {'data': obj.as_jsonapi(request)}
+            else:
+                raise HTTPBadRequest()
+        else:
+            raise HTTPNotFound()
+
+
     def item_delete(request):
         """Delete a single item."""
         check_authorization(request)
@@ -179,6 +193,8 @@ def generate_db_api(config, type_name, db_class):
     config.add_view(collection_post, route_name=f'api.{type_name}.collection.post', renderer='json')
     config.add_route(f'api.{type_name}.item.get', f'/api/{type_name}/{{iid}}', request_method='GET')
     config.add_view(item_get, route_name=f'api.{type_name}.item.get', renderer='json')
+    config.add_route(f'api.{type_name}.item.post', f'/api/{type_name}/{{iid}}', request_method='POST')
+    config.add_view(item_post, route_name=f'api.{type_name}.item.post', renderer='json')
     config.add_route(f'api.{type_name}.item.delete', f'/api/{type_name}/{{iid}}', request_method='DELETE')
     config.add_view(item_delete, route_name=f'api.{type_name}.item.delete', renderer='json')
 

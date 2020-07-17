@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { mapActions } from 'vuex';
 import axios, { AxiosError } from 'axios';
 import router from '../router/index';
 
@@ -350,6 +350,31 @@ export default new Vuex.Store({
             await dispatch('init');
             router.push({name: 'root'});
             commit('setBusy', false);
+        },
+
+        async action({ commit, state }, payload: {obj: JSONAPIObject, action: string}) {
+            try {
+                commit('setBusy', true);
+                const obj = (await axios({
+                    method: 'POST',
+                    url: state.config.api.baseURL + '/' + payload.obj.type + '/' + payload.obj.id,
+                    headers: {'X-Authorization': state.userId + ' ' + state.userToken,
+                              'X-Action': payload.action}
+                })).data.data;
+                commit('setObject', obj);
+                commit('setBusy', false);
+                return obj;
+            } catch(error) {
+                commit('setBusy', false);
+                if (error.response.status === 401) {
+                    commit('setUserId', '');
+                    commit('setUserToken', '');
+                    commit('setLoggedIn', '');
+                    router.push({name: 'login'});
+                } else {
+                    throw error;
+                }
+            }
         },
     },
     modules: {
