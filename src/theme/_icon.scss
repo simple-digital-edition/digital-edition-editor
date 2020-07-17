@@ -12,4 +12,15 @@ svg.icon {
         height: rem-calc(14px);
     }
 
+    &.success {
+        path, g {
+            fill: #00aa00;
+        }
+    }
+
+    &.warning {
+        path, g {
+            fill: #dd0000;
+        }
+    }
 }

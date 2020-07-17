@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex, { mapActions } from 'vuex';
+import Vuex from 'vuex';
 import axios, { AxiosError } from 'axios';
 import router from '../router/index';
 
@@ -254,6 +254,27 @@ export default new Vuex.Store({
             }
         },
 
+        async backgroundFetchSingle({ commit, state }, ref) {
+            try {
+                const obj = (await axios({
+                    method: 'GET',
+                    url: state.config.api.baseURL + '/' + ref.type + '/' + ref.id,
+                    headers: {'X-Authorization': state.userId + ' ' + state.userToken}
+                })).data.data;
+                commit('setObject', obj);
+                return obj;
+            } catch(error) {
+                if (error.response.status === 401) {
+                    commit('setUserId', '');
+                    commit('setUserToken', '');
+                    commit('setLoggedIn', '');
+                    router.push({name: 'login'});
+                } else {
+                    throw error;
+                }
+            }
+        },
+
         async createSingle({ commit, state }, obj: JSONAPIObject) {
             try {
                 commit('setBusy', true);
@@ -357,7 +378,7 @@ export default new Vuex.Store({
             }
         },
 
-        async action({ commit, state }, payload: {obj: JSONAPIObject, action: string}) {
+        async action({ commit, state }, payload: {obj: JSONAPIObject; action: string}) {
             try {
                 commit('setBusy', true);
                 const obj = (await axios({

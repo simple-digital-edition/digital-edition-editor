@@ -22,7 +22,7 @@
                     </template>
                 </dl>
                 <div class="flex-25 padding-left">
-                    <ul class="no-bullet">
+                    <ul class="no-bullet margin-bottom">
                         <li class="margin-bottom">
                             <a class="button outline full-width text-center">
                                 <svg viewBox="0 0 24 24" class="icon">
@@ -32,7 +32,7 @@
                             </a>
                         </li>
                         <li class="margin-bottom">
-                            <a v-if="branch.attributes.pull_request.status === 'open'" class="button outline full-width text-center" @click="cancelIntegration">
+                            <a v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open'" class="button outline full-width text-center" @click="cancelIntegration">
                                 <svg viewBox="0 0 24 24" class="icon">
                                     <path d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M21,18A3,3 0 0,1 18,21A3,3 0 0,1 15,18C15,16.69 15.83,15.58 17,15.17V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V15.17C20.17,15.58 21,16.69 21,18M18,17A1,1 0 0,0 17,18A1,1 0 0,0 18,19A1,1 0 0,0 19,18A1,1 0 0,0 18,17Z" />
                                 </svg>
@@ -54,6 +54,29 @@
                             </a>
                         </li>
                     </ul>
+                    <template v-if="branch.attributes.pull_request">
+                        <h3 class="no-margin">Integration reviews</h3>
+                        <dl class="margin-bottom">
+                            <template v-for="review, idx in branch.attributes.pull_request.reviews">
+                                <dt :key="idx + '-dt'" class="flex">
+                                    <span>{{ review.user }}</span>
+                                    <svg v-if="review.state === 'APPROVED'" viewBox="0 0 24 24" class="shrink icon success">
+                                        <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                                    </svg>
+                                    <svg v-else viewBox="0 0 24 24" class="shrink icon warning">
+                                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                    </svg>
+                                </dt>
+                                <dd :key="idx + '-dd'" class="no-margin margin-bottom">{{ review.body }}</dd>
+                            </template>
+                        </dl>
+                    </template>
+                    <template v-if="branch.attributes.changes">
+                        <h3 class="no-margin">Changed Files ({{ branch.attributes.changes.length }})</h3>
+                        <ul class="no-bullet">
+                            <li v-for="filename in branch.attributes.changes" :key="filename" :title="filename">{{ filename }}</li>
+                        </ul>
+                    </template>
                 </div>
             </div>
         </div>
@@ -73,6 +96,8 @@ interface FileSet {
 
 @Component
 export default class BranchOverview extends Vue {
+    private intervalId = -1;
+
     public get branch(): JSONAPIObject | null {
         if (this.$store.state.data.branches && this.$store.state.data.branches[this.$route.params.bid]) {
             return this.$store.state.data.branches[this.$route.params.bid];
@@ -113,6 +138,26 @@ export default class BranchOverview extends Vue {
         return this.$route.name === 'branch';
     }
 
+    public mounted() {
+        this.intervalId = window.setInterval(async () => {
+            if (this.branch) {
+                try {
+                    await this.$store.dispatch('backgroundFetchSingle', this.branch);
+                } catch(error) {
+                    if (error.response.status == 404) {
+                        this.$store.commit('deleteObject', this.branch);
+                        this.$store.dispatch('loadBranches');
+                        this.$router.push({name: 'root'});
+                    }
+                }
+            }
+        }, 10000);
+    }
+
+    public beforeDestroy() {
+        window.clearInterval(this.intervalId);
+    }
+
     public deleteBranch(ev: Event) {
         ev.preventDefault();
         if (this.branch) {
@@ -123,17 +168,17 @@ export default class BranchOverview extends Vue {
         }
     }
 
-    public requestIntegration(ev: Event) {
+    public async requestIntegration(ev: Event) {
         ev.preventDefault();
         if (this.branch) {
-            this.$store.dispatch('action', {'obj': this.branch, 'action': 'request-integration'})
+            await this.$store.dispatch('action', {'obj': this.branch, 'action': 'request-integration'});
         }
     }
 
-    public cancelIntegration(ev: Event) {
+    public async cancelIntegration(ev: Event) {
         ev.preventDefault();
         if (this.branch) {
-            this.$store.dispatch('action', {'obj': this.branch, 'action': 'cancel-integration'})
+            await this.$store.dispatch('action', {'obj': this.branch, 'action': 'cancel-integration'});
         }
     }
 }

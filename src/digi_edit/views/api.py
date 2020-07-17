@@ -1,11 +1,13 @@
 import json
 import os
+import re
 
 from cerberus import Validator
 from copy import deepcopy
 from git import Repo, Actor
+from github import Github
 from hashlib import sha256, sha512
-from pyramid.httpexceptions import HTTPBadRequest, HTTPUnauthorized, HTTPNotFound, HTTPNoContent
+from pyramid.httpexceptions import HTTPBadRequest, HTTPUnauthorized, HTTPNotFound, HTTPNoContent, HTTPOk
 from secrets import token_hex
 
 from digi_edit.models import User, Branch, File, Data
@@ -16,9 +18,11 @@ from digi_edit.util import get_config_setting, get_files_for_branch, get_file_id
 def includeme(config):
     """Setup the API routes."""
     config.add_route('api', '/api')
-    generate_db_api(config, 'users', User)
     config.add_route('api.login', '/api/login', request_method='POST')
     config.add_view(user_login, route_name='api.login', renderer='json')
+    config.add_route('api.webhook.github', '/api/webhook/github', request_method='POST')
+    config.add_view(github_webhook, route_name='api.webhook.github', renderer='json')
+    generate_db_api(config, 'users', User)
     generate_db_api(config, 'branches', Branch)
     generate_file_api(config, 'files', File)
     generate_file_api(config, 'data', Data)
@@ -106,6 +110,36 @@ def user_login(request):
                  'source': {'pointer': 'data/attributes/password'}},
             ]
         }))
+
+
+def github_webhook(request):
+    if 'X-GitHub-Event' in request.headers:
+        if request.headers['X-GitHub-Event'] in ['pull_request', 'pull_request_review']:
+            payload = json.loads(request.params['payload'])
+            branch_ref = payload['pull_request']['head']['ref']
+            match = re.fullmatch('branch-([0-9]+)', branch_ref)
+            if match:
+                branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
+                if branch:
+                    gh = Github(get_config_setting(request, 'github.token'))
+                    gh_repo = gh.get_repo('scmmmh/DigiEditTest')
+                    if branch.attributes['pull_request']:
+                        pull_request = gh_repo.get_pull(branch.attributes['pull_request']['id'])
+                        if pull_request.merged:  # TODO: We should actually just mark the branch as closed
+                            branch.pre_delete(request)
+                            request.dbsession.delete(branch)
+                            return HTTPOk()
+                    else:
+                        branch.attributes['pull_request'] = None
+                        for pull_request in gh_repo.get_pulls(state='open', head=f'branch-{branch.id}'):
+                            branch.attributes['pull_request'] = {'id': pull_request.number,}
+                    branch.attributes['pull_request']['state'] = pull_request.state
+                    branch.attributes['pull_request']['mergeable'] = pull_request.mergeable
+                    branch.attributes['pull_request']['reviews'] = list(map(lambda rv: {'state': rv.state,
+                                                                                        'body': rv.body,
+                                                                                        'user': rv.user.name},
+                                                                            pull_request.get_reviews()))
+    return HTTPOk()
 
 
 def check_authorization(request):

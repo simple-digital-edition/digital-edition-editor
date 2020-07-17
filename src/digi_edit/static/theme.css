@@ -37,6 +37,9 @@ ul, ol {
 dl {
   margin: 0; }
 
+.no-margin {
+  margin: 0; }
+
 .margin-top {
   margin-top: 1rem; }
 
@@ -144,6 +147,10 @@ svg.icon {
   svg.icon.small {
     width: 1rem;
     height: 1rem; }
+  svg.icon.success path, svg.icon.success g {
+    fill: #00aa00; }
+  svg.icon.warning path, svg.icon.warning g {
+    fill: #dd0000; }
 
 [role="dialog"] {
   position: fixed;

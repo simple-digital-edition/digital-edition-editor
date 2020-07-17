@@ -48,14 +48,19 @@ class Branch(Base):
         # Get the repository information
         repo = Repo(base_path)
         last_commit = next(repo.iter_commits())
-        if last_commit:
+        if last_commit and data['attributes']['updated'] != last_commit.committed_datetime.isoformat():
             data['attributes']['updated'] = last_commit.committed_datetime.isoformat()
-        # Get the remote repository information
-        gh = Github(get_config_setting(request, 'github.token'))
-        gh_repo = gh.get_repo('scmmmh/DigiEditTest')
-        data['attributes']['pull_request'] = {'status': 'none', 'id': ''}
-        for pull_request in gh_repo.get_pulls(state='open', head='branch-1'):
-            data['attributes']['pull_request'] = {'status': 'open', 'id': pull_request.number}
+        first_commit = None
+        last_commit = None
+        for commit in repo.iter_commits(f'default..branch-{self.id}'):
+            if not first_commit:
+                first_commit = commit
+            last_commit = commit
+        last_commit = last_commit.parents[0]
+        changed_files = []
+        for diff in first_commit.diff(last_commit):
+            changed_files.append(diff.a_path)
+        data['attributes']['changes'] = changed_files
         return data
 
     @classmethod
@@ -72,7 +77,7 @@ class Branch(Base):
     def pre_create(self, request):
         """Before creation set the creation date."""
         self.attributes['created'] = datetime.utcnow().isoformat()
-        self.attributes['pull_request'] = {'status': 'none', 'id': ''}
+        self.attributes['pull_request'] = None
 
     def post_create(self, request):
         """After creation clone the repository, checkout the new branch, and push that to the remote repository."""
@@ -93,12 +98,13 @@ class Branch(Base):
         if action == 'request-integration':
             gh = Github(get_config_setting(request, 'github.token'))
             gh_repo = gh.get_repo('scmmmh/DigiEditTest')
-            for pull_request in gh_repo.get_pulls(state='open', head='branch-1'):
-                self.attributes['pull_request'] = {'status': 'open', 'id': pull_request.number}
-            if self.attributes['pull_request']['status'] == 'none':
+            if self.attributes['pull_request']:
+                pull_request = gh_repo.get_pull(self.attributes['pull_request']['id'])
+                pull_request.edit(state='open')
+            else:
                 gh_repo.create_pull(title=f'Integrate {self.attributes["name"]}', body='', base='default', head=f'branch-{self.id}')
         elif action == 'cancel-integration':
-            if self.attributes['pull_request']['status'] == 'open':
+            if self.attributes['pull_request']['state'] == 'open':
                 gh = Github(get_config_setting(request, 'github.token'))
                 gh_repo = gh.get_repo('scmmmh/DigiEditTest')
                 pull_request = gh_repo.get_pull(self.attributes['pull_request']['id'])
