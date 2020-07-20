@@ -26,6 +26,7 @@ pwh_pyramid_routes = "^1.0.0"
 sqlalchemy_json = "^0.4.0"
 gitpython = "^3.1.7"
 pygithub = "^1.51"
+psycopg2 = {version = "^2.8.5", optional = true}
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"
