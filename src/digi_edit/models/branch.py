@@ -122,6 +122,7 @@ class Branch(Base):
         repo.git.push('origin', '--delete', f'branch-{self.id}')
         rmtree(base_path)
         self.files = []
+        self.attributes['deleted'] = datetime.now().isoformat()
 
     def action(self, request, action):
         if action == 'request-integration':

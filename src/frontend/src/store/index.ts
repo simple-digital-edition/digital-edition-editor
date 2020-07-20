@@ -232,6 +232,29 @@ export default new Vuex.Store({
             }
         },
 
+        async backgroundFetchAll({ commit, state }, type: string) {
+            try {
+                const objs = (await axios({
+                    method: 'GET',
+                    url: state.config.api.baseURL + '/' + type,
+                    headers: {'X-Authorization': state.userId + ' ' + state.userToken}
+                })).data;
+                (objs as {data: JSONAPIObject[]}).data.forEach((obj) => {
+                    commit('setObject', obj);
+                });
+                return objs.data;
+            } catch(error) {
+                if (error.response.status === 401) {
+                    commit('setUserId', '');
+                    commit('setUserToken', '');
+                    commit('setLoggedIn', '');
+                    router.push({name: 'login'});
+                } else {
+                    throw error;
+                }
+            }
+        },
+
         async fetchSingle({ commit, state }, ref) {
             try {
                 commit('setBusy', true);

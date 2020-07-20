@@ -86,6 +86,7 @@ import { JSONAPIObject } from '../../../../../experiment-support-system/src/js/a
     }
 })
 export default class EditionOverview extends Vue {
+    private intervalId = -1;
     public addBranch = false;
     public addingBranch = false;
     public newBranchName = '';
@@ -133,6 +134,16 @@ export default class EditionOverview extends Vue {
         } else {
             return [];
         }
+    }
+
+    public mounted() {
+        this.intervalId = window.setInterval(async () => {
+            await this.$store.dispatch('backgroundFetchAll', 'branches');
+        }, 300000);
+    }
+
+    public beforeDestroy() {
+        window.clearInterval(this.intervalId);
     }
 
     public toggleAddBranch(ev: Event): void {
