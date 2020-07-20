@@ -8,7 +8,6 @@ import zope.sqlalchemy
 from .user import User  # noqa
 from .branch import Branch  # noqa
 from .file import File  # noqa
-from .data import Data  # noqa
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup

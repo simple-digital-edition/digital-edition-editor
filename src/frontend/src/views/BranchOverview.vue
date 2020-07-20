@@ -4,7 +4,7 @@
             <div>
                 <h1>{{ branch.attributes.name }}</h1>
             </div>
-            <div class="flex">
+            <div v-if="branch.attributes.status === 'active'" class="flex">
                 <dl class="detail-list flex-75">
                     <template v-for="fileSet in fileSets">
                         <dt :key="fileSet.id + '-dt'">
@@ -14,7 +14,7 @@
                             <ul class="no-bullet">
                                 <li v-for="file in fileSet.files" :key="file.id">
                                     <router-link :to="'/branches/' + branch.id + '/files/' + file.id" v-slot="{ href, navigate }">
-                                        <a :href="href" @click="navigate">{{ file.attributes.filename }}</a>
+                                        <a :href="href" @click="navigate">{{ file.attributes.name }}</a>
                                     </router-link>
                                 </li>
                             </ul>
@@ -79,6 +79,12 @@
                     </template>
                 </div>
             </div>
+            <div v-else-if="branch.attributes.status === 'merged'">
+                <p>This task has been integrated into the primary copy.</p>
+            </div>
+            <div v-else-if="branch.attributes.status === 'deleted'">
+                <p>This task has been deleted.</p>
+            </div>
         </div>
     </div>
     <router-view v-else></router-view>
@@ -110,23 +116,25 @@ export default class BranchOverview extends Vue {
         if (this.branch && this.$store.state.data.files) {
             const fileSets = [] as FileSet[];
             let fileSet = null as FileSet | null;
-            (this.branch.relationships.files.data as JSONAPIObject[]).forEach((fileRef) => {
-                if (fileRef.id && this.$store.state.data.files[fileRef.id]) {
-                    const file = this.$store.state.data.files[fileRef.id];
-                    if (!fileSet || fileSet.id !== file.attributes.path) {
-                        if (fileSet) {
-                            fileSets.push(fileSet);
+            if (this.branch.relationships.files) {
+                (this.branch.relationships.files.data as JSONAPIObject[]).forEach((fileRef) => {
+                    if (fileRef.id && this.$store.state.data.files[fileRef.id]) {
+                        const file = this.$store.state.data.files[fileRef.id];
+                        if (!fileSet || fileSet.id !== file.attributes.path) {
+                            if (fileSet) {
+                                fileSets.push(fileSet);
+                            }
+                            fileSet = {
+                                id: file.attributes.path,
+                                files: []
+                            }
                         }
-                        fileSet = {
-                            id: file.attributes.path,
-                            files: []
-                        }
+                        fileSet.files.push(file);
                     }
-                    fileSet.files.push(file);
+                });
+                if (fileSet) {
+                    fileSets.push(fileSet);
                 }
-            });
-            if (fileSet) {
-                fileSets.push(fileSet);
             }
             return fileSets;
         } else {

@@ -4,13 +4,15 @@ import re
 
 from cerberus import Validator
 from copy import deepcopy
+from datetime import datetime
 from git import Repo, Actor
 from github import Github
 from hashlib import sha256, sha512
 from pyramid.httpexceptions import HTTPBadRequest, HTTPUnauthorized, HTTPNotFound, HTTPNoContent, HTTPOk
 from secrets import token_hex
+from sqlalchemy import desc
 
-from digi_edit.models import User, Branch, File, Data
+from digi_edit.models import User, Branch, File
 from digi_edit.jsonapi import jsonapi_type_schema, jsonapi_id_schema
 from digi_edit.util import get_config_setting, get_files_for_branch, get_file_identifier
 
@@ -20,12 +22,11 @@ def includeme(config):
     config.add_route('api', '/api')
     config.add_route('api.login', '/api/login', request_method='POST')
     config.add_view(user_login, route_name='api.login', renderer='json')
-    config.add_route('api.webhook.github', '/api/webhook/github', request_method='POST')
-    config.add_view(github_webhook, route_name='api.webhook.github', renderer='json')
+    config.add_route('api.webhooks.github', '/api/webhooks/github', request_method='POST')
+    config.add_view(github_webhook, route_name='api.webhooks.github', renderer='json')
     generate_db_api(config, 'users', User)
     generate_db_api(config, 'branches', Branch)
-    generate_file_api(config, 'files', File)
-    generate_file_api(config, 'data', Data)
+    generate_db_api(config, 'files', File)
 
 
 def flatten_errors(errors, path=''):
@@ -125,9 +126,10 @@ def github_webhook(request):
                     gh_repo = gh.get_repo('scmmmh/DigiEditTest')
                     if branch.attributes['pull_request']:
                         pull_request = gh_repo.get_pull(branch.attributes['pull_request']['id'])
-                        if pull_request.merged:  # TODO: We should actually just mark the branch as closed
+                        if pull_request.merged:
                             branch.pre_delete(request)
-                            request.dbsession.delete(branch)
+                            branch.attributes['status'] = 'merged'
+                            branch.attributes['merged'] = payload['pull_request']['merged_at']
                             return HTTPOk()
                     else:
                         branch.attributes['pull_request'] = None
@@ -176,7 +178,12 @@ def generate_db_api(config, type_name, db_class):
         """Create a new item."""
         check_authorization(request)
         body = validate_body(request.body, db_class.create_schema())
-        obj = db_class(attributes=body['attributes'])
+        obj = db_class()
+        for key, value in list(body['attributes'].items()):
+            if hasattr(db_class, key):
+                setattr(obj, key, value)
+                del body['attributes'][key]
+        obj.attributes = body['attributes']
         if hasattr(obj, 'pre_create'):
             obj.pre_create(request)
         request.dbsession.add(obj)
@@ -191,7 +198,8 @@ def generate_db_api(config, type_name, db_class):
         check_authorization(request)
         obj = request.dbsession.query(db_class).filter(db_class.id == request.matchdict['iid']).first()
         if obj:
-            return {'data': obj.as_jsonapi(request)}
+            data = obj.as_jsonapi(request)
+            return {'data': data}
         else:
             raise HTTPNotFound()
 
@@ -209,6 +217,29 @@ def generate_db_api(config, type_name, db_class):
             raise HTTPNotFound()
 
 
+    def item_patch(request):
+        """Update a single item."""
+        user = check_authorization(request)
+        obj = request.dbsession.query(db_class).filter(db_class.id == request.matchdict['iid']).first()
+        if obj:
+            body = validate_body(request.body, db_class.patch_schema(request))
+            for key, value in list(body['attributes'].items()):
+                if hasattr(db_class, key):
+                    setattr(obj, key, value)
+                    del body['attributes'][key]
+            obj.attributes = body['attributes']
+            if hasattr(obj, 'pre_patch'):
+                obj.pre_patch(request, user)
+            request.dbsession.add(obj)
+            if hasattr(obj, 'post_patch'):
+                request.dbsession.flush()
+                request.dbsession.add(obj)
+                request.dbsession.add(user)
+                obj.post_patch(request, user)
+            return {'data': obj.as_jsonapi(request)}
+        else:
+            raise HTTPNotFound()
+
     def item_delete(request):
         """Delete a single item."""
         check_authorization(request)
@@ -216,8 +247,12 @@ def generate_db_api(config, type_name, db_class):
         if obj:
             if hasattr(obj, 'pre_delete'):
                 obj.pre_delete(request)
-            request.dbsession.delete(obj)
-            return HTTPNoContent()
+            if 'status' in obj.attributes:
+                obj.attributes['status'] = 'deleted'
+                return {'data': obj.as_jsonapi(request)}
+            else:
+                request.dbsession.delete(obj)
+                return HTTPNoContent()
         else:
             raise HTTPNotFound()
 
@@ -229,58 +264,7 @@ def generate_db_api(config, type_name, db_class):
     config.add_view(item_get, route_name=f'api.{type_name}.item.get', renderer='json')
     config.add_route(f'api.{type_name}.item.post', f'/api/{type_name}/{{iid}}', request_method='POST')
     config.add_view(item_post, route_name=f'api.{type_name}.item.post', renderer='json')
+    config.add_route(f'api.{type_name}.item.patch', f'/api/{type_name}/{{iid}}', request_method='PATCH')
+    config.add_view(item_patch, route_name=f'api.{type_name}.item.patch', renderer='json')
     config.add_route(f'api.{type_name}.item.delete', f'/api/{type_name}/{{iid}}', request_method='DELETE')
     config.add_view(item_delete, route_name=f'api.{type_name}.item.delete', renderer='json')
-
-
-def get_files_for_all_branches(request):
-    """Returns a ``dict`` mapping file identifiers to their branch and filename."""
-    files = {}
-    for branch in request.dbsession.query(Branch):
-        files.update(dict([(get_file_identifier(branch, fn), {'branch': branch, 'filename': fn})
-                           for fn in get_files_for_branch(request, branch)]))
-    return files
-
-
-def generate_file_api(config, type_name, file_class):
-    """Generates the API endpoints for a file-backed model.
-
-    :param config: The Pyramid configuration
-    :param type_name: The name of the type
-    :type type_name: ``string``
-    :param file_class: The class to generate endpoints for
-    """
-    def item_get(request):
-        """Fetch a single item."""
-        check_authorization(request)
-        files = get_files_for_all_branches(request)
-        if request.matchdict['iid'] in files:
-            dataFile = file_class(request.matchdict['iid'],
-                                  files[request.matchdict['iid']]['branch'].id,
-                                  files[request.matchdict['iid']]['filename'])
-            return {'data': dataFile.as_jsonapi(request)}
-        else:
-            raise HTTPNotFound()
-
-    def item_patch(request):
-        """Update a single item."""
-        user = check_authorization(request)
-        files = get_files_for_all_branches(request)
-        if request.matchdict['iid'] in files:
-            dataFile = file_class(request.matchdict['iid'],
-                                  files[request.matchdict['iid']]['branch'].id,
-                                  files[request.matchdict['iid']]['filename'])
-            schema = deepcopy(file_class.patch_schema())
-            schema['id'] = jsonapi_id_schema(value=request.matchdict['iid'])
-            body = validate_body(request.body, schema)
-            dataFile.patch(request, body, user)
-            return {'data': dataFile.as_jsonapi(request)}
-        else:
-            raise HTTPNotFound()
-
-
-    config.add_route(f'api.{type_name}.item.get', f'/api/{type_name}/{{iid}}', request_method='GET')
-    config.add_view(item_get, route_name=f'api.{type_name}.item.get', renderer='json')
-    if hasattr(file_class, 'patch_schema'):
-        config.add_route(f'api.{type_name}.item.patch', f'/api/{type_name}/{{iid}}', request_method='PATCH')
-        config.add_view(item_patch, route_name=f'api.{type_name}.item.patch', renderer='json')

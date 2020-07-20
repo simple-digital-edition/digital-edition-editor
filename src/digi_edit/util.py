@@ -98,11 +98,19 @@ def get_files_for_branch(request, branch):
     :return: A sorted list of absolute file paths
     :rtype: ``list`` of ``string``
     """
+    file_extensions = get_config_setting(request, 'files.text', target_type='list', default=[])
+    file_extensions.extend(get_config_setting(request, 'files.tei', target_type='list', default=[]))
     base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
     files = []
     for basepath, _, filenames in os.walk(base_path):
         if not basepath.endswith('.git') and '/.git/' not in basepath:
             for filename in filenames:
-                files.append(os.path.join(basepath, filename))
+                include = False
+                for ext in file_extensions:
+                    if filename.endswith(f'.{ext}'):
+                        include = True
+                        break
+                if include:
+                    files.append(os.path.join(basepath, filename))
     files.sort()
     return files

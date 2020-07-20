@@ -1,16 +1,18 @@
 import os
 
 from collections import OrderedDict
+from copy import deepcopy
 from datetime import datetime
 from git import Repo
 from github import Github
 from pyramid.decorator import reify
 from shutil import rmtree
-from sqlalchemy import (Column, Index, Integer, Unicode, DateTime)
+from sqlalchemy import (Column, Index, Integer, Unicode, DateTime, func)
 from sqlalchemy.orm import relationship
 from sqlalchemy_json import NestedMutableJson
 
 from .meta import Base
+from .file import File
 from digi_edit.jsonapi import jsonapi_type_schema
 from digi_edit.util import get_config_setting, get_files_for_branch, get_file_identifier
 
@@ -22,6 +24,8 @@ class Branch(Base):
 
     id = Column(Integer, primary_key=True)
     attributes = Column(NestedMutableJson)
+
+    files = relationship('File', cascade="all, delete-orphan")
 
     def allow(self, user, action):
         """Check whether the given user is allowed to undertake the given action.
@@ -39,28 +43,36 @@ class Branch(Base):
         data = {
             'type': 'branches',
             'id': str(self.id),
-            'attributes': self.attributes}
-        # Find all editable files of this branch
-        files = get_files_for_branch(request, self)
-        files = list(map(lambda fn: {'type': 'files',
-                                     'id': get_file_identifier(self, fn)}, files))
-        data['relationships'] = {'files': {'data': files}}
-        # Get the repository information
-        repo = Repo(base_path)
-        last_commit = next(repo.iter_commits())
-        if last_commit and data['attributes']['updated'] != last_commit.committed_datetime.isoformat():
-            data['attributes']['updated'] = last_commit.committed_datetime.isoformat()
-        first_commit = None
-        last_commit = None
-        for commit in repo.iter_commits(f'default..branch-{self.id}'):
-            if not first_commit:
-                first_commit = commit
-            last_commit = commit
-        last_commit = last_commit.parents[0]
-        changed_files = []
-        for diff in first_commit.diff(last_commit):
-            changed_files.append(diff.a_path)
-        data['attributes']['changes'] = changed_files
+            'attributes': {},
+            'relationships': {}}
+        for key, value in self.attributes.items():
+            data['attributes'][key] = value
+        if self.attributes['status'] == 'active':
+            # Find all editable files of this branch
+            data['relationships']['files'] = {'data': [{'type': 'files',
+                                                        'id': str(file.id)} for file in self.files]}
+            # Get the repository information
+            repo = Repo(base_path)
+            last_commit = next(repo.iter_commits())
+            if last_commit and ('updated' not in data['attributes']
+                                or data['attributes']['updated'] != last_commit.committed_datetime.isoformat()):
+                data['attributes']['updated'] = last_commit.committed_datetime.isoformat()
+            data['attributes']['authors'] = []
+            first_commit = None
+            last_commit = None
+            for commit in repo.iter_commits(f'default..branch-{self.id}'):
+                if not first_commit:
+                    first_commit = commit
+                last_commit = commit
+                data['attributes']['authors'].append(commit.author.name)
+            if last_commit:
+                last_commit = last_commit.parents[0]
+                changed_files = []
+                for diff in first_commit.diff(last_commit):
+                    changed_files.append(diff.a_path)
+                data['attributes']['changes'] = changed_files
+            else:
+                data['attributes']['changes'] = []
         return data
 
     @classmethod
@@ -71,7 +83,10 @@ class Branch(Base):
             'attributes': {'type': 'dict',
                            'schema': {'name': {'type': 'string',
                                                'required': True,
-                                               'empty': False}}}
+                                               'empty': False},
+                                      'status': {'type': 'string',
+                                                 'default': 'active',
+                                                 'allowed': ['active', 'merged', 'deleted']}}}
         }
 
     def pre_create(self, request):
@@ -86,6 +101,17 @@ class Branch(Base):
         branch = repo.create_head(f'branch-{self.id}')
         branch.checkout()
         repo.git.push('--set-upstream', 'origin', f'branch-{self.id}', '--force')
+        files = get_files_for_branch(request, self)
+        for filename in files:
+            local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')) + 1:]
+            path, name = os.path.split(local_path)
+            if path == '':
+                path = '/'
+            self.files.append(File(attributes={'filename': filename,
+                                               'path': path,
+                                               'name': name}))
+        request.dbsession.flush()
+
 
     def pre_delete(self, request):
         """Delete the remote branch and the local directory."""
@@ -93,6 +119,7 @@ class Branch(Base):
         repo = Repo(base_path)
         repo.git.push('origin', '--delete', f'branch-{self.id}')
         rmtree(base_path)
+        self.files = []
 
     def action(self, request, action):
         if action == 'request-integration':

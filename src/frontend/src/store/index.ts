@@ -175,9 +175,11 @@ export default new Vuex.Store({
             const branches = await dispatch('fetchAll', 'branches');
             let promises = [] as Promise<JSONAPIReference>[];
             (branches as JSONAPIObject[]).forEach((branch) => {
-                promises = promises.concat((branch.relationships.files.data as JSONAPIReference[]).map((fileRef) => {
-                    return dispatch('loadFile', fileRef);
-                }));
+                if (branch.relationships.files) {
+                    promises = promises.concat((branch.relationships.files.data as JSONAPIReference[]).map((fileRef) => {
+                        return dispatch('loadFile', fileRef);
+                    }));
+                }
             });
             await Promise.all(promises);
             return branches;
@@ -305,15 +307,15 @@ export default new Vuex.Store({
         async saveSingle({commit, state }, obj: JSONAPIObject) {
             try {
                 commit('setBusy', true);
-                await axios({
+                obj = (await axios({
                     method: 'PATCH',
                     url: state.config.api.baseURL + '/' + obj.type + '/' + obj.id,
                     data: {
                         data: obj,
                     },
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
-                });
-                commit('deleteObject', obj);
+                })).data.data;
+                commit('setObject', obj);
                 commit('setBusy', false);
                 return obj;
             } catch(error) {
@@ -332,12 +334,16 @@ export default new Vuex.Store({
         async deleteSingle({ commit, state }, obj: JSONAPIObject) {
             try {
                 commit('setBusy', true);
-                await axios({
+                const response = await axios({
                     method: 'DELETE',
                     url: state.config.api.baseURL + '/' + obj.type + '/' + obj.id,
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 });
-                commit('deleteObject', obj);
+                if (response.status === 200) {
+                    commit('setObject', response.data.data);
+                } else {
+                    commit('deleteObject', obj);
+                }
                 commit('setBusy', false);
             } catch(error) {
                 commit('setBusy', false);

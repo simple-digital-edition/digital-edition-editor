@@ -1,6 +1,6 @@
 <template>
     <div v-if="file" class="editor">
-        <text-editor v-if="rawData" :text="rawData.attributes.data" @save="save"></text-editor>
+        <text-editor v-if="fileData" :text="fileData.attributes.rawData" @save="save"></text-editor>
     </div>
 </template>
 
@@ -9,6 +9,7 @@ import { Component, Vue } from 'vue-property-decorator';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import deepcopy from 'deepcopy';
+import axios from 'axios';
 
 import { JSONAPIObject } from '../store/index';
 import TextEditor from '../components/TextEditor.vue';
@@ -19,7 +20,7 @@ import TextEditor from '../components/TextEditor.vue';
     }
 })
 export default class FileEditor extends Vue {
-    public rawData = null as JSONAPIObject | null;
+    public fileData = null as JSONAPIObject | null;
 
     public get file(): JSONAPIObject | null {
         if (this.$store.state.data.files && this.$store.state.data.files[this.$route.params.fid]) {
@@ -30,17 +31,52 @@ export default class FileEditor extends Vue {
     }
 
     public mounted(): void {
-        this.$store.dispatch('fetchSingle', {type: 'data', id: this.$route.params.fid}).then((data) => {
-            this.$store.commit('deleteObject', data);
-            this.rawData = data;
-        });
+        this.$store.commit('setBusy', true);
+        axios({
+            method: 'GET',
+            url: this.$store.state.config.api.baseURL + '/files/' + this.$route.params.fid,
+            headers: {
+                'X-Authorization': this.$store.state.userId + ' ' + this.$store.state.userToken,
+                'X-Include-Data': true
+            },
+        }).then((response) => {
+            this.fileData = response.data.data;
+            this.$store.commit('setBusy', false);
+        }, (error) => {
+            this.$store.commit('setBusy', false);
+            if (error.response.status === 401) {
+                this.$store.commit('setUserId', '');
+                this.$store.commit('setUserToken', '');
+                this.$store.commit('setLoggedIn', '');
+                this.$router.push({name: 'login'});
+            }
+        })
     }
 
     public async save(text: string): Promise<void> {
-        let data = deepcopy(this.rawData);
-        data.attributes.data = text;
-        data =await this.$store.dispatch('saveSingle', data);
-        this.$store.commit('deleteObject', data);
+        try {
+            const data = deepcopy(this.fileData);
+            data.attributes.rawData = text;
+            this.$store.commit('setBusy', true);
+            await axios({
+                method: 'PATCH',
+                url: this.$store.state.config.api.baseURL + '/files/' + this.$route.params.fid,
+                headers: {
+                    'X-Authorization': this.$store.state.userId + ' ' + this.$store.state.userToken,
+                    'X-Include-Data': true
+                },
+                data: {data: data}
+            });
+            this.$store.commit('setBusy', false);
+        } catch(error) {
+            this.$store.commit('setBusy', false);
+            if (error.response.status === 401) {
+                this.$store.commit('setUserId', '');
+                this.$store.commit('setUserToken', '');
+                this.$store.commit('setLoggedIn', '');
+                this.$router.push({name: 'login'});
+            }
+        }
     }
 }
 </script>

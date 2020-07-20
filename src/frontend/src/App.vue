@@ -15,7 +15,7 @@
                             <li role="presentation"><a role="menuitem" tabindex="-1" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">{{ branch.attributes.name }}</a></li>
                         </router-link>
                         <router-link v-if="file" :to="'/branches/' + branch.id + '/files/' + file.id" v-slot="{ href, navigate, isActive, isExactActive }">
-                            <li role="presentation"><a role="menuitem" tabindex="-1" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">{{ file.attributes.filename }}</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">{{ file.attributes.name }}</a></li>
                         </router-link>
                     </template>
                 </ul>
