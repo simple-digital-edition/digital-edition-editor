@@ -141,6 +141,15 @@ def github_webhook(request):
                                                                                         'body': rv.body,
                                                                                         'user': rv.user.name},
                                                                             pull_request.get_reviews()))
+        elif request.headers['X-GitHub-Event'] == 'push':
+            payload = json.loads(request.params['payload'])
+            if payload['ref'] == 'refs/heads/default':
+                for branch in request.dbsession.query(Branch):
+                    if branch.attributes['status'] == 'active':
+                        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
+                        repo = Repo(base_path)
+                        repo.remotes.origin.fetch('default:default')
+                        repo.remotes.origin.pull()
     return HTTPOk()
 
 

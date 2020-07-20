@@ -65,6 +65,8 @@ class Branch(Base):
                     first_commit = commit
                 last_commit = commit
                 data['attributes']['authors'].append(commit.author.name)
+            if len(list(repo.iter_commits(f'branch-{self.id}..default'))) > 0:
+                data['attributes']['updates'] = True
             if last_commit:
                 last_commit = last_commit.parents[0]
                 changed_files = []
@@ -136,3 +138,8 @@ class Branch(Base):
                 gh_repo = gh.get_repo('scmmmh/DigiEditTest')
                 pull_request = gh_repo.get_pull(self.attributes['pull_request']['id'])
                 pull_request.edit(state='closed')
+        elif action == 'rebase':
+            base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
+            repo = Repo(base_path)
+            repo.git.rebase('default')
+            repo.git.push('origin', f'branch-{self.id}', '--force')
