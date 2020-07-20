@@ -135,8 +135,11 @@ dl.detail-list dd {
   border-bottom-left-radius: 0.21429rem;
   border-bottom-right-radius: 0.21429rem; }
   dl.detail-list dd span {
-    flex: 1 1 auto;
-    display: block; }
+    flex: 1 1 0;
+    display: block;
+    padding-right: 1rem; }
+    dl.detail-list dd span:last-child {
+      padding-right: 0; }
 
 svg.icon {
   width: 1.28571rem;

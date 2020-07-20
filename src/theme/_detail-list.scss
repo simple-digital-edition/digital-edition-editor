@@ -34,8 +34,13 @@ dl.detail-list {
         border-bottom-right-radius: rem-calc(3px);
 
         span {
-            flex: 1 1 auto;
+            flex: 1 1 0;
             display: block;
+            padding-right: $global-padding;
+
+            &:last-child {
+                padding-right: 0;
+            }
         }
     }
 }
