@@ -54,7 +54,7 @@
                             </a>
                         </li>
                     </ul>
-                    <template v-if="branch.attributes.pull_request">
+                    <template v-if="branch.attributes.pull_request && branch.attributes.pull_request.state == 'open'">
                         <h3 class="no-margin">Integration reviews</h3>
                         <dl class="margin-bottom">
                             <template v-for="review, idx in branch.attributes.pull_request.reviews">
@@ -68,6 +68,15 @@
                                     </svg>
                                 </dt>
                                 <dd :key="idx + '-dd'" class="no-margin margin-bottom">{{ review.body }}</dd>
+                            </template>
+                            <template v-if="branch.attributes.updates">
+                                <dt class="flex">
+                                    <span>Automatic Reviews</span>
+                                    <svg viewBox="0 0 24 24" class="shrink icon warning">
+                                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                    </svg>
+                                </dt>
+                                <dd class="no-margin margin-bottom">This task needs to be updated before the integration can proceed</dd>
                             </template>
                         </dl>
                     </template>
