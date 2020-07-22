@@ -46,6 +46,14 @@
                             </a>
                         </li>
                         <li class="margin-bottom">
+                            <a @click="rescan" class="button outline full-width text-center">
+                                <svg viewBox="0 0 24 24" class="icon alert">
+                                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                </svg>
+                                Add File
+                            </a>
+                        </li>
+                        <li class="margin-bottom">
                             <a @click="deleteBranch" class="button outline full-width text-center">
                                 <svg viewBox="0 0 24 24" class="icon alert">
                                     <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
@@ -203,6 +211,14 @@ export default class BranchOverview extends Vue {
         ev.preventDefault();
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'rebase'});
+        }
+    }
+
+    public async rescan(ev: Event) {
+        ev.preventDefault();
+        if (this.branch) {
+            await this.$store.dispatch('action', {'obj': this.branch, 'action': 'rescan'});
+            await this.$store.dispatch('loadBranch', this.branch);
         }
     }
 }

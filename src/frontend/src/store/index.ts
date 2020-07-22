@@ -194,6 +194,15 @@ export default new Vuex.Store({
             return branch;
         },
 
+        async loadBranch({ dispatch }, branch: JSONAPIObject) {
+            branch = await dispatch('fetchSingle', branch);
+            const promises = (branch.relationships.files.data as JSONAPIReference[]).map((fileRef) => {
+                return dispatch('loadFile', fileRef);
+            });
+            await Promise.all(promises);
+            return branch;
+        },
+
         async deleteBranch({ dispatch, commit }, branch: JSONAPIObject) {
             await dispatch('deleteSingle', branch);
             (branch.relationships.files.data as JSONAPIReference[]).forEach((fileRef) => {

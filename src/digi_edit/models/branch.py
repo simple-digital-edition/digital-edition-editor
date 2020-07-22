@@ -132,6 +132,8 @@ class Branch(Base):
             self.cancel_integration(request)
         elif action == 'rebase':
             self.rebase(request)
+        elif action == 'rescan':
+            self.rescan(request)
 
     def request_integration(self, request):
         integration = get_config_setting(request, 'git.integration')
@@ -169,3 +171,38 @@ class Branch(Base):
         repo = Repo(base_path)
         repo.git.rebase('default')
         repo.git.push('origin', f'branch-{self.id}', '--force')
+        self.rescan(request)
+
+    def rescan(self, request):
+        files = get_files_for_branch(request, self)
+        new = []
+        for filename in files:
+            found = False
+            for file in self.files:
+                if file.attributes['filename'] == filename:
+                    found = True
+                    break
+            if not found:
+                new.append(filename)
+        deleted = []
+        for file in self.files:
+            found = False
+            for filename in files:
+                if file.attributes['filename'] == filename:
+                    found = True
+                    break
+            if not found:
+                deleted.append(file)
+        print('------------------')
+        print(new)
+        print(deleted)
+        print('------------------')
+        for filename in new:
+            local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')) + 1:]
+            path, name = os.path.split(local_path)
+            self.files.append(File(attributes={'filename': filename,
+                                               'path': path,
+                                               'name': name}))
+        for file in deleted:
+            request.dbsession.delete(file)
+        request.dbsession.flush()
