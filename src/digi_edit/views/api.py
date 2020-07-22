@@ -22,8 +22,6 @@ def includeme(config):
     config.add_route('api', '/api')
     config.add_route('api.login', '/api/login', request_method='POST')
     config.add_view(user_login, route_name='api.login', renderer='json')
-    config.add_route('api.webhooks.github', '/api/webhooks/github', request_method='POST')
-    config.add_view(github_webhook, route_name='api.webhooks.github', renderer='json')
     generate_db_api(config, 'users', User)
     generate_db_api(config, 'branches', Branch)
     generate_db_api(config, 'files', File)
@@ -111,46 +109,6 @@ def user_login(request):
                  'source': {'pointer': 'data/attributes/password'}},
             ]
         }))
-
-
-def github_webhook(request):
-    if 'X-GitHub-Event' in request.headers:
-        if request.headers['X-GitHub-Event'] in ['pull_request', 'pull_request_review']:
-            payload = json.loads(request.params['payload'])
-            branch_ref = payload['pull_request']['head']['ref']
-            match = re.fullmatch('branch-([0-9]+)', branch_ref)
-            if match:
-                branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
-                if branch:
-                    gh = Github(get_config_setting(request, 'github.token'))
-                    gh_repo = gh.get_repo('scmmmh/DigiEditTest')
-                    if branch.attributes['pull_request']:
-                        pull_request = gh_repo.get_pull(branch.attributes['pull_request']['id'])
-                        if pull_request.merged:
-                            branch.pre_delete(request)
-                            branch.attributes['status'] = 'merged'
-                            branch.attributes['merged'] = payload['pull_request']['merged_at']
-                            return HTTPOk()
-                    else:
-                        branch.attributes['pull_request'] = None
-                        for pull_request in gh_repo.get_pulls(state='open', head=f'branch-{branch.id}'):
-                            branch.attributes['pull_request'] = {'id': pull_request.number,}
-                    branch.attributes['pull_request']['state'] = pull_request.state
-                    branch.attributes['pull_request']['mergeable'] = pull_request.mergeable
-                    branch.attributes['pull_request']['reviews'] = list(map(lambda rv: {'state': rv.state,
-                                                                                        'body': rv.body,
-                                                                                        'user': rv.user.name},
-                                                                            pull_request.get_reviews()))
-        elif request.headers['X-GitHub-Event'] == 'push':
-            payload = json.loads(request.params['payload'])
-            if payload['ref'] == 'refs/heads/default':
-                for branch in request.dbsession.query(Branch):
-                    if branch.attributes['status'] == 'active':
-                        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
-                        repo = Repo(base_path)
-                        repo.remotes.origin.fetch('default:default')
-                        repo.remotes.origin.pull()
-    return HTTPOk()
 
 
 def check_authorization(request):

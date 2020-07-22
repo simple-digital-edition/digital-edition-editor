@@ -643,6 +643,21 @@ docs = ["sphinx", "pylons-sphinx-themes"]
 testing = ["webtest", "nose", "coverage"]
 
 [[package]]
+category = "main"
+description = "Interact with GitLab API"
+name = "python-gitlab"
+optional = false
+python-versions = ">=3.6.0"
+version = "2.4.0"
+
+[package.dependencies]
+requests = ">=2.22.0"
+
+[package.extras]
+autocompletion = ["argcomplete (>=1.10.0,<2)"]
+yaml = ["PyYaml (>=5.2)"]
+
+[[package]]
 category = "dev"
 description = "YAML parser and emitter for Python"
 name = "pyyaml"
@@ -916,7 +931,7 @@ test = ["zope.testing"]
 postgresql = ["psycopg2"]
 
 [metadata]
-content-hash = "a2ce7a56edae29ee6f3c747c0112375429c7ba72f570ec67d48693ab78546567"
+content-hash = "89cc81792f0f05e4e3d40756f87e2b44cb3020c1385d3339bf41badee42c1b48"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1229,6 +1244,10 @@ pyramid-nacl-session = [
 pyramid-tm = [
     {file = "pyramid_tm-2.4-py2.py3-none-any.whl", hash = "sha256:4a4e212cd239f06c496d074f5d294e88478b94059541448bc151d505f653be59"},
     {file = "pyramid_tm-2.4.tar.gz", hash = "sha256:5fd6d4ac9181a65ec54e5b280229ed6d8b3ed6a8f5a0bcff05c572751f086533"},
+]
+python-gitlab = [
+    {file = "python-gitlab-2.4.0.tar.gz", hash = "sha256:e240b5c371d9e98c46c980d878c3f03cd83f3da6cda01d533db27fa3e0dd474f"},
+    {file = "python_gitlab-2.4.0-py3-none-any.whl", hash = "sha256:6461e0662cacceb795fb3ffd225391133cc11e0e760d0caf1c998c7ba955c771"},
 ]
 pyyaml = [
     {file = "PyYAML-5.3.1-cp27-cp27m-win32.whl", hash = "sha256:74809a57b329d6cc0fdccee6318f44b9b8649961fa73144a98735b0aaf029f1f"},

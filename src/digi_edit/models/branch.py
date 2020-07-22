@@ -5,6 +5,7 @@ from copy import deepcopy
 from datetime import datetime
 from git import Repo
 from github import Github
+from gitlab import Gitlab
 from pyramid.decorator import reify
 from shutil import rmtree
 from sqlalchemy import (Column, Index, Integer, Unicode, DateTime, func)
@@ -126,6 +127,15 @@ class Branch(Base):
 
     def action(self, request, action):
         if action == 'request-integration':
+            self.request_integration(request)
+        elif action == 'cancel-integration':
+            self.cancel_integration(request)
+        elif action == 'rebase':
+            self.rebase(request)
+
+    def request_integration(self, request):
+        integration = get_config_setting(request, 'git.integration')
+        if integration == 'github':
             gh = Github(get_config_setting(request, 'github.token'))
             gh_repo = gh.get_repo('scmmmh/DigiEditTest')
             if self.attributes['pull_request']:
@@ -133,14 +143,29 @@ class Branch(Base):
                 pull_request.edit(state='open')
             else:
                 gh_repo.create_pull(title=f'Integrate {self.attributes["name"]}', body='', base='default', head=f'branch-{self.id}')
-        elif action == 'cancel-integration':
+        elif integration == 'gitlab':
+            gl = Gitlab(get_config_setting(request, 'gitlab.host'), get_config_setting(request, 'gitlab.token'))
+            gl_repo = gl.projects.get(get_config_setting(request, 'gitlab.projectid'))
+            if self.attributes['pull_request']:
+                merge_request = gl_repo.mergerequests.get(self.attributes['pull_request']['id'])
+                merge_request.state_event = 'reopen'
+                merge_request.save()
+            else:
+                gl_repo.mergerequests.create({'source_branch': f'branch-{self.id}',
+                                              'target_branch': 'default',
+                                              'title': f'Integrate {self.attributes["name"]}'})
+
+    def cancel_integration(self, request):
+        integration = get_config_setting(request, 'git.integration')
+        if integration == 'github':
             if self.attributes['pull_request']['state'] == 'open':
                 gh = Github(get_config_setting(request, 'github.token'))
                 gh_repo = gh.get_repo('scmmmh/DigiEditTest')
                 pull_request = gh_repo.get_pull(self.attributes['pull_request']['id'])
                 pull_request.edit(state='closed')
-        elif action == 'rebase':
-            base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
-            repo = Repo(base_path)
-            repo.git.rebase('default')
-            repo.git.push('origin', f'branch-{self.id}', '--force')
+
+    def rebase(self, request):
+        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
+        repo = Repo(base_path)
+        repo.git.rebase('default')
+        repo.git.push('origin', f'branch-{self.id}', '--force')
