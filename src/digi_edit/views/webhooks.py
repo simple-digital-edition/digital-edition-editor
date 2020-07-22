@@ -23,7 +23,7 @@ def github_webhook(request):
                 branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
                 if branch:
                     gh = Github(get_config_setting(request, 'github.token'))
-                    gh_repo = gh.get_repo('scmmmh/DigiEditTest')
+                    gh_repo = gh.get_repo(get_config_setting(request, 'github.repository'))
                     if branch.attributes['pull_request']:
                         pull_request = gh_repo.get_pull(branch.attributes['pull_request']['id'])
                         if pull_request.merged:

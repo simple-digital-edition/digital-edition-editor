@@ -137,7 +137,7 @@ class Branch(Base):
         integration = get_config_setting(request, 'git.integration')
         if integration == 'github':
             gh = Github(get_config_setting(request, 'github.token'))
-            gh_repo = gh.get_repo('scmmmh/DigiEditTest')
+            gh_repo = gh.get_repo(get_config_setting(request, 'github.repository'))
             if self.attributes['pull_request']:
                 pull_request = gh_repo.get_pull(self.attributes['pull_request']['id'])
                 pull_request.edit(state='open')
@@ -160,7 +160,7 @@ class Branch(Base):
         if integration == 'github':
             if self.attributes['pull_request']['state'] == 'open':
                 gh = Github(get_config_setting(request, 'github.token'))
-                gh_repo = gh.get_repo('scmmmh/DigiEditTest')
+                gh_repo = gh.get_repo(get_config_setting(request, 'github.repository'))
                 pull_request = gh_repo.get_pull(self.attributes['pull_request']['id'])
                 pull_request.edit(state='closed')
 

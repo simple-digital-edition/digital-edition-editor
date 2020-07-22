@@ -6,15 +6,19 @@
 # Database URL
 sqlalchemy.url = sqlite:///%(here)s/digi_edit.sqlite
 
-# Secure session secret
-pwh.pyramid_session.secret = {{ session_secret }}
+# Repository configuration
+git.dir = %(here)s/tmp
+# git.url =
+# git.integration =
+# github.repository =
+# github.token =
+# gitlab.host =
+# gitlab.projectid =
+# gitlab.token =
 
-# Email configuration
-app.email.smtp_host =
-app.email.ssl =
-app.email.username =
-app.email.password =
-app.email.sender =
+# File configuration
+files.text = md
+files.tei = tei
 
 # Pyramid internal configuration
 pyramid.reload_templates = {% if debug %}true{% else %}false{% endif %}
