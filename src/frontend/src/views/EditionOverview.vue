@@ -139,7 +139,7 @@ export default class EditionOverview extends Vue {
     public mounted() {
         this.intervalId = window.setInterval(async () => {
             await this.$store.dispatch('backgroundFetchAll', 'branches');
-        }, 300000);
+        }, 60000);
     }
 
     public beforeDestroy() {
