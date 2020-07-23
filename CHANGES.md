@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.10.0 (23.07.2020)
+
 * **Update**: Rewritten using Pyramid + API + complete Vue.js frontend
 
 ## 0.9.9 (04.05.2020):
