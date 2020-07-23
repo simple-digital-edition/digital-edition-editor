@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Update**: Rewritten using Pyramid + API + complete Vue.js frontend
+
 ## 0.9.9 (04.05.2020):
 
 * **Update**: Removed old source data identifier attribute
