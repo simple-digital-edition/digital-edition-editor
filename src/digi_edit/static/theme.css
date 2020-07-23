@@ -265,6 +265,10 @@ div.home {
   padding: 1rem;
   overflow: auto; }
 
+.branch-overview {
+  height: 100%;
+  overflow: auto; }
+
 .editor {
   height: 100%;
   overflow: hidden; }

@@ -1,16 +1,16 @@
 <template>
-    <div v-if="isCurrentRoute" class="branch margin-top">
+    <div v-if="isCurrentRoute" class="branch-overview">
         <div v-if="branch" class="width-limited">
             <div>
                 <h1>{{ branch.attributes.name }}</h1>
             </div>
             <div v-if="branch.attributes.status === 'active'" class="flex">
                 <dl class="detail-list flex-75">
-                    <template v-for="fileSet in fileSets">
-                        <dt :key="fileSet.id + '-dt'">
+                    <template v-for="(fileSet, idx) in fileSets">
+                        <dt :key="idx + '-dt'">
                             <h2>{{ fileSet.id }}</h2>
                         </dt>
-                        <dd :key="fileSet.id + '-dd'">
+                        <dd :key="idx + '-dd'">
                             <ul class="no-bullet">
                                 <li v-for="file in fileSet.files" :key="file.id">
                                     <router-link :to="'/branches/' + branch.id + '/files/' + file.id" v-slot="{ href, navigate }">
