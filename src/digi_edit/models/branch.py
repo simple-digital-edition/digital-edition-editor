@@ -104,15 +104,22 @@ class Branch(Base):
         branch = repo.create_head(f'branch-{self.id}')
         branch.checkout()
         repo.git.push('--set-upstream', 'origin', f'branch-{self.id}', '--force')
+        tei_extensions = get_config_setting(request, 'files.tei', target_type='list', default=[])
         files = get_files_for_branch(request, self)
         for filename in files:
             local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')) + 1:]
             path, name = os.path.split(local_path)
             if path == '':
                 path = '/'
+            mode = 'text'
+            if '.' in name:
+                ext = name[name.rfind('.') + 1:]
+                if ext in tei_extensions:
+                    mode = 'tei'
             self.files.append(File(attributes={'filename': filename,
                                                'path': path,
-                                               'name': name}))
+                                               'name': name,
+                                               'mode': mode}))
         request.dbsession.flush()
 
 
@@ -193,16 +200,21 @@ class Branch(Base):
                     break
             if not found:
                 deleted.append(file)
-        print('------------------')
-        print(new)
-        print(deleted)
-        print('------------------')
+        tei_extensions = get_config_setting(request, 'files.tei', target_type='list', default=[])
         for filename in new:
             local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')) + 1:]
             path, name = os.path.split(local_path)
+            if path == '':
+                path = '/'
+            mode = 'text'
+            if '.' in name:
+                ext = name[name.rfind('.') + 1:]
+                if ext in tei_extensions:
+                    mode = 'tei'
             self.files.append(File(attributes={'filename': filename,
                                                'path': path,
-                                               'name': name}))
+                                               'name': name,
+                                               'mode': mode}))
         for file in deleted:
             request.dbsession.delete(file)
         request.dbsession.flush()

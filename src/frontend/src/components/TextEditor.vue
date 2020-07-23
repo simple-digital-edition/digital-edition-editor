@@ -1,6 +1,6 @@
 <template>
     <div class="text-editor flex vertical">
-        <nav class="shrink border-top">
+        <nav class="shrink">
             <ul role="menubar">
                 <li role="presentation">
                     <a role="menuitem" @click="save">

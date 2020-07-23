@@ -63,6 +63,7 @@ class File(Base):
                     'filename': {'type': 'string', 'required': True, 'empty': False},
                     'path': {'type': 'string', 'required': True, 'empty': False},
                     'name': {'type': 'string', 'required': True, 'empty': False},
+                    'mode': {'type': 'string', 'required': True, 'empty': False, 'allowed': ['text', 'tei']},
                 }
             },
             'relationships': {'type': 'dict', 'schema': {}}

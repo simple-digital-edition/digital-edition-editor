@@ -3,6 +3,7 @@
 <head>
   <link rel="stylesheet" href="{{ 'digi_edit:static/sanitize.css'|static_url }}"/>
   <link rel="stylesheet" href="{{ 'digi_edit:static/theme.css'|static_url }}"/>
+  <link rel="stylesheet" href="{{ 'config.css'|route_url }}"/>
   <title>Digital Edition Editor</title>
 </head>
 <body>
@@ -10,7 +11,8 @@
   <script id="DigiEditConfig" type="application/json">
   {
       "api": {
-          "baseURL": "{{ 'api'|route_url }}"
+          "baseURL": "{{ 'api'|route_url }}",
+          "configURL": "{{ 'config'|route_url }}"
       }
   }
   </script>

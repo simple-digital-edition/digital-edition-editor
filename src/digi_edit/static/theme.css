@@ -80,27 +80,32 @@ dl {
   .flex > .flex-75 {
     width: 75%; }
 
-nav.border-top {
-  border-top: 1px solid #cacaca; }
+nav {
+  border-bottom: 1px solid #cacaca; }
 
-nav ul[role="menubar"] {
+ul[role="menubar"] {
   display: flex;
   flex-direction: row;
   margin: 0;
   padding: 0;
   background: #e6e6e6; }
-  nav ul[role="menubar"] li {
+  ul[role="menubar"] li {
     list-style-type: none; }
-  nav ul[role="menubar"] a[role="menuitem"] {
+  ul[role="menubar"] a[role="menuitem"] {
     display: block;
     padding: 0.5rem 1rem;
     cursor: pointer;
     text-decoration: none;
     border-bottom: 0.28571rem solid transparent;
     color: #b24400; }
-    nav ul[role="menubar"] a[role="menuitem"][aria-current="true"] {
+    ul[role="menubar"] a[role="menuitem"][aria-current="true"], ul[role="menubar"] a[role="menuitem"][aria-checked="true"], ul[role="menubar"] a[role="menuitem"]:hover {
       border-bottom: 0.28571rem solid #b7512a; }
-  nav ul[role="menubar"] span {
+    ul[role="menubar"] a[role="menuitem"][aria-disabled="true"] {
+      border-bottom: 0.28571rem solid transparent;
+      cursor: not-allowed; }
+  ul[role="menubar"] select[role="menuitem"] {
+    margin: 0 1rem; }
+  ul[role="menubar"] span {
     display: block;
     padding: 0.5rem 1rem;
     font-weight: bold;
@@ -155,6 +160,9 @@ svg.icon {
   svg.icon.warning path, svg.icon.warning g {
     fill: #dd0000; }
 
+[aria-disabled="true"] svg path, [aria-disabled="true"] svg g {
+  fill: #e6e6e6; }
+
 [role="dialog"] {
   position: fixed;
   left: 50%;
@@ -195,25 +203,25 @@ svg.icon {
       flex-direction: column;
       z-index: 10001; }
 
-form label {
+label {
   display: block;
   width: 100%;
   font-size: 0.85714rem; }
-  form label input[type="text"], form label input[type="email"], form label input[type="password"] {
+  label input[type="text"], label input[type="email"], label input[type="password"] {
     display: block;
     width: 100%;
     font-size: 0.92857rem;
     border: 1px solid #cacaca;
     padding: 0.5rem 0.5rem; }
-    form label input[type="text"]:focus, form label input[type="email"]:focus, form label input[type="password"]:focus {
+    label input[type="text"]:focus, label input[type="email"]:focus, label input[type="password"]:focus {
       box-shadow: 0 0 0.21429rem #e6e6e6 inset;
       background: #fefefe; }
 
-form span.error-msg {
+span.error-msg {
   display: block;
   color: #cc0000;
   font-size: 0.85714rem; }
-  form span.error-msg.empty:after {
+  span.error-msg.empty:after {
     display: block;
     content: '\00a0'; }
 
@@ -270,6 +278,67 @@ div.home {
       cursor: text; }
       .text-editor > div .cm-content:focus, .text-editor > div .cm-content::-moz-focus-inner {
         outline: none; }
+
+#tei-editor .text-editor .ProseMirror {
+  padding: 0 1rem; }
+
+#tei-editor .text-editor .nested {
+  background: #ffffff; }
+
+#tei-editor .sidebar {
+  background: #e6e6e6;
+  border-left: 1px solid #cacaca;
+  padding: 1rem;
+  width: 30%;
+  max-width: 30rem; }
+  #tei-editor .sidebar a[role="menuitem"] {
+    padding: 0.5rem; }
+  #tei-editor .sidebar select[role="menuitem"] {
+    margin: 0 0.5rem; }
+  #tei-editor .sidebar ul {
+    margin-bottom: 1rem; }
+  #tei-editor .sidebar label {
+    display: block;
+    width: 100%;
+    font-size: 0.85714rem; }
+    #tei-editor .sidebar label input {
+      display: block;
+      width: 100%;
+      font-size: 0.92857rem;
+      border: 1px solid #cacaca;
+      padding: 0.5rem 0.5rem; }
+      #tei-editor .sidebar label input:focus {
+        box-shadow: 0 0 0.21429rem #e6e6e6 inset;
+        background: #fefefe; }
+
+#tei-editor .metadata-editor {
+  padding: 1rem; }
+  #tei-editor .metadata-editor ul[role="menubar"] {
+    background: transparent; }
+  #tei-editor .metadata-editor section {
+    margin-bottom: 1rem; }
+    #tei-editor .metadata-editor section > div > div > ol.multi-row > li {
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 0.07143rem solid #e6e6e6; }
+  #tei-editor .metadata-editor input[type="text"] {
+    max-width: 30rem; }
+  #tei-editor .metadata-editor .multi-row > li > div > label > .label-text {
+    display: none; }
+  #tei-editor .metadata-editor .multi-row > li:first-child > div > label > .label-text {
+    display: block; }
+  #tei-editor .metadata-editor .multi-row > li > ul {
+    align-self: flex-end;
+    padding-right: 1rem; }
+    #tei-editor .metadata-editor .multi-row > li > ul [role="menuitem"] {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem; }
+  #tei-editor .metadata-editor .multi-row + ul[role="menubar"] {
+    justify-content: flex-end;
+    padding-right: 1rem; }
+    #tei-editor .metadata-editor .multi-row + ul[role="menubar"] [role="menuitem"] {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem; }
 
 #busy {
   background: transparent;

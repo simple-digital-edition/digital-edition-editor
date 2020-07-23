@@ -19,10 +19,17 @@ interface State {
 
 interface Config {
     api: APIConfig;
+    'tei-schema'?: any;
 }
 
 interface APIConfig {
     baseURL: string;
+    configURL: string;
+}
+
+interface ConfigSectionPayload {
+    type: 'tei-schema';
+    data: any;
 }
 
 interface DataState {
@@ -90,6 +97,7 @@ export default new Vuex.Store({
         config: {
             api: {
                 baseURL: '',
+                configURL: '',
             },
         },
         data: {},
@@ -104,6 +112,10 @@ export default new Vuex.Store({
     mutations: {
         setConfig(state, config: Config) {
             state.config = config;
+        },
+
+        setConfigSection(state, payload: ConfigSectionPayload) {
+            Vue.set(state.config, payload.type, payload.data);
         },
 
         setUserId(state, userId) {
@@ -159,11 +171,23 @@ export default new Vuex.Store({
             commit('setUserId', sessionLoadValue('user.id', ''));
             commit('setUserToken', sessionLoadValue('user.token', ''));
             commit('setLoggedIn', sessionLoadValue('user.loggedIn', ''));
+            dispatch('loadConfig', 'tei-schema')
             if (state.loggedIn && state.userId !== '' && state.userToken !== '') {
                 await dispatch('loadUser');
                 await dispatch('loadBranches');
             } else {
                 router.push({name: 'login'});
+            }
+        },
+
+        async loadConfig({ commit, state }, type: string) {
+            try {
+                commit('setBusy', true);
+                const response = await axios.get(state.config.api.configURL + '/tei-schema');
+                commit('setConfigSection', {type: type, data: response.data});
+                commit('setBusy', false);
+            } catch(error) {
+                commit('setBusy', false);
             }
         },
 

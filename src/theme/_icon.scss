@@ -24,3 +24,11 @@ svg.icon {
         }
     }
 }
+
+[aria-disabled="true"] {
+    svg {
+        path, g {
+            fill: $light-gray;
+        }
+    }
+}

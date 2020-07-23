@@ -1,6 +1,7 @@
 <template>
     <div v-if="file" class="editor">
-        <text-editor v-if="fileData" :text="fileData.attributes.rawData" @save="save"></text-editor>
+        <text-editor v-if="fileData && fileData.attributes.mode === 'text'" :text="fileData.attributes.rawData" @save="save"></text-editor>
+        <tei-editor v-if="config && fileData && fileData.attributes.mode === 'tei'" :config="config" :autoLoadCallback="loadFileDataCallback" @save="save"></tei-editor>
     </div>
 </template>
 
@@ -10,6 +11,9 @@ import { Component, Vue } from 'vue-property-decorator';
 // @ts-ignore
 import deepcopy from 'deepcopy';
 import axios from 'axios';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+import { TeiEditor } from 'tei-editor';
 
 import { JSONAPIObject } from '../store/index';
 import TextEditor from '../components/TextEditor.vue';
@@ -17,6 +21,7 @@ import TextEditor from '../components/TextEditor.vue';
 @Component({
     components: {
         TextEditor,
+        TeiEditor,
     }
 })
 export default class FileEditor extends Vue {
@@ -25,6 +30,14 @@ export default class FileEditor extends Vue {
     public get file(): JSONAPIObject | null {
         if (this.$store.state.data.files && this.$store.state.data.files[this.$route.params.fid]) {
             return this.$store.state.data.files[this.$route.params.fid];
+        } else {
+            return null;
+        }
+    }
+
+    public get config(): any | null {
+        if (this.$store.state.config['tei-schema']) {
+            return this.$store.state.config['tei-schema'];
         } else {
             return null;
         }
@@ -76,6 +89,12 @@ export default class FileEditor extends Vue {
                 this.$store.commit('setLoggedIn', '');
                 this.$router.push({name: 'login'});
             }
+        }
+    }
+
+    public loadFileDataCallback(callback: (data: string) => void) {
+        if (this.fileData && this.fileData.attributes.rawData) {
+            callback(this.fileData.attributes.rawData);
         }
     }
 }

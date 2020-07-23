@@ -6,4 +6,8 @@ def includeme(config):
     config.add_route('webhooks.github', '/webhooks/github', request_method='POST')
     config.add_route('webhooks.gitlab', '/webhooks/gitlab', request_method='POST')
 
+    config.add_route('config', '/config')
+    config.add_route('config.tei_schema', '/config/tei-schema')
+    config.add_route('config.css', '/config/css')
+
     config.include('.views.api')
