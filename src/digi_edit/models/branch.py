@@ -61,12 +61,12 @@ class Branch(Base):
             data['attributes']['authors'] = []
             first_commit = None
             last_commit = None
-            for commit in repo.iter_commits(f'default..branch-{self.id}'):
+            for commit in repo.iter_commits(f'{get_config_setting(request, "git.default_branch")}..branch-{self.id}'):
                 if not first_commit:
                     first_commit = commit
                 last_commit = commit
                 data['attributes']['authors'].append(commit.author.name)
-            if len(list(repo.iter_commits(f'branch-{self.id}..default'))) > 0:
+            if len(list(repo.iter_commits(f'branch-{self.id}..{get_config_setting(request, "git.default_branch")}'))) > 0:
                 data['attributes']['updates'] = True
             if last_commit:
                 last_commit = last_commit.parents[0]
@@ -100,7 +100,7 @@ class Branch(Base):
     def post_create(self, request):
         """After creation clone the repository, checkout the new branch, and push that to the remote repository."""
         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
-        repo = Repo.clone_from(get_config_setting(request, 'git.url'), base_path)
+        repo = Repo.clone_from(get_config_setting(request, 'git.url'), base_path, branch=get_config_setting(request, 'git.default_branch'))
         branch = repo.create_head(f'branch-{self.id}')
         branch.checkout()
         repo.git.push('--set-upstream', 'origin', f'branch-{self.id}', '--force')
