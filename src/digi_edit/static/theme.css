@@ -279,6 +279,9 @@ div.home {
       .text-editor > div .cm-content:focus, .text-editor > div .cm-content::-moz-focus-inner {
         outline: none; }
 
+#tei-editor > nav li:first-child {
+  margin-right: 1rem; }
+
 #tei-editor .text-editor .ProseMirror {
   padding: 0 1rem; }
 
