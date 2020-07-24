@@ -129,7 +129,7 @@ def check_authorization(request):
 
 def set_cache_headers(request):
     """Sets the default no-caching headers."""
-    request.response.headers['Cache-Control'] = 'no-cache'
+    request.response.headers['Cache-Control'] = 'no-store'
 
 
 def generate_db_api(config, type_name, db_class):
