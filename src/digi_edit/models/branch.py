@@ -62,14 +62,16 @@ class Branch(Base):
             if last_commit and ('updated' not in data['attributes']
                                 or data['attributes']['updated'] != last_commit.committed_datetime.isoformat()):
                 data['attributes']['updated'] = last_commit.committed_datetime.isoformat()
-            data['attributes']['authors'] = []
+            data['attributes']['authors'] = set([])
             first_commit = None
             last_commit = None
             for commit in repo.iter_commits(f'{get_config_setting(request, "git.default_branch")}..branch-{self.id}'):
                 if not first_commit:
                     first_commit = commit
                 last_commit = commit
-                data['attributes']['authors'].append(commit.author.name)
+                data['attributes']['authors'].add(commit.author.name)
+            data['attributes']['authors'] = list(data['attributes']['authors'])
+            data['attributes']['authors'].sort()
             if len(list(repo.iter_commits(f'branch-{self.id}..{get_config_setting(request, "git.default_branch")}'))) > 0:
                 data['attributes']['updates'] = True
             if last_commit:
@@ -110,7 +112,7 @@ class Branch(Base):
         repo.git.push('--set-upstream', 'origin', f'branch-{self.id}', '--force')
         tei_extensions = get_config_setting(request, 'files.tei', target_type='list', default=[])
         files = get_files_for_branch(request, self)
-        for idx, filename in enumerate(files):
+        for filename in files:
             local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')) + 1:]
             path, name = os.path.split(local_path)
             if path == '':
