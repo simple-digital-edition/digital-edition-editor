@@ -26,6 +26,7 @@ class File(Base):
     id = Column(Integer, primary_key=True)
     branch_id = Column(Integer, ForeignKey('branches.id'))
     attributes = Column(NestedMutableJson)
+    position = Column(Integer)
 
     branch = relationship('Branch')
 

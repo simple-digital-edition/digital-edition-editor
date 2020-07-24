@@ -9,6 +9,7 @@ from gitlab import Gitlab
 from pyramid.decorator import reify
 from shutil import rmtree
 from sqlalchemy import (Column, Index, Integer, Unicode, DateTime, func)
+from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.orm import relationship
 from sqlalchemy_json import NestedMutableJson
 
@@ -26,7 +27,10 @@ class Branch(Base):
     id = Column(Integer, primary_key=True)
     attributes = Column(NestedMutableJson)
 
-    files = relationship('File', cascade="all, delete-orphan", order_by='File.id')
+    files = relationship('File',
+                         cascade="all, delete-orphan",
+                         order_by='File.position',
+                         collection_class=ordering_list('position'))
 
     def allow(self, user, action):
         """Check whether the given user is allowed to undertake the given action.
@@ -106,7 +110,7 @@ class Branch(Base):
         repo.git.push('--set-upstream', 'origin', f'branch-{self.id}', '--force')
         tei_extensions = get_config_setting(request, 'files.tei', target_type='list', default=[])
         files = get_files_for_branch(request, self)
-        for filename in files:
+        for idx, filename in enumerate(files):
             local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')) + 1:]
             path, name = os.path.split(local_path)
             if path == '':
@@ -217,4 +221,6 @@ class Branch(Base):
                                                'mode': mode}))
         for file in deleted:
             request.dbsession.delete(file)
+        request.dbsession.refresh(self)
+        self.files.sort(key=lambda f: f.attributes['filename'].split(os.path.sep))
         request.dbsession.flush()
