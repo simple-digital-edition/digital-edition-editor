@@ -127,6 +127,11 @@ def check_authorization(request):
         raise HTTPUnauthorized()
 
 
+def set_cache_headers(request):
+    """Sets the default no-caching headers."""
+    request.response.headers['Cache-Control'] = 'no-cache'
+
+
 def generate_db_api(config, type_name, db_class):
     """Generates the API endpoints for models backed by the database.
 
@@ -139,6 +144,7 @@ def generate_db_api(config, type_name, db_class):
         """Fetch the set of all items."""
         check_authorization(request)
         objs = request.dbsession.query(db_class)
+        set_cache_headers(request)
         return {'data': [obj.as_jsonapi(request) for obj in objs]}
 
     def collection_post(request):
@@ -166,6 +172,7 @@ def generate_db_api(config, type_name, db_class):
         obj = request.dbsession.query(db_class).filter(db_class.id == request.matchdict['iid']).first()
         if obj:
             data = obj.as_jsonapi(request)
+            set_cache_headers(request)
             return {'data': data}
         else:
             raise HTTPNotFound()

@@ -197,15 +197,6 @@ export default new Vuex.Store({
 
         async loadBranches({ dispatch }) {
             const branches = await dispatch('fetchAll', 'branches');
-            let promises = [] as Promise<JSONAPIReference>[];
-            (branches as JSONAPIObject[]).forEach((branch) => {
-                if (branch.relationships.files) {
-                    promises = promises.concat((branch.relationships.files.data as JSONAPIReference[]).map((fileRef) => {
-                        return dispatch('loadFile', fileRef);
-                    }));
-                }
-            });
-            await Promise.all(promises);
             return branches;
         },
 

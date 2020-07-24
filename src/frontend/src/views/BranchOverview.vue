@@ -130,7 +130,7 @@ export default class BranchOverview extends Vue {
     }
 
     public get fileSets(): FileSet[] {
-        if (this.branch && this.$store.state.data.files) {
+        if (this.branch && this.$store.state.data.files && !this.$store.state.busy) {
             const fileSets = [] as FileSet[];
             let fileSet = null as FileSet | null;
             if (this.branch.relationships.files) {
@@ -164,6 +164,7 @@ export default class BranchOverview extends Vue {
     }
 
     public mounted() {
+        this.$store.dispatch('loadBranch', {type: 'branches', id: this.$route.params.bid});
         this.intervalId = window.setInterval(async () => {
             if (this.branch) {
                 try {
