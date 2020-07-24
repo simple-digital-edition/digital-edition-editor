@@ -21,7 +21,8 @@ ul[role="menubar"] {
         border-bottom: rem-calc(4px) solid transparent;
         color: $colour-primary-dark;
 
-        &[aria-current="true"], &[aria-checked="true"], &:hover {
+        &[aria-current="true"], &[aria-checked="true"], &:hover, &:focus {
+            outline: none;
             border-bottom: rem-calc(4px) solid $colour-primary;
         }
 
