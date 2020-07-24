@@ -2,18 +2,19 @@ label {
     display: block;
     width: 100%;
     font-size: rem-calc(12px);
+}
 
-    input[type="text"], input[type="email"], input[type="password"], input[type="search"] {
-        display: block;
-        width: 100%;
-        font-size: rem-calc(13px);
-        border: 1px solid $medium-gray;
-        padding: $global-padding/2 $global-padding/2;
+input[type="text"], input[type="email"], input[type="password"], input[type="search"] {
+    display: block;
+    width: 100%;
+    font-size: rem-calc(13px);
+    border: 1px solid $medium-gray;
+    padding: $global-padding/2 $global-padding/2;
 
-        &:focus {
-            box-shadow: 0 0 rem-calc(3px) $light-gray inset;
-            background: $white;
-        }
+    &:focus {
+        box-shadow: 0 0 rem-calc(3px) $light-gray inset;
+        background: $white;
+        outline: none;
     }
 }
 
