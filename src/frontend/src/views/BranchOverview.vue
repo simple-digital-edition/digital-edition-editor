@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isCurrentRoute" class="branch-overview">
+    <div v-if="isCurrentRoute" class="branch-overview margin-top">
         <div v-if="branch" class="width-limited">
             <div>
                 <h1>{{ branch.attributes.name }}</h1>
