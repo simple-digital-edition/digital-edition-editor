@@ -66,7 +66,7 @@
                         <span v-else-if="branch.attributes.merged"><template>Integrated: {{ fancyDate(branch.attributes.merged) }}</template></span>
                         <span v-else-if="branch.attributes.deleted"><template>Deleted: {{ fancyDate(branch.attributes.deleted) }}</template></span>
                         <span v-else></span>
-                        <span><template v-if="branch.attributes.authors && branch.attributes.authors.length > 0">Edited By: {{ branch.attributes.authors.join(', ') }}</template></span>
+                        <span><template v-if="branch.attributes.authors && branch.attributes.authors.length > 0">Changes By: {{ branch.attributes.authors.join(', ') }}</template></span>
                     </dd>
                 </template>
             </dl>
