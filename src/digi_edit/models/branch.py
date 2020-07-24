@@ -26,7 +26,7 @@ class Branch(Base):
     id = Column(Integer, primary_key=True)
     attributes = Column(NestedMutableJson)
 
-    files = relationship('File', cascade="all, delete-orphan")
+    files = relationship('File', cascade="all, delete-orphan", order_by='File.id')
 
     def allow(self, user, action):
         """Check whether the given user is allowed to undertake the given action.
