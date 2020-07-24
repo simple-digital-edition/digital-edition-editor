@@ -158,7 +158,7 @@ class Branch(Base):
                 pull_request = gh_repo.get_pull(self.attributes['pull_request']['id'])
                 pull_request.edit(state='open')
             else:
-                gh_repo.create_pull(title=f'Integrate {self.attributes["name"]}', body='', base='default', head=f'branch-{self.id}')
+                gh_repo.create_pull(title=self.attributes["name"], body='', base='default', head=f'branch-{self.id}')
         elif integration == 'gitlab':
             gl = Gitlab(get_config_setting(request, 'gitlab.host'), get_config_setting(request, 'gitlab.token'))
             gl_repo = gl.projects.get(get_config_setting(request, 'gitlab.projectid'))
@@ -169,7 +169,7 @@ class Branch(Base):
             else:
                 gl_repo.mergerequests.create({'source_branch': f'branch-{self.id}',
                                               'target_branch': 'default',
-                                              'title': f'Integrate {self.attributes["name"]}'})
+                                              'title': self.attributes["name"]})
 
     def cancel_integration(self, request):
         integration = get_config_setting(request, 'git.integration')
