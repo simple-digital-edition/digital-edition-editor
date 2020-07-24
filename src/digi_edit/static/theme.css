@@ -207,13 +207,13 @@ label {
   display: block;
   width: 100%;
   font-size: 0.85714rem; }
-  label input[type="text"], label input[type="email"], label input[type="password"] {
+  label input[type="text"], label input[type="email"], label input[type="password"], label input[type="search"] {
     display: block;
     width: 100%;
     font-size: 0.92857rem;
     border: 1px solid #cacaca;
     padding: 0.5rem 0.5rem; }
-    label input[type="text"]:focus, label input[type="email"]:focus, label input[type="password"]:focus {
+    label input[type="text"]:focus, label input[type="email"]:focus, label input[type="password"]:focus, label input[type="search"]:focus {
       box-shadow: 0 0 0.21429rem #e6e6e6 inset;
       background: #fefefe; }
 
@@ -269,6 +269,15 @@ div.branch-overview {
   height: 100%;
   overflow: auto;
   padding: 1rem; }
+  div.branch-overview form.file-filter {
+    position: relative; }
+    div.branch-overview form.file-filter input[type="search"] {
+      padding-right: 2.42857rem; }
+    div.branch-overview form.file-filter svg {
+      position: absolute;
+      top: 50%;
+      right: 0.57143rem;
+      transform: translateY(-50%); }
 
 .editor {
   height: 100%;

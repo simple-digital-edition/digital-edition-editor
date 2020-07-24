@@ -1,8 +1,14 @@
 <template>
     <div v-if="isCurrentRoute" class="branch-overview">
         <div v-if="branch" class="width-limited">
-            <div>
+            <div class="flex margin-bottom">
                 <h1>{{ branch.attributes.name }}</h1>
+                <form class="shrink flex file-filter" @submit="$event.preventDefault();">
+                    <input type="search" v-model="fileFilter" />
+                    <svg viewBox="0 0 24 24" class="icon">
+                        <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
+                    </svg>
+                </form>
             </div>
             <div v-if="branch.attributes.status === 'active'" class="flex">
                 <dl class="detail-list flex-75">
@@ -120,6 +126,19 @@ interface FileSet {
 @Component
 export default class BranchOverview extends Vue {
     private intervalId = -1;
+    private fileFilterDebounce = -1;
+    public fileFilterValue = '';
+
+    public get fileFilter() {
+        return this.fileFilterValue;
+    }
+
+    public set fileFilter(value) {
+        window.clearTimeout(this.fileFilterDebounce);
+        this.fileFilterDebounce = window.setTimeout(() => {
+            this.fileFilterValue = value;
+        }, 300);
+    }
 
     public get branch(): JSONAPIObject | null {
         if (this.$store.state.data.branches && this.$store.state.data.branches[this.$route.params.bid]) {
@@ -137,16 +156,18 @@ export default class BranchOverview extends Vue {
                 (this.branch.relationships.files.data as JSONAPIObject[]).forEach((fileRef) => {
                     if (fileRef.id && this.$store.state.data.files[fileRef.id]) {
                         const file = this.$store.state.data.files[fileRef.id];
-                        if (!fileSet || fileSet.id !== file.attributes.path) {
-                            if (fileSet) {
-                                fileSets.push(fileSet);
+                        if (this.fileFilter === '' || file.attributes.filename.indexOf(this.fileFilter) >= 0) {
+                            if (!fileSet || fileSet.id !== file.attributes.path) {
+                                if (fileSet) {
+                                    fileSets.push(fileSet);
+                                }
+                                fileSet = {
+                                    id: file.attributes.path,
+                                    files: []
+                                }
                             }
-                            fileSet = {
-                                id: file.attributes.path,
-                                files: []
-                            }
+                            fileSet.files.push(file);
                         }
-                        fileSet.files.push(file);
                     }
                 });
                 if (fileSet) {

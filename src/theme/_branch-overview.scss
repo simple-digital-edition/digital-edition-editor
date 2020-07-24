@@ -2,4 +2,19 @@ div.branch-overview {
     height: 100%;
     overflow: auto;
     padding: $global-padding;
+
+    form.file-filter {
+        position: relative;
+
+        input[type="search"] {
+            padding-right: rem-calc(34px);
+        }
+
+        svg {
+            position: absolute;
+            top: 50%;
+            right: rem-calc(8px);
+            transform: translateY(-50%);
+        }
+    }
 }
