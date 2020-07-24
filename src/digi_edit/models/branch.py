@@ -126,6 +126,7 @@ class Branch(Base):
                                                'path': path,
                                                'name': name,
                                                'mode': mode}))
+        self.files.reorder()
         request.dbsession.flush()
 
 
@@ -225,4 +226,5 @@ class Branch(Base):
             request.dbsession.delete(file)
         request.dbsession.refresh(self)
         self.files.sort(key=lambda f: f.attributes['filename'].split(os.path.sep))
+        self.files.reorder()
         request.dbsession.flush()
