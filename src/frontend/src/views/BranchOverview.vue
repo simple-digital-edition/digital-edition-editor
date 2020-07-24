@@ -149,7 +149,9 @@ export default class BranchOverview extends Vue {
     }
 
     public get fileSets(): FileSet[] {
-        if (this.branch && this.$store.state.data.files) {
+        if (this.$store.state.busy) {
+            return [{id: 'Loading...', files: []}];
+        } else if (this.branch && this.$store.state.data.files) {
             const fileSets = [] as FileSet[];
             let fileSet = null as FileSet | null;
             if (this.branch.relationships.files) {

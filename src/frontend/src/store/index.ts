@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import axios, { AxiosError } from 'axios';
 import router from '../router/index';
+import equal from 'fast-deep-equal';
 
 import { sessionLoadValue, sessionStoreValue} from '../storage';
 
@@ -135,7 +136,13 @@ export default new Vuex.Store({
 
         setObject(state, obj) {
             if (state.data[obj.type]) {
-                Vue.set(state.data[obj.type], obj.id, obj);
+                if (state.data[obj.type][obj.id]) {
+                    if (!equal(obj, state.data[obj.type][obj.id])) {
+                        Vue.set(state.data[obj.type], obj.id, obj);
+                    }
+                } else {
+                    Vue.set(state.data[obj.type], obj.id, obj);
+                }
             } else {
                 Vue.set(state.data, obj.type, {[obj.id]: obj});
             }
@@ -209,13 +216,22 @@ export default new Vuex.Store({
             return branch;
         },
 
-        async loadBranch({ dispatch }, branch: JSONAPIObject) {
-            branch = await dispatch('fetchSingle', branch);
-            const promises = (branch.relationships.files.data as JSONAPIReference[]).map((fileRef) => {
-                return dispatch('loadFile', fileRef);
-            });
-            await Promise.all(promises);
-            return branch;
+        async loadBranch({ dispatch, state }, branch: JSONAPIObject) {
+            if (state.data.branches && branch.id && state.data.branches[branch.id]) {
+                branch = await dispatch('backgroundFetchSingle', branch);
+                const promises = (branch.relationships.files.data as JSONAPIReference[]).map((fileRef) => {
+                    return dispatch('loadFile', fileRef);
+                });
+                await Promise.all(promises);
+                return branch;
+            } else {
+                branch = await dispatch('fetchSingle', branch);
+                const promises = (branch.relationships.files.data as JSONAPIReference[]).map((fileRef) => {
+                    return dispatch('loadFile', fileRef);
+                });
+                await Promise.all(promises);
+                return branch;
+            }
         },
 
         async deleteBranch({ dispatch, commit }, branch: JSONAPIObject) {
@@ -225,9 +241,12 @@ export default new Vuex.Store({
             });
         },
 
-        async loadFile({ dispatch }, fileRef: JSONAPIReference | JSONAPIObject) {
-            const file = await dispatch('fetchSingle', fileRef);
-            return file;
+        async loadFile({ dispatch, state }, fileRef: JSONAPIReference | JSONAPIObject) {
+            if (state.data.files && fileRef.id && state.data.files[fileRef.id]) {
+                return await dispatch('backgroundFetchSingle', fileRef);
+            } else {
+                return await dispatch('fetchSingle', fileRef);
+            }
         },
 
         async fetchAll({ commit, state }, type: string) {
