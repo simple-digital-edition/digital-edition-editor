@@ -191,8 +191,14 @@ export default class EditionOverview extends Vue {
         parts.push('.');
         parts.push(date.getFullYear());
         parts.push(' at ');
+        if (date.getHours() < 10) {
+            parts.push('0');
+        }
         parts.push(date.getHours());
         parts.push(':');
+        if (date.getMinutes() < 10) {
+            parts.push('0');
+        }
         parts.push(date.getMinutes());
         return parts.join('');
     }
