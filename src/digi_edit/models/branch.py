@@ -107,6 +107,8 @@ class Branch(Base):
         """After creation clone the repository, checkout the new branch, and push that to the remote repository."""
         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
         repo = Repo.clone_from(get_config_setting(request, 'git.url'), base_path, branch=get_config_setting(request, 'git.default_branch'))
+        repo.git.config('user.email', get_config_setting(request, 'git.default_user_email'))
+        repo.git.config('user.name', get_config_setting(request, 'git.default_user_name'))
         branch = repo.create_head(f'branch-{self.id}')
         branch.checkout()
         repo.git.push('--set-upstream', 'origin', f'branch-{self.id}', '--force')
@@ -183,7 +185,7 @@ class Branch(Base):
     def rebase(self, request):
         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
         repo = Repo(base_path)
-        repo.git.rebase('default')
+        repo.git.rebase(get_config_setting(request, 'git.default_branch'))
         repo.git.push('origin', f'branch-{self.id}', '--force')
         self.rescan(request)
 
