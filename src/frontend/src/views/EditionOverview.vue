@@ -1,5 +1,5 @@
 <template>
-    <div class="home margin-top">
+    <div class="home">
         <aria-dialog v-if="addBranch">
             <div role="dialog" aria-modal="true">
                 <form class="flex vertical" @submit="createBranch">

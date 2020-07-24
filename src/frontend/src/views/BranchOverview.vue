@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isCurrentRoute" class="branch-overview margin-top">
+    <div v-if="isCurrentRoute" class="branch-overview">
         <div v-if="branch" class="width-limited">
             <div>
                 <h1>{{ branch.attributes.name }}</h1>
@@ -130,7 +130,7 @@ export default class BranchOverview extends Vue {
     }
 
     public get fileSets(): FileSet[] {
-        if (this.branch && this.$store.state.data.files && !this.$store.state.busy) {
+        if (this.branch && this.$store.state.data.files) {
             const fileSets = [] as FileSet[];
             let fileSet = null as FileSet | null;
             if (this.branch.relationships.files) {
