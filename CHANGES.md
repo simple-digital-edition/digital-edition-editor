@@ -2,6 +2,7 @@
 
 ## Development ():
 
+* **Bugfix**: Force fetching the default branch
 * **Bugfix**: Explicitly specify the default branch
 
 ## 0.10.0 (23.07.2020)

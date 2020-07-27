@@ -48,7 +48,7 @@ def github_webhook(request):
                     if branch.attributes['status'] == 'active':
                         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
                         repo = Repo(base_path)
-                        repo.remotes.origin.fetch('default:default')
+                        repo.remotes.origin.fetch('default:default', '--force')
                         repo.remotes.origin.pull()
     return HTTPOk()
 
@@ -95,6 +95,6 @@ def gitlab_webhook(request):
                     if branch.attributes['status'] == 'active':
                         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
                         repo = Repo(base_path)
-                        repo.remotes.origin.fetch('default:default')
+                        repo.remotes.origin.fetch('default:default', '--force')
                         repo.remotes.origin.pull()
     return HTTPOk()
