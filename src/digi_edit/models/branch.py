@@ -19,6 +19,25 @@ from digi_edit.jsonapi import jsonapi_type_schema
 from digi_edit.util import get_config_setting, get_files_for_branch, get_file_identifier
 
 
+def file_sort_key(file):
+    """Calculate the sort key for ``file``.
+
+    :param file: The file to calculate the sort key for
+    :type file: :class:`~digi_edit.models.file.File`
+    :return: The sort key
+    :rtype: ``tuple``
+    """
+    path = file.attributes['filename'].split(os.path.sep)
+    path_len = len(path)
+    key = []
+    for idx, element in enumerate(path):
+        if idx < path_len - 1:
+            key.append((1, element))
+        else:
+            key.append((0, element))
+    return tuple(key)
+
+
 class Branch(Base):
     """The :class:`~digi_edit.models.branch.Branch` represents a single branch."""
 
@@ -132,6 +151,7 @@ class Branch(Base):
                                                'path': path,
                                                'name': name,
                                                'mode': mode}))
+        self.files.sort(key=file_sort_key)
         self.files.reorder()
         request.dbsession.flush()
 
@@ -240,6 +260,6 @@ class Branch(Base):
         for file in deleted:
             request.dbsession.delete(file)
         request.dbsession.refresh(self)
-        self.files.sort(key=lambda f: f.attributes['filename'].split(os.path.sep))
+        self.files.sort(key=file_sort_key)
         self.files.reorder()
         request.dbsession.flush()

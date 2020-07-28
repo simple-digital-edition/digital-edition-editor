@@ -302,7 +302,7 @@ export default class BranchOverview extends Vue {
     public ellipsisPath(text: string, maxLength: number) {
         if (text.length > maxLength) {
             const path = text.split('/');
-            if (path[0].length + path[path.length - 1].length > maxLength) {
+            if (path[0].length + path[path.length - 1].length >= maxLength - 5) {
                 return '.../' + path[path.length - 1];
             } else {
                 const result = path.splice(0, 1);

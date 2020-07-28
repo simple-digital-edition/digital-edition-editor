@@ -3,6 +3,7 @@
 ## Development ():
 
 * **Update**: Updated the branch overview UX
+* **Bugfix**: Fixed a bug in the file sorting
 * **Bugfix**: Force fetching the default branch
 * **Bugfix**: Explicitly specify the default branch
 
