@@ -35,7 +35,10 @@ class File(Base):
         is set to ``'true'``, then the raw file content is also included."""
         data = {'type': 'files',
                 'id': str(self.id),
-                'attributes': deepcopy(self.attributes),
+                'attributes': {'filename': self.attributes['filename'],
+                               'path': self.attributes['path'],
+                               'name': self.attributes['name'],
+                               'mode': self.attributes['mode']},
                 'relationships': {}}
         if 'X-Include-Data' in request.headers and request.headers['X-Include-Data'] == 'true':
             base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.branch_id}')

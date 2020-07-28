@@ -12,6 +12,9 @@ dl.detail-list {
 
         h2 {
             margin-bottom: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
 
             a {
                 text-decoration: none;
@@ -41,6 +44,10 @@ dl.detail-list {
             &:last-child {
                 padding-right: 0;
             }
+        }
+
+        li {
+            margin-bottom: $global-margin/4;
         }
     }
 }

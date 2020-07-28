@@ -9,8 +9,16 @@ ul[role="menubar"] {
     padding: 0;
     background: $light-gray;
 
+    &.transparent {
+        background: transparent;
+    }
+
     li {
         list-style-type: none;
+
+        &.expander {
+            flex: 1 1 auto;
+        }
     }
 
     a[role="menuitem"] {

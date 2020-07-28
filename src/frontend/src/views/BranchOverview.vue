@@ -1,20 +1,75 @@
 <template>
     <div v-if="isCurrentRoute" class="branch-overview">
         <div v-if="branch" class="width-limited">
-            <div class="flex margin-bottom">
-                <h1>{{ branch.attributes.name }}</h1>
-                <form class="shrink flex file-filter" @submit="$event.preventDefault();">
-                    <input type="search" v-model="fileFilter" />
-                    <svg viewBox="0 0 24 24" class="icon">
-                        <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
-                    </svg>
-                </form>
-            </div>
-            <div v-if="branch.attributes.status === 'active'" class="flex">
-                <dl class="detail-list flex-75">
-                    <template v-for="(fileSet, idx) in fileSets">
+            <template v-if="branch.attributes.status === 'active'">
+                <div class="flex">
+                    <h1 class="no-margin">{{ branch.attributes.name }}</h1>
+                    <aria-menubar v-slot="{ keyboardNav }">
+                        <ul role="menubar" class="shrink transparent">
+                            <li v-if="branch.attributes.updates" role="presentation">
+                                <a role="menuitem" tabindex="0" aria-label="Update to latest changes from the primary copy" title="Update to latest changes from the primary copy" @keyup="keyboardNav" @click="rebase">
+                                    <svg viewBox="0 0 24 24" class="icon">
+                                        <path d="M7,3A3,3 0 0,1 10,6C10,7.29 9.19,8.39 8.04,8.81C8.58,13.81 13.08,14.77 15.19,14.96C15.61,13.81 16.71,13 18,13A3,3 0 0,1 21,16A3,3 0 0,1 18,19C16.69,19 15.57,18.16 15.16,17C10.91,16.8 9.44,15.19 8,13.39V15.17C9.17,15.58 10,16.69 10,18A3,3 0 0,1 7,21A3,3 0 0,1 4,18C4,16.69 4.83,15.58 6,15.17V8.83C4.83,8.42 4,7.31 4,6A3,3 0 0,1 7,3M7,5A1,1 0 0,0 6,6A1,1 0 0,0 7,7A1,1 0 0,0 8,6A1,1 0 0,0 7,5M7,17A1,1 0 0,0 6,18A1,1 0 0,0 7,19A1,1 0 0,0 8,18A1,1 0 0,0 7,17M18,15A1,1 0 0,0 17,16A1,1 0 0,0 18,17A1,1 0 0,0 19,16A1,1 0 0,0 18,15Z" />
+                                    </svg>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open'" role="menuitem" :tabindex="branch.attributes.updates ? -1 : 0" aria-label="Cancel the integration" title="Cancel the integration" @keyup="keyboardNav" @click="cancelIntegration">
+                                    <svg viewBox="0 0 24 24" class="icon">
+                                        <path d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M17.17,11.77V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V11.77H17.17M17.5 13C15 13 13 15 13 17.5C13 20 15 22 17.5 22C20 22 22 20 22 17.5C22 15 20 13 17.5 13M17.5 14.5C19.16 14.5 20.5 15.84 20.5 17.5C20.5 18.06 20.35 18.58 20.08 19L16 14.92C16.42 14.65 16.94 14.5 17.5 14.5M14.92 16L19 20.08C18.58 20.35 18.06 20.5 17.5 20.5C15.84 20.5 14.5 19.16 14.5 17.5C14.5 16.94 14.65 16.42 14.92 16Z" />
+                                    </svg>
+                                </a>
+                                <a v-else role="menuitem" :tabindex="branch.attributes.updates ? -1 : 0" aria-label="Request integration into the primary copy" title="request integration into the primary copy" @keyup="keyboardNav" @click="requestIntegration">
+                                    <svg viewBox="0 0 24 24" class="icon">
+                                        <path d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M21,18A3,3 0 0,1 18,21A3,3 0 0,1 15,18C15,16.69 15.83,15.58 17,15.17V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V15.17C20.17,15.58 21,16.69 21,18M18,17A1,1 0 0,0 17,18A1,1 0 0,0 18,19A1,1 0 0,0 19,18A1,1 0 0,0 18,17Z" />
+                                    </svg>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" aria-label="Add a file" title="Add a file" @keyup="keyboardNav" @click="rescan">
+                                    <svg viewBox="0 0 24 24" class="icon alert">
+                                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                    </svg>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a role="menuitem" tabindex="-1" aria-label="Delete this task" title="Delete this task" @keyup="keyboardNav" @click="deleteBranch">
+                                    <svg viewBox="0 0 24 24" class="icon alert">
+                                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                                    </svg>
+                                </a>
+                            </li>
+                        </ul>
+                    </aria-menubar>
+                </div>
+                <aria-menubar v-slot="{ keyboardNav }">
+                    <ul role="menubar" class="transparent">
+                        <li v-if="branch.attributes.changes && branch.attributes.changes.length > 0" role="presentation">
+                            <a role="menuitem" :aria-current="mode === 'changed' ? 'true' : 'false'" @keyup="keyboardNav" @click="setMode('changed')">Changed Files</a>
+                        </li>
+                        <li role="presentation">
+                            <a role="menuitem" :aria-current="mode === 'files' ? 'true' : 'false'" @keyup="keyboardNav" @click="setMode('files')">All Files</a>
+                        </li>
+                        <li v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open'" role="presentation">
+                            <a role="menuitem" :aria-current="mode === 'integration' ? 'true' : 'false'" @keyup="keyboardNav" @click="setMode('integration')">Integration Reviews</a>
+                        </li>
+                        <template v-if="mode === 'files'">
+                            <li role="presentation" class="expander"></li>
+                            <li role="presentation">
+                                <form class="flex file-filter" @submit="$event.preventDefault();">
+                                    <input type="search" v-model="fileFilter" />
+                                    <svg viewBox="0 0 24 24" class="icon">
+                                        <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
+                                    </svg>
+                                </form>
+                            </li>
+                        </template>
+                    </ul>
+                </aria-menubar>
+                <dl v-if="mode === 'changed'" class="detail-list margin-top">
+                    <template v-for="(fileSet, idx) in changedSets">
                         <dt :key="idx + '-dt'">
-                            <h2>{{ fileSet.id }}</h2>
+                            <h2 :title="fileSet.id">{{ ellipsisPath(fileSet.id, 55) }}</h2>
                         </dt>
                         <dd :key="idx + '-dd'">
                             <ul class="no-bullet">
@@ -27,85 +82,45 @@
                         </dd>
                     </template>
                 </dl>
-                <div class="flex-25 padding-left">
-                    <ul class="no-bullet margin-bottom">
-                        <li v-if="branch.attributes.updates" class="margin-bottom">
-                            <a class="button outline full-width text-center" @click="rebase">
-                                <svg viewBox="0 0 24 24" class="icon">
-                                    <path d="M7,3A3,3 0 0,1 10,6C10,7.29 9.19,8.39 8.04,8.81C8.58,13.81 13.08,14.77 15.19,14.96C15.61,13.81 16.71,13 18,13A3,3 0 0,1 21,16A3,3 0 0,1 18,19C16.69,19 15.57,18.16 15.16,17C10.91,16.8 9.44,15.19 8,13.39V15.17C9.17,15.58 10,16.69 10,18A3,3 0 0,1 7,21A3,3 0 0,1 4,18C4,16.69 4.83,15.58 6,15.17V8.83C4.83,8.42 4,7.31 4,6A3,3 0 0,1 7,3M7,5A1,1 0 0,0 6,6A1,1 0 0,0 7,7A1,1 0 0,0 8,6A1,1 0 0,0 7,5M7,17A1,1 0 0,0 6,18A1,1 0 0,0 7,19A1,1 0 0,0 8,18A1,1 0 0,0 7,17M18,15A1,1 0 0,0 17,16A1,1 0 0,0 18,17A1,1 0 0,0 19,16A1,1 0 0,0 18,15Z" />
-                                </svg>
-                                Update
-                            </a>
-                        </li>
-                        <li class="margin-bottom">
-                            <a v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open'" class="button outline full-width text-center" @click="cancelIntegration">
-                                <svg viewBox="0 0 24 24" class="icon">
-                                    <path d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M21,18A3,3 0 0,1 18,21A3,3 0 0,1 15,18C15,16.69 15.83,15.58 17,15.17V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V15.17C20.17,15.58 21,16.69 21,18M18,17A1,1 0 0,0 17,18A1,1 0 0,0 18,19A1,1 0 0,0 19,18A1,1 0 0,0 18,17Z" />
-                                </svg>
-                                Cancel integration
-                            </a>
-                            <a v-else class="button outline full-width text-center" @click="requestIntegration">
-                                <svg viewBox="0 0 24 24" class="icon">
-                                    <path d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M21,18A3,3 0 0,1 18,21A3,3 0 0,1 15,18C15,16.69 15.83,15.58 17,15.17V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V15.17C20.17,15.58 21,16.69 21,18M18,17A1,1 0 0,0 17,18A1,1 0 0,0 18,19A1,1 0 0,0 19,18A1,1 0 0,0 18,17Z" />
-                                </svg>
-                                Request integration
-                            </a>
-                        </li>
-                        <li class="margin-bottom">
-                            <a @click="rescan" class="button outline full-width text-center">
-                                <svg viewBox="0 0 24 24" class="icon alert">
-                                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
-                                </svg>
-                                Add File
-                            </a>
-                        </li>
-                        <li class="margin-bottom">
-                            <a @click="deleteBranch" class="button outline full-width text-center">
-                                <svg viewBox="0 0 24 24" class="icon alert">
-                                    <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
-                                </svg>
-                                Delete
-                            </a>
-                        </li>
-                    </ul>
-                    <template v-if="branch.attributes.pull_request && branch.attributes.pull_request.state == 'open'">
-                        <h3 class="no-margin">Integration reviews</h3>
-                        <dl class="margin-bottom">
-                            <template v-for="review, idx in branch.attributes.pull_request.reviews">
-                                <dt :key="idx + '-dt'" class="flex">
-                                    <span>{{ review.user }}</span>
-                                    <svg v-if="review.state === 'APPROVED'" viewBox="0 0 24 24" class="shrink icon success">
-                                        <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
-                                    </svg>
-                                    <svg v-else viewBox="0 0 24 24" class="shrink icon warning">
-                                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                                    </svg>
-                                </dt>
-                                <dd :key="idx + '-dd'" class="no-margin margin-bottom">{{ review.body }}</dd>
-                            </template>
-                            <template v-if="branch.attributes.updates">
-                                <dt class="flex">
-                                    <span>Automatic Reviews</span>
-                                    <svg viewBox="0 0 24 24" class="shrink icon warning">
-                                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                                    </svg>
-                                </dt>
-                                <dd class="no-margin margin-bottom">This task needs to be updated before the integration can proceed</dd>
-                            </template>
-                        </dl>
+                <dl v-else-if="mode === 'files'" class="detail-list margin-top">
+                    <template v-for="(fileSet, idx) in fileSets">
+                        <dt :key="idx + '-dt'">
+                            <h2 :title="fileSet.id">{{ ellipsisPath(fileSet.id, 55) }}</h2>
+                        </dt>
+                        <dd :key="idx + '-dd'">
+                            <ul class="no-bullet">
+                                <li v-for="file in fileSet.files" :key="file.id">
+                                    <router-link :to="'/branches/' + branch.id + '/files/' + file.id" v-slot="{ href, navigate }">
+                                        <a :href="href" @click="navigate">{{ file.attributes.name }}</a>
+                                    </router-link>
+                                </li>
+                            </ul>
+                        </dd>
                     </template>
-                    <template v-if="branch.attributes.changes">
-                        <h3 class="no-margin">Changed Files ({{ branch.attributes.changes.length }})</h3>
-                        <ul class="no-bullet">
-                            <li v-for="filename in branch.attributes.changes" :key="filename" :title="filename">{{ filename }}</li>
-                        </ul>
+                </dl>
+                <dl v-else-if="mode === 'integration'" class="detail-list margin-top">
+                    <template v-for="(review, idx) in branch.attributes.pull_request.reviews">
+                        <dt :key="idx + '-dt'" class="flex">
+                            <h2>{{ review.user }}</h2>
+                            <svg v-if="review.state === 'APPROVED'" viewBox="0 0 24 24" class="shrink icon success">
+                                <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                            </svg>
+                            <svg v-else-if="review.state !== ''" viewBox="0 0 24 24" class="shrink icon warning">
+                                <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                            </svg>
+                        </dt>
+                        <dd :key="idx + '-dd'">
+                            {{ review.body }}
+                        </dd>
                     </template>
-                </div>
-            </div>
+                </dl>
+            </template>
             <div v-else-if="branch.attributes.status === 'merged'">
+                <h1>{{ branch.attributes.name }}</h1>
                 <p>This task has been integrated into the primary copy.</p>
             </div>
             <div v-else-if="branch.attributes.status === 'deleted'">
+                <h1>{{ branch.attributes.name }}</h1>
                 <p>This task has been deleted.</p>
             </div>
         </div>
@@ -116,6 +131,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
+import AriaMenubar from '../components/AriaMenubar.vue';
 import { JSONAPIObject } from '../store/index';
 
 interface FileSet {
@@ -123,11 +139,16 @@ interface FileSet {
     files: JSONAPIObject[];
 }
 
-@Component
+@Component({
+    components: {
+        AriaMenubar,
+    }
+})
 export default class BranchOverview extends Vue {
     private intervalId = -1;
     private fileFilterDebounce = -1;
     public fileFilterValue = '';
+    public mode = 'files';
 
     public get fileFilter() {
         return this.fileFilterValue;
@@ -158,7 +179,7 @@ export default class BranchOverview extends Vue {
                 (this.branch.relationships.files.data as JSONAPIObject[]).forEach((fileRef) => {
                     if (fileRef.id && this.$store.state.data.files[fileRef.id]) {
                         const file = this.$store.state.data.files[fileRef.id];
-                        if (this.fileFilter === '' || file.attributes.filename.indexOf(this.fileFilter) >= 0) {
+                        if (this.fileFilter === '' || this.contains(file.attributes.filename, this.fileFilter)) {
                             if (!fileSet || fileSet.id !== file.attributes.path) {
                                 if (fileSet) {
                                     fileSets.push(fileSet);
@@ -182,12 +203,40 @@ export default class BranchOverview extends Vue {
         }
     }
 
+    public get changedSets(): FileSet[] {
+        if (this.branch && this.branch.attributes.changes && this.branch.attributes.changes.length > 0) {
+            const fileSets = [] as FileSet[];
+            let fileSet = null as FileSet | null;
+            (this.branch.attributes.changes as unknown as JSONAPIObject[]).forEach((file) => {
+                if (!fileSet || fileSet.id !== file.attributes.path) {
+                    if (fileSet) {
+                        fileSets.push(fileSet);
+                    }
+                    fileSet = {
+                        id: file.attributes.path as string,
+                        files: []
+                    }
+                }
+                fileSet.files.push(file);
+            });
+            if (fileSet) {
+                fileSets.push(fileSet);
+            }
+            return fileSets;
+        } else {
+            return [];
+        }
+    }
+
     public get isCurrentRoute() {
         return this.$route.name === 'branch';
     }
 
-    public mounted() {
-        this.$store.dispatch('loadBranch', {type: 'branches', id: this.$route.params.bid});
+    public async mounted() {
+        await this.$store.dispatch('loadBranch', {type: 'branches', id: this.$route.params.bid});
+        if (this.branch && this.branch.attributes.changes && this.branch.attributes.changes.length > 0) {
+            this.mode = 'changed';
+        }
         this.intervalId = window.setInterval(async () => {
             if (this.branch) {
                 try {
@@ -244,6 +293,40 @@ export default class BranchOverview extends Vue {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'rescan'});
             await this.$store.dispatch('loadBranch', this.branch);
         }
+    }
+
+    public setMode(mode: string) {
+        this.mode = mode;
+    }
+
+    public ellipsisPath(text: string, maxLength: number) {
+        if (text.length > maxLength) {
+            const path = text.split('/');
+            if (path[0].length + path[path.length - 1].length > maxLength) {
+                return '.../' + path[path.length - 1];
+            } else {
+                const result = path.splice(0, 1);
+                let length = result[0].length;
+                while (length < (maxLength - 5) && path.length > 0) {
+                    const added = path.splice(path.length - 1, 1)[0];
+                    if (length + added.length < (maxLength - 5)) {
+                        result.splice(1, 0, added);
+                        length = length + added.length + 1;
+                    } else {
+                        break;
+                    }
+                }
+                return result[0] + '/.../' + result.slice(1).join('/');
+            }
+        } else{
+            return text;
+        }
+    }
+
+    private contains(haystack: string, needle: string): boolean {
+        haystack = haystack.toLowerCase().replace('-', ' ');
+        needle = needle.toLowerCase();
+        return haystack.indexOf(needle) >= 0;
     }
 }
 </script>

@@ -88,6 +88,24 @@ def gitlab_webhook(request):
                                                                                             'user': nt.author['name']},
                                                                                 [nt for nt in merge_request.notes.list()
                                                                                  if not nt.system]))
+                        branch.attributes['pull_request']['reviews'].reverse()
+        elif request.headers['X-Gitlab-Event'] == 'Note Hook':
+            payload = json.loads(request.body)
+            if 'merge_request'  in payload:
+                branch_ref = payload['merge_request']['source_branch']
+                match = re.fullmatch('branch-([0-9]+)', branch_ref)
+                if match:
+                    branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
+                    if branch:
+                        gl = Gitlab(get_config_setting(request, 'gitlab.host'), get_config_setting(request, 'gitlab.token'))
+                        gl_repo = gl.projects.get(get_config_setting(request, 'gitlab.projectid'))
+                        merge_request = gl_repo.mergerequests.get(branch.attributes['pull_request']['id'])
+                        branch.attributes['pull_request']['reviews'] = list(map(lambda nt: {'state': '',
+                                                                                            'body': nt.body,
+                                                                                            'user': nt.author['name']},
+                                                                                [nt for nt in merge_request.notes.list()
+                                                                                 if not nt.system]))
+                        branch.attributes['pull_request']['reviews'].reverse()
         elif request.headers['X-Gitlab-Event'] == 'Push Hook':
             payload = json.loads(request.body)
             if payload['ref'] == 'refs/heads/default':

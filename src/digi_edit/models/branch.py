@@ -78,7 +78,11 @@ class Branch(Base):
                 last_commit = last_commit.parents[0]
                 changed_files = []
                 for diff in first_commit.diff(last_commit):
-                    changed_files.append(diff.a_path)
+                    for file in self.files:
+                        if file.attributes['filename'] == os.path.join(get_config_setting(request, 'git.dir'),
+                                                                       f'branch-{self.id}',
+                                                                       diff.a_path):
+                            changed_files.append(file.as_jsonapi(request))
                 data['attributes']['changes'] = changed_files
             else:
                 data['attributes']['changes'] = []
@@ -181,6 +185,15 @@ class Branch(Base):
                 gh_repo = gh.get_repo(get_config_setting(request, 'github.repository'))
                 pull_request = gh_repo.get_pull(self.attributes['pull_request']['id'])
                 pull_request.edit(state='closed')
+        elif integration == 'gitlab':
+            if self.attributes['pull_request']['state'] == 'open':
+                gl = Gitlab(get_config_setting(request, 'gitlab.host'), get_config_setting(request, 'gitlab.token'))
+                gl_repo = gl.projects.get(get_config_setting(request, 'gitlab.projectid'))
+                if self.attributes['pull_request']:
+                    merge_request = gl_repo.mergerequests.get(self.attributes['pull_request']['id'])
+                    merge_request.state_event = 'close'
+                    merge_request.save()
+
 
     def rebase(self, request):
         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')

@@ -89,8 +89,12 @@ ul[role="menubar"] {
   margin: 0;
   padding: 0;
   background: #e6e6e6; }
+  ul[role="menubar"].transparent {
+    background: transparent; }
   ul[role="menubar"] li {
     list-style-type: none; }
+    ul[role="menubar"] li.expander {
+      flex: 1 1 auto; }
   ul[role="menubar"] a[role="menuitem"] {
     display: block;
     padding: 0.5rem 1rem;
@@ -123,7 +127,10 @@ dl.detail-list dt {
   border-top-right-radius: 0.21429rem;
   padding: 0.33333rem 1rem 0 1rem; }
   dl.detail-list dt h2 {
-    margin-bottom: 0; }
+    margin-bottom: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
     dl.detail-list dt h2 a {
       text-decoration: none; }
 
@@ -146,6 +153,8 @@ dl.detail-list dd {
     padding-right: 1rem; }
     dl.detail-list dd span:last-child {
       padding-right: 0; }
+  dl.detail-list dd li {
+    margin-bottom: 0.25rem; }
 
 svg.icon {
   width: 1.28571rem;
