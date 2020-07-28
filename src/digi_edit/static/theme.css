@@ -386,3 +386,16 @@ div.branch-overview {
     height: 0.28571rem;
     border: none;
     background: #8a8a8a; }
+
+.flash {
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  max-width: 20rem;
+  z-index: 10;
+  background: #e6e6e6;
+  border: 1px solid #b7512a;
+  box-shadow: 0 0 0.71429rem #0a0a0a;
+  padding: 0.5rem 1rem; }
+  .flash p {
+    margin: 0; }

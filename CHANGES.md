@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Update**: Improved the UX for branch actions
+
 ## 0.10.1 (28.07.2020)
 
 * **Update**: Updated the branch overview UX

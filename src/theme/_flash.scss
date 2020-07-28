@@ -1,0 +1,15 @@
+.flash {
+    position: fixed;
+    right: $global-margin;
+    top: $global-margin;
+    max-width: 20rem;
+    z-index: 10;
+    background: $light-gray;
+    border: 1px solid $colour-primary;
+    box-shadow: 0 0 rem-calc(10px) $black;
+    padding: $global-padding/2 $global-padding;
+
+    p {
+        margin: 0;
+    }
+}

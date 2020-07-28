@@ -1,5 +1,13 @@
 <template>
     <div v-if="isCurrentRoute" class="branch-overview">
+        <div v-if="flash" class="flash flex">
+            <p>{{ flash }}</p>
+            <a class="shrink" @click="setFlash('')">
+                <svg viewBox="0 0 24 24" class="icon small">
+                    <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                </svg>
+            </a>
+        </div>
         <div v-if="branch" class="width-limited">
             <template v-if="branch.attributes.status === 'active'">
                 <div class="flex">
@@ -149,6 +157,7 @@ export default class BranchOverview extends Vue {
     private fileFilterDebounce = -1;
     public fileFilterValue = '';
     public mode = 'files';
+    public flash = '';
 
     public get fileFilter() {
         return this.fileFilterValue;
@@ -270,6 +279,7 @@ export default class BranchOverview extends Vue {
         ev.preventDefault();
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'request-integration'});
+            this.setFlash('The integration has been requested. The interface will take a few seconds for this to show.')
         }
     }
 
@@ -277,6 +287,7 @@ export default class BranchOverview extends Vue {
         ev.preventDefault();
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'cancel-integration'});
+            this.setFlash('The integration has been cancelled. The interface will take a few seconds for this to show.')
         }
     }
 
@@ -284,6 +295,7 @@ export default class BranchOverview extends Vue {
         ev.preventDefault();
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'rebase'});
+            this.setFlash('The changes from the primary copy have been integrated.')
         }
     }
 
@@ -292,11 +304,16 @@ export default class BranchOverview extends Vue {
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'rescan'});
             await this.$store.dispatch('loadBranch', this.branch);
+            this.setFlash('All new files have been loaded.')
         }
     }
 
     public setMode(mode: string) {
         this.mode = mode;
+    }
+
+    public setFlash(flash: string) {
+        this.flash = flash;
     }
 
     public ellipsisPath(text: string, maxLength: number) {
