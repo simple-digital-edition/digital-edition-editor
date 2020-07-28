@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.10.1 (28.07.2020)
+
 * **Update**: Updated the branch overview UX
 * **Bugfix**: Fixed a bug in the file sorting
 * **Bugfix**: Force fetching the default branch
