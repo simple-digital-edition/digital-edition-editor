@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.10.5 (29.07.2020)
+
 * **Update**: Minimally improved the UX in the metadata editor
 
 ## 0.10.4 (29.07.2020)
