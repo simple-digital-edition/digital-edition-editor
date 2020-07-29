@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Update**: Minimally improved the UX in the metadata editor
+
 ## 0.10.4 (29.07.2020)
 
 * **Bugfix**: Fixed a bug in force-fetching default branch updates

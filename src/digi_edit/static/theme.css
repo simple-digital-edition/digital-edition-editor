@@ -358,10 +358,15 @@ div.branch-overview {
     display: block; }
   #tei-editor .metadata-editor .multi-row > li > ul {
     align-self: flex-end;
-    padding-right: 1rem; }
+    padding-right: 1rem;
+    visibility: hidden; }
     #tei-editor .metadata-editor .multi-row > li > ul [role="menuitem"] {
       padding-left: 0.5rem;
       padding-right: 0.5rem; }
+  #tei-editor .metadata-editor .multi-row > li:hover {
+    background: #cacaca; }
+    #tei-editor .metadata-editor .multi-row > li:hover > ul {
+      visibility: visible; }
   #tei-editor .metadata-editor .multi-row + ul[role="menubar"] {
     justify-content: flex-end;
     padding-right: 1rem; }

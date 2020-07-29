@@ -104,10 +104,19 @@
                 > ul {
                     align-self: flex-end;
                     padding-right: $global-padding;
+                    visibility: hidden;
 
                     [role="menuitem"] {
                         padding-left: $global-padding/2;
                         padding-right: $global-padding/2;
+                    }
+                }
+
+                &:hover {
+                    background: $medium-gray;
+
+                    > ul {
+                        visibility: visible;
                     }
                 }
             }
