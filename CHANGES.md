@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Bugfix**: Fixed a bug in force-fetching default branch updates
+
 ## 0.10.3 (28.07.2020)
 
 * **Bugfix**: Fixed a bug in fetching default branch updates
