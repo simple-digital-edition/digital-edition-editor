@@ -8,6 +8,8 @@ def includeme(config):
 
     config.add_route('config', '/config')
     config.add_route('config.tei_schema', '/config/tei-schema')
-    config.add_route('config.css', '/config/css')
+
+    config.add_route('theme.css', '/theme/css')
+    config.add_route('theme.extra_files', '/theme/extra/*path')
 
     config.include('.views.api')

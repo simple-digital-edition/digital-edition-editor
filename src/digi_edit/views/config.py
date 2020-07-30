@@ -3,7 +3,7 @@ import os
 import re
 
 from pyramid.httpexceptions import HTTPNotFound
-from pyramid.response import Response
+from pyramid.response import FileResponse
 from pyramid.view import view_config
 
 from digi_edit.models import Branch
@@ -21,12 +21,24 @@ def config_tei(request):
         raise HTTPNotFound()
 
 
-@view_config(route_name='config.css')
+@view_config(route_name='theme.css')
 def css(request):
     filename = get_config_setting(request, 'css.customisation')
     if os.path.exists(filename):
-        with open(filename) as in_f:
-            data = in_f.read()
-        return Response(body=data, headers=[('Content-Type', 'text/css')])
+        return FileResponse(filename, content_type='text/css')
     else:
         raise HTTPNotFound()
+
+
+@view_config(route_name='theme.extra_files')
+def extra_files(request):
+    for basepath in get_config_setting(request, 'themeing.files', target_type='list'):
+        filename = os.path.abspath(os.path.join(basepath, *request.matchdict['path']))
+        if filename.startswith(basepath):
+            if os.path.exists(filename):
+                return FileResponse(filename)
+            else:
+                raise HTTPNotFound
+        else:
+            raise HTTPNotFound()
+    raise HTTPNotFound()
