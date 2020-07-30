@@ -2,6 +2,7 @@
 
 ## Development ():
 
+* **Update**: Support serving extra files
 * **Bugfix**: Fix white-space issues in the TEI editor
 
 ## 0.10.5 (29.07.2020)
