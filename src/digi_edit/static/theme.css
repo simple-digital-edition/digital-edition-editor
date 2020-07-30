@@ -309,7 +309,45 @@ div.branch-overview {
   margin-right: 1rem; }
 
 #tei-editor .text-editor .ProseMirror {
-  padding: 0 1rem; }
+  padding: 0 1rem;
+  position: relative;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  white-space: break-spaces;
+  -webkit-font-variant-ligatures: none;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0; }
+
+#tei-editor .text-editor .ProseMirror pre {
+  white-space: pre-wrap; }
+
+#tei-editor .text-editor .ProseMirror li {
+  position: relative; }
+
+#tei-editor .text-editor .ProseMirror-hideselection *::selection {
+  background: transparent; }
+
+#tei-editor .text-editor .ProseMirror-hideselection *::-moz-selection {
+  background: transparent; }
+
+#tei-editor .text-editor .ProseMirror-hideselection {
+  caret-color: transparent; }
+
+#tei-editor .text-editor .ProseMirror-selectednode {
+  outline: 2px solid #8cf; }
+
+#tei-editor .text-editor li.ProseMirror-selectednode {
+  outline: none; }
+
+#tei-editor .text-editor li.ProseMirror-selectednode:after {
+  content: "";
+  position: absolute;
+  left: -32px;
+  right: -2px;
+  top: -2px;
+  bottom: -2px;
+  border: 2px solid #8cf;
+  pointer-events: none; }
 
 #tei-editor .text-editor .nested {
   background: #ffffff; }
