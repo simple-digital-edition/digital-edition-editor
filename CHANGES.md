@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Bugfix**: Fix various bugs with nested documents
+
 ## 0.10.6 (30.07.2020)
 
 * **Update**: Support serving extra files
