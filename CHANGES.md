@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.10.7 (03.08.2020)
+
 * **Bugfix**: Fix various bugs with nested documents
 
 ## 0.10.6 (30.07.2020)
