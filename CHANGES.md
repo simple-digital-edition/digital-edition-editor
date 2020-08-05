@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.10.8 (05.08.2020)
+
 * **Bugfix**: Newly scanned files were not being committed
 
 ## 0.10.7 (03.08.2020)
