@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Bugfix**: Newly scanned files were not being committed
+
 ## 0.10.7 (03.08.2020)
 
 * **Bugfix**: Fix various bugs with nested documents

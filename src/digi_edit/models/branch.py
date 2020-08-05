@@ -259,6 +259,7 @@ class Branch(Base):
                                                'mode': mode}))
         for file in deleted:
             request.dbsession.delete(file)
+        request.dbsession.flush()
         request.dbsession.refresh(self)
         self.files.sort(key=file_sort_key)
         self.files.reorder()
