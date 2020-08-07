@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.10.9 (07.08.2020)
+
 * **Update**: On remote push events, run a pull in the webhook
 
 ## 0.10.8 (05.08.2020)
