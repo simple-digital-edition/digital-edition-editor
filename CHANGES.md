@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **Update**: On remote push events, run a pull in the webhook
+
 ## 0.10.8 (05.08.2020)
 
 * **Bugfix**: Newly scanned files were not being committed

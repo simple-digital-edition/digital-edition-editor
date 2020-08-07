@@ -43,13 +43,23 @@ def github_webhook(request):
                                                                             pull_request.get_reviews()))
         elif request.headers['X-GitHub-Event'] == 'push':
             payload = json.loads(request.params['payload'])
-            if payload['ref'] == 'refs/heads/default':
-                for branch in request.dbsession.query(Branch):
-                    if branch.attributes['status'] == 'active':
-                        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
-                        repo = Repo(base_path)
-                        repo.remotes.origin.fetch('default:default', force=True)
-                        repo.remotes.origin.pull()
+            match = re.fullmatch(r'refs/heads/([a-zA-Z\-0-9]+)', payload['ref'])
+            if match:
+                if match.group(1) == 'default':
+                    for branch in request.dbsession.query(Branch):
+                        if branch.attributes['status'] == 'active':
+                            base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
+                            repo = Repo(base_path)
+                            repo.remotes.origin.fetch('default:default', force=True)
+                            repo.remotes.origin.pull()
+                else:
+                    match = re.fullmatch('branch-([0-9]+)', match.group(1))
+                    if match:
+                        branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
+                        if branch and branch.attributes['status'] == 'active':
+                            base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
+                            repo = Repo(base_path)
+                            repo.remotes.origin.pull()
     return HTTPOk()
 
 
@@ -108,11 +118,21 @@ def gitlab_webhook(request):
                         branch.attributes['pull_request']['reviews'].reverse()
         elif request.headers['X-Gitlab-Event'] == 'Push Hook':
             payload = json.loads(request.body)
-            if payload['ref'] == 'refs/heads/default':
-                for branch in request.dbsession.query(Branch):
-                    if branch.attributes['status'] == 'active':
-                        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
-                        repo = Repo(base_path)
-                        repo.remotes.origin.fetch('default:default', force=True)
-                        repo.remotes.origin.pull()
+            match = re.fullmatch(r'refs/heads/([a-zA-Z\-0-9]+)', payload['ref'])
+            if match:
+                if match.group(1) == 'default':
+                    for branch in request.dbsession.query(Branch):
+                        if branch.attributes['status'] == 'active':
+                            base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
+                            repo = Repo(base_path)
+                            repo.remotes.origin.fetch('default:default', force=True)
+                            repo.remotes.origin.pull()
+                else:
+                    match = re.fullmatch('branch-([0-9]+)', match.group(1))
+                    if match:
+                        branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
+                        if branch and branch.attributes['status'] == 'active':
+                            base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
+                            repo = Repo(base_path)
+                            repo.remotes.origin.pull()
     return HTTPOk()
