@@ -46,11 +46,17 @@ dl {
 .margin-left {
   margin-left: 1rem; }
 
+.margin-right {
+  margin-right: 1rem; }
+
 .margin-bottom {
   margin-bottom: 1rem; }
 
 .padding-left {
   padding-left: 1rem; }
+
+.padding-right {
+  padding-right: 1rem; }
 
 .text-right {
   text-align: right; }

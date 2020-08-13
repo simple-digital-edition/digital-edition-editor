@@ -4,6 +4,7 @@ from collections import OrderedDict
 from copy import deepcopy
 from datetime import datetime
 from git import Repo
+from git.exc import GitCommandError
 from github import Github
 from gitlab import Gitlab
 from pyramid.decorator import reify
@@ -159,8 +160,11 @@ class Branch(Base):
     def pre_delete(self, request):
         """Delete the remote branch and the local directory."""
         base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
-        repo = Repo(base_path)
-        repo.git.push('origin', '--delete', f'branch-{self.id}')
+        try:
+            repo = Repo(base_path)
+            repo.git.push('origin', '--delete', f'branch-{self.id}')
+        except GitCommandError:
+            pass
         rmtree(base_path)
         self.files = []
         self.attributes['deleted'] = datetime.now().isoformat()

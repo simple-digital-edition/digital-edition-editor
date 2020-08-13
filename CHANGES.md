@@ -2,6 +2,9 @@
 
 ## Development ():
 
+* **Update**: Improved the UX for review comments
+* **Bugfix**: Fixed a bug in the github pull request handling
+
 ## 0.10.9 (07.08.2020)
 
 * **Update**: On remote push events, run a pull in the webhook

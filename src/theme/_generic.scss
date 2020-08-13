@@ -63,12 +63,20 @@ dl {
     margin-left: $global-margin;
 }
 
+.margin-right {
+    margin-right: $global-margin;
+}
+
 .margin-bottom {
     margin-bottom: $global-margin;
 }
 
 .padding-left {
     padding-left: $global-padding;
+}
+
+.padding-right {
+    padding-right: $global-padding;
 }
 
 .text-right {

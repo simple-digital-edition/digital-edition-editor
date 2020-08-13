@@ -43,11 +43,20 @@
                         </router-link>
                         <h2 v-else>{{ branch.attributes.name }}</h2>
                         <div class="shrink align-middle">
-                            <a v-if="branch.attributes.status === 'active'" @click="deleteBranch(branch)">
-                                <svg viewBox="0 0 24 24" class="icon alert">
-                                    <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
-                                </svg>
-                            </a>
+                            <template v-if="branch.attributes.status === 'active'">
+                                <span v-if="branch.attributes.updates">
+                                </span>
+                                <span v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open' && branch.attributes.pull_request.reviews && branch.attributes.pull_request.reviews.length > 0" aria-label="This task has review comments" title="This task has review comments" class="margin-right">
+                                    <svg viewBox="0 0 24 24" class="icon warning">
+                                        <path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,16V19.08L13.08,16H20V4H4V16H10M13,10H11V6H13V10M13,14H11V12H13V14Z" />
+                                    </svg>
+                                </span>
+                                <a @click="deleteBranch(branch)">
+                                    <svg viewBox="0 0 24 24" class="icon alert">
+                                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                                    </svg>
+                                </a>
+                            </template>
                             <span v-else-if="branch.attributes.status === 'merged'" title="This task has been integrated">
                                 <svg viewBox="0 0 24 24" class="icon success">
                                     <path d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M21,18A3,3 0 0,1 18,21A3,3 0 0,1 15,18C15,16.69 15.83,15.58 17,15.17V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V15.17C20.17,15.58 21,16.69 21,18M18,17A1,1 0 0,0 17,18A1,1 0 0,0 18,19A1,1 0 0,0 19,18A1,1 0 0,0 18,17Z" />

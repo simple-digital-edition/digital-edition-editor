@@ -58,7 +58,7 @@
                         <li role="presentation">
                             <a role="menuitem" :aria-current="mode === 'files' ? 'true' : 'false'" @keyup="keyboardNav" @click="setMode('files')">All Files</a>
                         </li>
-                        <li v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open'" role="presentation">
+                        <li v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open' && branch.attributes.pull_request.reviews && branch.attributes.pull_request.reviews.length > 0" role="presentation">
                             <a role="menuitem" :aria-current="mode === 'integration' ? 'true' : 'false'" @keyup="keyboardNav" @click="setMode('integration')">Integration Reviews</a>
                         </li>
                         <template v-if="mode === 'files'">

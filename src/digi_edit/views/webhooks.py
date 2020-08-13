@@ -32,9 +32,8 @@ def github_webhook(request):
                             branch.attributes['merged'] = payload['pull_request']['merged_at']
                             return HTTPOk()
                     else:
-                        branch.attributes['pull_request'] = None
-                        for pull_request in gh_repo.get_pulls(state='open', head=f'branch-{branch.id}'):
-                            branch.attributes['pull_request'] = {'id': pull_request.number,}
+                        branch.attributes['pull_request'] = {'id': payload['number']}
+                        pull_request = gh_repo.get_pull(branch.attributes['pull_request']['id'])
                     branch.attributes['pull_request']['state'] = pull_request.state
                     branch.attributes['pull_request']['mergeable'] = pull_request.mergeable
                     branch.attributes['pull_request']['reviews'] = list(map(lambda rv: {'state': rv.state,
