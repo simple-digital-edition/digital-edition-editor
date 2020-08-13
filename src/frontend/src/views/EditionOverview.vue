@@ -44,13 +44,18 @@
                         <h2 v-else>{{ branch.attributes.name }}</h2>
                         <div class="shrink align-middle">
                             <template v-if="branch.attributes.status === 'active'">
-                                <span v-if="branch.attributes.updates">
-                                </span>
-                                <span v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open' && branch.attributes.pull_request.reviews && branch.attributes.pull_request.reviews.length > 0" aria-label="This task has review comments" title="This task has review comments" class="margin-right">
+                                <a v-if="branch.attributes.updates" @click="rebase(branch, $event)" aria-label="Update to latest changes from the primary copy" title="Update to latest changes from the primary copy" class="margin-right-small">
                                     <svg viewBox="0 0 24 24" class="icon warning">
-                                        <path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,16V19.08L13.08,16H20V4H4V16H10M13,10H11V6H13V10M13,14H11V12H13V14Z" />
+                                        <path d="M13 14C9.64 14 8.54 15.35 8.18 16.24C9.25 16.7 10 17.76 10 19C10 20.66 8.66 22 7 22S4 20.66 4 19C4 17.69 4.83 16.58 6 16.17V7.83C4.83 7.42 4 6.31 4 5C4 3.34 5.34 2 7 2S10 3.34 10 5C10 6.31 9.17 7.42 8 7.83V13.12C8.88 12.47 10.16 12 12 12C14.67 12 15.56 10.66 15.85 9.77C14.77 9.32 14 8.25 14 7C14 5.34 15.34 4 17 4S20 5.34 20 7C20 8.34 19.12 9.5 17.91 9.86C17.65 11.29 16.68 14 13 14M7 18C6.45 18 6 18.45 6 19S6.45 20 7 20 8 19.55 8 19 7.55 18 7 18M7 4C6.45 4 6 4.45 6 5S6.45 6 7 6 8 5.55 8 5 7.55 4 7 4M17 6C16.45 6 16 6.45 16 7S16.45 8 17 8 18 7.55 18 7 17.55 6 17 6M18 14C19.1 14 20.1 14.4 20.8 15.2L22 14V18H18L19.8 16.2C19.3 15.8 18.7 15.5 18 15.5C16.6 15.5 15.5 16.6 15.5 18S16.6 20.5 18 20.5C18.8 20.5 19.5 20.1 20 19.5H21.7C21.1 21 19.7 22 18 22C15.8 22 14 20.2 14 18S15.8 14 18 14Z" />
                                     </svg>
-                                </span>
+                                </a>
+                                <router-link v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open' && branch.attributes.pull_request.reviews && branch.attributes.pull_request.reviews.length > 0" :to="'/branches/' + branch.id" v-slot="{ href, navigate }">
+                                    <a :href="href" @click="navigate" aria-label="This task has review comments" title="This task has review comments" class="margin-right">
+                                        <svg viewBox="0 0 24 24" class="icon warning">
+                                            <path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,16V19.08L13.08,16H20V4H4V16H10M13,10H11V6H13V10M13,14H11V12H13V14Z" />
+                                        </svg>
+                                    </a>
+                                </router-link>
                                 <a @click="deleteBranch(branch)">
                                     <svg viewBox="0 0 24 24" class="icon alert">
                                         <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
@@ -210,6 +215,13 @@ export default class EditionOverview extends Vue {
         }
         parts.push(date.getMinutes());
         return parts.join('');
+    }
+
+    public async rebase(branch: JSONAPIObject, ev: Event) {
+        ev.preventDefault();
+        if (branch) {
+            await this.$store.dispatch('action', {'obj': branch, 'action': 'rebase'});
+        }
     }
 }
 </script>
