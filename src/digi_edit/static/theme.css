@@ -386,6 +386,8 @@ div.branch-overview {
       #tei-editor .sidebar label input:focus {
         box-shadow: 0 0 0.21429rem #e6e6e6 inset;
         background: #fefefe; }
+      #tei-editor .sidebar label input[type="number"] {
+        width: 7rem; }
 
 #tei-editor .metadata-editor {
   padding: 1rem; }

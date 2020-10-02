@@ -7736,10 +7736,10 @@ tapable@^1.0.0, tapable@^1.1.3:
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-1.1.3.tgz#a1fccc06b58db61fd7a45da2da44f5f3a3e67ba2"
   integrity sha512-4WK/bYZmj8xLr+HUCODHGF1ZFzsYffasLUgEiMBY4fgtltdO6B4WJtlSbPaDTLpYTcGVwM2qLnFTICEcNxs3kA==
 
-tei-editor@^0.8.2:
-  version "0.8.5"
-  resolved "https://registry.yarnpkg.com/tei-editor/-/tei-editor-0.8.5.tgz#b97c1f124fdf7b922802231ea6df37799e953caa"
-  integrity sha512-yHPwB8YYGaWzF2jSrFE9Dt/WPH+Zq7qDWyQI0sObevlcVB2oZsCUbNBxf8mHi7xllj8rzXmQKgM7POiM8xhpRw==
+tei-editor@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/tei-editor/-/tei-editor-0.9.1.tgz#13de3a50b826029ab8d6b46c99789c43aee4f13d"
+  integrity sha512-x0EGynVP8Z8ZPLwXrKqCQwY61Rm9vhBrZDQjvwPLJH3/XAfC8niCJ2julNGcpPRgwTL6OX/u0PRg8eI8qEcINw==
   dependencies:
     "@types/prosemirror-commands" "^1.0.1"
     "@types/prosemirror-history" "^1.0.1"

@@ -2,6 +2,7 @@
 
 ## Development ():
 
+* **Update**: Add margin and indentation attributes
 * **Update**: Add quick-links to actions on the edition overview
 * **Update**: Improved the UX for review comments
 * **Bugfix**: Fixed a bug in the github pull request handling

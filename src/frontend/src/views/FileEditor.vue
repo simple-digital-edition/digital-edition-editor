@@ -67,27 +67,29 @@ export default class FileEditor extends Vue {
     }
 
     public async save(text: string): Promise<void> {
-        try {
-            const data = deepcopy(this.fileData);
-            data.attributes.rawData = text;
-            this.$store.commit('setBusy', true);
-            await axios({
-                method: 'PATCH',
-                url: this.$store.state.config.api.baseURL + '/files/' + this.$route.params.fid,
-                headers: {
-                    'X-Authorization': this.$store.state.userId + ' ' + this.$store.state.userToken,
-                    'X-Include-Data': true
-                },
-                data: {data: data}
-            });
-            this.$store.commit('setBusy', false);
-        } catch(error) {
-            this.$store.commit('setBusy', false);
-            if (error.response.status === 401) {
-                this.$store.commit('setUserId', '');
-                this.$store.commit('setUserToken', '');
-                this.$store.commit('setLoggedIn', '');
-                this.$router.push({name: 'login'});
+        if (this.fileData) {
+            try {
+                const data = deepcopy(this.fileData);
+                data.attributes.rawData = text;
+                this.$store.commit('setBusy', true);
+                await axios({
+                    method: 'PATCH',
+                    url: this.$store.state.config.api.baseURL + '/files/' + this.$route.params.fid,
+                    headers: {
+                        'X-Authorization': this.$store.state.userId + ' ' + this.$store.state.userToken,
+                        'X-Include-Data': true
+                    },
+                    data: {data: data}
+                });
+                this.$store.commit('setBusy', false);
+            } catch(error) {
+                this.$store.commit('setBusy', false);
+                if (error.response.status === 401) {
+                    this.$store.commit('setUserId', '');
+                    this.$store.commit('setUserToken', '');
+                    this.$store.commit('setLoggedIn', '');
+                    this.$router.push({name: 'login'});
+                }
             }
         }
     }

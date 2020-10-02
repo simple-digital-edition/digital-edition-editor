@@ -96,6 +96,10 @@
                     box-shadow: 0 0 rem-calc(3px) $light-gray inset;
                     background: $white;
                 }
+
+                &[type="number"] {
+                    width: 7rem;
+                }
             }
         }
     }
