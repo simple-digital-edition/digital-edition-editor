@@ -8,13 +8,13 @@
                 <ul role="menubar">
                     <li role="presentation"><span>Digital Edition Editor</span></li>
                     <template v-if="$store.state.loggedIn">
-                        <router-link to="/" v-slot="{ href, navigate, isActive, isExactActive }">
+                        <router-link to="/" v-slot="{ href, navigate, isExactActive }">
                             <li role="presentation"><a role="menuitem" tabindex="0" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">Edition</a></li>
                         </router-link>
-                        <router-link v-if="branch" :to="'/branches/' + branch.id" v-slot="{ href, navigate, isActive, isExactActive }">
+                        <router-link v-if="branch" :to="'/branches/' + branch.id" v-slot="{ href, navigate, isExactActive }">
                             <li role="presentation"><a role="menuitem" tabindex="-1" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">{{ branch.attributes.name }}</a></li>
                         </router-link>
-                        <router-link v-if="file" :to="'/branches/' + branch.id + '/files/' + file.id" v-slot="{ href, navigate, isActive, isExactActive }">
+                        <router-link v-if="file" :to="'/branches/' + branch.id + '/files/' + file.id" v-slot="{ href, navigate, isExactActive }">
                             <li role="presentation"><a role="menuitem" tabindex="-1" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">{{ file.attributes.name }}</a></li>
                         </router-link>
                     </template>
@@ -25,7 +25,7 @@
                     <li v-if="$store.state.loggedIn" role="presentation">
                         <a role="menuitem" tabindex="0" @click="logOut">Sign out</a>
                     </li>
-                    <router-link v-else to="/login" v-slot="{ href, navigate, isActive, isExactActive }">
+                    <router-link v-else to="/login" v-slot="{ href, navigate, isExactActive }">
                         <li role="presentation"><a role="menuitem" tabindex="0" :href="href" :aria-current="isExactActive ? 'true' : 'false'" @click="navigate" @keyup="keyboardNav">Sign in</a></li>
                     </router-link>
                 </ul>

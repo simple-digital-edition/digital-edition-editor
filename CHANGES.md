@@ -6,6 +6,7 @@
 * **Update**: Add quick-links to actions on the edition overview
 * **Update**: Improved the UX for review comments
 * **Bugfix**: Fixed a bug in the github pull request handling
+* **Bugfix**: Dependency update to fix Prosemirror errors
 
 ## 0.10.9 (07.08.2020)
 
