@@ -73,6 +73,9 @@ dl {
 .font-small {
   font-size: 0.85714rem; }
 
+.disabled {
+  color: #666; }
+
 .flex {
   display: flex;
   flex-direction: row; }

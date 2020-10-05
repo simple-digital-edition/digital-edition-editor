@@ -55,7 +55,7 @@
                 </span>
             </form>
             <dl class="detail-list">
-                <template v-for="branch in branches">
+                <template v-for="branch in paginatedBranches">
                     <dt :key="branch.id + '-dt'" class="flex">
                         <router-link v-if="branch.attributes.status === 'active'" :to="'/branches/' + branch.id" v-slot="{ href, navigate }">
                             <h2><a :href="href" @click="navigate">{{ branch.attributes.name }}</a></h2>
@@ -103,6 +103,17 @@
                     </dd>
                 </template>
             </dl>
+            <div class="flex">
+                <span>
+                    <a v-if="taskPage > 0" @click="paginate(-1)">&laquo; Previous Page</a>
+                    <span v-else class="disabled">&laquo; Previous Page</span>
+                </span>
+                <span class="text-center">{{ taskPage * 10 + 1 }} - {{ Math.min((taskPage + 1) * 10, branches.length) }}</span>
+                <span class="text-right">
+                    <a v-if="taskPage < Math.ceil(branches.length / 10) - 1" @click="paginate(1)">Next Page &raquo;</a>
+                    <span v-else class="disabled">Next Page &raquo;</span>
+                </span>
+            </div>
         </div>
     </div>
 </template>
@@ -126,6 +137,7 @@ export default class EditionOverview extends Vue {
     public showActive = true;
     public showIntegrated = false;
     public showDeleted = false;
+    public taskPage = 0;
 
     public get branches() {
         if (this.$store.state.data.branches) {
@@ -180,6 +192,14 @@ export default class EditionOverview extends Vue {
         } else {
             return [];
         }
+    }
+
+    public get paginatedBranches() {
+        let branches = this.branches;
+        if (this.taskPage * 10 > branches.length)  {
+            this.taskPage = 0;
+        }
+        return branches.slice(this.taskPage * 10, (this.taskPage + 1) * 10);
     }
 
     public mounted() {
@@ -254,6 +274,10 @@ export default class EditionOverview extends Vue {
         if (branch) {
             await this.$store.dispatch('action', {'obj': branch, 'action': 'rebase'});
         }
+    }
+
+    public paginate(direction: number) {
+        this.taskPage = Math.min(Math.max(0, this.taskPage + direction), Math.ceil(this.branches.length / 10) - 1)
     }
 }
 </script>
