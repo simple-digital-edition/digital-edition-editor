@@ -6,6 +6,14 @@
         flex-direction: column;
     }
 
+    &.align-end {
+        justify-content: flex-end;
+    }
+
+    &.align-bottom {
+        align-items: flex-end;
+    }
+
     > * {
         flex: 1 1 auto;
         box-sizing: border-box;

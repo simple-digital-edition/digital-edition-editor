@@ -34,7 +34,26 @@
                     <span>Add a Task</span>
                 </a>
             </div>
-            <p v-if="branches.length === 0">There are currently no active tasks. <a @click="toggleAddBranch">Add a Task</a>.</p>
+            <form class="flex align-end align-bottom margin-bottom">
+                <span class="shrink margin-right">
+                    <label>
+                        <input type="checkbox" v-model="showActive"/>
+                        Active Tasks
+                    </label>
+                </span>
+                <span class="shrink margin-right">
+                    <label>
+                        <input type="checkbox" v-model="showIntegrated"/>
+                        Integrated Tasks
+                    </label>
+                </span>
+                <span class="shrink">
+                    <label>
+                        <input type="checkbox" v-model="showDeleted"/>
+                        Deleted Tasks
+                    </label>
+                </span>
+            </form>
             <dl class="detail-list">
                 <template v-for="branch in branches">
                     <dt :key="branch.id + '-dt'" class="flex">
@@ -104,10 +123,23 @@ export default class EditionOverview extends Vue {
     public addBranch = false;
     public addingBranch = false;
     public newBranchName = '';
+    public showActive = true;
+    public showIntegrated = false;
+    public showDeleted = false;
 
     public get branches() {
         if (this.$store.state.data.branches) {
-            const branches = Object.values(this.$store.state.data.branches) as JSONAPIObject[];
+            let branches = Object.values(this.$store.state.data.branches) as JSONAPIObject[];
+            branches = branches.filter((branch) => {
+                if (this.showActive && branch.attributes.status === 'active') {
+                    return true;
+                } else if (this.showIntegrated && branch.attributes.status === 'integrated') {
+                    return true;
+                } else if (this.showDeleted && branch.attributes.status === 'deleted') {
+                    return true;
+                }
+                return false;
+            });
             branches.sort((a, b) => {
                 let dateA;
                 let dateB;

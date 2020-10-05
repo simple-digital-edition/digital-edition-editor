@@ -70,11 +70,18 @@ dl {
 .full-width {
   width: 100%; }
 
+.font-small {
+  font-size: 0.85714rem; }
+
 .flex {
   display: flex;
   flex-direction: row; }
   .flex.vertical {
     flex-direction: column; }
+  .flex.align-end {
+    justify-content: flex-end; }
+  .flex.align-bottom {
+    align-items: flex-end; }
   .flex > * {
     flex: 1 1 auto;
     box-sizing: border-box; }

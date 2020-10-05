@@ -2,6 +2,8 @@
 
 ## Development ():
 
+* **New**: Allow filtering of tasks by status
+
 ## 0.11.0 (05.10.2020)
 
 * **Update**: Add margin and indentation attributes
