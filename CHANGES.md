@@ -2,6 +2,8 @@
 
 ## Development ():
 
+## 0.11.0 (05.10.2020)
+
 * **Update**: Add margin and indentation attributes
 * **Update**: Add quick-links to actions on the edition overview
 * **Update**: Improved the UX for review comments
