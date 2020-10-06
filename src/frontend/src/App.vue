@@ -64,7 +64,7 @@
         <main class="flex">
             <router-view/>
             <aside v-if="showHelp" class="help flex vertical shrink">
-                <iframe :src="$store.state.config.api.helpURL" class="expand"></iframe>
+                <iframe :src="helpUrl" class="expand"></iframe>
             </aside>
         </main>
     </div>
@@ -101,6 +101,16 @@ export default class App extends Vue {
         } else {
             return null;
         }
+    }
+
+    public get helpUrl(): string {
+        let url = this.$store.state.config.api.helpURL;
+        if (this.$route.name === 'branch') {
+            url = url + '/processes/work_on_file.html';
+        } else if (this.$route.name === 'file') {
+            url = url + '/editor/index.html';
+        }
+        return url;
     }
 
     public fancyDate(timestamp: string): string {
