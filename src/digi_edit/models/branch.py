@@ -92,6 +92,7 @@ class Branch(Base):
                 data['attributes']['authors'].add(commit.author.name)
             data['attributes']['authors'] = list(data['attributes']['authors'])
             data['attributes']['authors'].sort()
+            self.attributes['authors'] = data['attributes']['authors']
             if len(list(repo.iter_commits(f'branch-{self.id}..{get_config_setting(request, "git.default_branch")}'))) > 0:
                 data['attributes']['updates'] = True
             if last_commit:
