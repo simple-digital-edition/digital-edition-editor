@@ -7,6 +7,7 @@
 * **New**: Added "About" information
 * **New**: Added a help viewer
 * **Update**: Various small UX Updates
+* **Bugfix**: Fix the date display for the tasks
 
 ## 0.11.0 (05.10.2020)
 

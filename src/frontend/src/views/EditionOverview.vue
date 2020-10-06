@@ -250,10 +250,10 @@ export default class EditionOverview extends Vue {
         }
         parts.push(date.getDate());
         parts.push('.');
-        if (date.getMonth() < 10) {
+        if (date.getMonth() + 1< 10) {
             parts.push('0');
         }
-        parts.push(date.getMonth());
+        parts.push(date.getMonth() + 1);
         parts.push('.');
         parts.push(date.getFullYear());
         parts.push(' at ');
