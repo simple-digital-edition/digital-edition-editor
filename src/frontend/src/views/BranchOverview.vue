@@ -159,11 +159,11 @@ export default class BranchOverview extends Vue {
     public mode = 'files';
     public flash = '';
 
-    public get fileFilter() {
+    public get fileFilter(): string {
         return this.fileFilterValue;
     }
 
-    public set fileFilter(value) {
+    public set fileFilter(value: string) {
         window.clearTimeout(this.fileFilterDebounce);
         this.fileFilterDebounce = window.setTimeout(() => {
             this.fileFilterValue = value;
@@ -237,11 +237,11 @@ export default class BranchOverview extends Vue {
         }
     }
 
-    public get isCurrentRoute() {
+    public get isCurrentRoute(): boolean {
         return this.$route.name === 'branch';
     }
 
-    public async mounted() {
+    public async mounted(): Promise<void> {
         await this.$store.dispatch('loadBranch', {type: 'branches', id: this.$route.params.bid});
         if (this.branch && this.branch.attributes.changes && this.branch.attributes.changes.length > 0) {
             this.mode = 'changed';
@@ -261,11 +261,11 @@ export default class BranchOverview extends Vue {
         }, 10000);
     }
 
-    public beforeDestroy() {
+    public beforeDestroy(): void {
         window.clearInterval(this.intervalId);
     }
 
-    public deleteBranch(ev: Event) {
+    public deleteBranch(ev: Event): void {
         ev.preventDefault();
         if (this.branch) {
             if (confirm('Deleting this task (' + this.branch.attributes.name + ') will also delete any changes that have been made there and that have not been integrated into the default copy.\n\nThis cannot be undone.\n\nPlease confirm you wish to proceed.')) {
@@ -275,7 +275,7 @@ export default class BranchOverview extends Vue {
         }
     }
 
-    public async requestIntegration(ev: Event) {
+    public async requestIntegration(ev: Event): Promise<void> {
         ev.preventDefault();
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'request-integration'});
@@ -283,7 +283,7 @@ export default class BranchOverview extends Vue {
         }
     }
 
-    public async cancelIntegration(ev: Event) {
+    public async cancelIntegration(ev: Event): Promise<void> {
         ev.preventDefault();
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'cancel-integration'});
@@ -291,7 +291,7 @@ export default class BranchOverview extends Vue {
         }
     }
 
-    public async rebase(ev: Event) {
+    public async rebase(ev: Event): Promise<void> {
         ev.preventDefault();
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'rebase'});
@@ -299,7 +299,7 @@ export default class BranchOverview extends Vue {
         }
     }
 
-    public async rescan(ev: Event) {
+    public async rescan(ev: Event): Promise<void> {
         ev.preventDefault();
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'rescan'});
@@ -308,15 +308,15 @@ export default class BranchOverview extends Vue {
         }
     }
 
-    public setMode(mode: string) {
+    public setMode(mode: string): void {
         this.mode = mode;
     }
 
-    public setFlash(flash: string) {
+    public setFlash(flash: string): void {
         this.flash = flash;
     }
 
-    public ellipsisPath(text: string, maxLength: number) {
+    public ellipsisPath(text: string, maxLength: number): string {
         if (text.length > maxLength) {
             const path = text.split('/');
             if (path[0].length + path[path.length - 1].length >= maxLength - 5) {

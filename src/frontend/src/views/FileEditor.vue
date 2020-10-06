@@ -94,7 +94,7 @@ export default class FileEditor extends Vue {
         }
     }
 
-    public loadFileDataCallback(callback: (data: string) => void) {
+    public loadFileDataCallback(callback: (data: string) => void): void {
         if (this.fileData && this.fileData.attributes.rawData) {
             callback(this.fileData.attributes.rawData);
         }

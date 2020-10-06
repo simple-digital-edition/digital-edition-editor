@@ -29,7 +29,7 @@ export default class Login extends Vue {
     public password = '';
     public errors = {} as ErrorDict;
 
-    public async login(ev: Event) {
+    public async login(ev: Event): Promise<void> {
         ev.preventDefault();
         try {
             this.errors = {};
