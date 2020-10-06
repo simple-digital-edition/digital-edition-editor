@@ -145,7 +145,7 @@ export default class EditionOverview extends Vue {
             branches = branches.filter((branch) => {
                 if (this.showActive && branch.attributes.status === 'active') {
                     return true;
-                } else if (this.showIntegrated && branch.attributes.status === 'integrated') {
+                } else if (this.showIntegrated && branch.attributes.status === 'merged') {
                     return true;
                 } else if (this.showDeleted && branch.attributes.status === 'deleted') {
                     return true;

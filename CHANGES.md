@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Bugfix**: Fix a filtering bug
+
 ## 0.12.0 (06.10.2020)
 
 * **New**: Allow filtering of tasks by status
