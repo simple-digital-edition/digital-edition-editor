@@ -6,6 +6,7 @@
 * **New**: Implemented pagination of tasks
 * **New**: Added "About" information
 * **New**: Added a help viewer
+* **Update**: Various small UX Updates
 
 ## 0.11.0 (05.10.2020)
 

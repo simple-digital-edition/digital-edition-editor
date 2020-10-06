@@ -23,7 +23,7 @@
                             </li>
                             <li role="presentation">
                                 <a v-if="branch.attributes.pull_request && branch.attributes.pull_request.state === 'open'" role="menuitem" :tabindex="branch.attributes.updates ? -1 : 0" aria-label="Cancel the integration" title="Cancel the integration" @keyup="keyboardNav" @click="cancelIntegration">
-                                    <svg viewBox="0 0 24 24" class="icon">
+                                    <svg viewBox="0 0 24 24" class="icon warning">
                                         <path d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M17.17,11.77V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V11.77H17.17M17.5 13C15 13 13 15 13 17.5C13 20 15 22 17.5 22C20 22 22 20 22 17.5C22 15 20 13 17.5 13M17.5 14.5C19.16 14.5 20.5 15.84 20.5 17.5C20.5 18.06 20.35 18.58 20.08 19L16 14.92C16.42 14.65 16.94 14.5 17.5 14.5M14.92 16L19 20.08C18.58 20.35 18.06 20.5 17.5 20.5C15.84 20.5 14.5 19.16 14.5 17.5C14.5 16.94 14.65 16.42 14.92 16Z" />
                                     </svg>
                                 </a>
@@ -35,14 +35,14 @@
                             </li>
                             <li role="presentation">
                                 <a role="menuitem" tabindex="-1" aria-label="Add a file" title="Add a file" @keyup="keyboardNav" @click="rescan">
-                                    <svg viewBox="0 0 24 24" class="icon alert">
+                                    <svg viewBox="0 0 24 24" class="icon">
                                         <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
                                     </svg>
                                 </a>
                             </li>
                             <li role="presentation">
                                 <a role="menuitem" tabindex="-1" aria-label="Delete this task" title="Delete this task" @keyup="keyboardNav" @click="deleteBranch">
-                                    <svg viewBox="0 0 24 24" class="icon alert">
+                                    <svg viewBox="0 0 24 24" class="icon warning">
                                         <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
                                     </svg>
                                 </a>
