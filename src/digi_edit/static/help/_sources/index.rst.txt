@@ -10,10 +10,4 @@ This is the user documentation for the Digital Edition Editor
    processes/index
    editor/index
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

@@ -5,6 +5,33 @@ from datetime import datetime
 from shutil import rmtree
 from subprocess import run
 
+# Update version numbers
+version = input('New Version: ')
+
+with open('package.json') as in_f:
+    data = json.load(in_f)
+data['version'] = version
+with open('package.json', 'w') as out_f:
+    json.dump(data, out_f, indent=2)
+
+with open('pyproject.toml') as in_f:
+    lines = in_f.readlines()
+with open('pyproject.toml', 'w') as out_f:
+    for line in lines:
+        if line.startswith('version = '):
+            out_f.write(f'version = "{version}"\n')
+        else:
+            out_f.write(line)
+
+with open('docs/conf.py') as in_f:
+    lines = in_f.readlines()
+with open('docs/conf.py', 'w') as out_f:
+    for line in lines:
+        if line.startswith('release = '):
+            out_f.write(f"release = '{version}'\n")
+        else:
+            out_f.write(line)
+
 
 # Build the static changes information
 
@@ -17,7 +44,7 @@ with open('CHANGES.md') as in_f:
         line = line.strip()
         match = re.fullmatch(r'## ([0-9]+\.[0-9]+\.[0-9]+) \(([0-9]+)\.([0-9]+)\.([0-9]+)\)', line)
         if match:
-            if release:
+            if release and changes:
                 history.append(
                     {'version': release[0],
                      'date': release[1].isoformat(),
