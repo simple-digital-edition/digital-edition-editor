@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 0.12.1 (06.10.2020)
+
 * **Bugfix**: Fix a filtering bug
 
 ## 0.12.0 (06.10.2020)
