@@ -139,7 +139,7 @@ export default class EditionOverview extends Vue {
     public showDeleted = false;
     public taskPage = 0;
 
-    public get branches() {
+    public get branches(): JSONAPIObject[] {
         if (this.$store.state.data.branches) {
             let branches = Object.values(this.$store.state.data.branches) as JSONAPIObject[];
             branches = branches.filter((branch) => {
@@ -194,7 +194,7 @@ export default class EditionOverview extends Vue {
         }
     }
 
-    public get paginatedBranches() {
+    public get paginatedBranches(): JSONAPIObject[] {
         let branches = this.branches;
         if (this.taskPage * 10 > branches.length)  {
             this.taskPage = 0;
@@ -202,13 +202,13 @@ export default class EditionOverview extends Vue {
         return branches.slice(this.taskPage * 10, (this.taskPage + 1) * 10);
     }
 
-    public mounted() {
+    public mounted(): void {
         this.intervalId = window.setInterval(async () => {
             await this.$store.dispatch('backgroundFetchAll', 'branches');
         }, 60000);
     }
 
-    public beforeDestroy() {
+    public beforeDestroy(): void {
         window.clearInterval(this.intervalId);
     }
 
@@ -242,7 +242,7 @@ export default class EditionOverview extends Vue {
         }
     }
 
-    public fancyDate(timestamp: string) {
+    public fancyDate(timestamp: string): string {
         const date = new Date(timestamp);
         const parts = [];
         if (date.getDate() < 10) {
@@ -269,14 +269,14 @@ export default class EditionOverview extends Vue {
         return parts.join('');
     }
 
-    public async rebase(branch: JSONAPIObject, ev: Event) {
+    public async rebase(branch: JSONAPIObject, ev: Event): Promise<void> {
         ev.preventDefault();
         if (branch) {
             await this.$store.dispatch('action', {'obj': branch, 'action': 'rebase'});
         }
     }
 
-    public paginate(direction: number) {
+    public paginate(direction: number): void {
         this.taskPage = Math.min(Math.max(0, this.taskPage + direction), Math.ceil(this.branches.length / 10) - 1)
     }
 }
