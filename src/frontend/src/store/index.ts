@@ -21,11 +21,24 @@ interface State {
 interface Config {
     api: APIConfig;
     'tei-schema'?: any;
+    versions: ReleaseVersion[];
 }
 
 interface APIConfig {
     baseURL: string;
     configURL: string;
+    changesURL: string;
+}
+
+interface ReleaseVersion {
+    version: string;
+    date: string;
+    changes: ReleaseChanges[];
+}
+
+interface ReleaseChanges {
+    type: 'new'|'update'|'bugfix';
+    message: string;
 }
 
 interface ConfigSectionPayload {
@@ -99,7 +112,9 @@ export default new Vuex.Store({
             api: {
                 baseURL: '',
                 configURL: '',
+                changesURL: '',
             },
+            versions: [],
         },
         data: {},
         userId: '',
@@ -117,6 +132,10 @@ export default new Vuex.Store({
 
         setConfigSection(state, payload: ConfigSectionPayload) {
             Vue.set(state.config, payload.type, payload.data);
+        },
+
+        setVersions(state, payload: ReleaseVersion[]) {
+            Vue.set(state.config, 'versions', payload);
         },
 
         setUserId(state, userId) {
@@ -178,7 +197,8 @@ export default new Vuex.Store({
             commit('setUserId', sessionLoadValue('user.id', ''));
             commit('setUserToken', sessionLoadValue('user.token', ''));
             commit('setLoggedIn', sessionLoadValue('user.loggedIn', ''));
-            dispatch('loadConfig', 'tei-schema')
+            dispatch('loadConfig', 'tei-schema');
+            dispatch('loadChanges');
             if (state.loggedIn && state.userId !== '' && state.userToken !== '') {
                 await dispatch('loadUser');
                 await dispatch('loadBranches');
@@ -196,6 +216,14 @@ export default new Vuex.Store({
             } catch(error) {
                 commit('setBusy', false);
             }
+        },
+
+        async loadChanges({ commit, state }) {
+            const versions = (await axios({
+                method: 'GET',
+                url: state.config.api.changesURL,
+            })).data;
+            commit('setVersions', versions);
         },
 
         async loadUser({ dispatch, state }) {

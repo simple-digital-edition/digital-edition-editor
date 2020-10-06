@@ -23,6 +23,11 @@
         flex: 0 0 auto;
     }
 
+    > .expand {
+        flex: 1 1 auto;
+        overflow: auto;
+    }
+
     > span {
         display: block;
     }

@@ -90,6 +90,9 @@ dl {
     box-sizing: border-box; }
   .flex > .shrink {
     flex: 0 0 auto; }
+  .flex > .expand {
+    flex: 1 1 auto;
+    overflow: auto; }
   .flex > span {
     display: block; }
   .flex > .align-end {
@@ -267,6 +270,9 @@ span.error-msg {
   .button.outline {
     background: #fefefe;
     color: #b7512a; }
+  .button.small {
+    font-size: 80%;
+    padding: 0.33333rem 0.5rem; }
 
 #app {
   width: 100vw;

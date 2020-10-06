@@ -42,4 +42,9 @@ span.error-msg {
         background: $white;
         color: $colour-primary;
     }
+
+    &.small {
+        font-size: 80%;
+        padding: $global-padding/3 $global-padding/2;
+    }
 }

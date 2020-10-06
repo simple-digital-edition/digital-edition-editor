@@ -1,9 +1,10 @@
 # Changes
 
-## Development ():
+## Development ()
 
 * **New**: Allow filtering of tasks by status
 * **New**: Implemented pagination of tasks
+* **New**: Added "About" information
 
 ## 0.11.0 (05.10.2020)
 
@@ -57,61 +58,61 @@
 
 * **Update**: Rewritten using Pyramid + API + complete Vue.js frontend
 
-## 0.9.9 (04.05.2020):
+## 0.9.9 (04.05.2020)
 
 * **Update**: Removed old source data identifier attribute
 
-## 0.9.8 (24.03.2020):
+## 0.9.8 (24.03.2020)
 
 * **Bugfix**: Generate the missing JavaScript files
 
-## 0.9.7 (24.03.2020):
+## 0.9.7 (24.03.2020)
 
 * **Bugfix**: Update the TEI editor to 0.7.2
 
-## 0.9.6 (16.03.2020):
+## 0.9.6 (16.03.2020)
 
 * **Update**: Update the TEI editor
 
-## 0.9.5 (12.03.2020):
+## 0.9.5 (12.03.2020)
 
 * **Bugfix**: Handle git merge errors more cleanly
 
-## 0.9.4 (11.03.2020):
+## 0.9.4 (11.03.2020)
 
 * **New**: Added support for marking up signatures
 * **New**: Added support for paragraph alignment in footnotes and annotations
 
-## 0.9.3 (04.02.2020):
+## 0.9.3 (04.02.2020)
 
 * **Update**: Updated the TEI editor dependency
 
-## 0.9.2 (30.01.2020):
+## 0.9.2 (30.01.2020)
 
 * **Update**: Updated icons in the menu
 
-## 0.9.1 (27.01.2020):
+## 0.9.1 (27.01.2020)
 
 * **Update**: Updated the TEI editor dependency for some performance improvements
 
-## 0.9.0 (24.01.2020):
+## 0.9.0 (24.01.2020)
 
 * **Update**: Updated to use the new TEI editor
 
-## 0.8.13 (10.12.2019):
+## 0.8.13 (10.12.2019)
 
 * **Update**: Updated the documentation
 * **Update**: Improved the labeling for date metadata inputs
 
-## 0.8.12 (10.12.2019):
+## 0.8.12 (10.12.2019)
 
 * **Bugfix**: Updated the TEI editor dependency
 
-## 0.8.11 (10.12.2019):
+## 0.8.11 (10.12.2019)
 
 * **Bugfix**: Updated the TEI editor dependency
 
-## 0.8.10 (05.12.2019):
+## 0.8.10 (05.12.2019)
 
 * **Bugfix**: Updated the config to actually enable the deduplication
 
