@@ -2,6 +2,11 @@ import re
 import json
 
 from datetime import datetime
+from shutil import rmtree
+from subprocess import run
+
+
+# Build the static changes information
 
 history = []
 changes = []
@@ -21,7 +26,6 @@ with open('CHANGES.md') as in_f:
                 changes = []
             release = (match.group(1), datetime(int(match.group(4)), int(match.group(3)), int(match.group(2))))
         if release:
-            print(line)
             match = re.fullmatch(r'\* \*\*(New|Update|Bugfix)\*\*: (.+)', line)
             if match:
                 changes.append({'type': match.group(1).lower(),
@@ -29,3 +33,8 @@ with open('CHANGES.md') as in_f:
 
 with open('src/digi_edit/static/changes.json', 'w') as out_f:
     json.dump(history, out_f)
+
+
+# Build the help docs
+rmtree('src/digi_edit/static/help', ignore_errors=True)
+run(['sphinx-build', '-b', 'html', '.', '../src/digi_edit/static/help'], cwd='docs')

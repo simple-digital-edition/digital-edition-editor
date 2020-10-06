@@ -22,8 +22,8 @@
             </aria-menubar>
             <aria-menubar v-slot="{ keyboardNav }">
                 <ul role="menubar">
+                    <li role="presentation"><a role="menuitem" tabindex="0" @click="toggleHelp" @keyup="keyboardNav"><template v-if="showHelp">Hide </template>Help</a></li>
                     <template v-if="$store.state.loggedIn">
-                        <li role="presentation"><a role="menuitem" tabindex="0" @click="toggleHelp" @keyup="keyboardNav"><template v-if="showHelp">Hide </template>Help</a></li>
                         <li role="presentation"><a role="menuitem" tabindex="0" @click="toggleAbout" @keyup="keyboardNav">About</a></li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" @click="logOut" @keyup="keyboardNav">Sign out</a></li>
                     </template>
@@ -64,7 +64,7 @@
         <main class="flex">
             <router-view/>
             <aside v-if="showHelp" class="help flex vertical shrink">
-                <iframe src="https://digital-edition-editor.readthedocs.io" class="expand"></iframe>
+                <iframe :src="$store.state.config.api.helpURL" class="expand"></iframe>
             </aside>
         </main>
     </div>

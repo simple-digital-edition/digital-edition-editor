@@ -6,3 +6,4 @@ production.ini
 *.sqlite
 __pycache__
 tmp
+.vscode

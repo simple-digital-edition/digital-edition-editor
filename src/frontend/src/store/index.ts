@@ -28,6 +28,7 @@ interface APIConfig {
     baseURL: string;
     configURL: string;
     changesURL: string;
+    helpURL: string;
 }
 
 interface ReleaseVersion {
@@ -113,6 +114,7 @@ export default new Vuex.Store({
                 baseURL: '',
                 configURL: '',
                 changesURL: '',
+                helpURL: '',
             },
             versions: [],
         },
