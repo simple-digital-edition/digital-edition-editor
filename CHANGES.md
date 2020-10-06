@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 0.12.0 (06.10.2020)
+
 * **New**: Allow filtering of tasks by status
 * **New**: Implemented pagination of tasks
 * **New**: Added "About" information
