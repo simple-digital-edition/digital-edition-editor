@@ -23,6 +23,7 @@
             <aria-menubar v-slot="{ keyboardNav }">
                 <ul role="menubar">
                     <template v-if="$store.state.loggedIn">
+                        <li role="presentation"><a role="menuitem" tabindex="0" @click="toggleHelp" @keyup="keyboardNav"><template v-if="showHelp">Hide </template>Help</a></li>
                         <li role="presentation"><a role="menuitem" tabindex="0" @click="toggleAbout" @keyup="keyboardNav">About</a></li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" @click="logOut" @keyup="keyboardNav">Sign out</a></li>
                     </template>
@@ -60,8 +61,11 @@
                 </div>
             </div>
         </aria-dialog>
-        <main>
+        <main class="flex">
             <router-view/>
+            <aside v-if="showHelp" class="help flex vertical shrink">
+                <iframe src="https://digital-edition-editor.readthedocs.io" class="expand"></iframe>
+            </aside>
         </main>
     </div>
 </template>
@@ -81,6 +85,7 @@ import { JSONAPIObject } from './store/index';
 })
 export default class App extends Vue {
     public showAbout = false;
+    public showHelp = false;
 
     public get branch(): JSONAPIObject | null {
         if (this.$store.state.data.branches && this.$store.state.data.branches[this.$route.params.bid]) {
@@ -125,6 +130,11 @@ export default class App extends Vue {
     public toggleAbout(ev: MouseEvent): void {
         ev.stopPropagation();
         this.showAbout = !this.showAbout;
+    }
+
+    public toggleHelp(ev: MouseEvent): void {
+        ev.stopPropagation();
+        this.showHelp = !this.showHelp;
     }
 }
 </script>

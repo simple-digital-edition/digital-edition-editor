@@ -5,6 +5,7 @@
 * **New**: Allow filtering of tasks by status
 * **New**: Implemented pagination of tasks
 * **New**: Added "About" information
+* **New**: Added a help viewer
 
 ## 0.11.0 (05.10.2020)
 

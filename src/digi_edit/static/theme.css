@@ -469,3 +469,8 @@ div.branch-overview {
   padding: 0.5rem 1rem; }
   .flash p {
     margin: 0; }
+
+.help {
+  width: 43rem;
+  max-width: 33.33333%;
+  border-left: 1px solid #cacaca; }
