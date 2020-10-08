@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 0.13.0 (08.10.2020)
+
 * **New**: Allow marking paragraphs as extracts
 * **Update**: TEI Editor upgrade
 

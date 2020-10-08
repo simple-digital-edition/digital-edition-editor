@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "digi_edit"
-version = "0.12.1"
+version = "0.13.0"
 description = "A web-based environment for editing a Digital Edition"
 authors = ["Mark Hall <mark.hall@work.room3b.eu>"]
 license = "MIT"
