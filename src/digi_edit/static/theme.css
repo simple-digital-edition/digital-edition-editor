@@ -117,6 +117,8 @@ ul[role="menubar"] {
     list-style-type: none; }
     ul[role="menubar"] li.expander {
       flex: 1 1 auto; }
+    ul[role="menubar"] li.separator {
+      width: 1rem; }
   ul[role="menubar"] a[role="menuitem"] {
     display: block;
     padding: 0.5rem 1rem;

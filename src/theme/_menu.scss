@@ -19,6 +19,10 @@ ul[role="menubar"] {
         &.expander {
             flex: 1 1 auto;
         }
+
+        &.separator {
+            width: $global-padding;
+        }
     }
 
     a[role="menuitem"] {

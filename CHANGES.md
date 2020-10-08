@@ -2,6 +2,9 @@
 
 ## Development ()
 
+* **New**: Allow marking paragraphs as extracts
+* **Update**: TEI Editor upgrade
+
 ## 0.12.1 (06.10.2020)
 
 * **Bugfix**: Fix a filtering bug
