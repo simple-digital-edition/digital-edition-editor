@@ -49,4 +49,4 @@ jobs:
       with:
         context: docker/base
         push: true
-        tags: scmmmh/digitaleditioneeditor:${{ steps.branch_name.outputs.SOURCE_TAG }}
+        tags: scmmmh/digitaleditioneditor:${{ steps.branch_name.outputs.SOURCE_TAG }}
