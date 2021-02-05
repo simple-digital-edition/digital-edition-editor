@@ -6,7 +6,7 @@ on:
       - 'gutzkow*'
 
 jobs:
-  build-base-image:
+  build-gutzkow-image:
     runs-on: ubuntu-20.04
 
     steps:
