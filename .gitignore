@@ -7,3 +7,4 @@ production.ini
 __pycache__
 tmp
 .vscode
+dist
