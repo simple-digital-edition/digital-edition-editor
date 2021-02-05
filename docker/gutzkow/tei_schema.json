@@ -2477,7 +2477,7 @@
                                     "entries": [
                                         {
                                             "type": "single-text",
-                                            "label": "Identifier",
+                                            "label": "Schlüssel",
                                             "path": "_attrs.xml:id"
                                         },
                                         {
@@ -2486,7 +2486,7 @@
                                             "entries": [
                                                 {
                                                     "type": "single-text",
-                                                    "label": "Responsible for",
+                                                    "label": "Rolle",
                                                     "path": "_text"
                                                 }
                                             ]
