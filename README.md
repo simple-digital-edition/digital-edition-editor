@@ -57,7 +57,10 @@ The application is then available at http://localhost:6543/
 2. Update version in pyproject.toml
 3. Update version in docs/conf.py
 4. Update version in docker/base/Dockerfile (2x)
+9. Update application Dockerfiles with the new base version
 5. Commit changes
 6. Tag changes with v{version}
 7. Push commit and tags
-8. After base Docker image built, tag changes with application version
+8. Wait for the base Docker image to build
+10. Tag application versions
+11. Push tags
