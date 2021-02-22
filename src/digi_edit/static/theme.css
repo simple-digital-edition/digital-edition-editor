@@ -104,6 +104,8 @@ dl {
 
 nav {
   border-bottom: 1px solid #cacaca; }
+  nav ul[role="menubar"] li::before {
+    display: none; }
 
 ul[role="menubar"] {
   display: flex;
