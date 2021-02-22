@@ -2,6 +2,7 @@
 
 ## Development ()
 
+* **Update**: Performance update in the text editor
 * **Bugfix**: Fix menu styling
 
 ## 0.13.0 (08.10.2020)

@@ -16,9 +16,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-import { EditorState } from "@codemirror/next/state";
-import { EditorView, keymap } from "@codemirror/next/view";
-import { defaultKeymap } from "@codemirror/next/commands";
+import { EditorState } from "@codemirror/state";
+import { EditorView, keymap } from "@codemirror/view";
+import { history, historyKeymap } from '@codemirror/history';
+import { defaultKeymap } from '@codemirror/commands';
 
 @Component
 export default class FileEditor extends Vue {
@@ -36,11 +37,21 @@ export default class FileEditor extends Vue {
         }
     }
 
+    private extensions() {
+        return [
+            history(),
+            keymap.of([
+                ...defaultKeymap,
+                ...historyKeymap,
+            ]),
+        ];
+    }
+
     private loadEditor(): void {
         if (!this.editorView && this.$refs.editorElement) {
             const startState = EditorState.create({
                 doc: "",
-                extensions: [keymap(defaultKeymap)]
+                extensions: this.extensions(),
             });
 
             this.editorView = new EditorView({
@@ -51,7 +62,7 @@ export default class FileEditor extends Vue {
         if (this.editorView && this.text) {
             const loadState = EditorState.create({
                 doc: this.text,
-                extensions: [keymap(defaultKeymap)]
+                extensions: this.extensions(),
             });
             this.editorView.setState(loadState);
         }
