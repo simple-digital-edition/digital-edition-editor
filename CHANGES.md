@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 0.14.0 (22.02.2021)
+
 * **New**: Add an error indicator if saving a document fails (#5)
 * **New**: Add an error indicator if the network connection is lost (#6)
 * **Update**: Performance update in the text editor
