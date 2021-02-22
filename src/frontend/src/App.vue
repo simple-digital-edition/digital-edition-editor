@@ -3,6 +3,12 @@
         <div v-if="$store.state.busy" id="busy">
             <progress :value="$store.state.completedBusyCounter" :max="$store.state.maxBusyCounter"></progress>
         </div>
+        <div v-if="!$store.state.networkAvailable" role="dialog" class="error">
+            <h2>Network connection lost</h2>
+            <p>The network connection has been lost. This may be due to a local problem in your own network or a problem on the server side. Until network connectivity has been restored you should avoid changing any files, as it will not be possible to save these changes.</p>
+            <p>If you are able to check your own network, then you should check that first, before reporting the issue. If your local network is working, then please contact your administrator.</p>
+            <p>This message will disappear automatically when the network connection has been restored.</p>
+        </div>
         <nav class="main">
             <aria-menubar v-slot="{ keyboardNav }">
                 <ul role="menubar">

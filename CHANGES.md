@@ -3,6 +3,7 @@
 ## Development ()
 
 * **New**: Add an error indicator if saving a document fails (#5)
+* **New**: Add an error indicator if the network connection is lost (#6)
 * **Update**: Performance update in the text editor
 * **Bugfix**: Fix menu styling
 

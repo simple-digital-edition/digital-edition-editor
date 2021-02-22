@@ -251,7 +251,7 @@ export default class BranchOverview extends Vue {
                 try {
                     await this.$store.dispatch('backgroundFetchSingle', this.branch);
                 } catch(error) {
-                    if (error.response.status == 404) {
+                    if (error.response && error.response.status == 404) {
                         this.$store.commit('deleteObject', this.branch);
                         this.$store.dispatch('loadBranches');
                         this.$router.push({name: 'root'});

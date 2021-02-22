@@ -16,6 +16,7 @@ interface State {
     busyCounter: number;
     maxBusyCounter: number;
     completedBusyCounter: number;
+    networkAvailable: boolean;
 }
 
 interface Config {
@@ -126,6 +127,7 @@ export default new Vuex.Store({
         busyCounter: 0,
         maxBusyCounter: 0,
         completedBusyCounter: 0,
+        networkAvailable: true,
     } as State,
     mutations: {
         setConfig(state, config: Config) {
@@ -192,6 +194,10 @@ export default new Vuex.Store({
             } else {
                 state.busy = true;
             }
+        },
+
+        setNetworkAvailable(state, networkAvailable) {
+            state.networkAvailable = networkAvailable;
         },
     },
     actions: {
@@ -287,6 +293,7 @@ export default new Vuex.Store({
                     url: state.config.api.baseURL + '/' + type,
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 })).data;
+                commit('setNetworkAvailable', true);
                 (objs as {data: JSONAPIObject[]}).data.forEach((obj) => {
                     commit('setObject', obj);
                 });
@@ -294,12 +301,13 @@ export default new Vuex.Store({
                 return objs.data;
             } catch(error) {
                 commit('setBusy', false);
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
                     commit('setLoggedIn', '');
                     router.push({name: 'login'});
                 } else {
+                    commit('setNetworkAvailable', false);
                     throw error;
                 }
             }
@@ -312,17 +320,19 @@ export default new Vuex.Store({
                     url: state.config.api.baseURL + '/' + type,
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 })).data;
+                commit('setNetworkAvailable', true);
                 (objs as {data: JSONAPIObject[]}).data.forEach((obj) => {
                     commit('setObject', obj);
                 });
                 return objs.data;
             } catch(error) {
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
                     commit('setLoggedIn', '');
                     router.push({name: 'login'});
                 } else {
+                    commit('setNetworkAvailable', false);
                     throw error;
                 }
             }
@@ -336,17 +346,19 @@ export default new Vuex.Store({
                     url: state.config.api.baseURL + '/' + ref.type + '/' + ref.id,
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 })).data.data;
+                commit('setNetworkAvailable', true);
                 commit('setObject', obj);
                 commit('setBusy', false);
                 return obj;
             } catch(error) {
                 commit('setBusy', false);
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
                     commit('setLoggedIn', '');
                     router.push({name: 'login'});
                 } else {
+                    commit('setNetworkAvailable', false);
                     throw error;
                 }
             }
@@ -359,15 +371,17 @@ export default new Vuex.Store({
                     url: state.config.api.baseURL + '/' + ref.type + '/' + ref.id,
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 })).data.data;
+                commit('setNetworkAvailable', true);
                 commit('setObject', obj);
                 return obj;
             } catch(error) {
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
                     commit('setLoggedIn', '');
                     router.push({name: 'login'});
                 } else {
+                    commit('setNetworkAvailable', false);
                     throw error;
                 }
             }
@@ -384,17 +398,19 @@ export default new Vuex.Store({
                     },
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 })).data.data;
+                commit('setNetworkAvailable', true);
                 commit('setObject', obj);
                 commit('setBusy', false);
                 return obj;
             } catch(error) {
                 commit('setBusy', false);
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
                     commit('setLoggedIn', '');
                     router.push({name: 'login'});
                 } else {
+                    commit('setNetworkAvailable', false);
                     throw error;
                 }
             }
@@ -411,17 +427,19 @@ export default new Vuex.Store({
                     },
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 })).data.data;
+                commit('setNetworkAvailable', true);
                 commit('setObject', obj);
                 commit('setBusy', false);
                 return obj;
             } catch(error) {
                 commit('setBusy', false);
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
                     commit('setLoggedIn', '');
                     router.push({name: 'login'});
                 } else {
+                    commit('setNetworkAvailable', false);
                     throw error;
                 }
             }
@@ -435,6 +453,7 @@ export default new Vuex.Store({
                     url: state.config.api.baseURL + '/' + obj.type + '/' + obj.id,
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 });
+                commit('setNetworkAvailable', true);
                 if (response.status === 200) {
                     commit('setObject', response.data.data);
                 } else {
@@ -443,12 +462,13 @@ export default new Vuex.Store({
                 commit('setBusy', false);
             } catch(error) {
                 commit('setBusy', false);
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
                     commit('setLoggedIn', '');
                     router.push({name: 'login'});
                 } else {
+                    commit('setNetworkAvailable', false);
                     throw error;
                 }
             }
@@ -468,6 +488,7 @@ export default new Vuex.Store({
                     },
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken}
                 });
+                commit('setNetworkAvailable', true);
                 commit('setUserId', user.data.id);
                 commit('setUserToken', user.data.attributes.token);
                 commit('setLoggedIn', true);
@@ -489,17 +510,19 @@ export default new Vuex.Store({
                     headers: {'X-Authorization': state.userId + ' ' + state.userToken,
                               'X-Action': payload.action}
                 })).data.data;
+                commit('setNetworkAvailable', true);
                 commit('setObject', obj);
                 commit('setBusy', false);
                 return obj;
             } catch(error) {
                 commit('setBusy', false);
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     commit('setUserId', '');
                     commit('setUserToken', '');
                     commit('setLoggedIn', '');
                     router.push({name: 'login'});
                 } else {
+                    commit('setNetworkAvailable', false);
                     throw error;
                 }
             }

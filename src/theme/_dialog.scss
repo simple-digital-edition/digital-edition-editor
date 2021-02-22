@@ -53,6 +53,10 @@
         padding-right: $global-padding;
     }
 
+    > *:last-child {
+        padding-bottom: $global-padding;
+    }
+
     &.error {
         h2, h3, h4, h5 {
             background: $colour-error;

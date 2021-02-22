@@ -245,6 +245,8 @@ svg.icon {
   [role="dialog"] > * {
     padding-left: 1rem;
     padding-right: 1rem; }
+  [role="dialog"] > *:last-child {
+    padding-bottom: 1rem; }
   [role="dialog"].error h2, [role="dialog"].error h3, [role="dialog"].error h4, [role="dialog"].error h5 {
     background: #cc0000;
     color: #fefefe; }
