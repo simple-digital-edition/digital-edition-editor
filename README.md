@@ -50,3 +50,14 @@ poetry run pserve --reload development.ini
 ```
 
 The application is then available at http://localhost:6543/
+
+## Release
+
+1. Update version in package.json
+2. Update version in pyproject.toml
+3. Update version in docs/conf.py
+4. Update version in docker/base/Dockerfile (2x)
+5. Commit changes
+6. Tag changes with v{version}
+7. Push commit and tags
+8. After base Docker image built, tag changes with application version

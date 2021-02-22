@@ -22,7 +22,7 @@ copyright = '2019, Mark Hall'
 author = 'Mark Hall'
 
 # The full version, including alpha/beta/rc tags
-release = '0.13.0'
+release = '0.14.1'
 
 
 # -- General configuration ---------------------------------------------------

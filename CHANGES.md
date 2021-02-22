@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Bugfix**: Fix the docker images
+
 ## 0.14.0 (22.02.2021)
 
 * **New**: Add an error indicator if saving a document fails (#5)
