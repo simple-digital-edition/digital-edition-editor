@@ -2,6 +2,10 @@
 
 ## Development ()
 
+## 0.14.2 (22.02.2021)
+
+* **Bugfix**: Fix missing version and documentation updates
+
 ## 0.14.1 (22.02.2021)
 
 * **Bugfix**: Fix the docker images

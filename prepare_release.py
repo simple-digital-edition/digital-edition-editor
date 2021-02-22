@@ -32,6 +32,23 @@ with open('docs/conf.py', 'w') as out_f:
         else:
             out_f.write(line)
 
+with open('docker/base/Dockerfile') as in_f:
+    lines = in_f.readlines()
+with open('docker/base/Dockerfile', 'w') as out_f:
+    for line in lines:
+        if re.search('digi_edit-[0-9]+\.[0-9]+\.[0-9]+', line):
+            out_f.write(re.sub('digi_edit-[0-9]+\.[0-9]+\.[0-9]+', f'digi_edit-{version}', line))
+        else:
+            out_f.write(line)
+
+with open('docker/gutzkow/Dockerfile') as in_f:
+    lines = in_f.readlines()
+with open('docker/gutzkow/Dockerfile', 'w') as out_f:
+    for line in lines:
+        if line.startswith('FROM scmmmh/digitaleditioneditor:'):
+            out_f.write(f'FROM scmmmh/digitaleditioneditor:{version}\n')
+        else:
+            out_f.write(line)
 
 # Build the static changes information
 

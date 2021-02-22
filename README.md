@@ -53,14 +53,10 @@ The application is then available at http://localhost:6543/
 
 ## Release
 
-1. Update version in package.json
-2. Update version in pyproject.toml
-3. Update version in docs/conf.py
-4. Update version in docker/base/Dockerfile (2x)
-9. Update application Dockerfiles with the new base version
-5. Commit changes
-6. Tag changes with v{version}
-7. Push commit and tags
-8. Wait for the base Docker image to build
-10. Tag application versions
-11. Push tags
+1. Run python prepare_release.py
+2. Commit changes
+3. Tag changes with v{version}
+4. Push commit and tags
+5. Wait for the base Docker image to build
+6. Tag application versions
+7. Push tags
