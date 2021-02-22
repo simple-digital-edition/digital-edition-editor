@@ -208,11 +208,11 @@ svg.icon {
   height: 20rem;
   background: #fefefe;
   box-shadow: 0 0 0.71429rem #0a0a0a;
-  padding: 1rem;
   border-radius: 0.21429rem;
   display: flex;
   flex-direction: column;
-  z-index: 10000; }
+  z-index: 10000;
+  overflow: auto; }
   [role="dialog"][aria-modal="true"] {
     left: 0;
     top: 0;
@@ -238,6 +238,16 @@ svg.icon {
       display: flex;
       flex-direction: column;
       z-index: 10001; }
+  [role="dialog"] > h1, [role="dialog"] > h2, [role="dialog"] > h3, [role="dialog"] > h4, [role="dialog"] > h5 {
+    padding: 1rem;
+    position: sticky;
+    top: 0; }
+  [role="dialog"] > * {
+    padding-left: 1rem;
+    padding-right: 1rem; }
+  [role="dialog"].error h2, [role="dialog"].error h3, [role="dialog"].error h4, [role="dialog"].error h5 {
+    background: #cc0000;
+    color: #fefefe; }
 
 label {
   display: block;

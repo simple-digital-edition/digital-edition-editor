@@ -7,11 +7,11 @@
     height: 20rem;
     background: $white;
     box-shadow: 0 0 rem-calc(10px) $black;
-    padding: $global-padding;
     border-radius: rem-calc(3px);
     display: flex;
     flex-direction: column;
     z-index: 10000;
+    overflow: auto;
 
     &[aria-modal="true"] {
         left: 0;
@@ -39,6 +39,24 @@
             display: flex;
             flex-direction: column;
             z-index: 10001;
+        }
+    }
+
+    > h1, > h2, > h3, > h4, > h5 {
+        padding: $global-padding;
+        position: sticky;
+        top: 0;
+    }
+
+    > * {
+        padding-left: $global-padding;
+        padding-right: $global-padding;
+    }
+
+    &.error {
+        h2, h3, h4, h5 {
+            background: $colour-error;
+            color: $white;
         }
     }
 }

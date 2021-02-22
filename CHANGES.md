@@ -2,6 +2,7 @@
 
 ## Development ()
 
+* **New**: Add an error indicator if saving a document fails (#5)
 * **Update**: Performance update in the text editor
 * **Bugfix**: Fix menu styling
 

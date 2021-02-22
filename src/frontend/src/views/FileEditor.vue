@@ -2,6 +2,12 @@
     <div v-if="file" class="editor">
         <text-editor v-if="fileData && fileData.attributes.mode === 'text'" :text="fileData.attributes.rawData" @save="save"></text-editor>
         <tei-editor v-if="config && fileData && fileData.attributes.mode === 'tei'" :config="config" :autoLoadCallback="loadFileDataCallback" @save="save"></tei-editor>
+        <div v-if="savingFailed" role="dialog" class="error">
+            <h2>Saving failed</h2>
+            <p>Unfortunately something went wrong saving the file. Your changes have <strong>not</strong> been saved on the server.</p>
+            <p>The most likely reason for this is that there is a problem with the network connection. Please check your network connection and then try saving again.</p>
+            <p>If your network connection is working, then this is most likely an issue on the server side. Please contact your administrator. If you leave the browser window open, then when the issue is resolved by your administrator, you can try saving again and your changes should then be saved.</p>
+        </div>
     </div>
 </template>
 
@@ -26,6 +32,7 @@ import TextEditor from '../components/TextEditor.vue';
 })
 export default class FileEditor extends Vue {
     public fileData = null as JSONAPIObject | null;
+    public savingFailed = false;
 
     public get file(): JSONAPIObject | null {
         if (this.$store.state.data.files && this.$store.state.data.files[this.$route.params.fid]) {
@@ -69,6 +76,7 @@ export default class FileEditor extends Vue {
     public async save(text: string): Promise<void> {
         if (this.fileData) {
             try {
+                this.savingFailed = false;
                 const data = deepcopy(this.fileData);
                 data.attributes.rawData = text;
                 this.$store.commit('setBusy', true);
@@ -83,8 +91,9 @@ export default class FileEditor extends Vue {
                 });
                 this.$store.commit('setBusy', false);
             } catch(error) {
+                this.savingFailed = true;
                 this.$store.commit('setBusy', false);
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     this.$store.commit('setUserId', '');
                     this.$store.commit('setUserToken', '');
                     this.$store.commit('setLoggedIn', '');
