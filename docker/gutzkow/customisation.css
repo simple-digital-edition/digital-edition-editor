@@ -97,10 +97,13 @@ text-decoration: underline dotted; }
   #tei-editor .text-editor .node-annotationGlobal {
 -webkit-text-decoration: underline dotted;
 text-decoration: underline dotted; }
-  #tei-editor .text-editor .node-footnoteMarker {
+#tei-editor .text-editor .node-footnoteMarker {
+  -webkit-text-decoration: underline dotted;
+  text-decoration: underline dotted; }
+#tei-editor .text-editor .node-externalLink {
 -webkit-text-decoration: underline dotted;
 text-decoration: underline dotted; }
-  #tei-editor .text-editor .node-quotation {
+    #tei-editor .text-editor .node-quotation {
 font-style: italic; }
   #tei-editor .text-editor .node-lineGroup {
 margin-top: 1rem;

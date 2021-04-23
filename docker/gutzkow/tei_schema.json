@@ -404,6 +404,32 @@
                     }
                 },
                 {
+                    "name": "externalLink",
+                    "type": "inline",
+                    "parser": {
+                        "selector": "tei:ref[@type=\"external\"]",
+                        "text": "text()"
+                    },
+                    "serialiser": {
+                        "tag": "tei:ref",
+                        "attrs": {
+                            "type": "external"
+                        }
+                    },
+                    "attrs": {
+                        "target": {
+                            "default": "",
+                            "parser": {
+                                "selector": "@target"
+                            },
+                            "serialiser": {
+                                "attr": "target",
+                                "value": "{value}"
+                            }
+                        }
+                    }
+                },
+                {
                     "name": "pageBegin",
                     "type": "inline",
                     "parser": {
@@ -685,6 +711,12 @@
                                         "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,10V4.5L19.5,10M5,3C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V9L15,3H5Z\" /></svg>",
                                         "nodeType": "footnoteMarker",
                                         "ariaLabel": "Fußnote"
+                                    },
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z\" /></svg>",
+                                        "nodeType": "externalLink",
+                                        "ariaLabel": "Externer Link"
                                     }
                                 ]
                             },
@@ -1038,6 +1070,26 @@
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "label": "Externer Link",
+                        "condition": {
+                            "type": "isActive",
+                            "activeType": "externalLink"
+                        },
+                        "entities": [
+                            {
+                                "type": "list",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrString",
+                                        "label": "URL",
+                                        "nodeType": "externalLink",
+                                        "attr": "target"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ],
                 "annotation": [
@@ -1088,6 +1140,12 @@
                                         "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H8V21C8 21.6 8.4 22 9 22H9.5C9.7 22 10 21.9 10.2 21.7L13.9 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H13.1L10 19.1V16H4V4H20V16M8 9V11H12.5L10.7 12.8L12 14L16 10L12 6L10.8 7.2L12.5 9H8Z\" /></svg>",
                                         "nodeType": "annotationGlobal",
                                         "ariaLabel": "Verweis auf den Apparat"
+                                    },
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z\" /></svg>",
+                                        "nodeType": "externalLink",
+                                        "ariaLabel": "Externer Link"
                                     }
                                 ]
                             },
@@ -1303,6 +1361,26 @@
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "label": "Externer Link",
+                        "condition": {
+                            "type": "isActive",
+                            "activeType": "externalLink"
+                        },
+                        "entities": [
+                            {
+                                "type": "list",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrString",
+                                        "label": "URL",
+                                        "nodeType": "externalLink",
+                                        "attr": "target"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ],
                 "footnote": [
@@ -1338,6 +1416,12 @@
                                         "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H8V21C8 21.6 8.4 22 9 22H9.5C9.7 22 10 21.9 10.2 21.7L13.9 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H13.1L10 19.1V16H4V4H20V16M8 9V11H12.5L10.7 12.8L12 14L16 10L12 6L10.8 7.2L12.5 9H8Z\" /></svg>",
                                         "nodeType": "annotationGlobal",
                                         "ariaLabel": "Verweis auf den Apparat"
+                                    },
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z\" /></svg>",
+                                        "nodeType": "externalLink",
+                                        "ariaLabel": "Externer Link"
                                     }
                                 ]
                             },
@@ -1461,6 +1545,26 @@
                                         "markType": "sup",
                                         "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>",
                                         "ariaLabel": "Hochgestellt"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Externer Link",
+                        "condition": {
+                            "type": "isActive",
+                            "activeType": "externalLink"
+                        },
+                        "entities": [
+                            {
+                                "type": "list",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrString",
+                                        "label": "URL",
+                                        "nodeType": "externalLink",
+                                        "attr": "target"
                                     }
                                 ]
                             }
@@ -1706,24 +1810,27 @@
                     }
                 },
                 {
-                    "name": "annotationMarker",
+                    "name": "externalLink",
                     "type": "inline",
                     "parser": {
-                        "selector": "tei:ref",
+                        "selector": "tei:ref[@type=\"external\"]",
                         "text": "text()"
                     },
                     "serialiser": {
-                        "tag": "tei:ref"
+                        "tag": "tei:ref",
+                        "attrs": {
+                            "type": "external"
+                        }
                     },
                     "attrs": {
                         "target": {
-                            "default": "unknown",
+                            "default": "",
                             "parser": {
-                                "selector": "substring(@target, 2)"
+                                "selector": "@target"
                             },
                             "serialiser": {
                                 "attr": "target",
-                                "value": "#{value}"
+                                "value": "{value}"
                             }
                         }
                     }
@@ -1984,6 +2091,12 @@
                                         "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H8V21C8 21.6 8.4 22 9 22H9.5C9.7 22 10 21.9 10.2 21.7L13.9 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H13.1L10 19.1V16H4V4H20V16M8 9V11H12.5L10.7 12.8L12 14L16 10L12 6L10.8 7.2L12.5 9H8Z\" /></svg>",
                                         "nodeType": "annotationGlobal",
                                         "ariaLabel": "Verweis innerhalb des Apparat"
+                                    },
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z\" /></svg>",
+                                        "nodeType": "externalLink",
+                                        "ariaLabel": "Externer Link"
                                     }
                                 ]
                             },
@@ -2242,6 +2355,26 @@
                                         "label": "Abschnitt (optional)",
                                         "nodeType": "annotationGlobal",
                                         "attr": "headingId"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Externer Link",
+                        "condition": {
+                            "type": "isActive",
+                            "activeType": "externalLink"
+                        },
+                        "entities": [
+                            {
+                                "type": "list",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrString",
+                                        "label": "URL",
+                                        "nodeType": "externalLink",
+                                        "attr": "target"
                                     }
                                 ]
                             }
