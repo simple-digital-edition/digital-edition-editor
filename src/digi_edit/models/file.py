@@ -6,7 +6,7 @@ from datetime import datetime
 from git import Repo, Actor
 from github import Github
 from pyramid.decorator import reify
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPClientError, HTTPNotFound
 from pyramid.response import Response
 from shutil import rmtree
 from sqlalchemy import (Column, Index, Integer, Unicode, DateTime, ForeignKey, func)
@@ -39,7 +39,14 @@ class File(Base):
                                'path': self.attributes['path'],
                                'name': self.attributes['name'],
                                'mode': self.attributes['mode']},
-                'relationships': {}}
+                'relationships': {
+                    'branch': {
+                        'data': {
+                            'type': 'branches',
+                            'id': str(self.branch.id)
+                        }
+                    }
+                }}
         if 'X-Include-Data' in request.headers and request.headers['X-Include-Data'] == 'true':
             base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.branch_id}')
             if (self.attributes['path'] == '/'):
@@ -47,12 +54,75 @@ class File(Base):
             else:
                 file_path = os.path.join(base_path, self.attributes['path'], self.attributes['name'])
             file_path = os.path.abspath(file_path)
-            if file_path.startswith(base_path):
+            if file_path.startswith(base_path) and os.path.exists(file_path):
                 with open(file_path) as in_f:
                     data['attributes']['rawData'] = in_f.read()
             else:
                 raise HTTPNotFound()
         return data
+
+    @classmethod
+    def create_schema(cls):
+        """Creates the schema for validating POST requests."""
+        return {
+            'type': jsonapi_type_schema('files'),
+            'attributes': {
+                'type': 'dict',
+                'schema': {
+                    'filename': {'type': 'string', 'required': True, 'empty': False},
+                    'path': {'type': 'string', 'required': True, 'empty': False},
+                    'name': {'type': 'string', 'required': True, 'empty': False}
+                }
+            },
+            'relationships': {
+                'type': 'dict',
+                'schema': {
+                    'branch': {
+                        'type': 'dict',
+                        'schema': {
+                            'data': {
+                                'type': 'dict',
+                                'schema': {
+                                    'type': jsonapi_type_schema('branches'),
+                                    'id': jsonapi_id_schema(),
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    def pre_create(self, request, user):
+        if self.attributes['filename'].startswith('/'):
+            self.attributes['filename'] = self.attributes['filename'][1:]
+        self.attributes['filename'] = os.path.join(get_config_setting(request, 'git.dir'),
+                                                   f'branch-{self.branch.id}',
+                                                   self.attributes['filename'])
+        if os.path.exists(self.attributes['filename']):
+            raise HTTPClientError()
+        tei_extensions = get_config_setting(request, 'files.tei', target_type='list', default=[])
+        self.attributes['mode'] = 'text'
+        if '.' in self.attributes['name']:
+            ext = self.attributes['name'][self.attributes['name'].rfind('.') + 1:]
+            if ext in tei_extensions:
+                self.attributes['mode'] = 'tei'
+        with open(self.attributes['filename'], 'w') as out_f:
+            if self.attributes['mode'] == 'tei':
+                print('<?xml version="1.0" encoding="UTF-8"?>', file=out_f)
+                print('<tei:TEI xmlns:tei="http://www.tei-c.org/ns/1.0">', file=out_f)
+                print('  <tei:teiHeader>', file=out_f)
+                print('  </tei:teiHeader>', file=out_f)
+                print('  <tei:text>', file=out_f)
+                print('  </tei:text>', file=out_f)
+                print('</tei:TEI>', file=out_f)
+        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.branch.id}')
+        repo = Repo(base_path)
+        repo.index.add([self.attributes['filename']])
+        actor = Actor(user.attributes['name'], user.email)
+        repo.index.commit(f'Added {self.attributes["name"]}', author=actor, committer=actor)
+        repo.git.push('--set-upstream', 'origin', f'branch-{self.branch.id}', '--force')
+
 
     @classmethod
     def patch_schema(cls, request):
@@ -70,7 +140,23 @@ class File(Base):
                     'mode': {'type': 'string', 'required': True, 'empty': False, 'allowed': ['text', 'tei']},
                 }
             },
-            'relationships': {'type': 'dict', 'schema': {}}
+            'relationships': {
+                'type': 'dict',
+                'schema': {
+                    'branch': {
+                        'type': 'dict',
+                        'schema': {
+                            'data': {
+                                'type': 'dict',
+                                'schema': {
+                                    'type': jsonapi_type_schema('branches'),
+                                    'id': jsonapi_id_schema(),
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         if 'X-Include-Data' in request.headers and request.headers['X-Include-Data'] == 'true':
             schema['attributes']['schema']['rawData'] = {'type': 'string', 'required': True, 'empty': False}

@@ -8,6 +8,25 @@
                 </svg>
             </a>
         </div>
+        <aria-dialog v-if="newFileDirectory">
+            <div role="dialog" aria-modal="true">
+                <form class="flex vertical" @submit="createFile">
+                    <div>
+                        <h2>Create a File</h2>
+                        <label>Directory the file will be added to
+                            <input type="text" readonly="readonly" v-model="newFileDirectory"/>
+                        </label>
+                        <label>Filename of the new file
+                            <input type="text" v-model="newFileName"/>
+                        </label>
+                    </div>
+                    <div class="shrink text-right">
+                        <a tabindex="0" @click="cancelAddFile">Don't add</a>
+                        <button class="button margin-left" tabindex="0">Add the File</button>
+                    </div>
+                </form>
+            </div>
+        </aria-dialog>
         <div v-if="branch" class="width-limited">
             <template v-if="branch.attributes.status === 'active'">
                 <div class="flex">
@@ -34,9 +53,9 @@
                                 </a>
                             </li>
                             <li role="presentation">
-                                <a role="menuitem" tabindex="-1" aria-label="Add a file" title="Add a file" @keyup="keyboardNav" @click="rescan">
+                                <a role="menuitem" tabindex="-1" aria-label="Reload all files" title="Reload all files" @keyup="keyboardNav" @click="rescan">
                                     <svg viewBox="0 0 24 24" class="icon">
-                                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                        <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
                                     </svg>
                                 </a>
                             </li>
@@ -76,8 +95,13 @@
                 </aria-menubar>
                 <dl v-if="mode === 'changed'" class="detail-list margin-top">
                     <template v-for="(fileSet, idx) in changedSets">
-                        <dt :key="idx + '-dt'">
-                            <h2 :title="fileSet.id">{{ ellipsisPath(fileSet.id, 55) }}</h2>
+                        <dt :key="idx + '-dt'" class="flex">
+                            <h2 :title="fileSet.id" class="expand">{{ ellipsisPath(fileSet.id, 55) }}</h2>
+                            <button v-if="fileSet.id !== 'Loading...'" @click="addFile(fileSet.id)" aria-label="Add a file here" title="Add a file here" class="button small clear shrink">
+                                <svg viewBox="0 0 24 24" class="icon">
+                                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                </svg>
+                            </button>
                         </dt>
                         <dd :key="idx + '-dd'">
                             <ul class="no-bullet">
@@ -92,8 +116,13 @@
                 </dl>
                 <dl v-else-if="mode === 'files'" class="detail-list margin-top">
                     <template v-for="(fileSet, idx) in fileSets">
-                        <dt :key="idx + '-dt'">
-                            <h2 :title="fileSet.id">{{ ellipsisPath(fileSet.id, 55) }}</h2>
+                        <dt :key="idx + '-dt'" class="flex">
+                            <h2 :title="fileSet.id" class="expand">{{ ellipsisPath(fileSet.id, 55) }}</h2>
+                            <button v-if="fileSet.id !== 'Loading...'" @click="addFile(fileSet.id)" aria-label="Add a file here" title="Add a file here" class="button small clear shrink">
+                                <svg viewBox="0 0 24 24" class="icon">
+                                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                </svg>
+                            </button>
                         </dt>
                         <dd :key="idx + '-dd'">
                             <ul class="no-bullet">
@@ -140,6 +169,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 import AriaMenubar from '../components/AriaMenubar.vue';
+import AriaDialog from '../components/AriaDialog.vue';
 import { JSONAPIObject } from '../store/index';
 
 interface FileSet {
@@ -150,6 +180,7 @@ interface FileSet {
 @Component({
     components: {
         AriaMenubar,
+        AriaDialog,
     }
 })
 export default class BranchOverview extends Vue {
@@ -158,6 +189,8 @@ export default class BranchOverview extends Vue {
     public fileFilterValue = '';
     public mode = 'files';
     public flash = '';
+    public newFileDirectory = '';
+    public newFileName = '';
 
     public get fileFilter(): string {
         return this.fileFilterValue;
@@ -304,7 +337,7 @@ export default class BranchOverview extends Vue {
         if (this.branch) {
             await this.$store.dispatch('action', {'obj': this.branch, 'action': 'rescan'});
             await this.$store.dispatch('loadBranch', this.branch);
-            this.setFlash('All new files have been loaded.')
+            this.setFlash('All files have been reloaded.')
         }
     }
 
@@ -314,6 +347,43 @@ export default class BranchOverview extends Vue {
 
     public setFlash(flash: string): void {
         this.flash = flash;
+    }
+
+    public addFile(parent: string): void {
+        this.newFileDirectory = parent;
+        this.newFileName = '';
+    }
+
+    public cancelAddFile(): void {
+        this.newFileDirectory = '';
+    }
+
+    public async createFile(ev: Event): Promise<void> {
+        ev.preventDefault();
+        if (this.newFileName && this.branch) {
+            const pathName = (this.newFileDirectory === '/' ? this.newFileDirectory : this.newFileDirectory + '/') + this.newFileName;
+            await this.$store.dispatch('createSingle', {
+                'type': 'files',
+                'attributes': {
+                    'filename': pathName,
+                    'path': this.newFileDirectory,
+                    'name': this.newFileName,
+                },
+                'relationships': {
+                    'branch': {
+                        'data': {
+                            'type': 'branches',
+                            'id': this.branch.id,
+                        }
+                    }
+                }
+            });
+            await this.$store.dispatch('fetchSingle', {
+                'type': 'branches',
+                'id': this.branch.id,
+            });
+            this.newFileDirectory = '';
+        }
     }
 
     public ellipsisPath(text: string, maxLength: number): string {

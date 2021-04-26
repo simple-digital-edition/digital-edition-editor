@@ -266,6 +266,8 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sea
     box-shadow: 0 0 0.21429rem #e6e6e6 inset;
     background: #fefefe;
     outline: none; }
+  input[type="text"][readonly="readonly"], input[type="email"][readonly="readonly"], input[type="password"][readonly="readonly"], input[type="search"][readonly="readonly"] {
+    background: #e6e6e6; }
 
 span.error-msg {
   display: block;
@@ -289,6 +291,10 @@ span.error-msg {
   .button.small {
     font-size: 80%;
     padding: 0.33333rem 0.5rem; }
+  .button.clear {
+    background: #fefefe;
+    color: #b7512a;
+    border: 1px solid transparent; }
 
 #app {
   width: 100vw;

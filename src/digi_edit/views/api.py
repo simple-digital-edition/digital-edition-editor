@@ -17,6 +17,13 @@ from digi_edit.jsonapi import jsonapi_type_schema, jsonapi_id_schema
 from digi_edit.util import get_config_setting, get_files_for_branch, get_file_identifier
 
 
+DB_CLASSES = {
+    'branches': Branch,
+    'files': File,
+    'users': User,
+}
+
+
 def includeme(config):
     """Setup the API routes."""
     config.add_route('api', '/api')
@@ -149,7 +156,7 @@ def generate_db_api(config, type_name, db_class):
 
     def collection_post(request):
         """Create a new item."""
-        check_authorization(request)
+        user = check_authorization(request)
         body = validate_body(request.body, db_class.create_schema())
         obj = db_class()
         for key, value in list(body['attributes'].items()):
@@ -157,11 +164,22 @@ def generate_db_api(config, type_name, db_class):
                 setattr(obj, key, value)
                 del body['attributes'][key]
         obj.attributes = body['attributes']
+        if 'relationships' in body:
+            for key, value in body['relationships'].items():
+                if isinstance(value['data'], list):
+                    setattr(obj, key, [request.dbsession.query(DB_CLASSES[entry['type']]).
+                                       filter(DB_CLASSES[entry['type']].id == entry['id']).
+                                       first()
+                                       for entry in value['data']])
+                else:
+                    setattr(obj, key, request.dbsession.query(DB_CLASSES[value['data']['type']]).
+                        filter(DB_CLASSES[value['data']['type']].id == value['data']['id']).
+                        first())
         if hasattr(obj, 'pre_create'):
-            obj.pre_create(request)
+            obj.pre_create(request, user)
         request.dbsession.add(obj)
+        request.dbsession.flush()
         if hasattr(obj, 'post_create'):
-            request.dbsession.flush()
             request.dbsession.add(obj)
             obj.post_create(request)
         return {'data': obj.as_jsonapi(request)}

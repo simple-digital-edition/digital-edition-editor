@@ -123,7 +123,7 @@ class Branch(Base):
                                                  'allowed': ['active', 'merged', 'deleted']}}}
         }
 
-    def pre_create(self, request):
+    def pre_create(self, request, user):
         """Before creation set the creation date."""
         self.attributes['created'] = datetime.utcnow().isoformat()
         self.attributes['pull_request'] = None

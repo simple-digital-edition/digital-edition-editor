@@ -16,6 +16,10 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sea
         background: $white;
         outline: none;
     }
+
+    &[readonly="readonly"] {
+        background: $light-gray;
+    }
 }
 
 span.error-msg {
@@ -46,5 +50,11 @@ span.error-msg {
     &.small {
         font-size: 80%;
         padding: $global-padding/3 $global-padding/2;
+    }
+
+    &.clear {
+        background: $white;
+        color: $colour-primary;
+        border: 1px solid transparent;
     }
 }
