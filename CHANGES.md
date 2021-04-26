@@ -3,6 +3,7 @@
 ## Development ()
 
 * **New**: Add support for adding files
+* **Update**: TEI Editor upgrade
 
 ## 0.14.2 (22.02.2021)
 
