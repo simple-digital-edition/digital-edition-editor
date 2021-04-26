@@ -2,6 +2,10 @@
 
 ## Development ()
 
+## 0.15.1 (26.04.2021)
+
+* **Bugfix**: Fixed release errors
+
 ## 0.15.0 (26.04.2021)
 
 * **New**: Add support for adding files
