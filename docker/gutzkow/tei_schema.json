@@ -1227,7 +1227,7 @@
                                 "entities": [
                                     {
                                         "type": "selectNodeAttr",
-                                        "markType": "staging",
+                                        "nodeType": "staging",
                                         "attr": "type",
                                         "values": [
                                             {
