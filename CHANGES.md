@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Update**: TEI Editor upgrade allows for linking across sections
+
 ## 0.15.1 (26.04.2021)
 
 * **Bugfix**: Fixed release errors
