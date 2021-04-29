@@ -1,4 +1,4 @@
-FROM scmmmh/digitaleditioneditor:0.15.1
+FROM scmmmh/digitaleditioneditor:0.15.2
 
 ARG DIGI_EDIT_USER="digi_edit"
 ARG DIGI_EDIT_UID="10000"
