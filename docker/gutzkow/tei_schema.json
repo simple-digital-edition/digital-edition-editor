@@ -206,6 +206,112 @@
                     }
                 },
                 {
+                    "name": "speech",
+                    "type": "wrapping",
+                    "content": "block",
+                    "parser": {
+                        "selector": "tei:sp"
+                    },
+                    "serialiser": {
+                        "tag": "tei:sp"
+                    }
+                },
+                {
+                    "name": "speaker",
+                    "type": "block",
+                    "parser": {
+                        "selector": "tei:speaker"
+                    },
+                    "serialiser": {
+                        "tag": "tei:speaker"
+                    },
+                    "attrs": {
+                        "marginLeft": {
+                            "default": "0",
+                            "parser": {
+                                "selector": "@margin-left"
+                            },
+                            "serialiser": {
+                                "attr": "margin-left"
+                            }
+                        },
+                        "marginRight": {
+                            "default": "0",
+                            "parser": {
+                                "selector": "@margin-right"
+                            },
+                            "serialiser": {
+                                "attr": "margin-right"
+                            }
+                        },
+                        "marginTop": {
+                            "default": "0",
+                            "parser": {
+                                "selector": "@margin-top"
+                            },
+                            "serialiser": {
+                                "attr": "margin-top"
+                            }
+                        },
+                        "marginBottom": {
+                            "default": "0",
+                            "parser": {
+                                "selector": "@margin-bottom"
+                            },
+                            "serialiser": {
+                                "attr": "margin-bottom"
+                            }
+                        },
+                        "firstLineIndent": {
+                            "default": "0.5",
+                            "parser": {
+                                "selector": "@first-line-indent"
+                            },
+                            "serialiser": {
+                                "attr": "first-line-indent"
+                            }
+                        },
+                        "textAlign": {
+                            "default": "left",
+                            "parsers": [
+                                {
+                                    "selector": "contains(@style, \"text-left\")",
+                                    "type": "static",
+                                    "value": "left"
+                                },
+                                {
+                                    "selector": "contains(@style, \"text-center\")",
+                                    "type": "static",
+                                    "value": "center"
+                                },
+                                {
+                                    "selector": "contains(@style, \"text-right\")",
+                                    "type": "static",
+                                    "value": "right"
+                                },
+                                {
+                                    "selector": "contains(@style, \"text-justify\")",
+                                    "type": "static",
+                                    "value": "justify"
+                                }
+                            ],
+                            "serialiser": {
+                                "attr": "style",
+                                "value": "text-{value}"
+                            }
+                        },
+                        "extract": {
+                            "default": "",
+                            "parser": {
+                                "selector": "@extract"
+                            },
+                            "serialiser": {
+                                "attr": "extract"
+                            }
+                        }
+                    }
+                },
+                {
                     "name": "pageLineRef",
                     "type": "inline",
                     "parser": {
@@ -242,6 +348,17 @@
                     },
                     "serialiser": {
                         "tag": "tei:q"
+                    }
+                },
+                {
+                    "name": "staging",
+                    "type": "inline",
+                    "parser": {
+                        "selector": "tei:stage",
+                        "text": "text()"
+                    },
+                    "serialiser": {
+                        "tag": "tei:stage"
                     }
                 },
                 {
@@ -682,7 +799,24 @@
                                         "type": "setNodeType",
                                         "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M4,9H20V11H4V9M4,13H14V15H4V13Z\" /></svg>",
                                         "nodeType": "lineGroup",
-                                        "ariaLabel": "Strophe"
+                                        "ariaLabel": "Zeilengruppe"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z\" /></svg>",
+                                        "nodeType": "speech",
+                                        "ariaLabel": "Gesprochener Text"
+                                    },
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M9,5A4,4 0 0,1 13,9A4,4 0 0,1 9,13A4,4 0 0,1 5,9A4,4 0 0,1 9,5M9,15C11.67,15 17,16.34 17,19V21H1V19C1,16.34 6.33,15 9,15M16.76,5.36C18.78,7.56 18.78,10.61 16.76,12.63L15.08,10.94C15.92,9.76 15.92,8.23 15.08,7.05L16.76,5.36M20.07,2C24,6.05 23.97,12.11 20.07,16L18.44,14.37C21.21,11.19 21.21,6.65 18.44,3.63L20.07,2Z\" /></svg>",
+                                        "nodeType": "speaker",
+                                        "ariaLabel": "Sprecher_in"
                                     }
                                 ]
                             }
@@ -938,7 +1072,7 @@
                         ]
                     },
                     {
-                        "label": "Vers",
+                        "label": "Zeile",
                         "condition": {
                             "type": "isActive",
                             "activeType": "line"
@@ -991,6 +1125,70 @@
                                     {
                                         "type": "setNodeAttrNumber",
                                         "nodeType": "line",
+                                        "attr": "marginBottom",
+                                        "label": "Unten (cm)",
+                                        "min": "0",
+                                        "max": "20",
+                                        "step": "0.1"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Sprecher_in",
+                        "condition": {
+                            "type": "isActive",
+                            "activeType": "speaker"
+                        },
+                        "entities": [
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrNumber",
+                                        "nodeType": "speaker",
+                                        "attr": "marginLeft",
+                                        "label": "Links (cm)",
+                                        "min": "0",
+                                        "max": "20",
+                                        "step": "0.1"
+                                    },
+                                    {
+                                        "type": "setNodeAttrNumber",
+                                        "nodeType": "speaker",
+                                        "attr": "marginRight",
+                                        "label": "Rechts (cm)",
+                                        "min": "0",
+                                        "max": "20",
+                                        "step": "0.1"
+                                    },
+                                    {
+                                        "type": "setNodeAttrNumber",
+                                        "nodeType": "speaker",
+                                        "attr": "firstLineIndent",
+                                        "label": "Einrücken (cm)",
+                                        "min": "0",
+                                        "max": "20",
+                                        "step": "0.1"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrNumber",
+                                        "nodeType": "speaker",
+                                        "attr": "marginTop",
+                                        "label": "Oben (cm)",
+                                        "min": "0",
+                                        "max": "20",
+                                        "step": "0.1"
+                                    },
+                                    {
+                                        "type": "setNodeAttrNumber",
+                                        "nodeType": "speaker",
                                         "attr": "marginBottom",
                                         "label": "Unten (cm)",
                                         "min": "0",
