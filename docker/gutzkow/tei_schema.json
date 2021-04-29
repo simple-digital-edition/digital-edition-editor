@@ -1232,35 +1232,35 @@
                                         "values": [
                                             {
                                                 "value": "setting",
-                                                "label": "Setting"
+                                                "label": "Schauplatz"
                                             },
                                             {
                                                 "value": "entrance",
-                                                "label": "Entrance"
+                                                "label": "Auftritt"
                                             },
                                             {
                                                 "value": "exit",
-                                                "label": "Exit"
+                                                "label": "Abgang"
                                             },
                                             {
                                                 "value": "business",
-                                                "label": "Business"
+                                                "label": "Aktivität auf der Bühne"
                                             },
                                             {
                                                 "value": "novelistic",
-                                                "label": "Novelistic"
+                                                "label": "Erzählerische, motivierende Anweisung"
                                             },
                                             {
                                                 "value": "delivery",
-                                                "label": "Delivery"
+                                                "label": "Aussprache"
                                             },
                                             {
                                                 "value": "modifier",
-                                                "label": "Modifier"
+                                                "label": "Details über die Figur"
                                             },
                                             {
                                                 "value": "location",
-                                                "label": "Location"
+                                                "label": "Ort"
                                             },
                                             {
                                                 "value": "mixed",
