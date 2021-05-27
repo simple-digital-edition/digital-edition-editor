@@ -1,7 +1,7 @@
 const { exec, spawn } = require('child_process'),
       gulp = require('gulp'),
       pump = require('pump'),
-      sass = require('gulp-sass');
+      sass = require('gulp-dart-sass');
 
 gulp.task('frontend:copy', function(cb) {
     pump([
