@@ -17,7 +17,7 @@ from sqlalchemy_json import NestedMutableJson
 from .meta import Base
 from .file import File
 from digi_edit.jsonapi import jsonapi_type_schema
-from digi_edit.util import get_config_setting, get_files_for_branch, get_file_identifier
+from digi_edit.util import get_config_setting, get_files_for_branch
 
 
 def file_sort_key(file):
@@ -62,9 +62,16 @@ class Branch(Base):
         """
         return True
 
+    def branch_name(self, request):
+        branch_prefix = get_config_setting(request, 'git.branch_prefix')
+        if branch_prefix:
+            return f'{branch_prefix}-branch-{self.id}'
+        else:
+            return f'branch-{self.id}'
+
     def as_jsonapi(self, request):
         """Return this :class:`~digi_edit.models.branch.Branch` in JSONAPI format."""
-        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
+        base_path = os.path.join(get_config_setting(request, 'git.dir'), self.branch_name(request))
         data = {
             'type': 'branches',
             'id': str(self.id),
@@ -85,7 +92,7 @@ class Branch(Base):
             data['attributes']['authors'] = set([])
             first_commit = None
             last_commit = None
-            for commit in repo.iter_commits(f'{get_config_setting(request, "git.default_branch")}..branch-{self.id}'):
+            for commit in repo.iter_commits(f'{get_config_setting(request, "git.default_branch")}..{self.branch_name(request)}'):
                 if not first_commit:
                     first_commit = commit
                 last_commit = commit
@@ -93,7 +100,7 @@ class Branch(Base):
             data['attributes']['authors'] = list(data['attributes']['authors'])
             data['attributes']['authors'].sort()
             self.attributes['authors'] = data['attributes']['authors']
-            if len(list(repo.iter_commits(f'branch-{self.id}..{get_config_setting(request, "git.default_branch")}'))) > 0:
+            if len(list(repo.iter_commits(f'{self.branch_name(request)}..{get_config_setting(request, "git.default_branch")}'))) > 0:
                 data['attributes']['updates'] = True
             if last_commit:
                 last_commit = last_commit.parents[0]
@@ -101,7 +108,7 @@ class Branch(Base):
                 for diff in first_commit.diff(last_commit):
                     for file in self.files:
                         if file.attributes['filename'] == os.path.join(get_config_setting(request, 'git.dir'),
-                                                                       f'branch-{self.id}',
+                                                                       self.branch_name(request),
                                                                        diff.a_path):
                             changed_files.append(file.as_jsonapi(request))
                 data['attributes']['changes'] = changed_files
@@ -130,17 +137,17 @@ class Branch(Base):
 
     def post_create(self, request):
         """After creation clone the repository, checkout the new branch, and push that to the remote repository."""
-        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
+        base_path = os.path.join(get_config_setting(request, 'git.dir'), self.branch_name(request))
         repo = Repo.clone_from(get_config_setting(request, 'git.url'), base_path, branch=get_config_setting(request, 'git.default_branch'))
         repo.git.config('user.email', get_config_setting(request, 'git.default_user_email'))
         repo.git.config('user.name', get_config_setting(request, 'git.default_user_name'))
-        branch = repo.create_head(f'branch-{self.id}')
+        branch = repo.create_head(self.branch_name(request))
         branch.checkout()
-        repo.git.push('--set-upstream', 'origin', f'branch-{self.id}', '--force')
+        repo.git.push('--set-upstream', 'origin', self.branch_name(request), '--force')
         tei_extensions = get_config_setting(request, 'files.tei', target_type='list', default=[])
         files = get_files_for_branch(request, self)
         for filename in files:
-            local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')) + 1:]
+            local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), self.branch_name(request))) + 1:]
             path, name = os.path.split(local_path)
             if path == '':
                 path = '/'
@@ -160,10 +167,10 @@ class Branch(Base):
 
     def pre_delete(self, request):
         """Delete the remote branch and the local directory."""
-        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
+        base_path = os.path.join(get_config_setting(request, 'git.dir'), self.branch_name(request))
         try:
             repo = Repo(base_path)
-            repo.git.push('origin', '--delete', f'branch-{self.id}')
+            repo.git.push('origin', '--delete', self.branch_name(request))
         except GitCommandError:
             pass
         rmtree(base_path)
@@ -189,7 +196,7 @@ class Branch(Base):
                 pull_request = gh_repo.get_pull(self.attributes['pull_request']['id'])
                 pull_request.edit(state='open')
             else:
-                gh_repo.create_pull(title=self.attributes["name"], body='', base='default', head=f'branch-{self.id}')
+                gh_repo.create_pull(title=self.attributes["name"], body='', base='default', head=self.branch_name(request))
         elif integration == 'gitlab':
             gl = Gitlab(get_config_setting(request, 'gitlab.host'), get_config_setting(request, 'gitlab.token'))
             gl_repo = gl.projects.get(get_config_setting(request, 'gitlab.projectid'))
@@ -198,7 +205,7 @@ class Branch(Base):
                 merge_request.state_event = 'reopen'
                 merge_request.save()
             else:
-                gl_repo.mergerequests.create({'source_branch': f'branch-{self.id}',
+                gl_repo.mergerequests.create({'source_branch': self.branch_name(request),
                                               'target_branch': 'default',
                                               'title': self.attributes["name"]})
 
@@ -221,10 +228,10 @@ class Branch(Base):
 
 
     def rebase(self, request):
-        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')
+        base_path = os.path.join(get_config_setting(request, 'git.dir'), self.branch_name(request))
         repo = Repo(base_path)
         repo.git.rebase(get_config_setting(request, 'git.default_branch'))
-        repo.git.push('origin', f'branch-{self.id}', '--force')
+        repo.git.push('origin', self.branch_name(request), '--force')
         self.rescan(request)
 
     def rescan(self, request):
@@ -249,7 +256,7 @@ class Branch(Base):
                 deleted.append(file)
         tei_extensions = get_config_setting(request, 'files.tei', target_type='list', default=[])
         for filename in new:
-            local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.id}')) + 1:]
+            local_path = filename[len(os.path.join(get_config_setting(request, 'git.dir'), self.branch_name(request))) + 1:]
             path, name = os.path.split(local_path)
             if path == '':
                 path = '/'

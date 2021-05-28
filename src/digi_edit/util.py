@@ -100,7 +100,7 @@ def get_files_for_branch(request, branch):
     """
     file_extensions = get_config_setting(request, 'files.text', target_type='list', default=[])
     file_extensions.extend(get_config_setting(request, 'files.tei', target_type='list', default=[]))
-    base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{branch.id}')
+    base_path = os.path.join(get_config_setting(request, 'git.dir'), branch.branch_name(request))
     files = []
     for basepath, _, filenames in os.walk(base_path):
         if not basepath.endswith('.git') and '/.git/' not in basepath:

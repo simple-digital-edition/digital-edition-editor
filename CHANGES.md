@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Update**: Support branch name prefixes
+
 ## 0.15.2 (29.04.2021)
 
 * **Update**: TEI Editor upgrade allows for linking across sections

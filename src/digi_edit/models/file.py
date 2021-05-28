@@ -48,7 +48,7 @@ class File(Base):
                     }
                 }}
         if 'X-Include-Data' in request.headers and request.headers['X-Include-Data'] == 'true':
-            base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.branch_id}')
+            base_path = os.path.join(get_config_setting(request, 'git.dir'), self.branch.branch_name(request))
             if (self.attributes['path'] == '/'):
                 file_path = os.path.join(base_path, self.attributes['name'])
             else:
@@ -97,7 +97,7 @@ class File(Base):
         if self.attributes['filename'].startswith('/'):
             self.attributes['filename'] = self.attributes['filename'][1:]
         self.attributes['filename'] = os.path.join(get_config_setting(request, 'git.dir'),
-                                                   f'branch-{self.branch.id}',
+                                                   self.branch.branch_name(request),
                                                    self.attributes['filename'])
         if os.path.exists(self.attributes['filename']):
             raise HTTPClientError()
@@ -116,12 +116,12 @@ class File(Base):
                 print('  <tei:text>', file=out_f)
                 print('  </tei:text>', file=out_f)
                 print('</tei:TEI>', file=out_f)
-        base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.branch.id}')
+        base_path = os.path.join(get_config_setting(request, 'git.dir'), self.branch.branch_name(request))
         repo = Repo(base_path)
         repo.index.add([self.attributes['filename']])
         actor = Actor(user.attributes['name'], user.email)
         repo.index.commit(f'Added {self.attributes["name"]}', author=actor, committer=actor)
-        repo.git.push('--set-upstream', 'origin', f'branch-{self.branch.id}', '--force')
+        repo.git.push('--set-upstream', 'origin', self.branch.branch_name(request), '--force')
 
 
     @classmethod
@@ -167,7 +167,7 @@ class File(Base):
         the raw file content is written to the disk and if necessary a commit created and pushed to the remote."""
         if 'X-Include-Data' in request.headers and request.headers['X-Include-Data'] == 'true' \
             and 'rawData' in self.attributes:
-            base_path = os.path.join(get_config_setting(request, 'git.dir'), f'branch-{self.branch_id}')
+            base_path = os.path.join(get_config_setting(request, 'git.dir'), self.branch.branch_name(request))
             if (self.attributes['path'] == '/'):
                 file_path = os.path.join(base_path, self.attributes['name'])
             else:
@@ -181,7 +181,7 @@ class File(Base):
                     repo.index.add([file_path])
                     actor = Actor(user.attributes['name'], user.email)
                     repo.index.commit(f'Updated {self.attributes["name"]}', author=actor, committer=actor)
-                    repo.git.push('--set-upstream', 'origin', f'branch-{self.branch_id}', '--force')
+                    repo.git.push('--set-upstream', 'origin', self.branch.branch_name(request), '--force')
             else:
                 raise HTTPNotFound()
         if 'rawData' in self.attributes:
