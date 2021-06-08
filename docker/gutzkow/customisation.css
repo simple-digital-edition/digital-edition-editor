@@ -32,7 +32,6 @@
 #tei-editor .ProseMirror {
 font-family: 'Merriweather';
 }
-
 #tei-editor .text-editor .nested {
 background: #fefefe;
 top: 0;
@@ -103,45 +102,38 @@ text-decoration: underline dotted; }
 #tei-editor .text-editor .node-externalLink {
 -webkit-text-decoration: underline dotted;
 text-decoration: underline dotted; }
-    #tei-editor .text-editor .node-quotation {
+    #tei-editor .text-editor .mark-quotation {
 font-style: italic; }
   #tei-editor .text-editor .node-lineGroup {
 margin-top: 1rem;
 margin-left: 2rem; }
-#tei-editor .text-editor .node-speaker {
+#tei-editor .text-editor .mark-speaker {
   font-variant: small-caps;
 }
-#tei-editor .text-editor .node-speaker + .node-lineGroup {
-  margin-top: 0;
-}
-#tei-editor .text-editor .node-speech {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-#tei-editor .text-editor .node-staging {
+#tei-editor .text-editor .mark-staging {
   font-size: 80%;
   font-variant: normal;
 }
-  #tei-editor .text-editor .node-pageLineRef {
+  #tei-editor .text-editor .mark-pageLineRef {
 font-weight: bold; }
-  #tei-editor .text-editor .node-wordRange {
+  #tei-editor .text-editor .mark-wordRange {
 padding-left: 1rem; }
-  #tei-editor .text-editor .node-sic {
+  #tei-editor .text-editor .mark-sic {
 font-style: italic; }
-  #tei-editor .text-editor .node-reading {
+  #tei-editor .text-editor .mark-reading {
 font-style: italic; }
-  #tei-editor .text-editor .node-lemma {
+  #tei-editor .text-editor .mark-lemma {
 font-style: italic; }
-#tei-editor .text-editor .node-lemma::after {
+#tei-editor .text-editor .mark-lemma::after {
   content: ' ]';
   font-style: normal; }
-  #tei-editor .text-editor .node-missing::before {
+  #tei-editor .text-editor .mark-missing::before {
 content: '\25fc';
 vertical-align: sub; }
-  #tei-editor .text-editor .node-missing::after {
+  #tei-editor .text-editor .mark-missing::after {
 content: '\25fc';
 vertical-align: super; }
-  #tei-editor .text-editor .node-signed {
+  #tei-editor .text-editor .mark-signed {
 font-weight: bold; }
   #tei-editor .text-editor .mark-letterSparse {
 letter-spacing: 1.5pt; }
