@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Bugfix**: TEI Editor upgrade
+
 ## 0.16.0 (08.06.2021)
 
 * **Update**: Support branch name prefixes
