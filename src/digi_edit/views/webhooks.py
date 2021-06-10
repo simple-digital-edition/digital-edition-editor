@@ -21,7 +21,7 @@ def github_webhook(request):
         if request.headers['X-GitHub-Event'] in ['pull_request', 'pull_request_review']:
             payload = json.loads(request.params['payload'])
             branch_ref = payload['pull_request']['head']['ref']
-            match = re.fullmatch(f'{branch_prefix}-branch-([0-9]+)', branch_ref)
+            match = re.fullmatch(f'{branch_prefix}branch-([0-9]+)', branch_ref)
             if match:
                 branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
                 if branch:
@@ -55,7 +55,7 @@ def github_webhook(request):
                             repo.remotes.origin.fetch('default:default', force=True)
                             repo.remotes.origin.pull()
                 else:
-                    match = re.fullmatch(f'{branch_prefix}-branch-([0-9]+)', match.group(1))
+                    match = re.fullmatch(f'{branch_prefix}branch-([0-9]+)', match.group(1))
                     if match:
                         branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
                         if branch and branch.attributes['status'] == 'active':
@@ -74,7 +74,7 @@ def gitlab_webhook(request):
         if request.headers['X-Gitlab-Event'] == 'Merge Request Hook':
             payload = json.loads(request.body)
             branch_ref = payload['object_attributes']['source_branch']
-            match = re.fullmatch(f'{branch_prefix}-branch-([0-9]+)', branch_ref)
+            match = re.fullmatch(f'{branch_prefix}branch-([0-9]+)', branch_ref)
             if match:
                 branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
                 if branch:
@@ -108,7 +108,7 @@ def gitlab_webhook(request):
             payload = json.loads(request.body)
             if 'merge_request'  in payload:
                 branch_ref = payload['merge_request']['source_branch']
-                match = re.fullmatch(f'{branch_prefix}-branch-([0-9]+)', branch_ref)
+                match = re.fullmatch(f'{branch_prefix}branch-([0-9]+)', branch_ref)
                 if match:
                     branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
                     if branch:
@@ -133,7 +133,7 @@ def gitlab_webhook(request):
                             repo.remotes.origin.fetch('default:default', force=True)
                             repo.remotes.origin.pull()
                 else:
-                    match = re.fullmatch(f'{branch_prefix}-branch-([0-9]+)', match.group(1))
+                    match = re.fullmatch(f'{branch_prefix}branch-([0-9]+)', match.group(1))
                     if match:
                         branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
                         if branch and branch.attributes['status'] == 'active':

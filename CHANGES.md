@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Bugfix**: Fix branch matching in webhooks
+
 ## 0.16.1 (09.06.2021)
 
 * **Bugfix**: TEI Editor upgrade
