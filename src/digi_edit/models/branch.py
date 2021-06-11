@@ -63,7 +63,7 @@ class Branch(Base):
         return True
 
     def branch_name(self, request):
-        branch_prefix = get_config_setting(request, 'git.branch_prefix')
+        branch_prefix = get_config_setting(request, 'git.branch_prefix', default='')
         if branch_prefix:
             return f'{branch_prefix}-branch-{self.id}'
         else:
