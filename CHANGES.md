@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 0.16.3 (11.06.2021)
+
 * **Bugfix**: Fix setting an incorrect default branch prefix
 
 ## 0.16.2 (10.06.2021)
