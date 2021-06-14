@@ -2,7 +2,7 @@
 
 ## Development ()
 
-* **Bugfix**: Include the JS filename hash
+* **Bugfix**: Improve cache control
 
 ## 0.16.3 (11.06.2021)
 

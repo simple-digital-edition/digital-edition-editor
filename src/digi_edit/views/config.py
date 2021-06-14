@@ -25,7 +25,9 @@ def config_tei(request):
 def css(request):
     filename = get_config_setting(request, 'css.customisation')
     if os.path.exists(filename):
-        return FileResponse(filename, content_type='text/css')
+        resp = FileResponse(filename, content_type='text/css')
+        resp.headers['Cache-Control'] = 'no_store max-age=0'
+        return resp
     else:
         raise HTTPNotFound()
 
@@ -36,7 +38,9 @@ def extra_files(request):
         filename = os.path.abspath(os.path.join(basepath, *request.matchdict['path']))
         if filename.startswith(basepath):
             if os.path.exists(filename):
-                return FileResponse(filename)
+                resp = FileResponse(filename)
+                resp.headers['Cache-Control'] = 'no_store max-age=0'
+                return resp
             else:
                 raise HTTPNotFound
         else:
