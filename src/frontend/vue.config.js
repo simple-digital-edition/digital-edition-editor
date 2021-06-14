@@ -1,4 +1,4 @@
 module.exports = {
-    filenameHashing: false,
+    filenameHashing: true,
     publicPath: '/ui',
 }

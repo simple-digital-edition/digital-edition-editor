@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Bugfix**: Include the JS filename hash
+
 ## 0.16.3 (11.06.2021)
 
 * **Bugfix**: Fix setting an incorrect default branch prefix
