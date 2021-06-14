@@ -2212,6 +2212,17 @@
                     },
                     "serialiser": {
                         "tag": "tei:item"
+                    },
+                    "attrs": {
+                        "sourceId": {
+                            "default": "",
+                            "parser": {
+                                "selector": "@data-source-id"
+                            },
+                            "serialiser": {
+                                "attr": "data-source-id"
+                            }
+                        }
                     }
                 },
                 {
