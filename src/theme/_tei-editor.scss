@@ -57,8 +57,15 @@
         }
     }
 
-    .text-editor .nested {
-        background: #ffffff;
+    .text-editor {
+        .nested {
+            .overlay {
+                background: rgba(0, 0, 0, 0.4);
+            }
+            .text-editor {
+                background: #ffffff;
+            }
+        }
     }
 
     .sidebar {

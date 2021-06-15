@@ -489,7 +489,10 @@ div.branch-overview form.file-filter svg {
   border: 2px solid #8cf;
   pointer-events: none;
 }
-#tei-editor .text-editor .nested {
+#tei-editor .text-editor .nested .overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+#tei-editor .text-editor .nested .text-editor {
   background: #ffffff;
 }
 #tei-editor .sidebar {

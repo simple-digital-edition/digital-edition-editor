@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Bugfix**: Prevent users from saving when editing a nested document
+
 ## 0.16.4 (14.06.2021)
 
 * **Bugfix**: Improve cache control
