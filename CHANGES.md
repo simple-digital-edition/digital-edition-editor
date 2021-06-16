@@ -2,6 +2,7 @@
 
 ## Development ()
 
+* **New**: Added favicon
 * **Bugfix**: Fix incorrect Cache-Control settings
 
 ## 0.16.5 (15.06.2021)
