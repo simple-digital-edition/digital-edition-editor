@@ -79,8 +79,34 @@ text-align: center; }
   font-size: 12pt; }
 #tei-editor .text-editor .node-heading[data-level="4"] {
   font-size: 11pt; }
-  #tei-editor .text-editor .node-lineGroup {
-margin: 1rem 0; }
+  #tei-editor .text-editor .node-lineGroup:hover {
+    position: relative;
+    border: 1px dotted #aaaaaa;
+  }
+  #tei-editor .text-editor .node-lineGroup:hover::after {
+    content: 'Zeilengruppe';
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #dddddd;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 90%;
+    padding: 0 0 0.2rem 0.4rem;
+  }
+  #tei-editor .text-editor .node-speech:hover {
+    position: relative;
+    border: 1px dotted #aaaaaa;
+  }
+  #tei-editor .text-editor .node-speech:hover::after {
+    content: 'Gesprochener Text';
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #dddddd;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 90%;
+    padding: 0 0 0.2rem 0.4rem;
+  }
   #tei-editor .text-editor .node-pageBegin {
 font-size: 80%;
 font-style: italic; }
