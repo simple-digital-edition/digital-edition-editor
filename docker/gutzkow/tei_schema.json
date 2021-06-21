@@ -286,6 +286,15 @@
                             "serialiser": {
                                 "attr": "margin-bottom"
                             }
+                        },
+                        "extract": {
+                            "default": "",
+                            "parser": {
+                                "selector": "@extract"
+                            },
+                            "serialiser": {
+                                "attr": "extract"
+                            }
                         }
                     }
                 },
@@ -334,6 +343,15 @@
                             },
                             "serialiser": {
                                 "attr": "margin-bottom"
+                            }
+                        },
+                        "extract": {
+                            "default": "",
+                            "parser": {
+                                "selector": "@extract"
+                            },
+                            "serialiser": {
+                                "attr": "extract"
                             }
                         }
                     }
@@ -1114,6 +1132,74 @@
                         ]
                     },
                     {
+                        "label": "Gesprochener Text",
+                        "condition": {
+                            "type": "isActive",
+                            "activeType": "speech"
+                        },
+                        "entities": [
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "toggleNodeAttrValue",
+                                        "nodeType": "speech",
+                                        "attr": "extract",
+                                        "value": "true",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z\" /></svg>",
+                                        "ariaLabel": "Als Auszug markieren"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrNumber",
+                                        "nodeType": "speech",
+                                        "attr": "marginLeft",
+                                        "label": "Links (cm)",
+                                        "min": "0",
+                                        "max": "20",
+                                        "step": "0.1"
+                                    },
+                                    {
+                                        "type": "setNodeAttrNumber",
+                                        "nodeType": "speech",
+                                        "attr": "marginRight",
+                                        "label": "Rechts (cm)",
+                                        "min": "0",
+                                        "max": "20",
+                                        "step": "0.1"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrNumber",
+                                        "nodeType": "speech",
+                                        "attr": "marginTop",
+                                        "label": "Oben (cm)",
+                                        "min": "0",
+                                        "max": "20",
+                                        "step": "0.1"
+                                    },
+                                    {
+                                        "type": "setNodeAttrNumber",
+                                        "nodeType": "speech",
+                                        "attr": "marginBottom",
+                                        "label": "Unten (cm)",
+                                        "min": "0",
+                                        "max": "20",
+                                        "step": "0.1"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
                         "label": "Absatz",
                         "condition": {
                             "type": "isActive",
@@ -1226,67 +1312,25 @@
                         ]
                     },
                     {
-                        "label": "Gesprochener Text",
-                        "condition": {
-                            "type": "isActive",
-                            "activeType": "speech"
-                        },
-                        "entities": [
-                            {
-                                "type": "menubar",
-                                "entities": [
-                                    {
-                                        "type": "setNodeAttrNumber",
-                                        "nodeType": "speech",
-                                        "attr": "marginLeft",
-                                        "label": "Links (cm)",
-                                        "min": "0",
-                                        "max": "20",
-                                        "step": "0.1"
-                                    },
-                                    {
-                                        "type": "setNodeAttrNumber",
-                                        "nodeType": "speech",
-                                        "attr": "marginRight",
-                                        "label": "Rechts (cm)",
-                                        "min": "0",
-                                        "max": "20",
-                                        "step": "0.1"
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "menubar",
-                                "entities": [
-                                    {
-                                        "type": "setNodeAttrNumber",
-                                        "nodeType": "speech",
-                                        "attr": "marginTop",
-                                        "label": "Oben (cm)",
-                                        "min": "0",
-                                        "max": "20",
-                                        "step": "0.1"
-                                    },
-                                    {
-                                        "type": "setNodeAttrNumber",
-                                        "nodeType": "speech",
-                                        "attr": "marginBottom",
-                                        "label": "Unten (cm)",
-                                        "min": "0",
-                                        "max": "20",
-                                        "step": "0.1"
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
                         "label": "Zeilengruppe",
                         "condition": {
                             "type": "isActive",
                             "activeType": "lineGroup"
                         },
                         "entities": [
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "toggleNodeAttrValue",
+                                        "nodeType": "lineGroup",
+                                        "attr": "extract",
+                                        "value": "true",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z\" /></svg>",
+                                        "ariaLabel": "Als Auszug markieren"
+                                    }
+                                ]
+                            },
                             {
                                 "type": "menubar",
                                 "entities": [

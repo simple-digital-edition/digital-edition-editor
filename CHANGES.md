@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Bugfix**: TEI Editor upgrade
+
 ## 0.16.6 (16.06.2021)
 
 * **New**: Added favicon
