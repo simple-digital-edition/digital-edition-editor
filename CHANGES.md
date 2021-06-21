@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 0.16.7 (21.06.2021)
+
 * **Bugfix**: TEI Editor upgrade
 
 ## 0.16.6 (16.06.2021)
