@@ -2088,6 +2088,7 @@
                 {
                     "name": "paragraph",
                     "type": "block",
+                    "content": "inline*",
                     "parser": {
                         "selector": "tei:p"
                     },
@@ -2251,6 +2252,7 @@
                 {
                     "name": "source",
                     "type": "block",
+                    "content": "inline*",
                     "parser": {
                         "selector": "tei:item"
                     },
@@ -2421,6 +2423,20 @@
                                 "attr": "target",
                                 "value": "{value}"
                             }
+                        }
+                    }
+                },
+                {
+                    "name": "pageBegin",
+                    "type": "inline",
+                    "parser": {
+                        "selector": "tei:pb",
+                        "text": "@n"
+                    },
+                    "serialiser": {
+                        "tag": "tei:pb",
+                        "text": {
+                            "attr": "n"
                         }
                     }
                 },
@@ -2647,20 +2663,6 @@
                             "style": {
                                 "value": "font-weight-bold"
                             }
-                        }
-                    }
-                },
-                {
-                    "name": "pageBegin",
-                    "type": "inline",
-                    "parser": {
-                        "selector": "tei:pb",
-                        "text": "@n"
-                    },
-                    "serialiser": {
-                        "tag": "tei:pb",
-                        "text": {
-                            "attr": "n"
                         }
                     }
                 }
