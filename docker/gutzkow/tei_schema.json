@@ -2286,6 +2286,29 @@
                     }
                 },
                 {
+                    "name": "footnote",
+                    "type": "nested",
+                    "parser": {
+                        "selector": "tei:note[@type=\"footnote\"]"
+                    },
+                    "serialiser": {
+                        "tag": "tei:note",
+                        "attrs": {
+                            "type": "footnote"
+                        }
+                    },
+                    "attrs": {
+                        "id": {
+                            "parser": {
+                                "selector": "@xml:id"
+                            },
+                            "serialiser": {
+                                "attr": "xml:id"
+                            }
+                        }
+                    }
+                },
+                {
                     "name": "text",
                     "type": "inline",
                     "parsers": [
@@ -2397,6 +2420,36 @@
                     },
                     "reference": {
                         "type": "annotation",
+                        "attr": "target"
+                    }
+                },
+                {
+                    "name": "footnoteMarker",
+                    "type": "inline",
+                    "parser": {
+                        "selector": "tei:ref[@type=\"footnote\"]",
+                        "text": "text()"
+                    },
+                    "serialiser": {
+                        "tag": "tei:ref",
+                        "attrs": {
+                            "type": "footnote"
+                        }
+                    },
+                    "attrs": {
+                        "target": {
+                            "default": "",
+                            "parser": {
+                                "selector": "substring(@target, 2)"
+                            },
+                            "serialiser": {
+                                "attr": "target",
+                                "value": "#{value}"
+                            }
+                        }
+                    },
+                    "reference": {
+                        "type": "footnote",
                         "attr": "target"
                     }
                 },
@@ -2755,6 +2808,12 @@
                                         "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H8V21C8 21.6 8.4 22 9 22H9.5C9.7 22 10 21.9 10.2 21.7L13.9 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H13.1L10 19.1V16H4V4H20V16M8 9V11H12.5L10.7 12.8L12 14L16 10L12 6L10.8 7.2L12.5 9H8Z\" /></svg>",
                                         "nodeType": "annotationGlobal",
                                         "ariaLabel": "Verweis innerhalb des Apparat"
+                                    },
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,10V4.5L19.5,10M5,3C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V9L15,3H5Z\" /></svg>",
+                                        "nodeType": "footnoteMarker",
+                                        "ariaLabel": "Fußnote"
                                     },
                                     {
                                         "type": "setNodeType",
@@ -3124,6 +3183,28 @@
                         ]
                     },
                     {
+                        "label": "Fußnote",
+                        "condition": {
+                            "type": "isActive",
+                            "activeType": "footnoteMarker"
+                        },
+                        "entities": [
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "editNestedDoc",
+                                        "nodeType": "footnoteMarker",
+                                        "attr": "target",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z\" /></svg>",
+                                        "targetNodeType": "footnote",
+                                        "ariaLabel": "Bearbeiten"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
                         "label": "Externer Link",
                         "condition": {
                             "type": "isActive",
@@ -3158,6 +3239,194 @@
                                         "label": "Quellenkürzel",
                                         "markType": "reading",
                                         "attr": "wit"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "footnote": [
+                    {
+                        "label": "Fußnote",
+                        "entities": [
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "closeNested",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z\" /></svg>",
+                                        "ariaLabel": "Zurück zum Haupttext"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Auszeichnungen",
+                        "entities": [
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,16V19.08L13.08,16H20V4H4V16H10M6,7H18V9H6V7M6,11H15V13H6V11Z\" /></svg>",
+                                        "nodeType": "annotationMarker",
+                                        "ariaLabel": "Stellenkommentar"
+                                    },
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H8V21C8 21.6 8.4 22 9 22H9.5C9.7 22 10 21.9 10.2 21.7L13.9 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H13.1L10 19.1V16H4V4H20V16M8 9V11H12.5L10.7 12.8L12 14L16 10L12 6L10.8 7.2L12.5 9H8Z\" /></svg>",
+                                        "nodeType": "annotationGlobal",
+                                        "ariaLabel": "Verweis auf den Apparat"
+                                    },
+                                    {
+                                        "type": "setNodeType",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z\" /></svg>",
+                                        "nodeType": "externalLink",
+                                        "ariaLabel": "Externer Link"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "toggleMark",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z\" /></svg>",
+                                        "nodeType": "foreignLanguage",
+                                        "ariaLabel": "Fremdsprachiger Text"
+                                    },
+                                    {
+                                        "type": "toggleMark",
+                                        "label": "<svg viewBox=\"0 0 24 24\"><path d=\"M14,17H17L19,13V7H13V13H16M6,17H9L11,13V7H5V13H8L6,17Z\" /></svg>",
+                                        "markType": "quotation",
+                                        "ariaLabel": "Zitat"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Absatz",
+                        "condition": {
+                            "type": "isActive",
+                            "activeType": "paragraph"
+                        },
+                        "entities": [
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrValue",
+                                        "nodeType": "paragraph",
+                                        "attr": "textAlign",
+                                        "value": "left",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H15V9H3V7M3,11H21V13H3V11M3,15H15V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                        "ariaLabel": "Linksbündig"
+                                    },
+                                    {
+                                        "type": "setNodeAttrValue",
+                                        "nodeType": "paragraph",
+                                        "attr": "textAlign",
+                                        "value": "center",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M7,7H17V9H7V7M3,11H21V13H3V11M7,15H17V17H7V15M3,19H21V21H3V19Z\" /></svg>",
+                                        "ariaLabel": "Zentriert"
+                                    },
+                                    {
+                                        "type": "setNodeAttrValue",
+                                        "nodeType": "paragraph",
+                                        "attr": "textAlign",
+                                        "value": "right",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M9,7H21V9H9V7M3,11H21V13H3V11M9,15H21V17H9V15M3,19H21V21H3V19Z\" /></svg>",
+                                        "ariaLabel": "Rechtsbündig"
+                                    },
+                                    {
+                                        "type": "setNodeAttrValue",
+                                        "nodeType": "paragraph",
+                                        "attr": "textAlign",
+                                        "value": "justify",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M3,3H21V5H3V3M3,7H21V9H3V7M3,11H21V13H3V11M3,15H21V17H3V15M3,19H21V21H3V19Z\" /></svg>",
+                                        "ariaLabel": "Blocksatz"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Darstellung",
+                        "entities": [
+                            {
+                                "type": "menubar",
+                                "entities": [
+                                    {
+                                        "type": "selectMarkAttr",
+                                        "markType": "fontSize",
+                                        "attr": "size",
+                                        "values": [
+                                            {
+                                                "value": "",
+                                                "label": "Normal"
+                                            },
+                                            {
+                                                "value": "small",
+                                                "label": "Klein"
+                                            },
+                                            {
+                                                "value": "medium",
+                                                "label": "Mittel"
+                                            },
+                                            {
+                                                "value": "large",
+                                                "label": "Groß"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "separator"
+                                    },
+                                    {
+                                        "type": "toggleMark",
+                                        "markType": "fontWeightBold",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M13.5,15.5H10V12.5H13.5A1.5,1.5 0 0,1 15,14A1.5,1.5 0 0,1 13.5,15.5M10,6.5H13A1.5,1.5 0 0,1 14.5,8A1.5,1.5 0 0,1 13,9.5H10M15.6,10.79C16.57,10.11 17.25,9 17.25,8C17.25,5.74 15.5,4 13.25,4H7V18H14.04C16.14,18 17.75,16.3 17.75,14.21C17.75,12.69 16.89,11.39 15.6,10.79Z\" /></svg>",
+                                        "ariaLabel": "Fett"
+                                    },
+                                    {
+                                        "type": "toggleMark",
+                                        "markType": "fontStyleItalic",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M10,4V7H12.21L8.79,15H6V18H14V15H11.79L15.21,7H18V4H10Z\" /></svg>",
+                                        "ariaLabel": "Kursivtext"
+                                    },
+                                    {
+                                        "type": "toggleMark",
+                                        "markType": "letterSparse",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M7,8L2.5,12L7,16V8M17,8V16L21.5,12L17,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z\" /></svg>",
+                                        "ariaLabel": "Textsperrung"
+                                    },
+                                    {
+                                        "type": "toggleMark",
+                                        "markType": "sup",
+                                        "label": "<svg viewBox=\"0 0 24 24\" class=\"mdi-icon\"><path d=\"M16,7.41L11.41,12L16,16.59L14.59,18L10,13.41L5.41,18L4,16.59L8.59,12L4,7.41L5.41,6L10,10.59L14.59,6L16,7.41M21.85,9H16.97V8L17.86,7.18C18.62,6.54 19.18,6 19.56,5.55C19.93,5.11 20.12,4.7 20.13,4.32C20.14,4.04 20.05,3.8 19.86,3.62C19.68,3.43 19.39,3.34 19,3.33C18.69,3.34 18.42,3.4 18.16,3.5L17.5,3.89L17.05,2.72C17.32,2.5 17.64,2.33 18.03,2.19C18.42,2.05 18.85,2 19.32,2C20.1,2 20.7,2.2 21.1,2.61C21.5,3 21.72,3.54 21.72,4.18C21.71,4.74 21.53,5.26 21.18,5.73C20.84,6.21 20.42,6.66 19.91,7.09L19.27,7.61V7.63H21.85V9Z\" /></svg>",
+                                        "ariaLabel": "Hochgestellt"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Externer Link",
+                        "condition": {
+                            "type": "isActive",
+                            "activeType": "externalLink"
+                        },
+                        "entities": [
+                            {
+                                "type": "list",
+                                "entities": [
+                                    {
+                                        "type": "setNodeAttrString",
+                                        "label": "URL",
+                                        "nodeType": "externalLink",
+                                        "attr": "target"
                                     }
                                 ]
                             }
