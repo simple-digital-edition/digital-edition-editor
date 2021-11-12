@@ -4,17 +4,12 @@ import re
 
 from cerberus import Validator
 from copy import deepcopy
-from datetime import datetime
-from git import Repo, Actor
-from github import Github
-from hashlib import sha256, sha512
-from pyramid.httpexceptions import HTTPBadRequest, HTTPUnauthorized, HTTPNotFound, HTTPNoContent, HTTPOk
+from hashlib import sha512
+from pyramid.httpexceptions import HTTPBadRequest, HTTPUnauthorized, HTTPNotFound, HTTPNoContent
 from secrets import token_hex
-from sqlalchemy import desc
 
 from digi_edit.models import User, Branch, File
-from digi_edit.jsonapi import jsonapi_type_schema, jsonapi_id_schema
-from digi_edit.util import get_config_setting, get_files_for_branch, get_file_identifier
+from digi_edit.jsonapi import jsonapi_type_schema
 
 
 DB_CLASSES = {
@@ -97,23 +92,23 @@ def user_login(request):
         hash.update(body['attributes']['password'].encode('utf-8'))
         if user.password == hash.hexdigest():
             user.attributes['token'] = token_hex(64)
-            return user.as_jsonapi(request)
+            return {'data': user.as_jsonapi(request)}
         else:
             raise HTTPBadRequest(body=json.dumps({
                 'errors': [
                     {'title': 'User not found, password incorrect, or blocked',
-                     'source': {'pointer': 'data/attributes/email'}},
+                     'source': {'pointer': '/data/attributes/email'}},
                     {'title': 'User not found, password incorrect, or blocked',
-                     'source': {'pointer': 'data/attributes/password'}},
+                     'source': {'pointer': '/data/attributes/password'}},
                 ]
             }))
     else:
         raise HTTPBadRequest(body=json.dumps({
             'errors': [
                 {'title': 'User not found, password incorrect, or blocked',
-                 'source': {'pointer': 'data/attributes/email'}},
+                 'source': {'pointer': '/data/attributes/email'}},
                 {'title': 'User not found, password incorrect, or blocked',
-                 'source': {'pointer': 'data/attributes/password'}},
+                 'source': {'pointer': '/data/attributes/password'}},
             ]
         }))
 
@@ -151,6 +146,10 @@ def generate_db_api(config, type_name, db_class):
         """Fetch the set of all items."""
         check_authorization(request)
         objs = request.dbsession.query(db_class)
+        for key, value in request.params.items():
+            match = re.match(r'filter\[([a-zA-Z_\-]+)\]', key)
+            if match:
+                objs = objs.filter(getattr(db_class, match.group(1)) == value)
         set_cache_headers(request)
         return {'data': [obj.as_jsonapi(request) for obj in objs]}
 
