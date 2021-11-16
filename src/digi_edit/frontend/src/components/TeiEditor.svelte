@@ -10,6 +10,7 @@
     import { createConfigurableMark, createConfigurableNode } from '../tiptap';
     import { schema, uiConfig } from '../stores';
     import { TEIParser } from '../tei';
+    import EditorMenuEntry from './EditorMenuEntry.svelte';
 
     export let text: string;
 
@@ -36,7 +37,7 @@
         if (editor) {
             editor.destroy();
         }
-        if (text && localSchema) {
+        if (text && localSchema && localSchema.elements && localSchema.attributes) {
             const parser = new TEIParser(localSchema);
             const extensions = [
                 Document,
@@ -82,7 +83,7 @@
                 extensions: extensions,
                 content: parser.parse(text),
                 onTransaction: ({ transaction }) => {
-                    const { from, to } = transaction.selection;
+                    /*const { from, to } = transaction.selection;
                     const active = {};
                     transaction.doc.nodesBetween(from, to, (node) => {
                         active[node.type.name] = node.attrs;
@@ -96,7 +97,7 @@
                             });
                         }
                     });
-                    activeAttributes = active;
+                    activeAttributes = active;*/
                     editor = editor;
                 }
             });
@@ -123,8 +124,9 @@
      * @param config
      * @param ev
      */
-     function handleAction(config, ev: Event) {
+     function handleAction(entry, ev: Event) {
         if (editor) {
+            const config = entry.action;
             if (config.type === 'setNode') {
                 if (config.attributes) {
                    editor.chain().focus().setNode(config.name, config.attributes).run();
@@ -133,19 +135,25 @@
                 }
             } else if (config.type === 'toggleMark') {
                 editor.chain().focus().toggleMark(config.name).run();
-            } else if (config.type === 'updateAttribute') {
-                if (activeAttributes[config.node]) {
-                    if (config.value) {
-                        editor.chain().focus().updateAttribute(config.name, config.attribute, config.value).run();
+            } else if (config.type === 'selectMarkAttribute') {
+                if (isConfigActive(editor, config)) {
+                    if (!ev.detail) {
+                        editor.chain().focus().unsetMark(config.name).run();
                     } else {
-                        editor.chain().focus().updateAttribute(config.name, config.attribute, ev).run();
+                        editor.chain().focus().extendMarkRange(config.name).updateAttributes(config.name, {[config.attribute]: ev.detail}).run();
                     }
                 } else {
-                    if (config.value) {
-                        editor.chain().focus().setNode(config.name).updateAttribute(config.name, config.attribute, config.value).run();
-                    } else {
-                        editor.chain().focus().setNode(config.name).updateAttribute(config.name, config.attribute, ev).run();
-                    }
+                    editor.chain().focus().setMark(config.name, {[config.attribute]: ev.detail}).run();
+                }
+            } else if (config.type === 'setAttribute') {
+                editor.chain().focus().updateAttributes(config.name, {[config.attribute]: config.value}).run();
+            } else if (config.type === 'inputAttribute') {
+                editor.chain().focus().updateAttributes(config.name, {[config.attribute]: ev.detail}).run();
+            } else if (config.type === 'toggleAttribute') {
+                if (isConfigActive(editor, config)) {
+                    editor.chain().focus().updateAttributes(config.name, {[config.attribute]: null}).run();
+                } else {
+                    editor.chain().focus().updateAttributes(config.name, {[config.attribute]: config.value}).run();
                 }
             }
         }
@@ -157,23 +165,29 @@
      * @param editor
      * @param element
      */
-     function isConfigActive(editor, element) {
-        if (element.action.type === 'setNode') {
-            if (element.action.attributes) {
-                return isActive(editor.state, element.action.name, element.action.attributes);
-            } else {
-                return isActive(editor.state, element.action.name);
+    function isConfigActive(editor, config) {
+        if (config.type === 'selectMarkAttribute') {
+            for (let value of config.values) {
+                if (isActive(editor.state, config.name, {[config.attribute]: value.value})) {
+                    return value.value;
+                }
             }
-        } else if (element.action.type === 'toggleMark') {
-            return isActive(editor.state, element.action.name);
-        } else if (element.action.type === 'updateAttribute' && element.action.value) {
-            return isActive(editor.state, element.action.name, {[element.action.attribute]: element.action.value});
+            return false;
+        } else if (config.type === 'inputAttribute') {
+            return editor.getAttributes(config.name)[config.attribute];
+        } else {
+            if (config.attributes) {
+                return isActive(editor.state, config.name, config.attributes);
+            } else if (config.attribute && config.value) {
+                return isActive(editor.state, config.name, {[config.attribute]: config.value});
+            } else {
+                return isActive(editor.state, config.name);
+            }
         }
-        return false;
     }
 </script>
 
-<div class="flex flex-col h-full overflow-hidden">
+<div id="tei-editor" class="flex flex-col h-full overflow-hidden">
     <nav class="flex-none">
         <ul class="flex flex-row">
             <li role="presentation">
@@ -190,51 +204,43 @@
         </div>
         {#if editor && $uiConfig && $uiConfig.editor && $uiConfig.editor.tei}
             {#if $uiConfig.editor.tei.sidebar}
-                <div class="flex-none border-l border-solid border-gray-300 px-3 py-1">
+                <div id="tei-editor-sidebar" class="flex-none w-1/5 border-l border-solid border-gray-300 px-3 py-1">
                     {#each $uiConfig.editor.tei.sidebar as section}
-                        <section>
-                            <h3 class="font-bold">{section.label}</h3>
-                            {#if section.menus}
-                                {#each section.menus as menu}
-                                    {#if menu.entries}
-                                        <ul class="flex flex-row flex-wrap">
-                                            {#each menu.entries as entry}
-                                                <li role="presentation">
-                                                    {#if entry.svg}
-                                                        <button on:click={(ev) => { handleAction(entry.action, ev); }} class="block {isConfigActive(editor, entry) ? 'bg-gray-300' : ''}" title={entry.label}>
-                                                            {@html entry.svg}
-                                                        </button>
-                                                    {:else}
-                                                        <button on:click={(ev) => { handleAction(entry.action, ev); }} class="block {isConfigActive(editor, entry) ? 'bg-gray-300' : ''}">
-                                                            {entry.label}
-                                                        </button>
-                                                    {/if}
-                                                </li>
-                                            {/each}
-                                        </ul>
-                                    {/if}
-                                {/each}
-                            {/if}
-                        </section>
+                        {#if !section.filter || isConfigActive(editor, section.filter)}
+                            <section class="mb-4">
+                                <h3 class="font-bold mb-2">{section.label}</h3>
+                                {#if section.menus}
+                                    {#each section.menus as menu}
+                                        {#if menu.entries}
+                                            <ul class="flex flex-row flex-wrap mb-2">
+                                                {#each menu.entries as entry}
+                                                    <li role="presentation">
+                                                        <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                                    </li>
+                                                {/each}
+                                            </ul>
+                                        {/if}
+                                    {/each}
+                                {/if}
+                            </section>
+                        {/if}
                     {/each}
                 </div>
             {/if}
             {#if $uiConfig.editor.tei.bubbleMenu}
-                <ul bind:this={bubbleMenuElement} class="bg-white p-1 border border-gray-300 shadow-lg flex flex-row flex-wrap">
-                    {#each $uiConfig.editor.tei.bubbleMenu as entry}
-                        <li role="presentation">
-                            {#if entry.svg}
-                                <button on:click={(ev) => { handleAction(entry.action, ev); }} class="block {isConfigActive(editor, entry) ? 'bg-gray-300' : ''}" title={entry.label}>
-                                    {@html entry.svg}
-                                </button>
-                            {:else}
-                                <button on:click={(ev) => { handleAction(entry.action, ev); }} class="block {isConfigActive(editor, entry) ? 'bg-gray-300' : ''}">
-                                    {entry.label}
-                                </button>
-                            {/if}
-                        </li>
+                <div bind:this={bubbleMenuElement} class="bg-white p-1 border border-gray-300 shadow-lg">
+                    {#each $uiConfig.editor.tei.bubbleMenu as menu}
+                        {#if menu.entries}
+                            <ul class="flex flex-row flex-wrap mb-2">
+                                {#each menu.entries as entry}
+                                    <li role="presentation">
+                                        <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                    </li>
+                                {/each}
+                            </ul>
+                        {/if}
                     {/each}
-                </ul>
+                </div>
             {/if}
         {/if}
     </div>

@@ -64,6 +64,7 @@ export default {
 		production && terser(),
 
 		replace({
+			preventAssignment: false,
 			'process.env.NODE_ENV': JSON.stringify(!production ? 'development': 'production'),
 		}),
 	],

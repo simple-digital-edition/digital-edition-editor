@@ -29,8 +29,19 @@
     src: url("/extra/fonts/MerriweatherSans-Light.woff2");
 }
 
+/**
+ * Editor styling
+ */
+
 .ProseMirror {
     font-family: 'Merriweather';
+}
+
+/**
+ * Editor Sidebar styling
+ */
+#tei-editor-sidebar input[type="number"] {
+    width: 4rem;
 }
 
 /*
@@ -111,15 +122,15 @@ span[data-type="mark-letterSparse"] {
 }
 
 span[data-type="mark-fontSize"][data-attr-size="small"] {
-    font-size: 80%;
+    font-size: 10pt;
 }
 
 span[data-type="mark-fontSize"][data-attr-size="medium"] {
-    font-size: 120%;
+    font-size: 13pt;
 }
 
 span[data-type="mark-fontSize"][data-attr-size="large"] {
-    font-size: 140%;
+    font-size: 15pt;
 }
 
 span[data-type="mark-annotationMarker"] {
