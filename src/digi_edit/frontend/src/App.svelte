@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { Router } from 'svelte-navigator';
 
-	import { authTokenChecker } from './stores';
+	import { authTokenChecker, loadConfig } from './stores';
 	import AuthWrapper from './components/AuthWrapper.svelte'
+
+	loadConfig();
 </script>
 
 <Router basepath="/ui">

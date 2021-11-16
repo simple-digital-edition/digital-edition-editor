@@ -2,6 +2,11 @@ import { Mark, mergeAttributes } from '@tiptap/core';
 
 export interface MarkConfig {
     name: string;
+    attributes?: {[x: string]: MarkAttributeConfig};
+}
+
+interface MarkAttributeConfig {
+    default: string;
 }
 
 export function createConfigurableMark(config: MarkConfig) {
@@ -9,30 +14,32 @@ export function createConfigurableMark(config: MarkConfig) {
         name: config.name,
 
         addAttributes() {
-            return {
-                'blabla': {
-                    default: 'bla',
-                    renderHTML(attributes) {
-                        return {'data-attr-blabla': attributes.blabla}
-                    },
-                    parseHTML(element) {
-                        return {
-                            blabla: element.getAttribute('data-attr-blabla'),
+            if (config.attributes) {
+                return Object.fromEntries(Object.entries(config.attributes).map(([key, value]) => {
+                    return [key, {
+                        default: value.default,
+                        renderHTML(attributes) {
+                            return {['data-attr-' + key]: attributes[key]}
+                        },
+                        parseHTML(element) {
+                            return {[key]: element.getAttribute('data-attr-' + key)}
                         }
-                    }
-                }
+                    }];
+                }));
+            } else {
+                return {}
             }
         },
 
         renderHTML({ HTMLAttributes }) {
-            return ['span', mergeAttributes(HTMLAttributes, {'data-type': config.name}), 0]
+            return ['span', mergeAttributes(HTMLAttributes, {'data-type': 'mark-' + config.name}), 0]
         },
 
         parseHTML() {
             return [
                 {
                     tag: 'span',
-                    getAttrs: node => (node as HTMLElement).getAttribute('data-type') === config.name && null,
+                    getAttrs: node => (node as HTMLElement).getAttribute('data-type') === 'mark-' + config.name && null,
                 }
             ]
         }

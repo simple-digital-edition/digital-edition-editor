@@ -7,6 +7,7 @@ def includeme(config):
     config.add_route('webhooks.gitlab', '/webhooks/gitlab', request_method='POST')
 
     config.add_route('config', '/config')
+    config.add_route('config.ui', '/config/ui')
     config.add_route('config.tei_schema', '/config/tei-schema')
 
     config.add_route('theme.css', '/theme/css')

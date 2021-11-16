@@ -4,7 +4,12 @@ interface TextNodeConfig {
     name: string;
     group?: string;
     content?: string;
-    attributes?: {[x:string]: TextNodeChoiceAttributeConfig};
+    inline?: boolean;
+    attributes?: {[x:string]: TextNodeAttributeConfig | TextNodeChoiceAttributeConfig};
+}
+
+interface TextNodeAttributeConfig {
+    default: string;
 }
 
 interface TextNodeChoiceAttributeConfig {
@@ -18,6 +23,7 @@ export function createConfigurableNode(config: TextNodeConfig) {
         name: config.name,
         group: config.group || 'block',
         content: config.content || 'inline*',
+        inline: config.inline || false,
 
         addAttributes() {
             if (config.attributes) {
@@ -38,14 +44,14 @@ export function createConfigurableNode(config: TextNodeConfig) {
         },
 
         renderHTML({ HTMLAttributes }) {
-            return ['div', mergeAttributes(HTMLAttributes, {'data-type': config.name}), 0]
+            return [config.inline ? 'span' : 'div', mergeAttributes(HTMLAttributes, {'data-type': 'node-' + config.name}), 0]
         },
 
         parseHTML() {
             return [
                 {
-                    tag: 'div',
-                    getAttrs: node => (node as HTMLElement).getAttribute('data-type') === config.name && null,
+                    tag: config.inline ? 'span' : 'div',
+                    getAttrs: node => (node as HTMLElement).getAttribute('data-type') === 'node-' + config.name && null,
                 }
             ]
         }

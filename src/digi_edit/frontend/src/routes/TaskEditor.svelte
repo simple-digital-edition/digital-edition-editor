@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onDestroy } from 'svelte';
+    import { onDestroy, tick } from 'svelte';
     import { derived, writable } from 'svelte/store';
     import { Link, Route, useParams } from 'svelte-navigator';
 
@@ -9,6 +9,7 @@
     const params = useParams();
     const fileSearchText = writable('');
     let oldTaskId = null;
+    let fileList = null;
 
     const selectedFileId = derived(params, (params) => {
         return params['*'];
@@ -36,6 +37,14 @@
                 }
             }
         }
+        tick().then(() => {
+            if (fileList) {
+                const current = fileList.querySelector('[aria-current="true"]');
+                if (current) {
+                    current.scrollIntoView();
+                }
+            }
+        });
         return fileSets;
     });
 
@@ -63,12 +72,12 @@
                 </svg>
             </button>
         </form>
-        <ol class="flex-auto overflow-auto">
+        <ol bind:this={fileList} class="flex-auto overflow-auto">
             {#each $fileSets as fileSet}
                 <li><span class="block px-2 py-1 text-sm bg-gray-100">{fileSet.name}</span>
                     <ol>
                         {#each fileSet.files as file}
-                            <li><Link to="{file.id}" class="block px-2 py-1 text-sm {$selectedFileId === file.id ? 'text-blue-700' : ''}">{file.attributes.name}</Link></li>
+                            <li><Link to="{file.id}" class="block px-2 py-1 text-sm {$selectedFileId === file.id ? 'text-blue-700' : ''}" aria-current="{$selectedFileId === file.id ? 'true' : 'false'}">{file.attributes.name}</Link></li>
                         {/each}
                     </ol>
                 </li>
