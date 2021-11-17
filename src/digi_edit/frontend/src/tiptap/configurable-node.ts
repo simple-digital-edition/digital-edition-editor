@@ -23,7 +23,6 @@ export function createConfigurableNode(config: TextNodeConfig) {
         name: config.name,
         group: config.group || 'block',
         content: config.content || 'inline*',
-        inline: config.inline || false,
 
         addAttributes() {
             if (config.attributes) {

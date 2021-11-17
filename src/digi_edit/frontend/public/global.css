@@ -89,25 +89,21 @@ div[data-attr-textalign="justify"] {
 }
 
 /**
- * Inline node styling
+ * Mark styling
  */
 
-span[data-type="node-pageBegin"] {
+span[data-type="mark-pageBegin"] {
     font-size: 80%;
     font-style: italic;
 }
 
-span[data-type="node-pageBegin"]::before {
+span[data-type="mark-pageBegin"]::before {
     content: '[';
 }
 
-span[data-type="node-pageBegin"]::after {
+span[data-type="mark-pageBegin"]::after {
     content: ']';
 }
-
-/**
- * Mark styling
- */
 
 span[data-type="mark-fontWeight"] {
     font-weight: bold;

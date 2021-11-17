@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
     import { get } from 'svelte/store';
-    import { Editor, isActive } from '@tiptap/core';
+    import { Editor, isActive, getNodeType } from '@tiptap/core';
     import { Document } from '@tiptap/extension-document';
     import { Text } from '@tiptap/extension-text';
     import { History } from '@tiptap/extension-history';
@@ -17,7 +17,6 @@
     let editorElement = null as HTMLElement;
     let bubbleMenuElement = null as HTMLElement;
     let editor = null;
-    let activeAttributes = {};
 
     function createAttributes(schema, names) {
         const attrs = {};
@@ -83,21 +82,6 @@
                 extensions: extensions,
                 content: parser.parse(text),
                 onTransaction: ({ transaction }) => {
-                    /*const { from, to } = transaction.selection;
-                    const active = {};
-                    transaction.doc.nodesBetween(from, to, (node) => {
-                        active[node.type.name] = node.attrs;
-                        if (node.marks) {
-                            node.marks.forEach((mark) => {
-                                if (mark.attrs) {
-                                    active[mark.type.name] = mark.attrs;
-                                } else {
-                                    active[mark.type.name] = {};
-                                }
-                            });
-                        }
-                    });
-                    activeAttributes = active;*/
                     editor = editor;
                 }
             });
