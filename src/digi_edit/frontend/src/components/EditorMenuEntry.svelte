@@ -33,7 +33,7 @@
         <input type={entry.action.dataType} on:change={change} value={active} min={entry.action.min} max={entry.action.max} step={entry.action.step} class="border border-solid border-gray-300 focus:shadow-inset"/>
     </label>
 {:else}
-    <button on:click={click} class="block p-1 {active ? 'bg-gray-300' : ''} hover:bg-gray-300 transition-colors" title={entry.svg ? entry.label : null} aria-label={entry.svg ? entry.label : null}>
+    <button on:click={click} class="block p-1 {active ? 'bg-gray-300' : ''} hover:bg-gray-300 transition-colors" title={entry.svg ? entry.label : null} aria-label={entry.svg ? entry.label : null} aria-current={active ? 'true' : 'false'}>
         {#if entry.svg}
             {@html entry.svg}
         {:else}
