@@ -150,22 +150,24 @@
      * @param element
      */
     function isConfigActive(editor, config) {
-        if (config.type === 'selectMarkAttribute') {
-            for (let value of config.values) {
-                if (isActive(editor.state, config.name, {[config.attribute]: value.value})) {
-                    return value.value;
+        if (config) {
+            if (config.type === 'selectMarkAttribute') {
+                for (let value of config.values) {
+                    if (isActive(editor.state, config.name, {[config.attribute]: value.value})) {
+                        return value.value;
+                    }
                 }
-            }
-            return false;
-        } else if (config.type === 'inputAttribute') {
-            return editor.getAttributes(config.name)[config.attribute];
-        } else {
-            if (config.attributes) {
-                return isActive(editor.state, config.name, config.attributes);
-            } else if (config.attribute && config.value) {
-                return isActive(editor.state, config.name, {[config.attribute]: config.value});
+                return false;
+            } else if (config.type === 'inputAttribute') {
+                return editor.getAttributes(config.name)[config.attribute];
             } else {
-                return isActive(editor.state, config.name);
+                if (config.attributes) {
+                    return isActive(editor.state, config.name, config.attributes);
+                } else if (config.attribute && config.value) {
+                    return isActive(editor.state, config.name, {[config.attribute]: config.value});
+                } else {
+                    return isActive(editor.state, config.name);
+                }
             }
         }
     }
@@ -196,11 +198,15 @@
                                 {#if section.menus}
                                     {#each section.menus as menu}
                                         {#if menu.entries}
-                                            <ul class="flex flex-row flex-wrap mb-2">
+                                            <ul class="flex flex-row flex-wrap items-center mb-2">
                                                 {#each menu.entries as entry}
-                                                    <li role="presentation">
-                                                        <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
-                                                    </li>
+                                                    {#if entry.separator}
+                                                        <li role="presentation" class="w-6"></li>
+                                                    {:else}
+                                                        <li role="presentation">
+                                                            <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                                        </li>
+                                                    {/if}
                                                 {/each}
                                             </ul>
                                         {/if}
@@ -215,11 +221,15 @@
                 <div bind:this={bubbleMenuElement} class="bg-white p-1 border border-gray-300 shadow-lg">
                     {#each $uiConfig.editor.tei.bubbleMenu as menu}
                         {#if menu.entries}
-                            <ul class="flex flex-row flex-wrap mb-2">
+                            <ul class="flex flex-row flex-wrap items-center mb-2 last:mb-0">
                                 {#each menu.entries as entry}
-                                    <li role="presentation">
-                                        <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
-                                    </li>
+                                    {#if entry.separator}
+                                        <li role="presentation" class="w-6"></li>
+                                    {:else}
+                                        <li role="presentation">
+                                            <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                        </li>
+                                    {/if}
                                 {/each}
                             </ul>
                         {/if}
