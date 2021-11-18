@@ -2,31 +2,31 @@
     font-family: "Merriweather";
     font-style: normal;
     font-weight: 400;
-    src: url("ui/extra/fonts/Merriweather-Regular.woff2");
+    src: url("/theme/extra/fonts/Merriweather-Regular.woff2");
  }
 @font-face {
     font-family: "Merriweather";
     font-style: italic;
     font-weight: 400;
-    src: url("/extra/fonts/Merriweather-Italic.woff2");
+    src: url("/theme/extra/fonts/Merriweather-Italic.woff2");
 }
 @font-face {
     font-family: "Merriweather";
     font-style: normal;
     font-weight: 300;
-    src: url("/extra/fonts/Merriweather-Light.woff2");
+    src: url("/theme/extra/fonts/Merriweather-Light.woff2");
 }
 @font-face {
     font-family: "Merriweather";
     font-style: normal;
     font-weight: 700;
-    src: url("/extra/fonts/Merriweather-Bold.woff2");
+    src: url("/theme/extra/fonts/Merriweather-Bold.woff2");
 }
 @font-face {
     font-family: "Merriweather Sans";
     font-style: normal;
     font-weight: 300;
-    src: url("/extra/fonts/MerriweatherSans-Light.woff2");
+    src: url("/theme/extra/fonts/MerriweatherSans-Light.woff2");
 }
 
 /**
