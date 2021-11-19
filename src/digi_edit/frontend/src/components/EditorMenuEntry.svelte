@@ -20,7 +20,7 @@
     }
 </script>
 
-{#if entry.action.type === 'selectMarkAttribute'}
+{#if entry.action.type === 'selectAttribute'}
     <label class="block"><span class="sr-only">{entry.label}</span>
         <select on:change={change}>
             {#each entry.action.values as value}

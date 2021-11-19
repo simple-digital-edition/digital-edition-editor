@@ -1,10 +1,11 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
-    import { Editor, isActive, getNodeType } from '@tiptap/core';
+    import { Editor, isActive } from '@tiptap/core';
     import { Document } from '@tiptap/extension-document';
     import { Text } from '@tiptap/extension-text';
     import { History } from '@tiptap/extension-history';
     import BubbleMenu from '@tiptap/extension-bubble-menu';
+    import type { Schema, NodeType, MarkType } from 'prosemirror-model';
 
     import { createConfigurableMark, createConfigurableNode, ExtendNodeSelection, ToggleWrapNode } from '../tiptap';
     import EditorMenuEntry from './EditorMenuEntry.svelte';
@@ -17,6 +18,15 @@
     let editorElement = null;
     let bubbleMenuElement = null;
     let editor = null;
+
+    function getSchemaTypeNameByName(name: string, schema: Schema): 'node' | 'mark' | null {
+        if (schema.nodes[name]) {
+            return 'node';
+        } else if (schema.marks[name]) {
+            return 'mark';
+        }
+        return null;
+    }
 
     function createAttributes(schema, names) {
         const attrs = {};
@@ -125,20 +135,28 @@
                 editor.chain().focus().toggleWrapNode(config.name, config.wrappedName, config.unwrappedName).run();
             } else if (config.type === 'toggleMark') {
                 editor.chain().focus().toggleMark(config.name).run();
-            } else if (config.type === 'selectMarkAttribute') {
-                if (isConfigActive(editor, config)) {
-                    if (!ev.detail) {
-                        editor.chain().focus().unsetMark(config.name).run();
+            } else if (config.type === 'selectAttribute') {
+                const elementType = getSchemaTypeNameByName(config.name, editor.schema);
+                if (elementType === 'mark') {
+                    if (isConfigActive(editor, config)) {
+                        if (!ev.detail) {
+                            editor.chain().focus().unsetMark(config.name).run();
+                        } else {
+                            editor.chain().focus().extendMarkRange(config.name).updateAttributes(config.name, {[config.attribute]: ev.detail}).run();
+                        }
                     } else {
-                        editor.chain().focus().extendMarkRange(config.name).updateAttributes(config.name, {[config.attribute]: ev.detail}).run();
+                        editor.chain().focus().setMark(config.name, {[config.attribute]: ev.detail}).run();
                     }
-                } else {
-                    editor.chain().focus().setMark(config.name, {[config.attribute]: ev.detail}).run();
                 }
             } else if (config.type === 'setAttribute') {
                 editor.chain().focus().updateAttributes(config.name, {[config.attribute]: config.value}).run();
             } else if (config.type === 'inputAttribute') {
-                editor.chain().focus().updateAttributes(config.name, {[config.attribute]: ev.detail}).run();
+                const elementType = getSchemaTypeNameByName(config.name, editor.schema);
+                if (elementType === 'node') {
+                    editor.chain().focus().updateAttributes(config.name, {[config.attribute]: ev.detail}).run();
+                } else if (elementType === 'mark') {
+                    editor.chain().focus().extendMarkRange(config.name).updateAttributes(config.name, {[config.attribute]: ev.detail}).run();
+                }
             } else if (config.type === 'toggleAttribute') {
                 if (isConfigActive(editor, config)) {
                     editor.chain().focus().updateAttributes(config.name, {[config.attribute]: null}).run();
