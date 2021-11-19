@@ -59,8 +59,11 @@ export default class XPathEvaluator {
 export class TEIParser {
     private nodeRules = [];
     private attrRules = [];
+    private sections = [];
 
     constructor(config) {
+        this.sections = config.sections;
+
         this.nodeRules = [];
         for (let element of config.elements) {
             if (element.parse) {
@@ -133,7 +136,14 @@ export class TEIParser {
         const doc = parser.parseFromString(text, 'application/xml');
         const xpath = new XPathEvaluator(doc);
         const root = doc.documentElement;
-        return this.cleanEmptyTextNodes(this.parseTextDocument(xpath.firstNode(root, 'tei:text/tei:body'), xpath));
+        const result = {};
+        for (let section of this.sections) {
+            if (section.type === 'text') {
+                result[section.name] = this.cleanEmptyTextNodes(this.parseTextDocument(xpath.firstNode(root, section.parse.rule), xpath))
+            }
+        }
+        return result;
+        //return this.cleanEmptyTextNodes(this.parseTextDocument(xpath.firstNode(root, 'tei:text/tei:body'), xpath));
     }
 
     parseTextDocument(root: Element, xpath: XPathEvaluator) {
@@ -233,20 +243,24 @@ export class TEIParser {
     }
 
     cleanEmptyTextNodes(node) {
-        return {
-            type: node.type,
-            content: node.content.map((child) => {
-                if (child.type !== 'text' || child.text) {
-                    return this.cleanEmptyTextNodes(child);
-                } else {
-                    return false;
-                }
-            }).filter((child) => {
-                return child;
-            }),
-            marks: node.marks,
-            attrs: node.attrs,
-            text: node.text
-        };
+        if (node) {
+            return {
+                type: node.type,
+                content: node.content.map((child) => {
+                    if (child.type !== 'text' || child.text) {
+                        return this.cleanEmptyTextNodes(child);
+                    } else {
+                        return false;
+                    }
+                }).filter((child) => {
+                    return child;
+                }),
+                marks: node.marks,
+                attrs: node.attrs,
+                text: node.text
+            };
+        } else {
+            return undefined;
+        }
     }
 }

@@ -1,8 +1,8 @@
 import { writable } from 'svelte/store';
 
-export const uiConfig = writable({});
+export const uiConfig = writable(null);
 
-export const schema = writable({});
+export const schema = writable(null);
 
 export async function loadUIConfig() {
     const response = await fetch('/config/ui');

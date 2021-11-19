@@ -4,7 +4,7 @@
 	import { Route } from 'svelte-navigator';
 	import { useNavigate, useLocation } from 'svelte-navigator';
 
-    import { isAuthorised } from '../stores';
+    import { isAuthorised, uiConfig, schema } from '../stores';
 	import Editor from '../routes/Editor.svelte';
     import Login from '../routes/Login.svelte';
 
@@ -28,6 +28,8 @@
 </script>
 
 <main class="w-screen h-screen">
-	<Route path="/*"><Editor/></Route>
-    <Route path="/login"><Login/></Route>
+    {#if $uiConfig && $schema}
+	    <Route path="/*"><Editor/></Route>
+        <Route path="/login"><Login/></Route>
+    {/if}
 </main>

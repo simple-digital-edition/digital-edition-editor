@@ -5,6 +5,7 @@ interface TextNodeConfig {
     group?: string;
     content?: string;
     inline?: boolean;
+    defining?: boolean;
     attributes?: {[x:string]: TextNodeAttributeConfig | TextNodeChoiceAttributeConfig};
 }
 
@@ -23,6 +24,7 @@ export function createConfigurableNode(config: TextNodeConfig) {
         name: config.name,
         group: config.group || 'block',
         content: config.content || 'inline*',
+        defining: config.defining || false,
 
         addAttributes() {
             if (config.attributes) {
