@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
     import { Editor, isActive } from '@tiptap/core';
     import { Document } from '@tiptap/extension-document';
     import { Text } from '@tiptap/extension-text';
@@ -15,6 +15,7 @@
     export let bubbleMenu = null;
     export let sidebarMenu = null;
 
+    const dispatch = createEventDispatcher();
     let editorElement = null;
     let bubbleMenuElement = null;
     let editor = null;
@@ -94,7 +95,7 @@
             editor = new Editor({
                 element: editorElement,
                 extensions: extensions,
-                content: doc,
+                content: doc._main,
                 onTransaction: ({ transaction }) => {
                     editor = editor;
                 }
@@ -163,6 +164,11 @@
                 } else {
                     editor.chain().focus().updateAttributes(config.name, {[config.attribute]: config.value}).run();
                 }
+            } else if (config.type === 'editNestedDoc') {
+                dispatch('editNestedDoc', {
+                    type: config.name,
+                    id: editor.getAttributes(config.markerName).nestedTarget
+                })
             }
         }
     }
@@ -207,7 +213,7 @@
                         <h3 class="font-bold mb-2">{section.label}</h3>
                         {#if section.menus}
                             {#each section.menus as menu}
-                                {#if menu.entries}
+                                {#if menu.entries && (!menu.filter || isConfigActive(editor, menu.filter))}
                                     <ul class="flex flex-row flex-wrap items-center mb-2">
                                         {#each menu.entries as entry}
                                             {#if entry.separator}
@@ -234,7 +240,7 @@
     <div id="tiptap-editor-bubblemenu" bind:this={bubbleMenuElement} class="{bubbleMenu ? 'bg-white p-1 border border-gray-300 shadow-lg' : 'hidden'}">
         {#if bubbleMenu}
             {#each bubbleMenu as menu}
-                {#if menu.entries}
+                {#if menu.entries && (!menu.filter || isConfigActive(editor, menu.filter))}
                     <ul class="flex flex-row flex-wrap items-center mb-2 last:mb-0">
                         {#each menu.entries as entry}
                             {#if entry.separator}
@@ -243,7 +249,7 @@
                                         {@html entry.svg}
                                     {/if}
                                 </li>
-                            {:else}
+                            {:else if (!entry.filter || isConfigActive(editor, entry.filter))}
                                 <li role="presentation">
                                     <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
                                 </li>

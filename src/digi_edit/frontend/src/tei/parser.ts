@@ -139,16 +139,19 @@ export class TEIParser {
         const result = {};
         for (let section of this.sections) {
             if (section.type === 'text') {
-                result[section.name] = this.cleanEmptyTextNodes(this.parseTextDocument(xpath.firstNode(root, section.parse.rule), xpath))
+                result[section.name] = this.parseTextDocument(xpath.firstNode(root, section.parse.rule), xpath);
             }
         }
         return result;
-        //return this.cleanEmptyTextNodes(this.parseTextDocument(xpath.firstNode(root, 'tei:text/tei:body'), xpath));
     }
 
     parseTextDocument(root: Element, xpath: XPathEvaluator) {
-        const tmpRoot = {content: []};
-        this.walkTextDocument(root, tmpRoot, (node: Element) => {
+        const doc = {
+            _main: {
+                content: [],
+            },
+        };
+        this.walkTextDocument(root, doc, doc._main, (node: Element) => {
             for (let rule of this.nodeRules) {
                 if (xpath.firstNode(node, 'self::' + rule.rule)) {
                     if (rule.type === 'mark') {
@@ -206,16 +209,37 @@ export class TEIParser {
             }
             return null;
         });
-        if (tmpRoot.content.length > 0) {
-            return tmpRoot.content[0];
+        for (let key of Object.keys(doc)) {
+            if (key === '_main') {
+                doc[key] = this.cleanEmptyTextNodes(doc[key].content[0]);
+            } else {
+                for (let nestedDoc of Object.values(doc[key])) {
+                    nestedDoc.doc = this.cleanEmptyTextNodes(nestedDoc.doc);
+                }
+            }
         }
+        console.log(doc);
+        return doc;
     }
 
-    walkTextDocument(node: Element, parent, callback) {
+    walkTextDocument(node: Element, container, parent, callback) {
         const obj = callback(node);
         if (obj) {
             if (obj.nested) {
-                // Handle nested docs
+                if (!container[obj.type]) {
+                    container[obj.type] = {};
+                }
+                container[obj.type][obj.attrs.xmlid] = {
+                    id: obj.attrs.xmlid,
+                    type: obj.type,
+                    doc: {
+                        type: 'doc',
+                        content: obj.content,
+                    }
+                };
+                for (let child of node.children) {
+                    this.walkTextDocument(child, container, obj, callback);
+                }
             } else {
                 delete obj['nested'];
                 if (parent.type === 'text') {
@@ -228,12 +252,12 @@ export class TEIParser {
                         }
                     }
                     for (let child of node.children) {
-                        this.walkTextDocument(child, parent, callback);
+                        this.walkTextDocument(child, container, parent, callback);
                     }
                 } else {
                     parent.content.push(obj);
                     for (let child of node.children) {
-                        this.walkTextDocument(child, obj, callback);
+                        this.walkTextDocument(child, container, obj, callback);
                     }
                 }
             }
@@ -260,7 +284,7 @@ export class TEIParser {
                 text: node.text
             };
         } else {
-            return undefined;
+            return null;
         }
     }
 }

@@ -15,12 +15,15 @@
         if (uiConfig && uiConfig.editor && uiConfig.editor.tei && uiConfig.editor.tei.sections && uiConfig.editor.tei.menuItems && currentSection && currentSection.bubbleMenu) {
             return currentSection.bubbleMenu.map((menu) => {
                 if (menu.entries) {
-                    return {entries: menu.entries.map((entry) => {
-                        if (entry && uiConfig.editor.tei.menuItems[entry]) {
-                            return uiConfig.editor.tei.menuItems[entry];
-                        }
-                        return null;
-                    }).filter((entry) => { return entry; })}
+                    return {
+                        entries: menu.entries.map((entry) => {
+                            if (entry && uiConfig.editor.tei.menuItems[entry]) {
+                                return uiConfig.editor.tei.menuItems[entry];
+                            }
+                            return null;
+                        }).filter((entry) => { return entry; }),
+                        filter: menu.filter
+                    }
                 } else {
                     return {entries: []}
                 }
@@ -81,6 +84,10 @@
     onDestroy(() => {
         unsubscribeUiConfig();
     });
+
+    function editNestedDoc(ev) {
+        console.log(ev);
+    }
 </script>
 
 <div id="tei-editor" class="flex flex-col h-full overflow-hidden">
@@ -106,7 +113,7 @@
         </nav>
         <div class="flex-auto overflow-hidden">
             {#if $currentSection && $document && $document[$currentSection.name]}
-                <TiptapEditor doc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu}/>
+                <TiptapEditor doc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc}/>
             {/if}
         </div>
     {/if}
