@@ -5,9 +5,9 @@
     import { Text } from '@tiptap/extension-text';
     import { History } from '@tiptap/extension-history';
     import BubbleMenu from '@tiptap/extension-bubble-menu';
-    import type { Schema, NodeType, MarkType } from 'prosemirror-model';
+    import type { Schema } from 'prosemirror-model';
 
-    import { createConfigurableMark, createConfigurableNode, ExtendNodeSelection, ToggleWrapNode } from '../tiptap';
+    import { createConfigurableMark, createConfigurableNode, ExtendNodeSelection, ToggleWrapNode, ClearSelection } from '../tiptap';
     import EditorMenuEntry from './EditorMenuEntry.svelte';
 
     export let doc = null;
@@ -54,6 +54,7 @@
                 Text,
                 ExtendNodeSelection,
                 ToggleWrapNode,
+                ClearSelection,
             ] as any[];
             if (bubbleMenuElement && bubbleMenu) {
                 extensions.push(BubbleMenu.configure({
@@ -80,7 +81,7 @@
                         attributes: createAttributes(schema, element.attrs),
                     }));
                 } else if (element.type === 'nested') {
-                    // TODO: Implement
+                    // Nothing needed for this
                 } else if (element.type === 'text') {
                     // Nothing needed for this
                 } else if (element.type === 'mark') {
@@ -95,27 +96,13 @@
             editor = new Editor({
                 element: editorElement,
                 extensions: extensions,
-                content: doc._main,
+                content: doc,
                 onTransaction: ({ transaction }) => {
                     editor = editor;
                 }
             });
         }
     }
-
-    onMount(() => {
-        initEditor(doc);
-    });
-
-    $: {
-        initEditor(doc);
-    }
-
-    onDestroy(() => {
-        if (this.editor) {
-            this.editor.destroy();
-        }
-    });
 
     /**
      * Handle menubar actions
@@ -168,7 +155,8 @@
                 dispatch('editNestedDoc', {
                     type: config.name,
                     id: editor.getAttributes(config.markerName).nestedTarget
-                })
+                });
+                editor.chain().focus().clearSelection().run();
             }
         }
     }
@@ -201,6 +189,20 @@
             }
         }
     }
+
+    onMount(() => {
+        initEditor(doc);
+    });
+
+    $: {
+        initEditor(doc);
+    }
+
+    onDestroy(() => {
+        if (editor) {
+            editor.destroy();
+        }
+    });
 </script>
 
 <div id="tiptap-editor" class="flex flex-row w-full h-full overflow-hidden">
@@ -222,7 +224,7 @@
                                                         {@html entry.svg}
                                                     {/if}
                                                 </li>
-                                            {:else}
+                                            {:else if (!entry.filter || isConfigActive(editor, entry.filter))}
                                                 <li role="presentation">
                                                     <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
                                                 </li>

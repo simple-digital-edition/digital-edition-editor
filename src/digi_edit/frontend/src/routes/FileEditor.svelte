@@ -15,7 +15,11 @@
         }
     });
 
-    onDestroy(paramsUnsubscribe);
+    onDestroy(() => {
+        console.log('oh');
+        console.log(this);
+        paramsUnsubscribe();
+    });
 </script>
 
 <div class="flex-auto overflow-hidden">

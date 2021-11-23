@@ -139,7 +139,17 @@ export class TEIParser {
         const result = {};
         for (let section of this.sections) {
             if (section.type === 'text') {
-                result[section.name] = this.parseTextDocument(xpath.firstNode(root, section.parse.rule), xpath);
+                const docRoot = xpath.firstNode(root, section.parse.rule);
+                if (docRoot) {
+                    result[section.name] = this.parseTextDocument(docRoot, xpath);
+                } else {
+                    result[section.name] = {
+                        _main: {
+                            type: 'doc',
+                            content: [],
+                        }
+                    }
+                }
             }
         }
         return result;
@@ -218,7 +228,6 @@ export class TEIParser {
                 }
             }
         }
-        console.log(doc);
         return doc;
     }
 
