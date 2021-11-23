@@ -10,7 +10,6 @@ try:
 except ImportError:
     from yaml import Loader
 
-from digi_edit.models import Branch
 from digi_edit.util import get_config_setting
 
 

@@ -13,6 +13,7 @@
     const document = writable({});
     const nestedDoc = writable(null);
     const nestedSection = writable(null);
+    const nestedId = writable(null);
 
     function createBubbleMenu(uiConfig, section) {
         return section.bubbleMenu.map((menu) => {
@@ -94,15 +95,48 @@
 
     function editNestedDoc(ev) {
         const doc = $document[$currentSection.name];
-        if (doc[ev.detail.type] && doc[ev.detail.type][ev.detail.id]) {
+        if (doc[ev.detail.type]) {
             const sect = $uiConfig.editor.tei.sections.filter((sect) => {
                 return sect.name === ev.detail.type;
             });
             if (sect.length === 1) {
-                nestedDoc.set(doc[ev.detail.type][ev.detail.id].doc);
-                nestedSection.set(sect[0]);
+                if (doc[ev.detail.type][ev.detail.id]) {
+                    nestedDoc.set(doc[ev.detail.type][ev.detail.id].doc);
+                    nestedSection.set(sect[0]);
+                    nestedId.set(ev.detail.id);
+                } else {
+                    let newId = 1;
+                    Object.values($document).forEach((section) => {
+                        if (section[ev.detail.type]) {
+                            const ids = Object.keys(section[ev.detail.type]);
+                            while (ids.indexOf(ev.detail.type + '-' + newId) >= 0) {
+                                newId = newId + 1;
+                            }
+                        }
+                    });
+                    doc[ev.detail.type][ev.detail.type + '-' + newId] = {
+                        type: ev.detail.type,
+                        id: ev.detail.type + '-' + newId,
+                        doc: {
+                            type: 'doc',
+                            content: [],
+                        },
+                    };
+                    ev.detail.created(ev.detail.type + '-' + newId);
+                    nestedDoc.set(doc[ev.detail.type][ev.detail.type + '-' + newId].doc);
+                    nestedSection.set(sect[0]);
+                    nestedId.set(ev.detail.type + '-' + newId);
+                }
             }
         }
+    }
+
+    function updateMainDoc(ev) {
+        $document[$currentSection.name]._main = ev.detail;
+    }
+
+    function updateNestedDoc(ev) {
+        $document[$currentSection.name][$nestedSection.name][$nestedId].doc = ev.detail;
     }
 
     onMount(() => {
@@ -147,13 +181,13 @@
         </nav>
         <div class="flex-auto overflow-hidden">
             {#if $currentSection && $document && $document[$currentSection.name]}
-                <TiptapEditor doc={$document[$currentSection.name]._main} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc}/>
+                <TiptapEditor doc={$document[$currentSection.name]._main} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateMainDoc}/>
             {/if}
         </div>
         {#if $nestedDoc}
             <div transition:fade="{{ duration: 100 }}" on:click={() => { nestedDoc.set(null); }} class="absolute left-0 top-0 w-full h-full z-10 bg-white bg-opacity-70">
                 <div on:click={(ev) => { ev.stopPropagation(); }} class="absolute left-1/2 top-1/2 w-4/5 h-4/5 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-300 shadow-lg">
-                    <TiptapEditor doc={$nestedDoc} schema={$schema} bubbleMenu={$nestedBubbleMenu} sidebarMenu={$nestedSidebarMenu} on:editNestedDoc={editNestedDoc}/>
+                    <TiptapEditor doc={$nestedDoc} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$nestedBubbleMenu} sidebarMenu={$nestedSidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateNestedDoc}/>
                     <div class="absolute right-0 top-0 z-10 transform translate-x-1/2 -translate-y-1/2">
                         <button on:click={() => { nestedDoc.set(null); }} class="block p-1 bg-white rounded-full border border-gray-300 shadow-lg">
                             <svg viewBox="0 0 24 24" class="w-6 w-8">

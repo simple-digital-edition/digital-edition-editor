@@ -11,6 +11,7 @@
     import EditorMenuEntry from './EditorMenuEntry.svelte';
 
     export let doc = null;
+    export let fullDoc = null;
     export let schema = null;
     export let bubbleMenu = null;
     export let sidebarMenu = null;
@@ -19,6 +20,8 @@
     let editorElement = null;
     let bubbleMenuElement = null;
     let editor = null;
+    let updateTimeout = null;
+    let internalUpdate = false;
 
     function getSchemaTypeNameByName(name: string, schema: Schema): 'node' | 'mark' | null {
         if (schema.nodes[name]) {
@@ -44,6 +47,10 @@
     }
 
     function initEditor(text: string) {
+        if (internalUpdate) {
+            internalUpdate = false;
+            return;
+        }
         if (editor) {
             editor.destroy();
         }
@@ -98,6 +105,13 @@
                 extensions: extensions,
                 content: doc,
                 onTransaction: ({ transaction }) => {
+                    if (transaction.docChanged) {
+                        clearTimeout(updateTimeout);
+                        updateTimeout = setTimeout(() => {
+                            internalUpdate = true;
+                            dispatch('update', transaction.doc.toJSON());
+                        }, 1000);
+                    }
                     editor = editor;
                 }
             });
@@ -136,6 +150,11 @@
                         editor.chain().focus().setMark(config.name, {[config.attribute]: ev.detail}).run();
                     }
                 }
+            } else if (config.type === 'selectNestedDoc') {
+                const elementType = getSchemaTypeNameByName(config.markerName, editor.schema);
+                if (elementType === 'mark') {
+                    editor.chain().focus().extendMarkRange(config.markerName).updateAttributes(config.markerName, {nestedTarget: ev.detail}).run();
+                }
             } else if (config.type === 'setAttribute') {
                 editor.chain().focus().updateAttributes(config.name, {[config.attribute]: config.value}).run();
             } else if (config.type === 'inputAttribute') {
@@ -152,11 +171,21 @@
                     editor.chain().focus().updateAttributes(config.name, {[config.attribute]: config.value}).run();
                 }
             } else if (config.type === 'editNestedDoc') {
-                dispatch('editNestedDoc', {
-                    type: config.name,
-                    id: editor.getAttributes(config.markerName).nestedTarget
-                });
-                editor.chain().focus().clearSelection().run();
+                if (editor.getAttributes(config.markerName).nestedTarget) {
+                    dispatch('editNestedDoc', {
+                        type: config.name,
+                        id: editor.getAttributes(config.markerName).nestedTarget,
+                    });
+                    editor.chain().focus().clearSelection().run();
+                } else {
+                    dispatch('editNestedDoc', {
+                        type: config.name,
+                        id: editor.getAttributes(config.markerName).nestedTarget,
+                        created(newId: string) {
+                            editor.chain().focus().extendMarkRange(config.markerName).updateAttributes(config.markerName, {'nestedTarget': newId}).clearSelection().run();
+                        }
+                    });
+                }
             }
         }
     }
@@ -176,6 +205,8 @@
                     }
                 }
                 return false;
+            } else if (config.type === 'selectNestedDoc') {
+                return editor.getAttributes(config.markerName).nestedTarget;
             } else if (config.type === 'inputAttribute') {
                 return editor.getAttributes(config.name)[config.attribute];
             } else {
@@ -190,7 +221,20 @@
         }
     }
 
+    function nestedDocList(entry) {
+        if (fullDoc[entry.action.name]) {
+            return Object.values(fullDoc[entry.action.name]).map((nestedDoc) => {
+                return {
+                    value: nestedDoc.id,
+                    label: nestedDoc.id,
+                }
+            });
+        }
+        return [];
+    }
+
     onMount(() => {
+        internalUpdate = false;
         initEditor(doc);
     });
 
@@ -226,7 +270,11 @@
                                                 </li>
                                             {:else if (!entry.filter || isConfigActive(editor, entry.filter))}
                                                 <li role="presentation">
-                                                    <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                                    {#if entry.action.type === 'selectNestedDoc'}
+                                                        <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} values={nestedDocList(entry)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                                    {:else}
+                                                        <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                                    {/if}
                                                 </li>
                                             {/if}
                                         {/each}
@@ -253,7 +301,11 @@
                                 </li>
                             {:else if (!entry.filter || isConfigActive(editor, entry.filter))}
                                 <li role="presentation">
-                                    <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                    {#if entry.action.type === 'selectNestedDoc'}
+                                        <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} values={nestedDocList(entry)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                    {:else}
+                                        <EditorMenuEntry entry={entry} active={isConfigActive(editor, entry.action)} on:action={(ev) => { handleAction(entry, ev) }}/>
+                                    {/if}
                                 </li>
                             {/if}
                         {/each}
