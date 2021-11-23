@@ -244,6 +244,8 @@
 
     onDestroy(() => {
         if (editor) {
+            clearTimeout(updateTimeout);
+            dispatch('update', editor.state.doc.toJSON());
             editor.destroy();
         }
     });
