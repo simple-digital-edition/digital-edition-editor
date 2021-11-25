@@ -4,7 +4,7 @@
 	import { fade } from 'svelte/transition';
 
     import { schema, uiConfig } from '../stores';
-    import { TEIParser } from '../tei';
+    import { TEIParser, TEISerialiser } from '../tei';
     import TiptapEditor from './TiptapEditor.svelte';
 
     export let text: string;
@@ -139,6 +139,11 @@
         $document[$currentSection.name][$nestedSection.name][$nestedId].doc = ev.detail;
     }
 
+    function saveDoc() {
+        const serialiser = new TEISerialiser(get(schema));
+        console.log(serialiser.serialise($document));
+    }
+
     onMount(() => {
         if (text) {
             const parser = new TEIParser(get(schema));
@@ -161,10 +166,7 @@
         <nav class="flex-none">
             <ul class="flex flex-row">
                 <li role="presentation">
-                    <button class="block px-2 py-1 border-b border-solid border-gray-300 hover:border-blue-700 focus:border-blu-700">Save</button>
-                </li>
-                <li role="presentation">
-                    <button class="block px-2 py-1 border-b border-solid border-gray-300 hover:border-blue-700 focus:border-blu-700">Discard</button>
+                    <button on:click={saveDoc} class="block px-2 py-1 border-b border-solid border-gray-300 hover:border-blue-700 focus:border-blu-700">Save</button>
                 </li>
                 <li role="presentation" class="w-8 border-b border-solid border-gray-300"></li>
                 {#if $uiConfig.editor.tei.sections}

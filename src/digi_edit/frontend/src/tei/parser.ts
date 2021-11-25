@@ -162,31 +162,38 @@ export class TEIParser {
             },
         };
         this.walkTextDocument(root, doc, doc._main, (node: Element) => {
+            let markObj = null;
             for (let rule of this.nodeRules) {
                 if (xpath.firstNode(node, 'self::' + rule.rule)) {
                     if (rule.type === 'mark') {
-                        const obj = {
-                            type: 'text',
-                            content: [],
-                            marks: [
-                                {
-                                    type: rule.name,
-                                    attrs: {},
-                                }
-                            ],
-                            attrs: {},
-                            text: null,
+                        if (markObj === null) {
+                            markObj = {
+                                type: 'text',
+                                content: [],
+                                marks: [
+                                    {
+                                        type: rule.name,
+                                        attrs: {},
+                                    }
+                                ],
+                                attrs: {},
+                                text: null,
+                            }
+                        } else {
+                            markObj.marks.push({
+                                type: rule.name,
+                                attrs: {},
+                            });
                         }
                         if (rule.text && node.children.length === 0) {
-                            obj.text = xpath.stringValue(node, rule.text)
+                            markObj.text = xpath.stringValue(node, rule.text)
                         }
                         for (let attrRule of this.attrRules) {
                             if (rule.attrs && rule.attrs.indexOf(attrRule.name) >= 0 && xpath.booleanValue(node, attrRule.rule)) {
-                                obj.marks[0].attrs[attrRule.name] = xpath.stringValue(node, attrRule.value);
+                                markObj.marks[markObj.marks.length - 1].attrs[attrRule.name] = xpath.stringValue(node, attrRule.value);
                             }
                         }
-                        return obj;
-                    } else {
+                    } else if (markObj === null) {
                         const obj = {
                             type: rule.name,
                             content: [],
@@ -217,7 +224,7 @@ export class TEIParser {
                     }
                 }
             }
-            return null;
+            return markObj;
         });
         for (let key of Object.keys(doc)) {
             if (key === '_main') {
