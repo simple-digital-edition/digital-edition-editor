@@ -150,6 +150,8 @@ export class TEIParser {
                         }
                     }
                 }
+            } else if (section.type === 'metadata') {
+                result[section.name] = this.parseMetadata(root, xpath);
             }
         }
         return result;
@@ -282,7 +284,7 @@ export class TEIParser {
         }
     }
 
-    cleanEmptyTextNodes(node) {
+    private cleanEmptyTextNodes(node) {
         if (node) {
             return {
                 type: node.type,
@@ -302,5 +304,22 @@ export class TEIParser {
         } else {
             return null;
         }
+    }
+
+    private parseMetadata(root, xpath: XPathEvaluator) {
+        return this.walkMetadata(xpath.firstNode(root, 'tei:teiHeader'), xpath);
+    }
+
+    private walkMetadata(node, xpath: XPathEvaluator) {
+        const text = xpath.stringValue(node, 'text()').trim();
+        const entry = {
+            tag: 'tei:' + node.localName,
+            children: Array.from(node.children).map((child) => { return this.walkMetadata(child, xpath); }),
+            text: text ? text : null,
+            attributes: Object.fromEntries(Array.from(node.attributes).map((attr) => {
+                return [attr.name, attr.value];
+            })),
+        }
+        return entry;
     }
 }

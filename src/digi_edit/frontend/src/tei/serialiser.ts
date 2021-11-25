@@ -33,6 +33,8 @@ export class TEISerialiser {
                 this.serialiseNestedDocs(leaf, this.textDoc2tree(leaf, doc[section.name]._main), doc[section.name]);
 
                 this.mergeTree(tree, root);
+            } else if (section.type === 'metadata' && doc[section.name]) {
+                this.mergeTree(tree, doc[section.name]);
             }
         }
         const lines = [
