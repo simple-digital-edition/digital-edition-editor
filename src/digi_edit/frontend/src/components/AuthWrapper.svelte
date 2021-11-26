@@ -31,5 +31,7 @@
     {#if $uiConfig && $schema}
 	    <Route path="/*"><Editor/></Route>
         <Route path="/login"><Login/></Route>
+    {:else}
+        <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">The editor is starting up. Please wait...</div>
     {/if}
 </main>

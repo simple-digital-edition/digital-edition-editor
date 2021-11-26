@@ -6,6 +6,7 @@
     import { schema, uiConfig, fileBusy } from '../stores';
     import { TEIParser, TEISerialiser } from '../tei';
     import TiptapEditor from './TiptapEditor.svelte';
+    import BusySpinner from './BusySpinner.svelte';
 
     export let text: string;
 
@@ -168,68 +169,7 @@
             <ul class="flex flex-row">
                 <li role="presentation">
                     {#if $fileBusy}
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="block w-10 h-8 px-2 py-1 border-b border-solid border-gray-300" aria-label="Saving your file" title="Saving...">
-                            <g transform="rotate(0 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(30 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.8333333333333334s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(60 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.75s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(90 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.6666666666666666s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(120 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5833333333333334s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(150 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(180 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.4166666666666667s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(210 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.3333333333333333s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(240 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.25s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(270 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.16666666666666666s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(300 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.08333333333333333s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                            <g transform="rotate(330 50 50)">
-                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
-                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animate>
-                                </rect>
-                            </g>
-                        </svg>
+                        <BusySpinner class="px-2 py-1" message="Your file is being saved. Please wait..."/>
                     {:else}
                         <button on:click={saveDoc} class="block px-2 py-1 border-b border-solid border-gray-300 hover:border-blue-700 focus:border-blu-700" aria-label="Save">
                             <svg viewBox="0 0 24 24" class="w-6 h-6">

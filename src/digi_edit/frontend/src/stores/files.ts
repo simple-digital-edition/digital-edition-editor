@@ -7,43 +7,48 @@ export const files = writable([]);
 export const filesBusy = writable(false);
 
 export async function getAllFiles(branchId) {
-    let fileList = await getAll('files', 'filter[branch_id]=' + branchId);
-    fileList = fileList.filter((file) => {
-        return (file.attributes.name.endsWith('.md') || file.attributes.name.endsWith('.rst') || file.attributes.name.endsWith('.tei'));
-    });
-    fileList.sort((a, b) => {
-        if (a.attributes.path === b.attributes.path) {
-            if (a.attributes.name === b.attributes.name) {
-                return 0;
-            } else if (a.attributes.name > b.attributes.name) {
-                return 1;
-            } else {
-                return -1;
-            }
-        } else {
-            let aPath = a.attributes.path.split('/');
-            if (a.attributes.path === '/') {
-                aPath = [''];
-            }
-            let bPath = b.attributes.path.split('/');
-            if (b.attributes.path === '/') {
-                bPath = [''];
-            }
-            for (let idx = 0; idx < Math.max(aPath.length, bPath.length); idx++) {
-                if (idx >= aPath.length) {
-                    return -1;
-                } else if (idx >= bPath.length) {
+    try {
+        filesBusy.set(true);
+        let fileList = await getAll('files', 'filter[branch_id]=' + branchId);
+        fileList = fileList.filter((file) => {
+            return (file.attributes.name.endsWith('.md') || file.attributes.name.endsWith('.rst') || file.attributes.name.endsWith('.tei'));
+        });
+        fileList.sort((a, b) => {
+            if (a.attributes.path === b.attributes.path) {
+                if (a.attributes.name === b.attributes.name) {
+                    return 0;
+                } else if (a.attributes.name > b.attributes.name) {
                     return 1;
-                } else if (aPath[idx] < bPath[idx]) {
+                } else {
                     return -1;
-                } else if (aPath[idx] > bPath[idx]) {
-                    return 1;
                 }
+            } else {
+                let aPath = a.attributes.path.split('/');
+                if (a.attributes.path === '/') {
+                    aPath = [''];
+                }
+                let bPath = b.attributes.path.split('/');
+                if (b.attributes.path === '/') {
+                    bPath = [''];
+                }
+                for (let idx = 0; idx < Math.max(aPath.length, bPath.length); idx++) {
+                    if (idx >= aPath.length) {
+                        return -1;
+                    } else if (idx >= bPath.length) {
+                        return 1;
+                    } else if (aPath[idx] < bPath[idx]) {
+                        return -1;
+                    } else if (aPath[idx] > bPath[idx]) {
+                        return 1;
+                    }
+                }
+                return 0;
             }
-            return 0;
-        }
-    });
-    files.set(fileList);
+        });
+        files.set(fileList);
+    } finally {
+        filesBusy.set(false);
+    }
 }
 
 export const file = writable(null);

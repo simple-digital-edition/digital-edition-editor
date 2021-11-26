@@ -3,6 +3,7 @@ import { writable, derived } from 'svelte/store';
 import { getAll } from './jsonapi';
 
 export const branches = writable([]);
+export const branchesBusy = writable(false);
 
 export const activeBranches = derived(branches, (branches) => {
     return branches.filter((branch) => {
@@ -11,5 +12,10 @@ export const activeBranches = derived(branches, (branches) => {
 });
 
 export async function getAllBranches() {
-    branches.set(await getAll('branches', ''));
+    try {
+        branchesBusy.set(true);
+        branches.set(await getAll('branches', ''));
+    } finally {
+        branchesBusy.set(false);
+    }
 }
