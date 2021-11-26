@@ -39,3 +39,19 @@ export async function postBranchAction(branch, action: string) {
         busyBranchAction.set('');
     }
 }
+
+export async function deleteBranch(branch) {
+    try {
+        busyBranchAction.set('delete');
+        const url = '/api/branches/' + branch.id;
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'X-Authorization': get(authToken),
+            }
+        });
+        await getAllBranches();
+    } catch {
+        busyBranchAction.set('');
+    }
+}

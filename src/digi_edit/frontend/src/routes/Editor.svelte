@@ -1,14 +1,15 @@
 <script lang="ts">
     import { tick, onDestroy } from 'svelte';
-    import { derived, get } from 'svelte/store';
-    import { Route, Link, useLocation, useParams } from 'svelte-navigator';
+    import { derived } from 'svelte/store';
+    import { Route, Link, useLocation, useParams, useNavigate } from 'svelte-navigator';
 
-    import { activeBranches, getAllBranches, branchesBusy, postBranchAction, busyBranchAction } from '../stores';
+    import { activeBranches, getAllBranches, branchesBusy, postBranchAction, busyBranchAction, deleteBranch } from '../stores';
     import TaskEditor from './TaskEditor.svelte';
     import BusySpinner from '../components/BusySpinner.svelte';
 
     const location = useLocation();
     const params = useParams();
+    const navigate = useNavigate();
 
     const selectedTask = derived([activeBranches, params], ([activeBranches, params]) => {
         let taskId = params['*'];
@@ -22,6 +23,16 @@
             return selectedTask[0];
         }
         return null;
+    });
+
+    let oldSelectedTask = null;
+
+    const selectedTaskUnsubscribe = selectedTask.subscribe((selectedTask) => {
+        if (selectedTask === null && oldSelectedTask !== null) {
+            navigate('/');
+            busyBranchAction.set('');
+        }
+        oldSelectedTask = selectedTask;
     });
 
     let showTaskMenu = false;
@@ -67,6 +78,10 @@
         }, 5000);
     }
 
+    async function deleteTask() {
+        await deleteBranch($selectedTask);
+    }
+
     async function rebase() {
         await postBranchAction($selectedTask, 'rebase');
     }
@@ -82,6 +97,7 @@
     onDestroy(() => {
         clearInterval(branchRefreshInterval);
         unsubscribeLocation();
+        selectedTaskUnsubscribe();
     });
 
     getAllBranches();
@@ -111,6 +127,10 @@
                         {#each $activeBranches as branch}
                             <li role="presentation">
                                 <Link to="/{branch.id}" class="block w-full text-left px-3 py-1 hover:text-blue-700 focus:text-blue-700">{branch.attributes.name}</Link>
+                            </li>
+                        {:else}
+                            <li role="presentation">
+                                <p class="px-3 py-1">There are no active tasks</p>
                             </li>
                         {/each}
                     </ul>
@@ -156,11 +176,15 @@
                     </li>
                 {/if}
                 <li role="presentation">
-                    <button class="block px-3 py-1 border-b-2 border-solid border-gray-300 hover:border-blue-700 focus:border-blue-700 transition-colors" aria-label="Delete this task" title="Delete this task">
-                        <svg viewBox="0 0 24 24" class="w-6 h-6">
-                            <path fill="currentColor" d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
-                        </svg>
-                    </button>
+                    {#if $busyBranchAction === 'delete'}
+                        <BusySpinner width="w-6" height="h-6" class="px-3 py-1 border-b-2 border-solid border-gray-300" message="Deleting. Please wait..."/>
+                    {:else}
+                        <button on:click={deleteTask} class="block px-3 py-1 border-b-2 border-solid border-gray-300 hover:border-blue-700 focus:border-blue-700 transition-colors" aria-label="Delete this task" title="Delete this task">
+                            <svg viewBox="0 0 24 24" class="w-6 h-6">
+                                <path fill="currentColor" d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
+                            </svg>
+                        </button>
+                    {/if}
                 </li>
             {:else if !$branchesBusy}
                 <li role="presentation">
