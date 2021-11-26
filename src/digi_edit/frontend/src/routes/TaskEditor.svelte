@@ -3,11 +3,13 @@
     import { derived, writable } from 'svelte/store';
     import { Link, Route, useParams } from 'svelte-navigator';
 
-    import { files, getAllFiles } from '../stores';
+    import { files, filesBusy, getAllFiles } from '../stores';
     import FileEditor from './FileEditor.svelte';
 
     const params = useParams();
     const fileSearchText = writable('');
+    let sidebarElement = null as HTMLElement;
+    let emWidthElement = null as HTMLElement;
     let oldTaskId = null;
     let fileList = null;
 
@@ -56,11 +58,26 @@
     });
 
     onDestroy(paramsUnsubscribe);
+
+    function limitedPath(path) {
+        if (sidebarElement) {
+            const maxLength = Math.floor(sidebarElement.clientWidth / (emWidthElement.clientWidth / 26));
+            if (path.length > maxLength) {
+                const elements = path.split('/');
+                path = elements[0] + '/.../' + elements[elements.length - 1];
+                if (path.length > maxLength) {
+                    path = '.../' + elements[elements.length - 1];
+                }
+            }
+        }
+        return path;
+    }
 </script>
 
 <div class="flex-auto flex flex-row overflow-hidden">
     <h2 class="sr-only">Task Editor</h2>
-    <div class="flex flex-col flex-none w-1/5 overflow-hidden border-r border-solid border-gray-300">
+    <div bind:this={sidebarElement} class="flex flex-col flex-none w-1/5 overflow-hidden border-r border-solid border-gray-300">
+        <span bind:this={emWidthElement} class="absolute -top-full -left-full" aria-hidden="true">abcdefghijklmnopqrstuvwxyz</span>
         <form on:submit={(ev) => { ev.preventDefault(); }} class="flex-none relative">
             <label>
                 <span class="sr-only">Search files</span>
@@ -74,7 +91,7 @@
         </form>
         <ol bind:this={fileList} class="flex-auto overflow-auto">
             {#each $fileSets as fileSet}
-                <li><span class="block px-2 py-1 text-sm bg-gray-100">{fileSet.name}</span>
+                <li><span class="block px-2 py-1 text-sm bg-gray-100 truncate" title={fileSet.name}>{limitedPath(fileSet.name)}</span>
                     <ol>
                         {#each fileSet.files as file}
                             <li><Link to="{file.id}" class="block px-2 py-1 text-sm {$selectedFileId === file.id ? 'text-blue-700' : ''}" aria-current="{$selectedFileId === file.id ? 'true' : 'false'}">{file.attributes.name}</Link></li>
@@ -86,7 +103,7 @@
     </div>
     <Route path="/">
         <div class="flex-auto relative">
-            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">Please select the file you wish to work on from the list on the left</div>
+            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">{#if $filesBusy}Files are being loaded. Please wait...{:else}Please select the file you wish to work on from the list on the left{/if}</div>
         </div>
     </Route>
     <Route path="/:fid"><FileEditor/></Route>

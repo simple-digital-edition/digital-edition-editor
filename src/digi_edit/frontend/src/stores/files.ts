@@ -4,6 +4,7 @@ import { getAll } from './jsonapi';
 import { authToken } from './auth';
 
 export const files = writable([]);
+export const filesBusy = writable(false);
 
 export async function getAllFiles(branchId) {
     let fileList = await getAll('files', 'filter[branch_id]=' + branchId);
