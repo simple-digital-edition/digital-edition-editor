@@ -46,17 +46,43 @@ export async function getAllFiles(branchId) {
 }
 
 export const file = writable(null);
+export const fileBusy = writable(false);
 
 export async function getFile(fileId) {
-    const response = await fetch('/api/files/' + fileId, {
-        headers: {
-            'X-Authorization': get(authToken),
-            'X-Include-Data': 'true'
+    try {
+        fileBusy.set(true);
+        const response = await fetch('/api/files/' + fileId, {
+            headers: {
+                'X-Authorization': get(authToken),
+                'X-Include-Data': 'true',
+            }
+        });
+        if (response.status === 200) {
+            file.set((await response.json()).data);
+        } else {
+            file.set(null);
         }
-    });
-    if (response.status === 200) {
-        file.set((await response.json()).data);
-    } else {
-        file.set(null);
+    } finally {
+        fileBusy.set(false);
+    }
+}
+
+export async function patchFile(file) {
+    try {
+        fileBusy.set(true);
+        const response = await fetch('/api/files/' + file.id, {
+            method: 'PATCH',
+            headers: {
+                'X-Authorization': get(authToken),
+                'X-Include-Data': 'true',
+            },
+            body: JSON.stringify({data: file}),
+        });
+        if (response.status !== 200) {
+            throw new Error('Failed to save');
+        }
+    } finally {
+        fileBusy.set(false);
+
     }
 }

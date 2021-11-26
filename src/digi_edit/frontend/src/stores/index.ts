@@ -1,6 +1,6 @@
 import { authToken, isAuthorised, authTokenChecker } from './auth';
 import { branches, activeBranches, getAllBranches } from './branches';
-import { files, getAllFiles, file, getFile } from './files';
+import { files, getAllFiles, file, fileBusy, getFile, patchFile } from './files';
 import { schema, uiConfig, loadSchema, loadUIConfig, loadConfig } from './config';
 
 export {
@@ -21,5 +21,7 @@ export {
     files,
     getAllFiles,
     file,
+    fileBusy,
     getFile,
+    patchFile,
 }

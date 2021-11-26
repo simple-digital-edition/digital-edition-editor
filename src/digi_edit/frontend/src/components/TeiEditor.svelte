@@ -1,14 +1,15 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
     import { derived, get, writable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 
-    import { schema, uiConfig } from '../stores';
+    import { schema, uiConfig, fileBusy } from '../stores';
     import { TEIParser, TEISerialiser } from '../tei';
     import TiptapEditor from './TiptapEditor.svelte';
 
     export let text: string;
 
+    const dispatch = createEventDispatcher();
     const currentSection = writable({});
     const document = writable({});
     const nestedDoc = writable(null);
@@ -141,7 +142,7 @@
 
     function saveDoc() {
         const serialiser = new TEISerialiser(get(schema));
-        console.log(serialiser.serialise($document));
+        dispatch('save', serialiser.serialise($document));
     }
 
     onMount(() => {
@@ -166,7 +167,76 @@
         <nav class="flex-none">
             <ul class="flex flex-row">
                 <li role="presentation">
-                    <button on:click={saveDoc} class="block px-2 py-1 border-b border-solid border-gray-300 hover:border-blue-700 focus:border-blu-700">Save</button>
+                    {#if $fileBusy}
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="block w-10 h-8 px-2 py-1 border-b border-solid border-gray-300" aria-label="Saving your file" title="Saving...">
+                            <g transform="rotate(0 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(30 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.8333333333333334s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(60 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.75s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(90 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.6666666666666666s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(120 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5833333333333334s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(150 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(180 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.4166666666666667s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(210 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.3333333333333333s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(240 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.25s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(270 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.16666666666666666s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(300 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.08333333333333333s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                            <g transform="rotate(330 50 50)">
+                                <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
+                                    <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animate>
+                                </rect>
+                            </g>
+                        </svg>
+                    {:else}
+                        <button on:click={saveDoc} class="block px-2 py-1 border-b border-solid border-gray-300 hover:border-blue-700 focus:border-blu-700" aria-label="Save">
+                            <svg viewBox="0 0 24 24" class="w-6 h-6">
+                                <path fill="currentColor" d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
+                            </svg>
+                        </button>
+                    {/if}
                 </li>
                 <li role="presentation" class="w-8 border-b border-solid border-gray-300"></li>
                 {#if $uiConfig.editor.tei.sections}
