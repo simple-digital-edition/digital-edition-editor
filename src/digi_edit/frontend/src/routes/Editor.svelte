@@ -124,10 +124,22 @@
                     </button>
                 {/if}
                 {#if showTaskMenu}
-                    <ul bind:this={taskMenu} class="absolute left-0 top-full w-full bg-white z-10 border-l border-b border-r border-solid border-gray-300 shadow max-h-64 overflow-auto">
+                    <ul bind:this={taskMenu} class="absolute left-0 top-full min-w-full bg-white z-10 border-l border-b border-r border-solid border-gray-300 shadow max-h-64 overflow-y-auto overflow-x-visible">
                         {#each $activeBranches as branch}
                             <li role="presentation">
-                                <Link to="/{branch.id}" class="block w-full text-left px-3 py-1 hover:text-blue-700 focus:text-blue-700">{branch.attributes.name}</Link>
+                                <Link to="/{branch.id}" class="block flex flex-row items-center w-full text-left px-3 py-1 hover:text-blue-700 focus:text-blue-700 overflow-visible" title="{(!branch.attributes.pull_request || branch.attributes.pull_request.state !== 'open') ? 'Work on this task' : 'The integration of this task has been requested. If you want to make changes, cancel the integration first.'}">
+                                    <span class="block flex-auto whitespace-nowrap">{branch.attributes.name}</span>
+                                    <span class="block flex-none w-4"></span>
+                                    {#if !branch.attributes.pull_request || branch.attributes.pull_request.state !== 'open'}
+                                        <svg aria-hidden="true" viewBox="0 0 24 24" class="block flex-none w-4 h-4" aria-label="Edit">
+                                            <path fill="currentColor" d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" />
+                                        </svg>
+                                    {:else}
+                                        <svg aria-hidden="true" viewBox="0 0 24 24" class="block flex-none w-4 h-4" aria-label="Integration requested">
+                                            <path fill="currentColor" d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M21,18A3,3 0 0,1 18,21A3,3 0 0,1 15,18C15,16.69 15.83,15.58 17,15.17V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V15.17C20.17,15.58 21,16.69 21,18M18,17A1,1 0 0,0 17,18A1,1 0 0,0 18,19A1,1 0 0,0 19,18A1,1 0 0,0 18,17Z" />
+                                        </svg>
+                                    {/if}
+                                </Link>
                             </li>
                         {:else}
                             <li role="presentation">
