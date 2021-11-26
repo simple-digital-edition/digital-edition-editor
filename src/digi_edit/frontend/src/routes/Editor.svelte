@@ -5,6 +5,7 @@
 
     import { activeBranches, getAllBranches, branchesBusy, postBranchAction, busyBranchAction, deleteBranch } from '../stores';
     import TaskEditor from './TaskEditor.svelte';
+    import NewTask from './NewTask.svelte';
     import BusySpinner from '../components/BusySpinner.svelte';
 
     const location = useLocation();
@@ -188,7 +189,7 @@
                 </li>
             {:else if !$branchesBusy}
                 <li role="presentation">
-                    <button class="block px-3 py-1 border-b-2 border-solid border-gray-300 hover:border-blue-700 focus:border-blue-700 transition-colors">New Task</button>
+                    <Link to="/new" class="block px-3 py-1 border-b-2 border-solid border-gray-300 hover:border-blue-700 focus:border-blue-700 transition-colors">New Task</Link>
                 </li>
             {/if}
             <li role="presentation" class="flex-auto border-b-2 border-solid border-gray-300"></li>
@@ -200,8 +201,9 @@
     </nav>
     <Route path="/">
         <div class="flex-auto relative">
-            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">Please select the task you wish to work on from the top menu or <button>create a new one</button></div>
+            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">Please select the task you wish to work on from the top menu or <Link to="/new" class="underline">create a new one</Link></div>
         </div>
     </Route>
+    <Route path="new"><NewTask/></Route>
     <Route path=":tid/*"><TaskEditor/></Route>
 </div>

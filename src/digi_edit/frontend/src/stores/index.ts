@@ -1,5 +1,5 @@
 import { authToken, isAuthorised, authTokenChecker } from './auth';
-import { branches, branchesBusy, activeBranches, getAllBranches, postBranchAction, busyBranchAction, deleteBranch } from './branches';
+import { branches, branchesBusy, activeBranches, getAllBranches, postBranchAction, busyBranchAction, createBranch, deleteBranch } from './branches';
 import { files, filesBusy, getAllFiles, file, fileBusy, getFile, patchFile } from './files';
 import { schema, uiConfig, loadSchema, loadUIConfig, loadConfig } from './config';
 
@@ -20,6 +20,7 @@ export {
     getAllBranches,
     postBranchAction,
     busyBranchAction,
+    createBranch,
     deleteBranch,
 
     files,

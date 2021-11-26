@@ -23,9 +23,33 @@ export async function getAllBranches() {
 
 export const busyBranchAction = writable('');
 
-export async function postBranchAction(branch, action: string) {
-    busyBranchAction.set(action);
+export async function createBranch(branch) {
     try {
+        busyBranchAction.set('create');
+        const url = '/api/branches';
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-Authorization': get(authToken),
+            },
+            body: JSON.stringify({'data': branch}),
+        });
+        if (response.status === 200) {
+            branches.set(await getAll('branches', ''));
+            return (await response.json()).data;
+        } else {
+            throw new Error(JSON.stringify(await response.json()));
+        }
+    } catch (e) {
+        throw e;
+    } finally {
+        busyBranchAction.set('');
+    }
+}
+
+export async function postBranchAction(branch, action: string) {
+    try {
+        busyBranchAction.set(action);
         const url = '/api/branches/' + branch.id;
         const response = await fetch(url, {
             method: 'POST',
