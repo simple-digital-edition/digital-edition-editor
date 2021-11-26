@@ -7,9 +7,19 @@ export const branches = writable([]);
 export const branchesBusy = writable(false);
 
 export const activeBranches = derived(branches, (branches) => {
-    return branches.filter((branch) => {
+    const activeBranches = branches.filter((branch) => {
         return branch.attributes.status === 'active';
     });
+    activeBranches.sort((a, b) => {
+        if (a.attributes.name > b.attributes.name) {
+            return 1;
+        } else if (a.attributes.name < b.attributes.name) {
+            return -1;
+        } else {
+            return 0;
+        }
+    })
+    return activeBranches;
 });
 
 export async function getAllBranches() {
