@@ -22,6 +22,7 @@
     let editor = null;
     let updateTimeout = null;
     let internalUpdate = false;
+    let oldDoc = null;
 
     function getSchemaTypeNameByName(name: string, schema: Schema): 'node' | 'mark' | null {
         if (schema.nodes[name]) {
@@ -46,15 +47,19 @@
         return attrs;
     }
 
-    function initEditor(text: string) {
-        if (internalUpdate) {
-            internalUpdate = false;
-            return;
-        }
-        if (editor) {
-            editor.destroy();
-        }
-        if (text && schema && schema.elements && schema.attributes) {
+    function initEditor(textDoc: string) {
+        if (textDoc && schema && schema.elements && schema.attributes && editorElement) {
+            if (internalUpdate) {
+                internalUpdate = false;
+                return;
+            }
+            if (textDoc === oldDoc) {
+                return;
+            }
+            oldDoc = textDoc;
+            if (editor) {
+                editor.destroy();
+            }
             const extensions = [
                 Document,
                 History,
@@ -78,13 +83,6 @@
                         group: element.group,
                         content: element.content,
                         defining: element.defining,
-                        attributes: createAttributes(schema, element.attrs),
-                    }));
-                } else if (element.type === 'inline') {
-                    extensions.push(createConfigurableNode({
-                        name: element.name,
-                        group: 'inline',
-                        inline: true,
                         attributes: createAttributes(schema, element.attrs),
                     }));
                 } else if (element.type === 'nested') {
@@ -254,7 +252,7 @@
 <div id="tiptap-editor" class="flex flex-row w-full h-full overflow-hidden">
     <div bind:this={editorElement} class="flex-auto h-full px-2 py-1 overflow-auto"></div>
     <div id="tiptap-editor-sidebar" class="flex-none w-1/4 border-l border-solid border-gray-300 px-3 py-1 overflow-auto">
-        {#if sidebarMenu}
+        {#if editor && sidebarMenu}
             {#each sidebarMenu as section}
                 {#if !section.filter || isConfigActive(editor, section.filter)}
                     <section class="mb-4">
@@ -290,7 +288,7 @@
         {/if}
     </div>
     <div id="tiptap-editor-bubblemenu" bind:this={bubbleMenuElement} class="{bubbleMenu ? 'bg-white p-1 border border-gray-300 shadow-lg' : 'hidden'}">
-        {#if bubbleMenu}
+        {#if editor && bubbleMenu}
             {#each bubbleMenu as menu}
                 {#if menu.entries && (!menu.filter || isConfigActive(editor, menu.filter))}
                     <ul class="flex flex-row flex-wrap items-center mb-2 last:mb-0">

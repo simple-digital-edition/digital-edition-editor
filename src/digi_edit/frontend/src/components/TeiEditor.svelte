@@ -97,6 +97,9 @@
 
     function editNestedDoc(ev) {
         const doc = $document[$currentSection.name];
+        if (!doc[ev.detail.type]) {
+            doc[ev.detail.type] = {};
+        }
         if (doc[ev.detail.type]) {
             const sect = $uiConfig.editor.tei.sections.filter((sect) => {
                 return sect.name === ev.detail.type;
