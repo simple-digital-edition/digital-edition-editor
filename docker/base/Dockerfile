@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.9
 
 ARG DIGI_EDIT_USER="digi_edit"
 ARG DIGI_EDIT_UID="10000"
