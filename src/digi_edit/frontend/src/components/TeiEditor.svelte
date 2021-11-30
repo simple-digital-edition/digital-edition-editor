@@ -7,6 +7,7 @@
     import { TEIParser, TEISerialiser } from '../tei';
     import TiptapEditor from './TiptapEditor.svelte';
     import BusySpinner from './BusySpinner.svelte';
+    import TeiMetadataEditor from './TeiMetadataEditor.svelte';
 
     export let text: string;
 
@@ -85,6 +86,17 @@
     const nestedSidebarMenu = derived([uiConfig, nestedSection], ([uiConfig, nestedSection]) => {
         if (uiConfig && uiConfig.editor && uiConfig.editor.tei && uiConfig.editor.tei.sections && uiConfig.editor.tei.menuItems && nestedSection && nestedSection.sidebarMenu) {
             return createSidebarMenu(uiConfig, nestedSection);
+        }
+        return null;
+    });
+
+    const metadataSchema = derived([uiConfig, currentSection], ([uiConfig, currentSection]) => {
+        if (uiConfig && uiConfig.editor && uiConfig.editor.tei && uiConfig.editor.tei.sections && currentSection && currentSection.name) {
+            for (let section of uiConfig.editor.tei.sections) {
+                if (section.name === currentSection.name) {
+                    return section;
+                }
+            }
         }
         return null;
     });
@@ -196,7 +208,11 @@
         </nav>
         <div class="flex-auto overflow-hidden">
             {#if $currentSection && $document && $document[$currentSection.name]}
-                <TiptapEditor doc={$document[$currentSection.name]._main} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateMainDoc}/>
+                {#if $document[$currentSection.name]._type === 'text'}
+                    <TiptapEditor doc={$document[$currentSection.name]._main} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateMainDoc}/>
+                {:else if $document[$currentSection.name]._type === 'metadata'}
+                    <TeiMetadataEditor doc={$document[$currentSection.name]} schema={$metadataSchema}/>
+                {/if}
             {/if}
         </div>
         {#if $nestedDoc}

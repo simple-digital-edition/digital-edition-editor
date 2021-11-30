@@ -153,6 +153,7 @@ export class TEIParser {
             } else if (section.type === 'metadata') {
                 result[section.name] = this.parseMetadata(root, xpath);
             }
+            result[section.name]._type = section.type;
         }
         return result;
     }
