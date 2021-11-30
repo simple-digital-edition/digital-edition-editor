@@ -3,7 +3,7 @@
     import { derived } from 'svelte/store';
     import { Route, Link, useLocation, useParams, useNavigate } from 'svelte-navigator';
 
-    import { activeBranches, getAllBranches, branchesBusy, postBranchAction, busyBranchAction, deleteBranch } from '../stores';
+    import { activeBranches, getAllBranches, branchesBusy, postBranchAction, busyBranchAction, deleteBranch, activeDialog } from '../stores';
     import TaskEditor from './TaskEditor.svelte';
     import NewTask from './NewTask.svelte';
     import BusySpinner from '../components/BusySpinner.svelte';
@@ -80,7 +80,25 @@
     }
 
     async function deleteTask() {
-        await deleteBranch($selectedTask);
+        activeDialog.set({
+            title: 'Confirm deleting this branch',
+            text: 'Please confirm that you wish to delete the task "' + $selectedTask.attributes.name + '".',
+            buttons: [
+                {
+                    title: "Don't delete",
+                    action() {
+                        activeDialog.set(null);
+                    },
+                },
+                {
+                    title: 'Delete',
+                    action: async () => {
+                        deleteBranch($selectedTask);
+                        activeDialog.set(null);
+                    }
+                },
+            ]
+        });
     }
 
     async function rebase() {

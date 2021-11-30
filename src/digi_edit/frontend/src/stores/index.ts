@@ -2,6 +2,7 @@ import { authToken, isAuthorised, authTokenChecker } from './auth';
 import { branches, branchesBusy, activeBranches, getAllBranches, postBranchAction, busyBranchAction, createBranch, deleteBranch } from './branches';
 import { files, filesBusy, getAllFiles, file, fileBusy, getFile, patchFile } from './files';
 import { schema, uiConfig, loadSchema, loadUIConfig, loadConfig } from './config';
+import { activeDialog } from './dialog';
 
 export {
     schema,
@@ -30,4 +31,6 @@ export {
     fileBusy,
     getFile,
     patchFile,
+
+    activeDialog,
 }
