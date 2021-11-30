@@ -184,7 +184,7 @@
             <ul class="flex flex-row">
                 <li role="presentation">
                     {#if $fileBusy}
-                        <BusySpinner class="px-2 py-1" message="Your file is being saved. Please wait..."/>
+                        <BusySpinner class="px-2 py-1 border-b border-solid border-gray-300" message="Your file is being saved. Please wait..."/>
                     {:else}
                         <button on:click={saveDoc} class="block px-2 py-1 border-b border-solid border-gray-300 hover:border-blue-700 focus:border-blu-700" aria-label="Save">
                             <svg viewBox="0 0 24 24" class="w-6 h-6">
