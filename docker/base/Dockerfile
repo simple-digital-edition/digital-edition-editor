@@ -17,7 +17,7 @@ RUN apt-get update && \
 COPY digi_edit-1.0.0b1-b0-py3-none-any.whl /tmp/
 
 # Install the application
-RUN python -m pip install /tmp/digi_edit-1.0.0b1-b0-py3-none-any.whl[postgresql]
+RUN python -m pip install /tmp/digi_edit-1.0.0b2-py3-none-any.whl[postgresql]
 COPY start_digi_edit.sh /usr/bin/
 RUN chmod a+x /usr/bin/start_digi_edit.sh && \
     mkdir /var/lib/digi-edit && \
