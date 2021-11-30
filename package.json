@@ -1,6 +1,6 @@
 {
   "name": "digital-edition-editor",
-  "version": "1.0.0b1",
+  "version": "1.0.0b3",
   "main": "index.js",
   "repository": "git@gitlab.informatik.uni-halle.de:gutzkow/digital-edition-editor.git",
   "author": "Mark <mark.hall@work.room3b.eu>",
