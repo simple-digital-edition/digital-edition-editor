@@ -14,7 +14,7 @@ RUN apt-get update && \
     apt-get install -y tini git
 
 # Copy the application and configuration file
-COPY digi_edit-1.0.0b1-b0-py3-none-any.whl /tmp/
+COPY digi_edit-1.0.0b2-py3-none-any.whl /tmp/
 
 # Install the application
 RUN python -m pip install /tmp/digi_edit-1.0.0b2-py3-none-any.whl[postgresql]
