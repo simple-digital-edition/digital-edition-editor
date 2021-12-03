@@ -161,6 +161,13 @@
         dispatch('save', serialiser.serialise($document));
     }
 
+    function keyboardHandler(ev: KeyboardEvent) {
+        if (ev.key.toLowerCase() === 's' && ev.ctrlKey) {
+            ev.preventDefault();
+            saveDoc();
+        }
+    }
+
     onMount(() => {
         if (text) {
             const parser = new TEIParser(get(schema));
@@ -178,7 +185,7 @@
     onDestroy(unsubscribeUiConfig);
 </script>
 
-<div id="tei-editor" class="flex flex-col h-full overflow-hidden relative">
+<div id="tei-editor" class="flex flex-col h-full overflow-hidden relative" on:keydown={keyboardHandler}>
     {#if $uiConfig && $uiConfig.editor && $uiConfig.editor.tei}
         <nav class="flex-none">
             <ul class="flex flex-row">
