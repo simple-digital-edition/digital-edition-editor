@@ -112,11 +112,11 @@
 </script>
 
 <div class="flex-auto flex flex-row overflow-hidden">
-    <h2 class="sr-only">Task Editor</h2>
-    <div bind:this={sidebarElement} class="relative flex flex-col flex-none w-1/5 overflow-hidden border-r border-solid border-gray-300">
-        <span bind:this={emWidthElement} class="absolute -top-full -left-full" aria-hidden="true">abcdefghijklmnopqrstuvwxyz</span>
+    <h1 class="sr-only">Task Editor</h1>
+    <div bind:this={sidebarElement} class="relative flex flex-col flex-none w-1/5 overflow-hidden border-r border-solid border-neutral">
+        <span bind:this={emWidthElement} class="absolute -top-full -left-full tracking-widest" aria-hidden="true">abcdefghijklmnopqrstuvwxyz</span>
         {#if $filesBusy}
-            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">Files are being loaded. Please wait...</div>
+            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-disabled">Files are being loaded. Please wait...</div>
         {:else}
             {#if $modifiedFiles.length > 0}
                 <label class="block"><span class="sr-only">Select whether to show all files or just modified files.</span>
@@ -129,7 +129,7 @@
             <form on:submit={(ev) => { ev.preventDefault(); }} class="flex-none relative">
                 <label>
                     <span class="sr-only">Search files</span>
-                    <input bind:value={$fileSearchText} type="search" class="blockblock py-1 pl-2 pr-8 border-l border-b border-r border-solid border-gray-300 w-full text-base focus:shadow-inner"/>
+                    <input bind:value={$fileSearchText} type="search" class="blockblock py-1 pl-2 pr-8 border-l border-b border-r border-solid border-neutral w-full text-base focus:shadow-inner"/>
                 </label>
                 <button class="block absolute right-0 top-1/2 p-2 transform -translate-y-1/2">
                     <svg viewBox="0 0 24 24" class="w-4 h-4">
@@ -139,10 +139,10 @@
             </form>
             <ol bind:this={fileList} class="flex-auto overflow-auto">
                 {#each $fileSets as fileSet}
-                    <li><span class="block px-2 py-1 text-sm bg-gray-100 truncate" title={fileSet.name}>{limitedPath(fileSet.name)}</span>
-                        <ol>
+                    <li><span class="block px-2 py-1 border-b border-solid border-primary tracking-widest truncate" title={fileSet.name}>{limitedPath(fileSet.name)}</span>
+                        <ol class="mb-2">
                             {#each fileSet.files as file}
-                                <li><Link to="{file.id}" class="block px-2 py-1 text-sm {$selectedFileId === file.id ? 'text-blue-700' : ''}" aria-current="{$selectedFileId === file.id ? 'true' : 'false'}">{file.attributes.name}</Link></li>
+                                <li><Link to="{file.id}" class="block px-2 py-1 text-sm {$selectedFileId === file.id ? 'text-primary font-bold border-r-2 border-solid border-primary' : ''}" aria-current="{$selectedFileId === file.id ? 'true' : 'false'}">{file.attributes.name}</Link></li>
                             {/each}
                         </ol>
                     </li>
@@ -152,7 +152,7 @@
     </div>
     <Route path="/">
         <div class="flex-auto relative">
-            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">{#if $filesBusy}Files are being loaded. Please wait...{:else}Please select the file you wish to work on from the list on the left{/if}</div>
+            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-disabled">{#if $filesBusy}Files are being loaded. Please wait...{:else}Please select the file you wish to work on from the list on the left{/if}</div>
         </div>
     </Route>
     <Route path="/:fid"><FileEditor/></Route>

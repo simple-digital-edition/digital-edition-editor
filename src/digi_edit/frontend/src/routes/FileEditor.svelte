@@ -37,7 +37,7 @@
         {/if}
     {:else if $fileBusy}
         <div class="w-full h-full relative">
-            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">The file is being loaded. Please wait...</div>
+            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-disabled">The file is being loaded. Please wait...</div>
         </div>
     {/if}
 </div>

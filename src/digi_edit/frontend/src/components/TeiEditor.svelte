@@ -185,32 +185,32 @@
     onDestroy(unsubscribeUiConfig);
 </script>
 
-<div id="tei-editor" class="flex flex-col h-full overflow-hidden relative" on:keydown={keyboardHandler}>
+<div class="flex flex-col h-full overflow-hidden relative tei-editor" on:keydown={keyboardHandler}>
     {#if $uiConfig && $uiConfig.editor && $uiConfig.editor.tei}
         <nav class="flex-none">
             <ul class="flex flex-row">
                 <li role="presentation">
                     {#if $fileBusy}
-                        <BusySpinner class="px-2 py-1 border-b border-solid border-gray-300" message="Your file is being saved. Please wait..."/>
+                        <BusySpinner class="px-2 py-1 border-b-2 border-solid border-neutral" message="Your file is being saved. Please wait..."/>
                     {:else}
-                        <button on:click={saveDoc} class="block px-2 py-1 border-b border-solid border-gray-300 hover:border-blue-700 focus:border-blu-700" aria-label="Save">
+                        <button on:click={saveDoc} class="block px-2 py-1 border-b-2 border-solid border-neutral hover:border-primary focus:border-primary" aria-label="Save">
                             <svg viewBox="0 0 24 24" class="w-6 h-6">
                                 <path fill="currentColor" d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
                             </svg>
                         </button>
                     {/if}
                 </li>
-                <li role="presentation" class="w-8 border-b border-solid border-gray-300"></li>
+                <li role="presentation" class="w-8 border-b-2 border-solid border-neutral"></li>
                 {#if $uiConfig.editor.tei.sections}
                     {#each $uiConfig.editor.tei.sections as section}
                         {#if section.label}
                             <li role="presentation">
-                                <button on:click={() => { currentSection.set(section); }} class="block px-2 py-1 border-b border-solid {(section.name === $currentSection.name) ? 'border-blue-700' : 'border-gray-300'} transition-colors hover:border-blue-700 focus:border-blu-700" aria-current={section.name === $currentSection}>{section.label}</button>
+                                <button on:click={() => { currentSection.set(section); }} class="block px-2 py-1 border-b-2 border-solid {(section.name === $currentSection.name) ? 'border-primary' : 'border-neutral'} transition-colors hover:border-primary focus:border-primary" aria-current={section.name === $currentSection}>{section.label}</button>
                             </li>
                         {/if}
                     {/each}
                 {/if}
-                <li role="presentation" class="flex-auto border-b border-solid border-gray-300"></li>
+                <li role="presentation" class="flex-auto border-b-2 border-solid border-neutral"></li>
             </ul>
         </nav>
         <div class="flex-auto overflow-hidden">
@@ -224,10 +224,10 @@
         </div>
         {#if $nestedDoc}
             <div transition:fade="{{ duration: 100 }}" on:click={() => { nestedDoc.set(null); }} class="absolute left-0 top-0 w-full h-full z-10 bg-white bg-opacity-70">
-                <div on:click={(ev) => { ev.stopPropagation(); }} class="absolute left-1/2 top-1/2 w-4/5 h-4/5 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-300 shadow-lg">
+                <div on:click={(ev) => { ev.stopPropagation(); }} class="absolute left-1/2 top-1/2 w-4/5 h-4/5 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-neutral shadow-lg">
                     <TiptapEditor doc={$nestedDoc} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$nestedBubbleMenu} sidebarMenu={$nestedSidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateNestedDoc}/>
                     <div class="absolute right-0 top-0 z-10 transform translate-x-1/2 -translate-y-1/2">
-                        <button on:click={() => { nestedDoc.set(null); }} class="block p-1 bg-white rounded-full border border-gray-300 shadow-lg">
+                        <button on:click={() => { nestedDoc.set(null); }} class="block p-1 bg-white rounded-full border border-neutral shadow-lg">
                             <svg viewBox="0 0 24 24" class="w-6 w-8">
                                 <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                             </svg>

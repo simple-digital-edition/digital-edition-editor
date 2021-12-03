@@ -249,9 +249,9 @@
     });
 </script>
 
-<div id="tiptap-editor" class="flex flex-row w-full h-full overflow-hidden">
+<div class="flex flex-row w-full h-full overflow-hidden tiptap-editor">
     <div bind:this={editorElement} class="flex-auto h-full px-2 py-1 overflow-auto"></div>
-    <div id="tiptap-editor-sidebar" class="flex-none w-1/4 border-l border-solid border-gray-300 px-3 py-1 overflow-auto">
+    <div class="flex-none w-1/4 border-l border-solid border-neutral px-3 py-1 overflow-auto tiptap-editor-sidebar">
         {#if editor && sidebarMenu}
             {#each sidebarMenu as section}
                 {#if !section.filter || isConfigActive(editor, section.filter)}
@@ -287,7 +287,7 @@
             {/each}
         {/if}
     </div>
-    <div id="tiptap-editor-bubblemenu" bind:this={bubbleMenuElement} class="{bubbleMenu ? 'bg-white p-1 border border-gray-300 shadow-lg' : 'hidden'}">
+    <div bind:this={bubbleMenuElement} class="{bubbleMenu ? 'bg-white p-1 border border-neutral shadow-lg' : 'hidden'} tiptap-editor-bubblemenu">
         {#if editor && bubbleMenu}
             {#each bubbleMenu as menu}
                 {#if menu.entries && (!menu.filter || isConfigActive(editor, menu.filter))}

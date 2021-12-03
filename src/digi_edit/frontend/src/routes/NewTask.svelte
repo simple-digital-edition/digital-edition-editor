@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { useNavigate } from 'svelte-navigator';
+    import { useNavigate, Link } from 'svelte-navigator';
 
     import { createBranch, busyBranchAction } from '../stores';
 
@@ -31,13 +31,13 @@
 </script>
 
 <div class="flex-auto relative">
-    <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-solid border-gray-300 shadow-lg w-96">
-        <h2 class="px-4 py-2 bg-gray-300 font-bold text-lg">Create a new Task</h2>
+    <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-solid border-neutral shadow-lg w-96">
+        <h2 class="px-4 py-2 bg-primary text-primary-contrast font-bold text-lg">Create a new Task</h2>
         <form on:submit={create} class="px-4 py-2">
             <label class="block mb-3 text-sm">Task Name
-                <input bind:value={name} disabled={$busyBranchAction === 'create'} type="text" class="block px-1 py-1 border border-solid {nameError ? 'border-red-600' : 'border-gray-300'} w-full text-base focus:shadow-inner {$busyBranchAction === 'create' ? 'text-gray-700' : ''}" />
+                <input bind:value={name} disabled={$busyBranchAction === 'create'} type="text" class="block px-1 py-1 border border-solid {nameError ? 'border-red-600' : 'border-neutral'} w-full text-base focus:shadow-inner {$busyBranchAction === 'create' ? 'text-disabled' : ''}" />
                 {#if nameError}
-                    <span class="block px-2 py-1 text-sm text-white bg-red-600">{nameError}</span>
+                    <span class="block px-2 py-1 text-sm text-primary-contrast bg-red-600">{nameError}</span>
                 {/if}
             </label>
             {#if $busyBranchAction === 'create'}
@@ -45,9 +45,10 @@
             {/if}
             <div class="text-right">
                 {#if $busyBranchAction === 'create'}
-                    <button class="inline-block px-3 py-1 bg-blue-700 text-white hover:bg-blue-600 focus:bg-blue-600 transition-colors">Creating...</button>
+                    <span class="inline-block px-3 py-1 bg-primary text-primary-contrast hover:bg-primary focus:bg-primary transition-colors">Creating...</span>
                 {:else}
-                    <button class="inline-block px-3 py-1 bg-blue-700 text-white hover:bg-blue-600 focus:bg-blue-600 transition-colors">Create</button>
+                    <Link to="/" class="inline-block px-3 py-1 bg-neutral text-text hover:bg-primary hover:text-primary-contrast focus:bg-primary focus:text-primary-contrast transition-colors">Don't create</Link>
+                    <button class="inline-block px-3 py-1 bg-primary text-primary-contrast hover:bg-primary focus:bg-primary transition-colors">Create</button>
                 {/if}
             </div>
         </form>

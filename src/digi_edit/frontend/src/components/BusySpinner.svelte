@@ -6,8 +6,8 @@
     export {cls as class};
 </script>
 
-<span class="block {cls}" aria-label={message} title={message}>
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="block {width} {height}">
+<span class="block text-text {cls} busy-spinner" aria-label={message} title={message}>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="block fill-current {width} {height}">
         <g transform="rotate(0 50 50)">
             <rect x="47" y="14" rx="1.8" ry="1.8" width="6" height="12" fill="currentColor">
                 <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s" repeatCount="indefinite"></animate>

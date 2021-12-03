@@ -23,7 +23,7 @@
 
 {#if entry.action.type === 'selectAttribute'}
     <label class="block"><span class="sr-only">{entry.label}</span>
-        <select on:change={change}>
+        <select on:change={change} class="p-1">
             {#each entry.action.values as value}
                 <option value={value.value} selected={value.value === active ? 'selected' : null}>{value.label}</option>
             {/each}
@@ -31,11 +31,11 @@
     </label>
 {:else if entry.action.type === 'inputAttribute'}
     <label class="block"><small class="block">{entry.label}</small>
-        <input type={entry.action.dataType} on:change={change} value={active} min={entry.action.min} max={entry.action.max} step={entry.action.step} class="border border-solid border-gray-300 focus:shadow-inset"/>
+        <input type={entry.action.dataType} on:change={change} value={active} min={entry.action.min} max={entry.action.max} step={entry.action.step} class="block border border-solid border-neutral focus:shadow-inset px-1 py-1"/>
     </label>
 {:else if entry.action.type === 'selectNestedDoc'}
     <label class="block"><span class="sr-only">{entry.label}</span>
-        <select on:change={change}>
+        <select on:change={change} class="p-1">
             <option value="null"></option>
             {#each values as value}
                 <option value={value.value} selected={value.value === active ? 'selected' : null}>{value.label}</option>
@@ -43,7 +43,7 @@
         </select>
     </label>
 {:else}
-    <button on:click={click} class="block p-1 {active ? 'bg-gray-300' : ''} hover:bg-gray-300 transition-colors" title={entry.svg ? entry.label : null} aria-label={entry.svg ? entry.label : null} aria-current={active ? 'true' : 'false'}>
+    <button on:click={click} class="block p-1 {active ? 'bg-primary text-primary-contrast' : ''} hover:bg-primary hover:text-primary-contrast transition-colors" title={entry.svg ? entry.label : null} aria-label={entry.svg ? entry.label : null} aria-current={active ? 'true' : 'false'}>
         {#if entry.svg}
             {@html entry.svg}
         {:else}

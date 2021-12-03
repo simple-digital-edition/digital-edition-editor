@@ -225,7 +225,7 @@
 {#if entry}
     {#if entry.type === 'single-line-text'}
         <label class="block mb-2"><span class="text-sm">{entry.label}</span>
-            <input type="text" class="block w-96 px-3 py-1 border border-solid border-gray-300" value={getValue(doc, entry.element)} on:change={changeInputValue}/>
+            <input type="text" class="block w-96 px-3 py-1 border border-solid border-neutral" value={getValue(doc, entry.element)} on:change={changeInputValue}/>
         </label>
     {:else if entry.type === 'multi-column'}
         <div class="flex flex-row">
@@ -242,17 +242,17 @@
                             <svelte:self doc={childDoc} entry={child}/>
                             {#if entry.label}
                                 <div class="flex-none self-end flex flex-row pb-2">
-                                    <button on:click={(ev) => { swapValues(idx, idx - 1); }} class="block px-1 py-1" aria-label="Move {entry.label} up" title="Move {entry.label} up">
+                                    <button on:click={(ev) => { swapValues(idx, idx - 1); }} class="block px-1 py-1 text-text hover:text-primary focus:text-primary" aria-label="Move {entry.label} up" title="Move {entry.label} up">
                                         <svg viewBox="0 0 24 24" class="w-6 h-6">
                                             <path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" />
                                         </svg>
                                     </button>
-                                    <button on:click={(ev) => { swapValues(idx, idx + 1); }} class="block px-1 py-1" aria-label="Move {entry.label} down" title="Move {entry.label} down">
+                                    <button on:click={(ev) => { swapValues(idx, idx + 1); }} class="block px-1 py-1 text-text hover:text-primary focus:text-primary" aria-label="Move {entry.label} down" title="Move {entry.label} down">
                                         <svg viewBox="0 0 24 24" class="w-6 h-6">
                                             <path fill="currentColor" d="M10,4H14V13L17.5,9.5L19.92,11.92L12,19.84L4.08,11.92L6.5,9.5L10,13V4Z" />
                                         </svg>
                                     </button>
-                                    <button on:click={(ev) => { deleteValue(idx); }} class="block px-1 py-1" aria-label="Delete {entry.label}" title="Delete {entry.label}">
+                                    <button on:click={(ev) => { deleteValue(idx); }} class="block px-1 py-1 text-text hover:text-primary focus:text-primary" aria-label="Delete {entry.label}" title="Delete {entry.label}">
                                         <svg viewBox="0 0 24 24" class="w-6 h-6">
                                             <path fill="currentColor" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
                                         </svg>
@@ -264,7 +264,7 @@
                 </ol>
                 {#if entry.label}
                     <div>
-                        <button on:click={addValue} class="text-sm">Add {entry.label}</button>
+                        <button on:click={addValue} class="inline-block px-2 py-1 bg-primary text-primary-contrast text-sm">Add {entry.label}</button>
                     </div>
                 {/if}
         {/each}
