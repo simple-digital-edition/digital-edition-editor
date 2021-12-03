@@ -39,7 +39,7 @@ def config_ui(request):
 
 @view_config(route_name='theme.css')
 def css(request):
-    filename = get_config_setting(request, 'css.customisation')
+    filename = get_config_setting(request, 'theme.css')
     if os.path.exists(filename):
         resp = FileResponse(filename, content_type='text/css')
         resp.headers['Cache-Control'] = 'no-store max-age=0'
@@ -48,9 +48,9 @@ def css(request):
         raise HTTPNotFound()
 
 
-@view_config(route_name='theme.extra_files')
+@view_config(route_name='theme.files')
 def extra_files(request):
-    for basepath in get_config_setting(request, 'themeing.files', target_type='list'):
+    for basepath in get_config_setting(request, 'theme.files', target_type='list'):
         filename = os.path.abspath(os.path.join(basepath, *request.matchdict['path']))
         if filename.startswith(basepath):
             if os.path.exists(filename):
