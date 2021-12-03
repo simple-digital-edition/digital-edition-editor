@@ -12,6 +12,7 @@
     let emWidthElement = null as HTMLElement;
     let oldTaskId = null;
     let fileList = null;
+    let showSidebar = true;
 
     const selectedFileId = derived(params, (params) => {
         return params['*'];
@@ -113,11 +114,22 @@
 
 <div class="flex-auto flex flex-row overflow-hidden">
     <h1 class="sr-only">Task Editor</h1>
-    <div bind:this={sidebarElement} class="relative flex flex-col flex-none w-1/5 overflow-hidden border-r border-solid border-neutral">
+    <div bind:this={sidebarElement} class="relative flex flex-col flex-none {showSidebar ? 'w-1/5 overflow-hidden' : 'w-0'} border-r border-solid border-neutral">
         <span bind:this={emWidthElement} class="absolute -top-full -left-full tracking-widest" aria-hidden="true">abcdefghijklmnopqrstuvwxyz</span>
+        <div class="absolute {showSidebar ? 'right-0' : 'left-0'} bottom-0 pb-2 z-50">
+            <button on:click={() => { showSidebar = !showSidebar; }} aria-label="{showSidebar ? 'Hide' : 'Show'} the list of files" title="{showSidebar ? 'Hide' : 'Show'} the list of files" class="text-text hover:text-primary focus:text-primary px-2 py-2 border border-solid border-neutral shadow-lg bg-white">
+                <svg viewBox="0 0 24 24" class="w-4 h-4">
+                    {#if showSidebar}
+                        <path fill="currentColor" d="M11.92,19.92L4,12L11.92,4.08L13.33,5.5L7.83,11H22V13H7.83L13.34,18.5L11.92,19.92M4,12V2H2V22H4V12Z" />
+                    {:else}
+                        <path fill="currentColor" d="M4,2H2V22H4V13H18.17L12.67,18.5L14.08,19.92L22,12L14.08,4.08L12.67,5.5L18.17,11H4V2Z" />
+                    {/if}
+                </svg>
+            </button>
+        </div>
         {#if $filesBusy}
             <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-disabled">Files are being loaded. Please wait...</div>
-        {:else}
+        {:else if showSidebar}
             {#if $modifiedFiles.length > 0}
                 <label class="block"><span class="sr-only">Select whether to show all files or just modified files.</span>
                     <select bind:value={$fileListfilter} class="block w-full px-3 py-1">
