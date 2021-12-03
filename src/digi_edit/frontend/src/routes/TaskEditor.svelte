@@ -3,7 +3,7 @@
     import { derived, writable } from 'svelte/store';
     import { Link, Route, useParams } from 'svelte-navigator';
 
-    import { files, filesBusy, getAllFiles } from '../stores';
+    import { activeBranches, files, filesBusy, getAllFiles } from '../stores';
     import FileEditor from './FileEditor.svelte';
 
     const params = useParams();
@@ -17,10 +17,37 @@
         return params['*'];
     });
 
-    const fileSets = derived([files, fileSearchText], ([files, fileSearchText]) => {
+    const selectedTask = derived([activeBranches, params], ([activeBranches, params]) => {
+        let taskId = params.tid;
+        const selectedTask = activeBranches.filter((branch) => {
+            return branch.id === taskId;
+        });
+        if (selectedTask.length === 1) {
+            return selectedTask[0];
+        }
+        return null;
+    });
+
+    const modifiedFiles = derived(selectedTask, (selectedTask) => {
+        if (selectedTask) {
+            if (selectedTask.relationships && selectedTask.attributes.changes && selectedTask.attributes.changes.length > 0) {
+                return selectedTask.attributes.changes.map((file) => {
+                    return file.id;
+                });
+            }
+        }
+        return [];
+    });
+
+    const fileListfilter = writable('');
+
+    const fileSets = derived([files, fileSearchText, modifiedFiles, fileListfilter], ([files, fileSearchText, modifiedFiles, fileListfilter]) => {
         const fileSets = [];
         for (const file of files) {
             if (fileSearchText !== '' && (file.attributes.path.indexOf(fileSearchText) < 0 && file.attributes.name.indexOf(fileSearchText) < 0)) {
+                continue;
+            }
+            if (fileListfilter === 'modified' && modifiedFiles.indexOf(file.id) < 0) {
                 continue;
             }
             if (fileSets.length === 0) {
@@ -50,14 +77,24 @@
         return fileSets;
     });
 
+    const modifiedFilesUnsubscribe = modifiedFiles.subscribe((modifiedFiles) => {
+        if (modifiedFiles.length > 0 && $fileListfilter === '') {
+            fileListfilter.set('modified');
+        }
+    });
+
     const paramsUnsubscribe = params.subscribe((params) => {
         if (params.tid !== oldTaskId) {
+            fileListfilter.set('');
             getAllFiles(params.tid);
             oldTaskId = params.tid;
         }
     });
 
-    onDestroy(paramsUnsubscribe);
+    onDestroy(() => {
+        paramsUnsubscribe();
+        modifiedFilesUnsubscribe();
+    });
 
     function limitedPath(path) {
         if (sidebarElement && emWidthElement) {
@@ -81,6 +118,14 @@
         {#if $filesBusy}
             <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">Files are being loaded. Please wait...</div>
         {:else}
+            {#if $modifiedFiles.length > 0}
+                <label class="block"><span class="sr-only">Select whether to show all files or just modified files.</span>
+                    <select bind:value={$fileListfilter} class="block w-full px-3 py-1">
+                        <option value="all">All files</option>
+                        <option value="modified">Modified files</option>
+                    </select>
+                </label>
+            {/if}
             <form on:submit={(ev) => { ev.preventDefault(); }} class="flex-none relative">
                 <label>
                     <span class="sr-only">Search files</span>
