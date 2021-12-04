@@ -319,7 +319,7 @@ export class TEISerialiser {
     }
 
     private xmlEscape(str: string): string {
-        return str.replace(/"'<>&/g, (value) => {
+        return str.replace(/["'<>&]/g, (value) => {
             if (value === '&') {
                 return '&amp;';
             } else if (value === '<') {
@@ -327,12 +327,12 @@ export class TEISerialiser {
             } else if (value === '>') {
                 return '&gt;';
             } else if (value === '"') {
-                return '&quot';
+                return '&quot;';
             } else if (value === "'") {
-                return '&apos';
+                return '&apos;';
             } else {
                 return value;
             }
-        })
+        });
     }
 }
