@@ -37,7 +37,7 @@ jobs:
     - name: Build Application
       run: |
         poetry build
-        cp dist/*.whl docker/base/
+        cp dist/*.whl docker/
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
@@ -51,6 +51,6 @@ jobs:
     - name: Build and Push Image
       uses: docker/build-push-action@v2
       with:
-        context: docker/base
+        context: docker
         push: true
         tags: scmmmh/digitaleditioneditor:${{ steps.branch_name.outputs.SOURCE_TAG }}
