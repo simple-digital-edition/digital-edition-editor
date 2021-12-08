@@ -6,7 +6,7 @@ from shutil import rmtree
 from subprocess import run
 
 # Update version numbers
-version = input('New Version: ')
+version = '1.0.0b6'
 
 with open('package.json') as in_f:
     data = json.load(in_f)
@@ -32,21 +32,12 @@ with open('docs/conf.py', 'w') as out_f:
         else:
             out_f.write(line)
 
-with open('docker/base/Dockerfile') as in_f:
+with open('docker/Dockerfile') as in_f:
     lines = in_f.readlines()
-with open('docker/base/Dockerfile', 'w') as out_f:
+with open('docker/Dockerfile', 'w') as out_f:
     for line in lines:
         if re.search('digi_edit-[0-9]+\.[0-9]+\.[0-9]+(?:b[0-9]+)?', line):
             out_f.write(re.sub('digi_edit-[0-9]+\.[0-9]+\.[0-9]+(?:b[0-9]+)?', f'digi_edit-{version}', line))
-        else:
-            out_f.write(line)
-
-with open('docker/gutzkow/Dockerfile') as in_f:
-    lines = in_f.readlines()
-with open('docker/gutzkow/Dockerfile', 'w') as out_f:
-    for line in lines:
-        if line.startswith('FROM scmmmh/digitaleditioneditor:'):
-            out_f.write(f'FROM scmmmh/digitaleditioneditor:{version}\n')
         else:
             out_f.write(line)
 
