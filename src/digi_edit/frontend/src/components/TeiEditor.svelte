@@ -10,6 +10,7 @@
     import TeiMetadataEditor from './TeiMetadataEditor.svelte';
 
     export let text: string;
+    export let dirty = false;
 
     const dispatch = createEventDispatcher();
     const currentSection = writable({});
@@ -150,10 +151,12 @@
 
     function updateMainDoc(ev) {
         $document[$currentSection.name]._main = ev.detail;
+        dirty = true;
     }
 
     function updateNestedDoc(ev) {
         $document[$currentSection.name][$nestedSection.name][$nestedId].doc = ev.detail;
+        dirty = true;
     }
 
     function saveDoc() {
@@ -193,7 +196,7 @@
                     {#if $fileBusy}
                         <BusySpinner class="px-2 py-1 border-b-2 border-solid border-neutral" message="Your file is being saved. Please wait..."/>
                     {:else}
-                        <button on:click={saveDoc} class="block px-2 py-1 border-b-2 border-solid border-neutral hover:border-primary focus:border-primary" aria-label="Save">
+                        <button on:click={saveDoc} class="block px-2 py-1 border-b-2 border-solid border-neutral {dirty ? 'text-text' : 'text-disabled'} hover:border-primary focus:border-primary" aria-label="Save">
                             <svg viewBox="0 0 24 24" class="w-6 h-6">
                                 <path fill="currentColor" d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" />
                             </svg>
@@ -218,7 +221,7 @@
                 {#if $document[$currentSection.name]._type === 'text'}
                     <TiptapEditor doc={$document[$currentSection.name]._main} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateMainDoc}/>
                 {:else if $document[$currentSection.name]._type === 'metadata'}
-                    <TeiMetadataEditor doc={$document[$currentSection.name]} schema={$metadataSchema}/>
+                    <TeiMetadataEditor doc={$document[$currentSection.name]} schema={$metadataSchema} on:notifyDirty={() => { dirty = true; }}/>
                 {/if}
             {/if}
         </div>

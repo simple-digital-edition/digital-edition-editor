@@ -7,6 +7,7 @@
 
     const params = useParams();
     let oldFileId = null;
+    let dirty = false;
 
     const paramsUnsubscribe = params.subscribe((params) => {
         if (oldFileId !== params.fid) {
@@ -22,6 +23,7 @@
             attrs.rawData = ev.detail;
             try {
                 await patchFile($file);
+                dirty = false;
             } catch {
                 alert('Unfortunately something went wrong saving your file. Your changes have not been saved.');
             }
@@ -34,7 +36,7 @@
 <div class="flex-auto overflow-hidden">
     {#if $file}
         {#if $file.attributes.mode === 'tei'}
-            <TeiEditor text={$file.attributes.rawData} on:save={save}/>
+            <TeiEditor text={$file.attributes.rawData} on:save={save} bind:dirty={dirty}/>
         {/if}
     {:else if $fileBusy}
         <div class="w-full h-full relative">

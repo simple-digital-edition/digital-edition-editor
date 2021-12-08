@@ -23,6 +23,7 @@
     let updateTimeout = null;
     let internalUpdate = false;
     let oldDoc = null;
+    let dirty = false;
 
     function getSchemaTypeNameByName(name: string, schema: Schema): 'node' | 'mark' | null {
         if (schema.nodes[name]) {
@@ -104,11 +105,13 @@
                 content: doc,
                 onTransaction: ({ transaction }) => {
                     if (transaction.docChanged) {
+                        dirty = true;
                         clearTimeout(updateTimeout);
                         updateTimeout = setTimeout(() => {
                             internalUpdate = true;
                             dispatch('update', transaction.doc.toJSON());
-                        }, 1000);
+                            dirty = false;
+                        }, 500);
                     }
                     editor = editor;
                 }
@@ -243,7 +246,9 @@
     onDestroy(() => {
         if (editor) {
             clearTimeout(updateTimeout);
-            dispatch('update', editor.state.doc.toJSON());
+            if (dirty) {
+                dispatch('update', editor.state.doc.toJSON());
+            }
             editor.destroy();
         }
     });
