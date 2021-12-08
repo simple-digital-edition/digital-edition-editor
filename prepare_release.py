@@ -77,8 +77,3 @@ with open('CHANGES.md') as in_f:
 
 with open('src/digi_edit/static/changes.json', 'w') as out_f:
     json.dump(history, out_f)
-
-
-# Build the help docs
-rmtree('src/digi_edit/static/help', ignore_errors=True)
-run(['sphinx-build', '-b', 'html', '.', '../src/digi_edit/static/help'], cwd='docs')

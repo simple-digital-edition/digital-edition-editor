@@ -1,9 +1,0 @@
-Editors
-=======
-
-The Digital Edition Editor provides two editors:
-
-.. toctree::
-
-    tei-editor
-    text-editor
