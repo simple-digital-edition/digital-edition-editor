@@ -89,6 +89,5 @@ export async function patchFile(file) {
         }
     } finally {
         fileBusy.set(false);
-
     }
 }

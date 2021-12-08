@@ -141,7 +141,7 @@
             <form on:submit={(ev) => { ev.preventDefault(); }} class="flex-none relative">
                 <label>
                     <span class="sr-only">Search files</span>
-                    <input bind:value={$fileSearchText} type="search" class="blockblock py-1 pl-2 pr-8 border-l border-b border-r border-solid border-neutral w-full text-base focus:shadow-inner"/>
+                    <input bind:value={$fileSearchText} type="search" class="block py-1 pl-2 pr-8 border-l border-b border-r border-solid border-neutral w-full text-base focus:shadow-inner"/>
                 </label>
                 <button class="block absolute right-0 top-1/2 p-2 transform -translate-y-1/2" aria-label="Search">
                     <svg viewBox="0 0 24 24" class="w-4 h-4">

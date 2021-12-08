@@ -18,7 +18,8 @@
 
     async function save(ev) {
         if ($file && ev.detail) {
-            $file.attributes.rawData = ev.detail;
+            const attrs = $file.attributes;
+            attrs.rawData = ev.detail;
             try {
                 await patchFile($file);
             } catch {
