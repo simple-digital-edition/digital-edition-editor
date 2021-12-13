@@ -222,12 +222,27 @@
         }
     }
 
+    function getText(node) {
+        if (node.text) {
+            return node.text;
+        } else if (node.content) {
+            return node.content.map((child) => {
+                return getText(child);
+            }).join('');
+        }
+        return '';
+    }
+
     function nestedDocList(entry) {
         if (fullDoc[entry.action.name]) {
             return Object.values(fullDoc[entry.action.name]).map((nestedDoc) => {
+                let label = getText(nestedDoc.doc);
+                if (label.length > 20) {
+                    label = label.substring(0, 17) + '...';
+                }
                 return {
                     value: nestedDoc.id,
-                    label: nestedDoc.id,
+                    label: label,
                 }
             });
         }
