@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store';
 
-import { NestedStorage, sessionLoadValue } from '../storage';
+import { NestedStorage, sessionLoadValue, localLoadValue } from '../storage';
 
 export const authToken = writable('');
 
@@ -22,7 +22,10 @@ export const authTokenChecker = derived(authToken, async (authTokenValue) => {
     return true;
 });
 
-const auth = sessionLoadValue('auth', null) as NestedStorage;
+let auth = localLoadValue('auth', null) as NestedStorage;
+if (!auth) {
+    auth = sessionLoadValue('auth', null) as NestedStorage;
+}
 if (auth) {
     authToken.set(auth.id + ' ' + auth.token);
 }

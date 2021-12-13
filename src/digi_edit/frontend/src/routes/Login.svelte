@@ -1,12 +1,13 @@
 <script lang="ts">
     import { authToken } from '../stores';
-    import { sessionStoreValue } from '../storage';
+    import { sessionStoreValue, localStoreValue, sessionDeleteValue, localDeleteValue } from '../storage';
 
     let email = '';
     let emailError = '';
     let password = '';
     let passwordError = '';
     let loggingIn = false;
+    let remember = false;
 
     async function login(ev: Event) {
         ev.preventDefault();
@@ -34,8 +35,15 @@
             });
             if (response.status === 200) {
                 const body = await response.json();
-                sessionStoreValue('auth.id', body.data.id);
-                sessionStoreValue('auth.token', body.data.attributes.token);
+                sessionDeleteValue('auth');
+                localDeleteValue('auth');
+                if (remember) {
+                    localStoreValue('auth.id', body.data.id);
+                    localStoreValue('auth.token', body.data.attributes.token);
+                } else {
+                    sessionStoreValue('auth.id', body.data.id);
+                    sessionStoreValue('auth.token', body.data.attributes.token);
+                }
                 authToken.set(body.data.id + ' ' + body.data.attributes.token);
             } else {
                 const body = await response.json();
@@ -75,6 +83,9 @@
             {#if passwordError}
                 <span class="block px-2 py-1 text-sm text-white bg-red-600">{passwordError}</span>
             {/if}
+        </label>
+        <label class="block mb-3 text-sm">
+            <input bind:value={remember} type="checkbox"> Remember me
         </label>
         <div class="text-right">
             {#if loggingIn}
