@@ -12,6 +12,7 @@
     const location = useLocation();
     const params = useParams();
     const navigate = useNavigate();
+    let integrationPrompted = false;
 
     const selectedTask = derived([activeBranches, params], ([activeBranches, params]) => {
         let taskId = params['*'];
@@ -33,6 +34,29 @@
         if (selectedTask === null && oldSelectedTask !== null) {
             navigate('/');
             busyBranchAction.set('');
+            integrationPrompted = false;
+        }
+        if (!integrationPrompted && selectedTask && selectedTask.attributes && selectedTask.attributes.updates) {
+            integrationPrompted = true;
+            activeDialog.set({
+                'title': 'Integrate changes from the primary copy',
+                'text': 'The primary copy has changes that your task does not have. It is recommended, that you integrate these changes into your task now.',
+                'buttons': [
+                    {
+                        title: "Don't integrate",
+                        action() {
+                            activeDialog.set(null);
+                        }
+                    },
+                    {
+                        title: 'Integrate',
+                        action() {
+                            rebase();
+                            activeDialog.set(null);
+                        }
+                    }
+                ]
+            });
         }
         oldSelectedTask = selectedTask;
     });
