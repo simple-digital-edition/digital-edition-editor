@@ -1,3 +1,5 @@
+import deepcopy from 'deepcopy';
+
 export interface XMLElement {
     tag: string;
     children: XMLElement[];
@@ -26,6 +28,7 @@ export class TEISerialiser {
     }
 
     serialise(doc) {
+        doc = deepcopy(doc);
         const tree = this.buildBaseElement('tei:TEI[@xmlns:tei="http://www.tei-c.org/ns/1.0"]')
         for (let section of this.sections) {
             if (section.type === 'text' && section.serialise && doc[section.name]) {
