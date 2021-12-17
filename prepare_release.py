@@ -6,13 +6,7 @@ from shutil import rmtree
 from subprocess import run
 
 # Update version numbers
-version = '1.0.0b8'
-
-with open('package.json') as in_f:
-    data = json.load(in_f)
-data['version'] = version
-with open('package.json', 'w') as out_f:
-    json.dump(data, out_f, indent=2)
+version = '1.0.0b9'
 
 with open('pyproject.toml') as in_f:
     lines = in_f.readlines()
@@ -20,15 +14,6 @@ with open('pyproject.toml', 'w') as out_f:
     for line in lines:
         if line.startswith('version = '):
             out_f.write(f'version = "{version}"\n')
-        else:
-            out_f.write(line)
-
-with open('docs/conf.py') as in_f:
-    lines = in_f.readlines()
-with open('docs/conf.py', 'w') as out_f:
-    for line in lines:
-        if line.startswith('release = '):
-            out_f.write(f"release = '{version}'\n")
         else:
             out_f.write(line)
 
@@ -66,5 +51,5 @@ with open('CHANGES.md') as in_f:
                 changes.append({'type': match.group(1).lower(),
                                 'message': match.group(2)})
 
-with open('src/digi_edit/static/changes.json', 'w') as out_f:
-    json.dump(history, out_f)
+#with open('src/digi_edit/static/changes.json', 'w') as out_f:
+#    json.dump(history, out_f)
