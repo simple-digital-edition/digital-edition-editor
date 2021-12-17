@@ -6,7 +6,7 @@ from shutil import rmtree
 from subprocess import run
 
 # Update version numbers
-version = '1.0.0b7'
+version = '1.0.0b8'
 
 with open('package.json') as in_f:
     data = json.load(in_f)
