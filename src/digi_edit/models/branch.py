@@ -6,7 +6,7 @@ from datetime import datetime
 from git import Repo
 from git.exc import GitCommandError
 from github import Github
-from gitlab import Gitlab
+from gitlab import Gitlab, GitlabCreateError
 from pyramid.decorator import reify
 from shutil import rmtree
 from sqlalchemy import (Column, Index, Integer, Unicode, DateTime, func)
@@ -205,9 +205,33 @@ class Branch(Base):
                 merge_request.state_event = 'reopen'
                 merge_request.save()
             else:
-                gl_repo.mergerequests.create({'source_branch': self.branch_name(request),
-                                              'target_branch': 'default',
-                                              'title': self.attributes["name"]})
+                try:
+                    gl_repo.mergerequests.create({'source_branch': self.branch_name(request),
+                                                  'target_branch': 'default',
+                                                  'title': self.attributes["name"]})
+                except GitlabCreateError:
+                    for merge_request in gl_repo.mergerequests.list():
+                        if merge_request.state == 'opened' and merge_request.source_branch == self.branch_name(request):
+                            self.attributes['pull_request'] = {'id': merge_request.iid}
+                    merge_request = gl_repo.mergerequests.get(self.attributes['pull_request']['id'])
+                    if merge_request.state == 'merged':
+                        self.pre_delete(request)
+                        self.attributes['pull_request']['state'] = 'merged'
+                        self.attributes['merged'] = merge_request.merged_at
+                        self.attributes['status'] = 'merged'
+                    else:
+                        if merge_request.state == 'opened':
+                            self.attributes['pull_request']['state'] = 'open'
+                        else:
+                            self.attributes['pull_request']['state'] = merge_request.state
+                        self.attributes['pull_request']['mergeable'] = (merge_request.merge_status == 'can_be_merged')
+                        self.attributes['pull_request']['reviews'] = list(map(lambda nt: {'state': '',
+                                                                                          'body': nt.body,
+                                                                                          'user': nt.author['name']},
+                                                                              [nt for nt in merge_request.notes.list()
+                                                                              if not nt.system]))
+                        self.attributes['pull_request']['reviews'].reverse()
+                    request.dbsession.add(self)
 
     def cancel_integration(self, request):
         integration = get_config_setting(request, 'git.integration')
