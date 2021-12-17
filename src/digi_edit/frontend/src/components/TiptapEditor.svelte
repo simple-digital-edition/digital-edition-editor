@@ -235,7 +235,7 @@
 
     function nestedDocList(entry) {
         if (fullDoc[entry.action.name]) {
-            return Object.values(fullDoc[entry.action.name]).map((nestedDoc) => {
+            const values = Object.values(fullDoc[entry.action.name]).map((nestedDoc) => {
                 let label = getText(nestedDoc.doc);
                 if (label.length > 20) {
                     label = label.substring(0, 17) + '...';
@@ -245,6 +245,36 @@
                     label: label,
                 }
             });
+            values.sort((a, b) => {
+                const aMatch = a.label.match(/^([0-9,.\-]+).*$/);
+                const bMatch = b.label.match(/^([0-9,.\-]+).*$/);
+                if (aMatch && bMatch) {
+                    const aParts = aMatch[1].split(/[.,\-]/).map((value) => { return Number.parseInt(value); });
+                    const bParts = bMatch[1].split(/[.,\-]/).map((value) => { return Number.parseInt(value); });
+                    for (let idx = 0; idx < aParts.length && idx < bParts.length; idx++) {
+                        if (aParts[idx] < bParts[idx]) {
+                            return -1;
+                        } else if (aParts[idx] > bParts[idx]) {
+                            return 1;
+                        }
+                    }
+                    if (aParts.length < bParts.length) {
+                        return -1;
+                    } else if (aParts.length > bParts.length) {
+                        return 1;
+                    }
+                } else if (aMatch) {
+                    return -1;
+                } else if (bMatch) {
+                    return 1;
+                } else if (a.label < b.label) {
+                    return -1;
+                } else if (a.label > b.label) {
+                    return 1;
+                }
+                return 0;
+            });
+            return values;
         }
         return [];
     }
