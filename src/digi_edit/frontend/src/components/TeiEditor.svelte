@@ -18,6 +18,8 @@
     const nestedDoc = writable(null);
     const nestedSection = writable(null);
     const nestedId = writable(null);
+    let triggerSave = false;
+    let nestedTriggerSave = false;
 
     function createBubbleMenu(uiConfig, section) {
         return section.bubbleMenu.map((menu) => {
@@ -159,9 +161,19 @@
         dirty = true;
     }
 
+    function closeNestedDoc(ev) {
+        nestedTriggerSave = !nestedTriggerSave;
+        setTimeout(() => {
+            nestedDoc.set(null);
+        }, 10)
+    }
+
     function saveDoc() {
-        const serialiser = new TEISerialiser(get(schema));
-        dispatch('save', serialiser.serialise($document));
+        triggerSave = !triggerSave;
+        setTimeout(() => {
+            const serialiser = new TEISerialiser(get(schema));
+            dispatch('save', serialiser.serialise($document));
+        }, 10);
     }
 
     function keyboardHandler(ev: KeyboardEvent) {
@@ -219,18 +231,18 @@
         <div class="flex-auto overflow-hidden">
             {#if $currentSection && $document && $document[$currentSection.name]}
                 {#if $document[$currentSection.name]._type === 'text'}
-                    <TiptapEditor doc={$document[$currentSection.name]._main} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateMainDoc}/>
+                    <TiptapEditor doc={$document[$currentSection.name]._main} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateMainDoc} bind:triggerSave={triggerSave} bind:dirty={dirty}/>
                 {:else if $document[$currentSection.name]._type === 'metadata'}
                     <TeiMetadataEditor doc={$document[$currentSection.name]} schema={$metadataSchema} on:notifyDirty={() => { dirty = true; }}/>
                 {/if}
             {/if}
         </div>
         {#if $nestedDoc}
-            <div transition:fade="{{ duration: 100 }}" on:click={() => { nestedDoc.set(null); nestedSection.set(null); nestedId.set(null); }} class="absolute left-0 top-0 w-full h-full z-10 bg-white bg-opacity-70">
+            <div transition:fade="{{ duration: 100 }}" on:click={closeNestedDoc} class="absolute left-0 top-0 w-full h-full z-10 bg-white bg-opacity-70">
                 <div on:click={(ev) => { ev.stopPropagation(); }} class="absolute left-1/2 top-1/2 w-4/5 h-4/5 transform -translate-x-1/2 -translate-y-1/2 bg-white border border-neutral shadow-lg">
-                    <TiptapEditor doc={$nestedDoc} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$nestedBubbleMenu} sidebarMenu={$nestedSidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateNestedDoc}/>
+                    <TiptapEditor doc={$nestedDoc} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$nestedBubbleMenu} sidebarMenu={$nestedSidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateNestedDoc} bind:triggerSave={nestedTriggerSave} bind:dirty={dirty}/>
                     <div class="absolute right-0 top-0 z-10 transform translate-x-1/2 -translate-y-1/2">
-                        <button on:click={() => { nestedDoc.set(null); nestedSection.set(null); nestedId.set(null); }} class="block p-1 bg-white rounded-full border border-neutral shadow-lg">
+                        <button on:click={closeNestedDoc} class="block p-1 bg-white rounded-full border border-neutral shadow-lg">
                             <svg viewBox="0 0 24 24" class="w-6 w-8">
                                 <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                             </svg>

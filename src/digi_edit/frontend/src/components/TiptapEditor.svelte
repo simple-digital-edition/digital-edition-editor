@@ -15,15 +15,15 @@
     export let schema = null;
     export let bubbleMenu = null;
     export let sidebarMenu = null;
+    export let triggerSave = false;
+    export let dirty = false;
 
     const dispatch = createEventDispatcher();
     let editorElement = null;
     let bubbleMenuElement = null;
     let editor = null;
-    let updateTimeout = null;
     let internalUpdate = false;
     let oldDoc = null;
-    let dirty = false;
 
     function getSchemaTypeNameByName(name: string, schema: Schema): 'node' | 'mark' | null {
         if (schema.nodes[name]) {
@@ -106,12 +106,6 @@
                 onTransaction: ({ transaction }) => {
                     if (transaction.docChanged) {
                         dirty = true;
-                        clearTimeout(updateTimeout);
-                        updateTimeout = setTimeout(() => {
-                            internalUpdate = true;
-                            dispatch('update', transaction.doc.toJSON());
-                            dirty = false;
-                        }, 500);
                     }
                     editor = editor;
                 }
@@ -279,6 +273,12 @@
         return [];
     }
 
+    function saveDocument(ignore: boolean) {
+        if (editor) {
+            dispatch('update', editor.state.doc.toJSON());
+        }
+    }
+
     onMount(() => {
         internalUpdate = false;
         initEditor(doc);
@@ -288,15 +288,18 @@
         initEditor(doc);
     }
 
+    $: {
+        saveDocument(triggerSave);
+    }
+
     onDestroy(() => {
         if (editor) {
-            clearTimeout(updateTimeout);
-            if (dirty) {
-                dispatch('update', editor.state.doc.toJSON());
-            }
+            saveDocument(true);
             editor.destroy();
         }
     });
+
+
 </script>
 
 <div class="flex flex-row w-full h-full overflow-hidden tiptap-editor">
