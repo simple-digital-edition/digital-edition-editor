@@ -4,7 +4,8 @@
 	import { fade } from 'svelte/transition';
 
     import { schema, uiConfig, fileBusy } from '../stores';
-    import { TEIParser, TEISerialiser } from '../tei';
+    import { TEIParser, TEISerialiser, TEIDocument } from 'tei-util';
+    import type { TEITextDocumentCollection, TEITextNode } from 'tei-util/dist/types';
     import TiptapEditor from './TiptapEditor.svelte';
     import BusySpinner from './BusySpinner.svelte';
     import TeiMetadataEditor from './TeiMetadataEditor.svelte';
@@ -14,10 +15,10 @@
 
     const dispatch = createEventDispatcher();
     const currentSection = writable({});
-    const document = writable({});
-    const nestedDoc = writable(null);
+    const document = writable({} as TEIDocument);
+    const nestedDoc = writable(null as TEITextNode);
     const nestedSection = writable(null);
-    const nestedId = writable(null);
+    const nestedId = writable(null as string);
     let triggerSave = false;
     let nestedTriggerSave = false;
 
@@ -110,18 +111,18 @@
         }
     });
 
-    function editNestedDoc(ev) {
-        const doc = $document[$currentSection.name];
-        if (!doc[ev.detail.type]) {
-            doc[ev.detail.type] = {};
+    function editNestedDoc(ev: EditNestedDocEvent) {
+        const doc = $document[$currentSection.name] as TEITextDocumentCollection;
+        if (!doc.nested[ev.detail.type]) {
+            doc.nested[ev.detail.type] = {};
         }
-        if (doc[ev.detail.type]) {
+        if (doc.nested[ev.detail.type]) {
             const sect = $uiConfig.editor.tei.sections.filter((sect) => {
                 return sect.name === ev.detail.type;
             });
             if (sect.length === 1) {
-                if (doc[ev.detail.type][ev.detail.id]) {
-                    nestedDoc.set(doc[ev.detail.type][ev.detail.id].doc);
+                if (doc.nested[ev.detail.type][ev.detail.id]) {
+                    nestedDoc.set(doc.nested[ev.detail.type][ev.detail.id].doc);
                     nestedSection.set(sect[0]);
                     nestedId.set(ev.detail.id);
                 } else {
@@ -134,16 +135,19 @@
                             }
                         }
                     });
-                    doc[ev.detail.type][ev.detail.type + '-' + newId] = {
+                    doc.nested[ev.detail.type][ev.detail.type + '-' + newId] = {
                         type: ev.detail.type,
                         id: ev.detail.type + '-' + newId,
                         doc: {
                             type: 'doc',
                             content: [],
+                            text: null,
+                            marks: [],
+                            attrs: {},
                         },
                     };
                     ev.detail.created(ev.detail.type + '-' + newId);
-                    nestedDoc.set(doc[ev.detail.type][ev.detail.type + '-' + newId].doc);
+                    nestedDoc.set(doc.nested[ev.detail.type][ev.detail.type + '-' + newId].doc);
                     nestedSection.set(sect[0]);
                     nestedId.set(ev.detail.type + '-' + newId);
                 }
@@ -152,12 +156,12 @@
     }
 
     function updateMainDoc(ev) {
-        $document[$currentSection.name]._main = ev.detail;
+        ($document[$currentSection.name] as TEITextDocumentCollection).main = ev.detail;
         dirty = true;
     }
 
     function updateNestedDoc(ev) {
-        $document[$currentSection.name][$nestedSection.name][$nestedId].doc = ev.detail;
+        ($document[$currentSection.name] as TEITextDocumentCollection).nested[$nestedSection.name][$nestedId].doc = ev.detail;
         dirty = true;
     }
 
@@ -230,9 +234,9 @@
         </nav>
         <div class="flex-auto overflow-hidden">
             {#if $currentSection && $document && $document[$currentSection.name]}
-                {#if $document[$currentSection.name]._type === 'text'}
-                    <TiptapEditor doc={$document[$currentSection.name]._main} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateMainDoc} bind:triggerSave={triggerSave} bind:dirty={dirty}/>
-                {:else if $document[$currentSection.name]._type === 'metadata'}
+                {#if $document[$currentSection.name].type === 'text'}
+                    <TiptapEditor doc={$document[$currentSection.name].main} fullDoc={$document[$currentSection.name]} schema={$schema} bubbleMenu={$bubbleMenu} sidebarMenu={$sidebarMenu} on:editNestedDoc={editNestedDoc} on:update={updateMainDoc} bind:triggerSave={triggerSave} bind:dirty={dirty}/>
+                {:else if $document[$currentSection.name].type === 'metadata'}
                     <TeiMetadataEditor doc={$document[$currentSection.name]} schema={$metadataSchema} on:notifyDirty={() => { dirty = true; }}/>
                 {/if}
             {/if}
