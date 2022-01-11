@@ -228,8 +228,8 @@
     }
 
     function nestedDocList(entry) {
-        if (fullDoc[entry.action.name]) {
-            const values = Object.values(fullDoc[entry.action.name]).map((nestedDoc) => {
+        if (fullDoc.nested[entry.action.name]) {
+            const values = Object.values(fullDoc.nested[entry.action.name]).map((nestedDoc) => {
                 let label = getText(nestedDoc.doc);
                 if (label.length > 20) {
                     label = label.substring(0, 17) + '...';
