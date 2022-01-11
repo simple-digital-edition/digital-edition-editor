@@ -6,7 +6,7 @@ from shutil import rmtree
 from subprocess import run
 
 # Update version numbers
-version = '1.0.0b10'
+version = '1.0.0b12'
 
 with open('pyproject.toml') as in_f:
     lines = in_f.readlines()
