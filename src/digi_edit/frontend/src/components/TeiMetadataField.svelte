@@ -51,7 +51,18 @@
                     } else if (pathElement.startsWith('@')) {
                         return '';
                     } else {
-                        return null;
+                        pathElements.push(pathElement);
+                        while (pathElements.length > 0) {
+                            const newElement = {
+                                tag: pathElements.pop(),
+                                children: [],
+                                text: null,
+                                attributes: {}
+                            };
+                            element.children.push(newElement);
+                            element = newElement;
+                        }
+                        return element;
                     }
                 }
             }
