@@ -53,8 +53,14 @@
                     } else {
                         pathElements.push(pathElement);
                         while (pathElements.length > 0) {
+                            pathElement = pathElements.pop();
+                            if (pathElement === 'text()') {
+                                return '';
+                            } else if (pathElement.startsWith('@')) {
+                                return '';
+                            }
                             const newElement = {
-                                tag: pathElements.pop(),
+                                tag: pathElement,
                                 children: [],
                                 text: null,
                                 attributes: {}
