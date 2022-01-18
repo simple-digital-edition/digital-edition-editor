@@ -128,8 +128,8 @@
                 } else {
                     let newId = 1;
                     Object.values($document).forEach((section) => {
-                        if (section[ev.detail.type]) {
-                            const ids = Object.keys(section[ev.detail.type]);
+                        if ((section as TEITextDocumentCollection).nested && (section as TEITextDocumentCollection).nested[ev.detail.type]) {
+                            const ids = Object.keys((section as TEITextDocumentCollection).nested[ev.detail.type]);
                             while (ids.indexOf(ev.detail.type + '-' + newId) >= 0) {
                                 newId = newId + 1;
                             }
