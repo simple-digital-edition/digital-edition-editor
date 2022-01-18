@@ -4,6 +4,7 @@
 
     import { file, fileBusy, getFile, patchFile } from '../stores';
     import TeiEditor from '../components/TeiEditor.svelte';
+    import TextEditor from '../components/TextEditor.svelte';
 
     const params = useParams();
     let oldFileId = null;
@@ -37,6 +38,8 @@
     {#if $file}
         {#if $file.attributes.mode === 'tei'}
             <TeiEditor text={$file.attributes.rawData} on:save={save} bind:dirty={dirty}/>
+        {:else if $file.attributes.mode === 'text'}
+            <TextEditor text={$file.attributes.rawData} on:save={save} bind:dirty={dirty}/>
         {/if}
     {:else if $fileBusy}
         <div class="w-full h-full relative">
