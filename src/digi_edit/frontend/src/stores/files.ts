@@ -54,6 +54,39 @@ export async function getAllFiles(branchId) {
 export const file = writable(null);
 export const fileBusy = writable(false);
 
+export async function createFile(filename: string, filepath: string, branchId: string) {
+    try {
+        fileBusy.set(true);
+        const response = await fetch('/api/files', {
+            method: 'POST',
+            headers: {
+                'X-Authorization': get(authToken),
+                'X-Include-Data': 'true',
+            },
+            body: JSON.stringify({
+                data: {
+                    type: 'files',
+                    attributes: {
+                        filename: filepath + '/' + filename,
+                        path: filepath,
+                        name: filename,
+                    },
+                    relationships: {
+                        branch: {
+                            data: {
+                                type: 'branches',
+                                id: branchId,
+                            }
+                        }
+                    }
+                },
+            }),
+        });
+    } finally {
+        fileBusy.set(false);
+    }
+}
+
 export async function getFile(fileId) {
     try {
         fileBusy.set(true);

@@ -1,9 +1,10 @@
 <script lang="ts">
     import { onDestroy, tick } from 'svelte';
+    import { fade } from 'svelte/transition';
     import { derived, writable } from 'svelte/store';
     import { Link, Route, useParams } from 'svelte-navigator';
 
-    import { activeBranches, files, filesBusy, getAllFiles } from '../stores';
+    import { activeBranches, getAllBranches, files, filesBusy, getAllFiles, createFile, fileBusy } from '../stores';
     import FileEditor from './FileEditor.svelte';
 
     const params = useParams();
@@ -13,6 +14,9 @@
     let oldTaskId = null;
     let fileList = null;
     let showSidebar = true;
+    let showAddFile = false;
+    let addFileLocation = '';
+    let addFileName = '';
 
     const selectedFileId = derived(params, (params) => {
         return params['*'];
@@ -99,7 +103,7 @@
 
     function limitedPath(path) {
         if (sidebarElement && emWidthElement) {
-            const maxLength = Math.floor(sidebarElement.clientWidth / (emWidthElement.clientWidth / 26));
+            const maxLength = Math.floor(sidebarElement.clientWidth / ((emWidthElement.clientWidth - 32) / 26));
             if (path.length > maxLength) {
                 const elements = path.split('/');
                 path = elements[0] + '/.../' + elements[elements.length - 1];
@@ -109,6 +113,24 @@
             }
         }
         return path;
+    }
+
+    function addFile(fileSet) {
+        showAddFile = true;
+        addFileLocation = fileSet.name;
+        addFileName = '';
+    }
+
+    async function addNewFile(ev: Event) {
+        ev.preventDefault();
+        if (!$fileBusy) {
+            await createFile(addFileName, addFileLocation, $selectedTask.id);
+            fileBusy.set(true);
+            await getAllFiles($selectedTask.id);
+            await getAllBranches();
+            fileBusy.set(false);
+            showAddFile = false;
+        }
     }
 </script>
 
@@ -151,7 +173,15 @@
             </form>
             <ol bind:this={fileList} class="flex-auto overflow-auto">
                 {#each $fileSets as fileSet}
-                    <li><span class="block px-2 py-1 border-b border-solid border-primary tracking-widest truncate" title={fileSet.name}>{limitedPath(fileSet.name)}</span>
+                    <li>
+                        <div class="flex flex-row border-b border-solid border-primary">
+                            <span class="block flex-auto px-2 py-1 tracking-widest truncate" title={fileSet.name}>{limitedPath(fileSet.name)}</span>
+                            <button on:click={() => { addFile(fileSet) }} class="flex-0 self-center px-2">
+                                <svg viewBox="0 0 24 24" class="w-4 h-4">
+                                    <path fill="currentColor" d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z" />
+                                </svg>
+                            </button>
+                        </div>
                         <ol class="mb-2">
                             {#each fileSet.files as file}
                                 <li><Link to="{file.id}" class="block px-2 py-1 text-sm {$selectedFileId === file.id ? 'text-primary font-bold border-r-2 border-solid border-primary' : ''}" aria-current="{$selectedFileId === file.id ? 'true' : 'false'}">{file.attributes.name}</Link></li>
@@ -168,4 +198,25 @@
         </div>
     </Route>
     <Route path="/:fid"><FileEditor/></Route>
+    {#if showAddFile}
+        <div transition:fade class="fixed left-0 top-0 w-full h-full z-50 bg-white bg-opacity-70">
+            <form on:submit={addNewFile} class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-solid border-neutral shadow-lg w-96 bg-white">
+                <h2 class="px-4 py-2 bg-primary text-primary-contrast font-bold text-lg">Add a new file</h2>
+                <div>
+                    <p class="px-4 pt-2 pb-1">Please enter the name of the new file to create:</p>
+                    <p class="px-4 py-1"><input bind:value={addFileName} disabled={$fileBusy} class="border border-solid border-neutral w-full px-2 py-1"/></p>
+                    <p class="px-4 py-1 text-sm">The file will be created in the following location:</p>
+                    <p class="px-4 pt-1 pb-2 text-sm"><input value={addFileLocation} readonly class="border border-solid border-neutral bg-neutral w-full px-2 py-1"/></p>
+                </div>
+                <div class="text-right px-4 py-2">
+                    {#if $fileBusy}
+                        <span class="inline-block ml-4 bg-primary text-primary-contrast text-sm px-3 py-1">Adding file...</span>
+                    {:else}
+                        <button type="button" on:click={(ev) => { showAddFile = false; }} class="inline-block ml-4 bg-primary text-primary-contrast text-sm px-3 py-1">Don't add</button>
+                        <button type="submit" class="inline-block ml-4 bg-primary text-primary-contrast text-sm px-3 py-1">Add</button>
+                    {/if}
+                </div>
+            </form>
+        </div>
+    {/if}
 </div>
