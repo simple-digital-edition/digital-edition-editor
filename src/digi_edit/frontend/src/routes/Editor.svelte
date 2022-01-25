@@ -39,17 +39,17 @@
         if (!integrationPrompted && selectedTask && selectedTask.attributes && selectedTask.attributes.updates) {
             integrationPrompted = true;
             activeDialog.set({
-                'title': 'Integrate changes from the primary copy',
-                'text': 'The primary copy has changes that your task does not have. It is recommended, that you integrate these changes into your task now.',
+                'title': 'Update to the latest primary version',
+                'text': 'The primary copy has changes that your task does not have. It is recommended, that you update your task to include these changes.',
                 'buttons': [
                     {
-                        title: "Don't integrate",
+                        title: "Don't update",
                         action() {
                             activeDialog.set(null);
                         }
                     },
                     {
-                        title: 'Integrate',
+                        title: 'Update',
                         action() {
                             rebase();
                             activeDialog.set(null);
