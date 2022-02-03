@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 1.0.0b18 (03.02.2022)
+
 * **New**: User Interface rewritten
 
 ## 0.16.7 (21.06.2021)
