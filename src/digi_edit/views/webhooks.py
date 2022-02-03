@@ -2,6 +2,7 @@ import json
 import os
 import re
 
+from copy import deepcopy
 from git import Repo
 from github import Github
 from gitlab import Gitlab
@@ -76,7 +77,7 @@ def gitlab_webhook(request):
             branch_ref = payload['object_attributes']['source_branch']
             match = re.fullmatch(f'{branch_prefix}branch-([0-9]+)', branch_ref)
             if match:
-                branch = request.dbsession.query(Branch).filter(Branch.id == match.group(1)).first()
+                branch = request.dbsession.query(Branch).filter(Branch.id == int(match.group(1))).first()
                 if branch:
                     gl = Gitlab(get_config_setting(request, 'gitlab.host'), get_config_setting(request, 'gitlab.token'))
                     gl_repo = gl.projects.get(get_config_setting(request, 'gitlab.projectid'))
@@ -104,6 +105,7 @@ def gitlab_webhook(request):
                                                                                 [nt for nt in merge_request.notes.list()
                                                                                  if not nt.system]))
                         branch.attributes['pull_request']['reviews'].reverse()
+                        branch.attributes = deepcopy(branch.attributes)
         elif request.headers['X-Gitlab-Event'] == 'Note Hook':
             payload = json.loads(request.body)
             if 'merge_request'  in payload:
