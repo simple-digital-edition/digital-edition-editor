@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 1.0.0 (03.03.2022)
+
 * **Bugfix**: Fixed an attribute selection bug
 
 ## 1.0.0b18 (03.02.2022)
