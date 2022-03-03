@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Bugfix**: Fixed an attribute selection bug
+
 ## 1.0.0b18 (03.02.2022)
 
 * **New**: User Interface rewritten
