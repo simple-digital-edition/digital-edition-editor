@@ -9,13 +9,11 @@ To build and run the server locally the following tools are required:
 * Python version 3.8 or greater: https://www.python.org/
 * Poetry: https://python-poetry.org/
 * NodeJS version 12 or greater: https://nodejs.org/en/
-* Yarn 1: https://classic.yarnpkg.com/lang/en/
 
 All further local dependencies are installed using the following commands:
 
 ```
 poetry install
-yarn install
 ```
 
 To activate the virtual environment run
@@ -34,13 +32,8 @@ digi_edit -c development.ini init-db
 To build the JavaScript / CSS libraries run
 
 ```
-gulp
-```
-
-or
-
-```
-gulp watch
+cd src/digi_edit/frontend
+npm run dev
 ```
 
 To run the server for development run:
@@ -57,6 +50,3 @@ The application is then available at http://localhost:6543/
 2. Commit changes
 3. Tag changes with v{version}
 4. Push commit and tags
-5. Wait for the base Docker image to build
-6. Tag application versions
-7. Push tags
