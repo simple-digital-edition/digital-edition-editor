@@ -193,7 +193,7 @@
      */
     function isConfigActive(editor, config) {
         if (config) {
-            if (config.type === 'selectMarkAttribute') {
+            if (config.type === 'selectAttribute') {
                 for (let value of config.values) {
                     if (isActive(editor.state, config.name, {[config.attribute]: value.value})) {
                         return value.value;

@@ -25,7 +25,7 @@
     <label class="block"><span class="sr-only">{entry.label}</span>
         <select on:change={change} class="p-1">
             {#each entry.action.values as value}
-                <option value={value.value} selected={value.value === active ? 'selected' : null}>{value.label}</option>
+                <option value={value.value} selected={value.value === active}>{value.label}</option>
             {/each}
         </select>
     </label>
@@ -38,7 +38,7 @@
         <select on:change={change} class="p-1">
             <option value="null"></option>
             {#each values as value}
-                <option value={value.value} selected={value.value === active ? 'selected' : null}>{value.label}</option>
+                <option value={value.value} selected={value.value === active}>{value.label}</option>
             {/each}
         </select>
     </label>
