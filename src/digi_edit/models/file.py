@@ -9,8 +9,8 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPClientError, HTTPNotFound
 from pyramid.response import Response
 from shutil import rmtree
-from sqlalchemy import (Column, Index, Integer, Unicode, DateTime, ForeignKey, func)
-from sqlalchemy.orm import relationship
+from sqlalchemy import (Column, Integer, ForeignKey)
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy_json import NestedMutableJson
 
 from .meta import Base
@@ -28,7 +28,7 @@ class File(Base):
     attributes = Column(NestedMutableJson)
     position = Column(Integer)
 
-    branch = relationship('Branch')
+    branch = relationship('Branch', back_populates='files')
 
     def as_jsonapi(self, request):
         """Return the :class:`~digi_edit.models.file.File` in JSONAPI representation. If the ``'X-Include-Data'`` header

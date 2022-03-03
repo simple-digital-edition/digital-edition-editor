@@ -9,9 +9,9 @@ from github import Github
 from gitlab import Gitlab, GitlabCreateError
 from pyramid.decorator import reify
 from shutil import rmtree
-from sqlalchemy import (Column, Index, Integer, Unicode, DateTime, func)
+from sqlalchemy import (Column, Integer)
 from sqlalchemy.ext.orderinglist import ordering_list
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy_json import NestedMutableJson
 
 from .meta import Base
@@ -50,7 +50,8 @@ class Branch(Base):
     files = relationship('File',
                          cascade="all, delete-orphan",
                          order_by='File.position',
-                         collection_class=ordering_list('position'))
+                         collection_class=ordering_list('position'),
+                         back_populates='branch')
 
     def allow(self, user, action):
         """Check whether the given user is allowed to undertake the given action.
