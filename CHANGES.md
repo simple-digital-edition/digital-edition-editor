@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 1.0.1 (13.03.2022)
+
 * **Update**: Support negative serialisation weights
 
 ## 1.0.0 (03.03.2022)
