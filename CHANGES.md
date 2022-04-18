@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Update**: Changed the Docker repository name
+
 ## 1.0.1 (13.03.2022)
 
 * **Update**: Support negative serialisation weights
