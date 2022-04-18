@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 1.0.2 (18.04.2022)
+
 * **Update**: Changed the Docker repository name
 
 ## 1.0.1 (13.03.2022)
