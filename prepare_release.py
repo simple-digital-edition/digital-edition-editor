@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 # Update version numbers
-version = '1.0.2'
+version = '1.0.3'
 
 with open('pyproject.toml') as in_f:
     lines = in_f.readlines()
