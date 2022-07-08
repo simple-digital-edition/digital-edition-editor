@@ -99,6 +99,6 @@ class BranchItemHandler(JsonApiHandler):
                     shutil.rmtree(target_dir)
                 await dbsession.delete(branch)
                 await dbsession.commit()
-                self.set_status(201)
+                self.set_status(204)
             else:
                 raise JsonApiException()
