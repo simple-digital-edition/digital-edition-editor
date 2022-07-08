@@ -38,17 +38,64 @@ CONFIG_SCHEMA = {
                 'type': 'integer',
                 'default': 6543
             },
-            'cookie_secret': {
+            'cookie-secret': {
                 'type': 'string',
                 'required': True,
                 'empty': False,
             },
-            'static_files': {
+            'static-files': {
                 'type': 'string',
                 'required': True,
                 'empty': False,
             }
         },
+    },
+    'git': {
+        'type': 'dict',
+        'required': True,
+        'schema': {
+            'source': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+            },
+            'base-dir': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+            },
+            'branch-prefix': {
+                'type': 'string',
+                'required': False,
+                'default': '',
+            },
+            'integration': {
+                'type': 'dict',
+                'required': True,
+                'schema': {
+                    'type': {
+                        'type': 'string',
+                        'required': True,
+                        'allowed': ['gitlab'],
+                    },
+                    'host': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                    },
+                    'project-id': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                    },
+                    'auth-token': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                    }
+                }
+            }
+        }
     },
     'debug': {
         'type': 'boolean',

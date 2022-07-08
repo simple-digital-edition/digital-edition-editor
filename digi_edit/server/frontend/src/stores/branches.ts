@@ -1,7 +1,7 @@
 import { writable, derived, get } from 'svelte/store';
 
 import { getAll } from './jsonapi';
-import { authToken } from './auth';
+import { getCookie, authToken } from './auth';
 
 export const branches = writable([]);
 export const branchesBusy = writable(false);
@@ -40,7 +40,8 @@ export async function createBranch(branch) {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'X-Authorization': get(authToken),
+                'Authorization': 'Bearer ' + get(authToken),
+                'X-XSRFToken': getCookie('_xsrf'),
             },
             body: JSON.stringify({'data': branch}),
         });
@@ -64,8 +65,8 @@ export async function postBranchAction(branch, action: string) {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'X-Authorization': get(authToken),
-                'X-Action': action,
+                'Authorization': 'Bearer ' + get(authToken),
+                'X-XSRFToken': getCookie('_xsrf'),
             }
         });
         branches.set(await getAll('branches', ''));
@@ -81,7 +82,8 @@ export async function deleteBranch(branch) {
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
-                'X-Authorization': get(authToken),
+                'Authorization': 'Bearer ' + get(authToken),
+                'X-XSRFToken': getCookie('_xsrf'),
             }
         });
         await getAllBranches();
