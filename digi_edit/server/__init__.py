@@ -4,7 +4,8 @@ import logging
 from tornado.web import Application, RedirectHandler, StaticFileHandler
 from tornado.ioloop import IOLoop
 
-from .handlers import (FrontendHandler, JsonStaticHandler, UserLoginHandler, BranchCollectionHandler, BranchItemHandler)
+from .handlers import (FrontendHandler, JsonStaticHandler, UserLoginHandler, BranchCollectionHandler, BranchItemHandler,
+                       FileCollectionHandler, FileItemHandler)
 
 from ..utils import config
 
@@ -23,6 +24,8 @@ def run_application_server() -> None:
         ('/api/users/login', UserLoginHandler),
         ('/api/branches', BranchCollectionHandler),
         ('/api/branches/([0-9]+)', BranchItemHandler),
+        ('/api/files', FileCollectionHandler),
+        ('/api/files/([a-zA-Z0-9\\-_=]+)', FileItemHandler)
     ]
     app = Application(
         routes,

@@ -1,7 +1,7 @@
 import { writable, get } from 'svelte/store';
 
 import { getAll } from './jsonapi';
-import { authToken } from './auth';
+import { getCookie, authToken } from './auth';
 
 export const files = writable([]);
 export const filesBusy = writable(false);
@@ -60,8 +60,8 @@ export async function createFile(filename: string, filepath: string, branchId: s
         const response = await fetch('/api/files', {
             method: 'POST',
             headers: {
-                'X-Authorization': get(authToken),
-                'X-Include-Data': 'true',
+                'Authorization': 'Bearer ' + get(authToken),
+                'X-XSRFToken': getCookie('_xsrf'),
             },
             body: JSON.stringify({
                 data: {
@@ -92,8 +92,8 @@ export async function getFile(fileId) {
         fileBusy.set(true);
         const response = await fetch('/api/files/' + fileId, {
             headers: {
-                'X-Authorization': get(authToken),
-                'X-Include-Data': 'true',
+                'Authorization': 'Bearer ' + get(authToken),
+                'X-XSRFToken': getCookie('_xsrf'),
             }
         });
         if (response.status === 200) {
@@ -112,12 +112,12 @@ export async function patchFile(file) {
         const response = await fetch('/api/files/' + file.id, {
             method: 'PATCH',
             headers: {
-                'X-Authorization': get(authToken),
-                'X-Include-Data': 'true',
+                'Authorization': 'Bearer ' + get(authToken),
+                'X-XSRFToken': getCookie('_xsrf'),
             },
             body: JSON.stringify({data: file}),
         });
-        if (response.status !== 200) {
+        if (response.status !== 204) {
             throw new Error('Failed to save');
         }
     } finally {

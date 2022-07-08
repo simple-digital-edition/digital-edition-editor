@@ -23,7 +23,7 @@ class JsonStaticHandler(ProtectedHandler):
         item_path = os.path.join(self._base_path, path)
         if item_path.startswith(self._base_path):
             if os.path.exists(item_path):
-                with open('config.yaml') as in_f:
+                with open(item_path) as in_f:
                     if item_path.endswith('.json'):
                         config = json.load(in_f)
                     elif item_path.endswith('.yaml'):

@@ -3,10 +3,9 @@ import json
 import logging
 
 from cerberus import Validator
-from typing import Union, List
-
 from sqlalchemy import select
 from tornado.web import RequestHandler
+from typing import Union, List
 
 from ...models import get_sessionmaker, User
 
@@ -23,8 +22,8 @@ class JsonApiException(Exception):
 class ProtectedHandler(RequestHandler):
     """RequestHandler that ensures request are authorised."""
 
-    async def check_authorised(self: 'JsonApiHandler') -> None:
-        """Check whether the user is authorised to access the system."""
+    async def get_authorised_user(self: 'JsonApiHandler') -> Union[None, User]:
+        """Return the authorised user."""
         try:
             if 'Authorization' in self.request.headers:
                 auth_header = self.request.headers['Authorization']
@@ -39,10 +38,15 @@ class ProtectedHandler(RequestHandler):
                             result = await dbsession.execute(query)
                             user = result.scalar()
                             if user and 'token' in user.attributes and user.attributes['token'] == token:
-                                return
+                                return user
         except Exception:
             pass
-        self.send_error(status_code=401)
+        return None
+
+    async def check_authorised(self: 'JsonApiHandler') -> None:
+        """Check whether the user is authorised to access the system."""
+        if await self.get_authorised_user() is None:
+            self.send_error(status_code=401)
 
     async def prepare(self: 'JsonApiHandler') -> None:
         """Check authorisation for all requests."""
