@@ -5,7 +5,7 @@
 	import { useNavigate, useLocation } from 'svelte-navigator';
     import { fade } from 'svelte/transition';
 
-    import { isAuthorised, uiConfig, schema, activeDialog } from '../stores';
+    import { isAuthorised, uiConfig, schema, activeDialog, loadConfig } from '../stores';
 	import Editor from '../routes/Editor.svelte';
     import Login from '../routes/Login.svelte';
 
@@ -14,6 +14,7 @@
 
     const isAuthorisedUnsubscribe = isAuthorised.subscribe((isAuthorised) => {
         if (isAuthorised) {
+            loadConfig();
             const pathname = get(location).pathname;
             if (pathname === '/login') {
                 navigate('/');
@@ -29,10 +30,10 @@
 </script>
 
 <main class="w-screen h-screen">
+    <Route path="/login"><Login/></Route>
     {#if $uiConfig && $schema}
 	    <Route path="/*"><Editor/></Route>
-        <Route path="/login"><Login/></Route>
-    {:else}
+    {:else if $location.pathname !== '/login'}
         <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-700">The editor is starting up. Please wait...</div>
     {/if}
     {#if $activeDialog}

@@ -7,7 +7,7 @@
 	loadConfig();
 </script>
 
-<Router basepath="/ui">
+<Router basepath="/app">
 	{#if $authTokenChecker}
 		<AuthWrapper/>
 	{/if}

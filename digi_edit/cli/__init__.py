@@ -9,6 +9,7 @@ from cerberus import Validator
 from typing import Union
 
 from .admin import admin
+from .app import app
 from ..utils import set_config
 
 
@@ -25,6 +26,37 @@ CONFIG_SCHEMA = {
             'dsn': 'sqlite+aiosqlite:////var/lib/digi-edit/digi-edit.sqlite'
         }
     },
+    'server': {
+        'type': 'dict',
+        'required': True,
+        'schema': {
+            'host': {
+                'type': 'string',
+                'default': '127.0.0.1'
+            },
+            'port': {
+                'type': 'integer',
+                'default': 6543
+            },
+            'cookie_secret': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+            },
+            'static_files': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+            }
+        },
+    },
+    'debug': {
+        'type': 'boolean',
+        'default': False,
+    },
+    'logging': {
+        'type': 'dict'
+    }
 }
 
 
@@ -76,3 +108,4 @@ def main() -> None:
 
 
 main.add_command(admin)
+main.add_command(app)

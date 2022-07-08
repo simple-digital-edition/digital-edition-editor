@@ -1,0 +1,35 @@
+"""The Digital Edition Editor Server application."""
+import logging
+
+from tornado.web import Application, RedirectHandler, StaticFileHandler
+from tornado.ioloop import IOLoop
+
+from .handlers import (FrontendHandler, JsonStaticHandler, UserLoginHandler, BranchCollectionHandler, BranchItemHandler)
+
+from ..utils import config
+
+
+logger = logging.getLogger(__name__)
+
+
+def run_application_server() -> None:
+    """Run the Digital Edition Editor server."""
+    logger.debug('Application server starting up...')
+    routes = [
+        ('/', RedirectHandler, {'permanent': False, 'url': '/app'}),
+        ('/app(.*)', FrontendHandler),
+        ('/static/config/(.*)', JsonStaticHandler, {'path': f'{config()["server"]["static_files"]}/config'}),
+        ('/static/theme/(.*)', StaticFileHandler, {'path': f'{config()["server"]["static_files"]}/theme'}),
+        ('/api/users/login', UserLoginHandler),
+        ('/api/branches', BranchCollectionHandler),
+        ('/api/branches/(.*)', BranchItemHandler),
+    ]
+    app = Application(
+        routes,
+        debug=config()['debug'],
+        xsrf_cookies=True,
+        cookie_secret=config()['server']['cookie_secret'],
+        websocket_ping_interval=10)
+    logger.debug(f'Application listening on {config()["server"]["host"]} port {config()["server"]["port"]}')
+    app.listen(config()['server']['port'], config()['server']['host'])
+    IOLoop.current().start()

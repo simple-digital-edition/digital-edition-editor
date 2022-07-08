@@ -25,6 +25,7 @@
     "@tiptap/extension-text": "^2.0.0-beta.15",
     "@tsconfig/svelte": "^2.0.0",
     "autoprefixer": "^10.4.0",
+    "browserlist": "^1.0.1",
     "deepcopy": "^2.1.0",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
