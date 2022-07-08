@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { authToken } from '../stores';
+    import { getCookie, authToken } from '../stores';
     import { sessionStoreValue, localStoreValue, sessionDeleteValue, localDeleteValue } from '../storage';
 
     let email = '';
@@ -21,7 +21,7 @@
         passwordError = '';
 
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('/api/users/login', {
                 method: 'POST',
                 body: JSON.stringify({
                     'data': {
@@ -31,7 +31,10 @@
                             'password': password,
                         }
                     }
-                })
+                }),
+                headers: {
+                    'X-XSRFToken': getCookie('_xsrf'),
+                }
             });
             if (response.status === 200) {
                 const body = await response.json();

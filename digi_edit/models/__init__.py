@@ -6,6 +6,7 @@ from typing import Callable
 
 from .meta import Base  # noqa: F401
 from .branch import Branch  # noqa: F401
+from .user import User  # noqa: F401
 from ..utils import config
 
 logger = logging.getLogger(__name__)
