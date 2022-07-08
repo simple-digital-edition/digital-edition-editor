@@ -15,12 +15,14 @@ from ..utils import set_config
 CONFIG_SCHEMA = {
     'database': {
         'type': 'dict',
-        'required': True,
         'schema': {
             'dsn': {
                 'type': 'string',
-                'required': True,
+                'default': 'sqlite+aiosqlite:////var/lib/digi-edit/digi-edit.sqlite'
             },
+        },
+        'default': {
+            'dsn': 'sqlite+aiosqlite:////var/lib/digi-edit/digi-edit.sqlite'
         }
     },
 }
