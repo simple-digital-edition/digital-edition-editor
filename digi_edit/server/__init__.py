@@ -18,17 +18,17 @@ def run_application_server() -> None:
     routes = [
         ('/', RedirectHandler, {'permanent': False, 'url': '/app'}),
         ('/app(.*)', FrontendHandler),
-        ('/static/config/(.*)', JsonStaticHandler, {'path': f'{config()["server"]["static_files"]}/config'}),
-        ('/static/theme/(.*)', StaticFileHandler, {'path': f'{config()["server"]["static_files"]}/theme'}),
+        ('/static/config/(.*)', JsonStaticHandler, {'path': f'{config()["server"]["static-files"]}/config'}),
+        ('/static/theme/(.*)', StaticFileHandler, {'path': f'{config()["server"]["static-files"]}/theme'}),
         ('/api/users/login', UserLoginHandler),
         ('/api/branches', BranchCollectionHandler),
-        ('/api/branches/(.*)', BranchItemHandler),
+        ('/api/branches/([0-9]+)', BranchItemHandler),
     ]
     app = Application(
         routes,
         debug=config()['debug'],
         xsrf_cookies=True,
-        cookie_secret=config()['server']['cookie_secret'],
+        cookie_secret=config()['server']['cookie-secret'],
         websocket_ping_interval=10)
     logger.debug(f'Application listening on {config()["server"]["host"]} port {config()["server"]["port"]}')
     app.listen(config()['server']['port'], config()['server']['host'])

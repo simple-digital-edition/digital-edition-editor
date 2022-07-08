@@ -10,7 +10,7 @@ export async function getAll(type: string, filters: string) {
     }
     const response = await fetch(url, {
         headers: {
-            'X-Authorization': get(authToken),
+            'Authorization': 'Bearer ' + get(authToken),
         }
     });
     if (response.status === 200) {
@@ -24,7 +24,7 @@ export async function getSingle(type: string, id: string, headers) {
     const url = '/api/' + type + '/' + id;
     const response = await fetch(url, {
         headers: {
-            'X-Authorization': get(authToken),
+            'Authorization': 'Bearer ' + get(authToken),
         }
     });
     if (response.status === 200) {

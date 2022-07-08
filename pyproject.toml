@@ -15,6 +15,7 @@ aiosqlite = "^0.17.0"
 sqlalchemy-json = "^0.5.0"
 tornado = "^6.2"
 bcrypt = "^3.2.2"
+GitPython = "^3.1.27"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
