@@ -19,7 +19,7 @@ class FileCollectionHandler(JsonApiHandler):
     async def get(self: 'FileCollectionHandler', branch_id: str) -> None:
         """Fetch all files for a branch."""
         async with get_sessionmaker()() as dbsession:
-            query = select(Branch)
+            query = select(Branch).filter(Branch.id == int(branch_id))
             result = await dbsession.execute(query)
             branch = result.scalar()
             if branch is not None:
@@ -95,7 +95,7 @@ class FileItemHandler(JsonApiHandler):
         """Get a single file."""
         logger.debug(f'Fetching single file {branch_id} {file_id}')
         async with get_sessionmaker()() as dbsession:
-            query = select(Branch)
+            query = select(Branch).filter(Branch.id == int(branch_id))
             result = await dbsession.execute(query)
             branch = result.scalar()
             if branch is not None:
@@ -127,7 +127,7 @@ class FileItemHandler(JsonApiHandler):
         """Update the content of a single file."""
         logger.debug(f'Updating single file {branch_id} {file_id}')
         async with get_sessionmaker()() as dbsession:
-            query = select(Branch)
+            query = select(Branch).filter(Branch.id == branch_id)
             result = await dbsession.execute(query)
             branch = result.scalar()
             if branch is not None:
