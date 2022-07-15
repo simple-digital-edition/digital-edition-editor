@@ -1,7 +1,8 @@
 import { writable, get } from 'svelte/store';
 
-import { getAll } from './jsonapi';
+import { makeJSONAPIRequest } from './jsonapi';
 import { getCookie, authToken } from './auth';
+import {  } from './branches';
 
 export const files = writable([]);
 export const filesBusy = writable(false);
@@ -9,7 +10,7 @@ export const filesBusy = writable(false);
 export async function getAllFiles(branchId) {
     try {
         filesBusy.set(true);
-        let fileList = await getAll('files', 'filter[branch_id]=' + branchId);
+        let fileList = await makeJSONAPIRequest('GET', '/branches/' + branchId + '/files');
         fileList = fileList.filter((file) => {
             return (file.attributes.name.endsWith('.md') || file.attributes.name.endsWith('.rst') || file.attributes.name.endsWith('.tei'));
         });
@@ -87,37 +88,23 @@ export async function createFile(filename: string, filepath: string, branchId: s
     }
 }
 
-export async function getFile(fileId) {
+export async function getFile(branchId: string, fileId: string) {
     try {
         fileBusy.set(true);
-        const response = await fetch('/api/files/' + fileId, {
-            headers: {
-                'Authorization': 'Bearer ' + get(authToken),
-                'X-XSRFToken': getCookie('_xsrf'),
-            }
-        });
-        if (response.status === 200) {
-            file.set((await response.json()).data);
-        } else {
-            file.set(null);
+        const fileData = await makeJSONAPIRequest('GET', '/branches/' + branchId + '/files/' + fileId);
+        if (fileData) {
+            file.set(fileData);
         }
     } finally {
         fileBusy.set(false);
     }
 }
 
-export async function patchFile(file) {
+export async function patchFile(branchId: string, file) {
     try {
         fileBusy.set(true);
-        const response = await fetch('/api/files/' + file.id, {
-            method: 'PATCH',
-            headers: {
-                'Authorization': 'Bearer ' + get(authToken),
-                'X-XSRFToken': getCookie('_xsrf'),
-            },
-            body: JSON.stringify({data: file}),
-        });
-        if (response.status !== 204) {
+        const response = await makeJSONAPIRequest('PATCH', '/branches/' + branchId + '/files/' + file.id, {data: file});
+        if (!response) {
             throw new Error('Failed to save');
         }
     } finally {

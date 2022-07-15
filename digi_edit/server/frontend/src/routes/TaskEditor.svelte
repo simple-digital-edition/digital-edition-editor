@@ -197,7 +197,7 @@
             <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-disabled">{#if $filesBusy}Files are being loaded. Please wait...{:else}Please select the file you wish to work on from the list on the left{/if}</div>
         </div>
     </Route>
-    <Route path="/:fid"><FileEditor/></Route>
+    <Route path="/:fid"><FileEditor branchId={$params.tid}/></Route>
     {#if showAddFile}
         <div transition:fade class="fixed left-0 top-0 w-full h-full z-50 bg-white bg-opacity-70">
             <form on:submit={addNewFile} class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-solid border-neutral shadow-lg w-96 bg-white">
