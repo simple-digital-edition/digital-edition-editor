@@ -7,13 +7,14 @@
     import TextEditor from '../components/TextEditor.svelte';
 
     const params = useParams();
+    export let branchId: string;
     let oldFileId = null;
     let dirty = false;
 
     const paramsUnsubscribe = params.subscribe((params) => {
         if (oldFileId !== params.fid) {
             file.set(null);
-            getFile(params.fid);
+            getFile(branchId, params.fid);
             oldFileId = params.fid;
         }
     });
@@ -23,7 +24,7 @@
             const attrs = $file.attributes;
             attrs.rawData = ev.detail;
             try {
-                await patchFile($file);
+                await patchFile(branchId, $file);
                 dirty = false;
             } catch {
                 alert('Unfortunately something went wrong saving your file. Your changes have not been saved.');

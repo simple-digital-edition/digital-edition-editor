@@ -24,8 +24,8 @@ def run_application_server() -> None:
         ('/api/users/login', UserLoginHandler),
         ('/api/branches', BranchCollectionHandler),
         ('/api/branches/([0-9]+)', BranchItemHandler),
-        ('/api/files', FileCollectionHandler),
-        ('/api/files/([a-zA-Z0-9\\-_=]+)', FileItemHandler)
+        ('/api/branches/([0-9]+)/files', FileCollectionHandler),
+        ('/api/branches/([0-9]+)/files/([a-zA-Z0-9\\-_=]+)', FileItemHandler)
     ]
     app = Application(
         routes,
