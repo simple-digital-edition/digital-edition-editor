@@ -51,6 +51,12 @@ async def load_existing_branches() -> None:
                                     attributes={'name': f'Branch {match.group(1)}'})
                     dbsession.add(branch)
                     await dbsession.commit()
+                    if branch_prefix:
+                        shutil.copytree(target_dir, os.path.join(config()['git']['base-dir'],
+                                                                 f'{branch_prefix}-branch-{match.group(1)}'))
+                    else:
+                        shutil.copytree(target_dir, os.path.join(config()['git']['base-dir'],
+                                                                 f'branch-{match.group(1)}'))
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir)
 
