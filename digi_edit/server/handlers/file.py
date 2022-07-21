@@ -140,7 +140,7 @@ class FileItemHandler(JsonApiHandler):
                             out_f.write(file['attributes']['rawData'])
                         user = await self.get_authorised_user()
                         await run_git_command('add', file_path[len(branch_dir) + 1:], cwd=branch_dir)
-                        await run_git_command('commit', '-m', f'Updated {file_path}', '--author',
+                        await run_git_command('commit', '-m', f'Updated {file_path[len(branch_dir) + 1:]}', '--author',
                                               f'{user.attributes["name"]} <{user.email}>', cwd=branch_dir)
                         await run_git_command('push', '--force', cwd=branch_dir)
                         self.set_status(204)
