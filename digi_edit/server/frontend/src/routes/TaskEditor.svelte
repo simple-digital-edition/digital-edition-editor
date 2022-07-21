@@ -33,26 +33,19 @@
         return null;
     });
 
-    const modifiedFiles = derived(selectedTask, (selectedTask) => {
-        if (selectedTask) {
-            if (selectedTask.relationships && selectedTask.attributes.changes && selectedTask.attributes.changes.length > 0) {
-                return selectedTask.attributes.changes.map((file) => {
-                    return file.id;
-                });
-            }
-        }
-        return [];
+    const modifiedFiles = derived(files, (files) => {
+        return files.filter((file) => { return file.attributes.changed; });
     });
 
     const fileListfilter = writable('');
 
-    const fileSets = derived([files, fileSearchText, modifiedFiles, fileListfilter], ([files, fileSearchText, modifiedFiles, fileListfilter]) => {
+    const fileSets = derived([files, fileSearchText, fileListfilter], ([files, fileSearchText, fileListfilter]) => {
         const fileSets = [];
         for (const file of files) {
             if (fileSearchText !== '' && (file.attributes.path.indexOf(fileSearchText) < 0 && file.attributes.name.indexOf(fileSearchText) < 0)) {
                 continue;
             }
-            if (fileListfilter === 'modified' && modifiedFiles.indexOf(file.id) < 0) {
+            if (fileListfilter === 'modified' && !file.attributes.changed) {
                 continue;
             }
             if (fileSets.length === 0) {

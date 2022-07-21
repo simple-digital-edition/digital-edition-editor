@@ -59,6 +59,11 @@ CONFIG_SCHEMA = {
                 'required': True,
                 'empty': False,
             },
+            'main-branch': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+            },
             'base-dir': {
                 'type': 'string',
                 'required': True,
