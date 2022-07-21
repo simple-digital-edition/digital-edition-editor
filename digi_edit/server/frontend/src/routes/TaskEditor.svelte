@@ -17,6 +17,7 @@
     let showAddFile = false;
     let addFileLocation = '';
     let addFileName = '';
+    let autoRefreshInterval = 0
 
     const selectedFileId = derived(params, (params) => {
         return params['*'];
@@ -83,13 +84,18 @@
 
     const paramsUnsubscribe = params.subscribe((params) => {
         if (params.tid !== oldTaskId) {
+            clearInterval(autoRefreshInterval);
             fileListfilter.set('');
             getAllFiles(params.tid);
             oldTaskId = params.tid;
+            autoRefreshInterval = window.setInterval(() => {
+                getAllFiles(params.tid, true);
+            }, 60000);
         }
     });
 
     onDestroy(() => {
+        clearInterval(autoRefreshInterval);
         paramsUnsubscribe();
         modifiedFilesUnsubscribe();
     });
