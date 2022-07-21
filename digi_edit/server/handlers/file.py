@@ -3,6 +3,7 @@ import logging
 import os
 
 from base64 import urlsafe_b64encode as b64encode, urlsafe_b64decode as b64decode
+from git import Repo
 from sqlalchemy import select
 
 from .base import JsonApiHandler
@@ -25,6 +26,14 @@ class FileCollectionHandler(JsonApiHandler):
             if branch is not None:
                 branch_dir = os.path.join(config()["git"]["base-dir"], get_branch_name(str(branch.id)))
                 if os.path.exists(branch_dir):
+                    first_commit = None
+                    last_commit = None
+                    repo = Repo(branch_dir)
+                    for commit in repo.iter_commits(f'{config()["git"]["main-branch"]}..{get_branch_name(str(branch.id))}'):  # noqa: E501
+                        if not first_commit:
+                            first_commit = commit
+                        last_commit = commit
+                    modified_files = [diff.a_path for diff in first_commit.diff(last_commit)]
                     await run_git_command('checkout', 'default', cwd=branch_dir)
                     await run_git_command('pull', cwd=branch_dir)
                     await run_git_command('checkout', get_branch_name(str(branch.id)), cwd=branch_dir)
@@ -40,6 +49,7 @@ class FileCollectionHandler(JsonApiHandler):
                                     'path': os.path.dirname(filepath[len(branch_dir):]),
                                     'name': filename,
                                     'mode': 'tei' if filename.endswith('.tei') else 'text',
+                                    'changed': filepath[len(branch_dir) + 1:] in modified_files
                                 }
                             })
                     self.send_jsonapi(files)
