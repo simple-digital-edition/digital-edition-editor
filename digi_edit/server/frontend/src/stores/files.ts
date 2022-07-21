@@ -7,9 +7,11 @@ import {  } from './branches';
 export const files = writable([]);
 export const filesBusy = writable(false);
 
-export async function getAllFiles(branchId) {
+export async function getAllFiles(branchId, background=false) {
     try {
-        filesBusy.set(true);
+        if (!background) {
+            filesBusy.set(true);
+        }
         let fileList = await makeJSONAPIRequest('GET', '/branches/' + branchId + '/files');
         fileList = fileList.filter((file) => {
             return (file.attributes.name.endsWith('.md') || file.attributes.name.endsWith('.rst') || file.attributes.name.endsWith('.tei'));
@@ -106,6 +108,8 @@ export async function patchFile(branchId: string, file) {
         const response = await makeJSONAPIRequest('PATCH', '/branches/' + branchId + '/files/' + file.id, {data: file});
         if (!response) {
             throw new Error('Failed to save');
+        } else {
+            getAllFiles(branchId, true);
         }
     } finally {
         fileBusy.set(false);
