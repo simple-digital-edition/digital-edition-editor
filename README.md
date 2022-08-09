@@ -6,14 +6,16 @@ The Digital Edition Editor is a generic web application for managing a digital e
 
 To build and run the server locally the following tools are required:
 
-* Python version 3.8 or greater: https://www.python.org/
+* Python version 3.10 or greater: https://www.python.org/
 * Poetry: https://python-poetry.org/
-* NodeJS version 12 or greater: https://nodejs.org/en/
+* NodeJS version 16 or greater: https://nodejs.org/en/
 
 All further local dependencies are installed using the following commands:
 
 ```
 poetry install
+cd digi_edit/server/frontend
+npm install
 ```
 
 To activate the virtual environment run
@@ -22,24 +24,17 @@ To activate the virtual environment run
 poetry shell
 ```
 
-To create the development configuration run
-
-```
-digi_edit -c development.ini create-config -d
-digi_edit -c development.ini init-db
-```
-
 To build the JavaScript / CSS libraries run
 
 ```
-cd src/digi_edit/frontend
+cd digi_edit/server/frontend
 npm run dev
 ```
 
-To run the server for development run:
+To run the server for development run (after activating the virtual environment):
 
 ```
-poetry run pserve --reload development.ini
+python -m digi_edit app server
 ```
 
 The application is then available at http://localhost:6543/
