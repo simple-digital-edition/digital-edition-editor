@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Setup the database
-digi_edit -c /etc/digi-edit/production.ini init-db
+python -m digi_edit admin setup
 while [ $? -ne 0 ]
 do
     sleep 10
-    digi_edit -c /etc/digi-edit/production.ini init-db
+    python -m digi_edit admin setup
 done
 
 # Run the web application
-pserve /etc/digi-edit/production.ini
+python -m digi_edit app server
