@@ -5,7 +5,7 @@ from tornado.web import Application, RedirectHandler, StaticFileHandler
 from tornado.ioloop import IOLoop
 
 from .handlers import (FrontendHandler, JsonStaticHandler, UserLoginHandler, BranchCollectionHandler, BranchItemHandler,
-                       FileCollectionHandler, FileItemHandler)
+                       FileCollectionHandler, FileItemHandler, GitlabWebhookHandler)
 
 from ..utils import config
 
@@ -25,7 +25,8 @@ def run_application_server() -> None:
         ('/api/branches', BranchCollectionHandler),
         ('/api/branches/([0-9]+)', BranchItemHandler),
         ('/api/branches/([0-9]+)/files', FileCollectionHandler),
-        ('/api/branches/([0-9]+)/files/([a-zA-Z0-9\\-_=]+)', FileItemHandler)
+        ('/api/branches/([0-9]+)/files/([a-zA-Z0-9\\-_=]+)', FileItemHandler),
+        ('/webhooks/gitlab', GitlabWebhookHandler),
     ]
     app = Application(
         routes,

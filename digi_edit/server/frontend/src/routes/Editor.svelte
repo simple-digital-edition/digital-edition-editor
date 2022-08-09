@@ -75,33 +75,11 @@
     }
 
     async function requestIntegration() {
-        await postBranchAction($selectedTask, 'request-integration');
-        busyBranchAction.set('request-integration');
-        let stateChangeTestInterval = null;
-        let counter = 0;
-        stateChangeTestInterval = window.setInterval(async () => {
-            await getAllBranches();
-            if (counter === 12 || ($selectedTask && $selectedTask.attributes.pull_request && $selectedTask.attributes.pull_request.state === 'open')) {
-                window.clearInterval(stateChangeTestInterval);
-                busyBranchAction.set('');
-            }
-            counter++;
-        }, 5000);
+        await postBranchAction($selectedTask, 'request-merge');
     }
 
     async function cancelIntegration() {
-        await postBranchAction($selectedTask, 'cancel-integration');
-        busyBranchAction.set('cancel-integration');
-        let stateChangeTestInterval = null;
-        let counter = 0;
-        stateChangeTestInterval = window.setInterval(async () => {
-            await getAllBranches();
-            if (counter === 12 || (!$selectedTask || ($selectedTask.attributes.pull_request && $selectedTask.attributes.pull_request.state !== 'open'))) {
-                window.clearInterval(stateChangeTestInterval);
-                busyBranchAction.set('');
-            }
-            counter++;
-        }, 5000);
+        await postBranchAction($selectedTask, 'cancel-merge');
     }
 
     async function deleteTask() {
@@ -199,32 +177,7 @@
                 {/if}
             </li>
             {#if $selectedTask}
-                {#if !$selectedTask.attributes.pull_request || $selectedTask.attributes.pull_request.state !== 'open'}
-                    <li role="presentation">
-                        {#if $busyBranchAction === 'request-integration'}
-                            <BusySpinner width="w-6" height="h-6" class="px-3 py-1 border-b-2 border-solid border-neutral" message="Requesting integration. Please wait..."/>
-                        {:else}
-                            <button on:click={requestIntegration} class="block px-3 py-1 border-b-2 border-solid border-neutral hover:border-primary focus:border-primary transition-colors" aria-label="Request integration" title="Request integration">
-                                <svg viewBox="0 0 24 24" class="w-6 h-6">
-                                    <path fill="currentColor" d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M21,18A3,3 0 0,1 18,21A3,3 0 0,1 15,18C15,16.69 15.83,15.58 17,15.17V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V15.17C20.17,15.58 21,16.69 21,18M18,17A1,1 0 0,0 17,18A1,1 0 0,0 18,19A1,1 0 0,0 19,18A1,1 0 0,0 18,17Z" />
-                                </svg>
-                            </button>
-                        {/if}
-                    </li>
-                {:else}
-                    <li role="presentation">
-                        {#if $busyBranchAction === 'cancel-integration'}
-                            <BusySpinner width="w-6" height="h-6" class="px-3 py-1 border-b-2 border-solid border-neutral" message="Cancelling integration. Please wait..."/>
-                        {:else}
-                            <button on:click={cancelIntegration} class="block px-3 py-1 border-b-2 border-solid border-neutral hover:border-primary focus:border-primary transition-colors" aria-label="Cancel integration" title="Cancel integration">
-                                <svg viewBox="0 0 24 24" class="w-6 h-6">
-                                    <path fill="currentColor" d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M17.17,11.77V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V11.77H17.17M17.5 13C15 13 13 15 13 17.5C13 20 15 22 17.5 22C20 22 22 20 22 17.5C22 15 20 13 17.5 13M17.5 14.5C19.16 14.5 20.5 15.84 20.5 17.5C20.5 18.06 20.35 18.58 20.08 19L16 14.92C16.42 14.65 16.94 14.5 17.5 14.5M14.92 16L19 20.08C18.58 20.35 18.06 20.5 17.5 20.5C15.84 20.5 14.5 19.16 14.5 17.5C14.5 16.94 14.65 16.42 14.92 16Z" />
-                                </svg>
-                            </button>
-                        {/if}
-                    </li>
-                {/if}
-                {#if $selectedTask.attributes.updates }
+                {#if $selectedTask.attributes.rebase_required }
                     <li role="presentation">
                         {#if $busyBranchAction === 'rebase'}
                             <BusySpinner width="w-6" height="h-6" class="px-3 py-1 border-b-2 border-solid border-neutral" message="Updating. Please wait..."/>
@@ -236,6 +189,32 @@
                             </button>
                         {/if}
                     </li>
+                {:else}
+                    {#if !$selectedTask.attributes.merge_request || $selectedTask.attributes.merge_request.state !== 'opened'}
+                        <li role="presentation">
+                            {#if $busyBranchAction === 'request-merge'}
+                                <BusySpinner width="w-6" height="h-6" class="px-3 py-1 border-b-2 border-solid border-neutral" message="Requesting integration. Please wait..."/>
+                            {:else}
+                                <button on:click={requestIntegration} class="block px-3 py-1 border-b-2 border-solid border-neutral hover:border-primary focus:border-primary transition-colors" aria-label="Request integration" title="Request integration">
+                                    <svg viewBox="0 0 24 24" class="w-6 h-6">
+                                        <path fill="currentColor" d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M21,18A3,3 0 0,1 18,21A3,3 0 0,1 15,18C15,16.69 15.83,15.58 17,15.17V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V15.17C20.17,15.58 21,16.69 21,18M18,17A1,1 0 0,0 17,18A1,1 0 0,0 18,19A1,1 0 0,0 19,18A1,1 0 0,0 18,17Z" />
+                                    </svg>
+                                </button>
+                            {/if}
+                        </li>
+                    {:else}
+                        <li role="presentation">
+                            {#if $busyBranchAction === 'cancel-merge'}
+                                <BusySpinner width="w-6" height="h-6" class="px-3 py-1 border-b-2 border-solid border-neutral" message="Cancelling integration. Please wait..."/>
+                            {:else}
+                                <button on:click={cancelIntegration} class="block px-3 py-1 border-b-2 border-solid border-neutral hover:border-primary focus:border-primary transition-colors" aria-label="Cancel integration" title="Cancel integration">
+                                    <svg viewBox="0 0 24 24" class="w-6 h-6">
+                                        <path fill="currentColor" d="M6,3A3,3 0 0,1 9,6C9,7.31 8.17,8.42 7,8.83V15.17C8.17,15.58 9,16.69 9,18A3,3 0 0,1 6,21A3,3 0 0,1 3,18C3,16.69 3.83,15.58 5,15.17V8.83C3.83,8.42 3,7.31 3,6A3,3 0 0,1 6,3M6,5A1,1 0 0,0 5,6A1,1 0 0,0 6,7A1,1 0 0,0 7,6A1,1 0 0,0 6,5M6,17A1,1 0 0,0 5,18A1,1 0 0,0 6,19A1,1 0 0,0 7,18A1,1 0 0,0 6,17M17.17,11.77V7H15V10.25L10.75,6L15,1.75V5H17A2,2 0 0,1 19,7V11.77H17.17M17.5 13C15 13 13 15 13 17.5C13 20 15 22 17.5 22C20 22 22 20 22 17.5C22 15 20 13 17.5 13M17.5 14.5C19.16 14.5 20.5 15.84 20.5 17.5C20.5 18.06 20.35 18.58 20.08 19L16 14.92C16.42 14.65 16.94 14.5 17.5 14.5M14.92 16L19 20.08C18.58 20.35 18.06 20.5 17.5 20.5C15.84 20.5 14.5 19.16 14.5 17.5C14.5 16.94 14.65 16.42 14.92 16Z" />
+                                    </svg>
+                                </button>
+                            {/if}
+                        </li>
+                    {/if}
                 {/if}
                 <li role="presentation">
                     {#if $busyBranchAction === 'delete'}
