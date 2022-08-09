@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 # Update version numbers
-version = '1.1.0b5'
+version = '1.1.0b6'
 
 with open('pyproject.toml') as in_f:
     lines = in_f.readlines()
