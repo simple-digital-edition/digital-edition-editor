@@ -1,10 +1,10 @@
+"""Script to prepare the release of the Digital Edition Editor."""
 import re
-import json
 
 from datetime import datetime
 
 # Update version numbers
-version = '1.0.3'
+version = '1.1.0b6'
 
 with open('pyproject.toml') as in_f:
     lines = in_f.readlines()
@@ -19,8 +19,8 @@ with open('docker/Dockerfile') as in_f:
     lines = in_f.readlines()
 with open('docker/Dockerfile', 'w') as out_f:
     for line in lines:
-        if re.search('digi_edit-[0-9]+\.[0-9]+\.[0-9]+(?:b[0-9]+)?', line):
-            out_f.write(re.sub('digi_edit-[0-9]+\.[0-9]+\.[0-9]+(?:b[0-9]+)?', f'digi_edit-{version}', line))
+        if re.search(r'digi_edit-[0-9]+\.[0-9]+\.[0-9]+(?:b[0-9]+)?', line):
+            out_f.write(re.sub(r'digi_edit-[0-9]+\.[0-9]+\.[0-9]+(?:b[0-9]+)?', f'digi_edit-{version}', line))
         else:
             out_f.write(line)
 
@@ -48,6 +48,3 @@ with open('CHANGES.md') as in_f:
             if match:
                 changes.append({'type': match.group(1).lower(),
                                 'message': match.group(2)})
-
-#with open('src/digi_edit/static/changes.json', 'w') as out_f:
-#    json.dump(history, out_f)
