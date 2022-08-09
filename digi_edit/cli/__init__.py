@@ -102,6 +102,23 @@ CONFIG_SCHEMA = {
             }
         }
     },
+    'templates': {
+        'type': 'dict',
+        'default': {
+            'tei': '',
+            'text': '',
+        },
+        'schema': {
+            'tei': {
+                'type': 'string',
+                'default': '',
+            },
+            'text': {
+                'type': 'string',
+                'default': '',
+            }
+        }
+    },
     'debug': {
         'type': 'boolean',
         'default': False,

@@ -67,9 +67,19 @@ export async function postBranchAction(branch, action: string) {
             headers: {
                 'Authorization': 'Bearer ' + get(authToken),
                 'X-XSRFToken': getCookie('_xsrf'),
-            }
+            },
+            body: JSON.stringify({'data': {'type': 'actions', 'id': action}})
         });
-        branches.set(await getAll('branches', ''));
+        branch = (await response.json()).data;
+        branches.update((branches) => {
+            return branches.map((oldBranch) => {
+                if (oldBranch.id === branch.id) {
+                    return branch;
+                } else {
+                    return oldBranch;
+                }
+            });
+        });
     } finally {
         busyBranchAction.set('');
     }

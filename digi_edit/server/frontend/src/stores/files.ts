@@ -60,7 +60,7 @@ export const fileBusy = writable(false);
 export async function createFile(filename: string, filepath: string, branchId: string) {
     try {
         fileBusy.set(true);
-        const response = await fetch('/api/files', {
+        const response = await fetch('/api/branches/' + branchId + '/files', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + get(authToken),
@@ -70,18 +70,10 @@ export async function createFile(filename: string, filepath: string, branchId: s
                 data: {
                     type: 'files',
                     attributes: {
-                        filename: filepath + '/' + filename,
+                        filename: filepath !== '/' ? filepath + '/' + filename : filepath + filename,
                         path: filepath,
                         name: filename,
                     },
-                    relationships: {
-                        branch: {
-                            data: {
-                                type: 'branches',
-                                id: branchId,
-                            }
-                        }
-                    }
                 },
             }),
         });
