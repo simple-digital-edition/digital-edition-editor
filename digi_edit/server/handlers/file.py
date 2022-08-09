@@ -213,7 +213,7 @@ class FileItemHandler(JsonApiHandler):
         """Update the content of a single file."""
         logger.debug(f'Updating single file {branch_id} {file_id}')
         async with get_sessionmaker()() as dbsession:
-            query = select(Branch).filter(Branch.id == branch_id)
+            query = select(Branch).filter(Branch.id == int(branch_id))
             result = await dbsession.execute(query)
             branch = result.scalar()
             if branch is not None:
