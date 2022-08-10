@@ -2,6 +2,12 @@
 
 ## Development ()
 
+* **New**: Added user profile editing
+
+## 1.1.0 (10.08.2022)
+
+* **Update**: Stability fixes for the backend
+
 ## 1.0.2 (18.04.2022)
 
 * **Update**: Changed the Docker repository name
