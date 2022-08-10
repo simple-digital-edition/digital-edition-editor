@@ -2,9 +2,11 @@
 
 ## Development ()
 
+## 1.1.1 (10.08.2022)
+
 * **New**: Added user profile editing
 
-## 1.1.0 (10.08.2022)
+## 1.1.0 (09.08.2022)
 
 * **Update**: Stability fixes for the backend
 
