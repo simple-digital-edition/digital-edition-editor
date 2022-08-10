@@ -3,10 +3,11 @@
     import { derived } from 'svelte/store';
     import { Route, Link, useLocation, useParams, useNavigate } from 'svelte-navigator';
 
-    import { activeBranches, getAllBranches, branchesBusy, postBranchAction, busyBranchAction, deleteBranch, activeDialog, authToken } from '../stores';
+    import { activeBranches, getAllBranches, branchesBusy, postBranchAction, busyBranchAction, deleteBranch, activeDialog, authToken, user } from '../stores';
     import { sessionDeleteValue, localDeleteValue } from '../storage';
     import TaskEditor from './TaskEditor.svelte';
     import NewTask from './NewTask.svelte';
+    import Profile from './Profile.svelte';
     import BusySpinner from '../components/BusySpinner.svelte';
 
     const location = useLocation();
@@ -137,7 +138,7 @@
         <ul class="flex">
             <li role="presentation" class="border-b-2 border-neutral w-4"></li>
             <li role="presentation">
-                <Link to="/" class="block px-3 py-1 border-b-2 border-solid {$selectedTask ? 'border-neutral' : 'border-primary'} hover:border-primary focus:border-primary transition-colors">Editor</Link>
+                <Link to="/" class="block px-3 py-1 border-b-2 border-solid {$location.pathname === '/' ? 'border-primary' : 'border-neutral'} hover:border-primary focus:border-primary transition-colors">Editor</Link>
             </li>
             <li role="presentation" class="relative">
                 {#if $branchesBusy && !$selectedTask}
@@ -237,6 +238,11 @@
                 </li>
             {/if}
             <li role="presentation" class="flex-auto border-b-2 border-solid border-neutral"></li>
+            {#if $user}
+                <li role="presentation">
+                    <Link to="/profile" class="block px-3 py-1 border-b-2 border-solid border-neutral hover:border-primary focus:border-primary transition-colors {$location.pathname === '/profile' ? 'border-primary' : 'border-neutral'}">{$user.attributes.name}</Link>
+                </li>
+            {/if}
             <li role="presentation">
                 <button on:click={logout} class="block px-3 py-1 border-b-2 border-solid border-neutral hover:border-primary focus:border-primary transition-colors">Log out</button>
             </li>
@@ -249,5 +255,6 @@
         </div>
     </Route>
     <Route path="new"><NewTask/></Route>
+    <Route path="profile"><Profile/></Route>
     <Route path=":tid/*"><TaskEditor/></Route>
 </div>

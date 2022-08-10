@@ -71,3 +71,77 @@ class UserLoginHandler(JsonApiHandler):
                     pass
         except Exception as e:
             logger.error(e)
+
+
+PATCH_USER_SCHEMA = {
+    'type': {
+        'type': 'string',
+        'empty': False,
+        'allowed': ['users'],
+    },
+    'id': {
+        'type': 'string',
+        'empty': False
+    },
+    'attributes': {
+        'type': 'dict',
+        'schema': {
+            'name': {
+                'type': 'string'
+            },
+            'email': {
+                'type': 'string'
+            },
+            'password': {
+                'type': 'string'
+            }
+        }
+    }
+}
+
+
+class UserItemHandler(JsonApiHandler):
+    """Handle requests for individual users."""
+
+    async def get(self: 'UserItemHandler', user_id: str) -> None:
+        """Get the currently authenticated user."""
+        user = await self.get_authorised_user()
+        if user:
+            self.send_jsonapi({
+                'type': 'user',
+                'id': str(user.id),
+                'attributes': {
+                    'email': user.email,
+                    'name': user.attributes['name'],
+                    'token': user.attributes['token'],
+                }
+            })
+        else:
+            self.set_status(401)
+
+    async def patch(self: 'UserItemHandler', user_id: str) -> None:
+        """Patch the currently authenticated user."""
+        user = await self.get_authorised_user()
+        if user:
+            body = self.request_body(PATCH_USER_SCHEMA)
+            async with get_sessionmaker()() as dbsession:
+                dbsession.add(user)
+                if 'name' in body['attributes']:
+                    user.attributes['name'] = body['attributes']['name']
+                elif 'email' in body['attributes']:
+                    user.email = body['attributes']['email']
+                elif 'password' in body['attributes']:
+                    user.password = bcrypt.hashpw(body['attributes']['password'].encode('utf-8'),
+                                                  bcrypt.gensalt()).decode()
+                await dbsession.commit()
+            self.send_jsonapi({
+                'type': 'user',
+                'id': str(user.id),
+                'attributes': {
+                    'email': user.email,
+                    'name': user.attributes['name'],
+                    'token': user.attributes['token'],
+                }
+            })
+        else:
+            self.set_status(404)
