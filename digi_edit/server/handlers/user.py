@@ -50,7 +50,7 @@ class UserLoginHandler(JsonApiHandler):
         try:
             obj = self.request_body(USER_LOGIN_SCHEMA)
             async with get_sessionmaker()() as dbsession:
-                query = select(User).filter(User.email == obj['attributes']['email'])
+                query = select(User).filter(User.email == obj['attributes']['email'].lower())
                 result = await dbsession.execute(query)
                 user = result.scalar()
                 if user and bcrypt.checkpw(obj['attributes']['password'].encode('utf-8'),

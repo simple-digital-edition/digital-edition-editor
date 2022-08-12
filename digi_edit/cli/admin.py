@@ -73,7 +73,7 @@ async def add_user_to_database(email: str, name: str, password: str) -> None:
     """Add a user to the database."""
     try:
         async with get_sessionmaker()() as dbsession:
-            user = User(email=email,
+            user = User(email=email.lower(),
                         password=bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode(),
                         status='active',
                         groups=[],
