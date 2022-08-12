@@ -74,6 +74,22 @@ CONFIG_SCHEMA = {
                 'required': False,
                 'default': '',
             },
+            'committer': {
+                'type': 'dict',
+                'required': True,
+                'schema': {
+                    'name': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                    },
+                    'email': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                    }
+                }
+            },
             'integration': {
                 'type': 'dict',
                 'required': True,

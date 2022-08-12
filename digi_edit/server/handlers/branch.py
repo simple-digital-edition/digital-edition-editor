@@ -76,6 +76,8 @@ class BranchCollectionHandler(JsonApiHandler):
             await run_git_command('checkout', get_branch_name(str(branch.id)), cwd=target_dir)
             await run_git_command('push', '--set-upstream', 'origin', get_branch_name(str(branch.id)), '--force',
                                   cwd=target_dir)
+            await run_git_command('config', 'user.name', config()['git']['committer']['name'], cwd=target_dir)
+            await run_git_command('config', 'user.email', config()['git']['committer']['email'], cwd=target_dir)
             self.send_jsonapi(await branch_as_jsonapi(branch))
         except Exception:
             async with get_sessionmaker()() as dbsession:

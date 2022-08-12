@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Update**: Set git committer name on checkout
+
 ## 1.1.1 (10.08.2022)
 
 * **New**: Added user profile editing
