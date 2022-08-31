@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 1.1.2 (12.08.2022)
+
 * **Update**: Set git committer name on checkout
 * **Bugfix**: Ensure the e-mail address is lower-case
 
