@@ -2,6 +2,8 @@
 
 ## Development ()
 
+* **Bugfix**: Fix the URL pattern for the user
+
 ## 1.1.2 (12.08.2022)
 
 * **Update**: Set git committer name on checkout
