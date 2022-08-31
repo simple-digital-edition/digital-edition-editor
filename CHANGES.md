@@ -2,6 +2,8 @@
 
 ## Development ()
 
+## 1.1.3 (31.08.2022)
+
 * **Bugfix**: Fix the URL pattern for the user
 
 ## 1.1.2 (12.08.2022)
