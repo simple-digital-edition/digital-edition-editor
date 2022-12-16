@@ -2,6 +2,7 @@
 
 ## Development ()
 
+* **New**: Added ability to change a user password via the CLI
 * **Bugfix**: Fixed an issue with the cookie extraction
 
 ## 1.1.4 (16.12.2022)

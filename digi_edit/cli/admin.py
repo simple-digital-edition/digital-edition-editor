@@ -112,6 +112,25 @@ def delete_user(email: str) -> None:
     asyncio.run(delete_user_from_database(email))
 
 
+async def update_password_in_database(email: str, password: str) -> None:
+    """Delete a user from the database."""
+    async with get_sessionmaker()() as dbsession:
+        query = select(User).filter(User.email == email)
+        user = (await dbsession.execute(query)).scalar()
+        if user:
+            user.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode()
+            dbsession.add(user)
+            await dbsession.commit()
+
+
+@click.command()
+@click.option('--email', prompt=True, help='Email of the user')
+@click.option('--password', prompt=True, hide_input=True, confirmation_prompt=True, help='Password for the user')
+def update_password(email: str, password: str) -> None:
+    """Update the password for a user."""
+    asyncio.run(update_password_in_database(email, password))
+
+
 @click.group()
 def admin() -> None:
     """Administer the Digital Edition Editor."""
@@ -121,3 +140,4 @@ def admin() -> None:
 admin.add_command(setup)
 admin.add_command(add_user)
 admin.add_command(delete_user)
+admin.add_command(update_password)
