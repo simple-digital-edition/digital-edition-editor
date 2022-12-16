@@ -4,6 +4,7 @@ import { NestedStorage, sessionLoadValue, localLoadValue } from '../storage';
 
 export function getCookie(name: string): string | undefined {
     const cookies = Object.fromEntries(document.cookie.split(';').map((cookie) => {
+        cookie = cookie.trim();
         return cookie.split('=');
     }));
     return cookies[name];

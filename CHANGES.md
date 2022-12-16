@@ -2,6 +2,12 @@
 
 ## Development ()
 
+* **Bugfix**: Fixed an issue with the cookie extraction
+
+## 1.1.4 (16.12.2022)
+
+* **Update**: Updated the dependencies
+
 ## 1.1.3 (31.08.2022)
 
 * **Bugfix**: Fix the URL pattern for the user
