@@ -2,6 +2,10 @@
 
 ## Development ()
 
+## 1.2.1 (26.05.2023)
+
+* **Bugfix**: Fixed a security issue in Tornado
+
 ## 1.2.0 (16.12.2022)
 
 * **New**: Added ability to change a user password via the CLI
