@@ -17,7 +17,7 @@ aiosqlite = "^0.17.0"
 sqlalchemy-json = "^0.5.0"
 tornado = "^6.3"
 bcrypt = "^3.2.2"
-GitPython = "^3.1.30"
+GitPython = "^3.1.32"
 python-gitlab = "^3.8.0"
 PyYAML = "^6.0"
 
