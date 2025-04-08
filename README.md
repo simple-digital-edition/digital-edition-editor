@@ -1,3 +1,5 @@
+**Important!** This editor is deprecated and you should switch to the [uEdition project](https://github.com/uEdition).
+
 # Digital Edition Editor
 
 The Digital Edition Editor is a generic web application for managing a digital edition
